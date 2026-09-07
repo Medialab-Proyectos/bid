@@ -1,0 +1,17 @@
+p.amount-box {
+  @extend .sf400;
+  color: $gray-2;
+  font-size: rem(12);
+  span {
+    @extend .sf600;
+    color: color("black");
+    display: block;
+    font-size: 13px;
+
+    &.overflow {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}

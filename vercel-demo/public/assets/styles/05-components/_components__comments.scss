@@ -1,0 +1,326 @@
+////
+/// COMMENTS component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}comments
+/// @since version 1.0.0
+////
+.#{$ns}comments {
+    &__title {
+        display: block;
+        font-size: rem(24);
+        color: color("black");
+        margin-bottom: rem(16);
+    }
+    &__description {
+        font-size: rem(14);
+        color: color("black");
+        margin-bottom: rem(48);
+    }
+    &__due-time {
+        font-size: rem(20);
+        color: color("black");
+
+        &-wrapper {
+            text-align: right;
+        }
+        &-description {
+            display: block;
+            font-size: rem(12);
+            font-style: italic;
+            color: color("black");
+            text-align: right;
+        }
+    }
+    &__view {
+        //HEADER
+        &-header {
+            margin-bottom: rem(32);
+        }
+        &-header-col {
+            display: inline-block;
+            width: 50%;
+
+            .k-dropdown {
+                min-width: rem(216);
+            }
+            .bid-textbox {
+                margin-right: rem(23);
+                margin-bottom: rem(5);
+            }
+            .bid-comments__view-toggle-filters {
+                cursor: pointer;
+                font-size: rem(16);
+                font-weight: bold;
+                color: color("primary");
+                text-decoration: underline;
+                padding: 0;
+                margin-bottom: rem(5);
+
+                &:hover {
+                    color: color("primary");
+                    text-decoration: underline;
+                }
+            }
+            &:first-child {
+                text-align: left;
+                padding-left: rem(20);
+            }
+            &:last-child {
+                text-align: right;
+                padding-right: rem(20);
+            }
+        }
+        &-order {
+            font-size: rem(16);
+            color: color("black");
+            display: inline-block;
+            margin-right: rem(38);
+        }
+
+        //FILTERS
+        &-filters {
+            padding: rem(25) rem(12) rem(32);
+            background-color: color("gray-100");
+            border-radius: rem(10);
+            margin-bottom: rem(32);
+
+            &-col {
+                display: inline-block;
+                width: 20%;
+                padding: 0 rem(12);
+
+                .k-dropdown {
+                    width: 100%;
+                }
+                .k-textbox {
+                    width: 100%;
+                }
+                &:last-child {
+                    text-align: center;
+                    .btn {
+                        font-size: rem(16);
+
+                        &:first-child {
+                            margin-right: rem(24);
+                        }
+                    }
+                }
+            }
+        }
+
+        //COMMENTS
+        &-comment {
+            padding: rem(25) rem(12) rem(32);
+            background-color: color("gray-100");
+            border-radius: rem(10);
+            margin-bottom: rem(16);
+
+            //ONLY COMMENTS
+            &-col {
+                display: inline-block;
+                vertical-align: top;
+                padding: 0 rem(12);
+                &:first-child {
+                    width: 18%;
+                    &:last-child {
+                        width: 100%;
+                    }
+                }
+                &:last-child {
+                    width: 82%;
+
+                    .bid-comments__view-comment-row {
+                        &:first-child {
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                    }
+                }
+                .bid-comments__read-more {
+                    cursor: pointer;
+                    text-decoration: underline;
+                    color: color("primary");
+                    font-weight: bold;
+
+                    &:hover {
+                        text-decoration: underline;
+                        color: color("primary");
+                    }
+                }
+            }
+            &-filtred {
+                background: color("gray-700", 0.3);
+            }
+            &-title {
+                font-size: rem(18);
+                font-weight: bold;
+                color: color("black");
+                p {
+                    font-size: rem(18);
+                    font-weight: bold;
+                    color: color("black");
+                    margin: 0;
+                }
+            }
+            &-info {
+                font-size: rem(14);
+                font-style: italic;
+                color: color("gray-700");
+                margin-bottom: rem(16);
+                margin-right: rem(15);
+
+                &:before {
+                    content: "";
+                    display: inline-block;
+                    width: rem(10);
+                    height: rem(10);
+                    border-radius: 50%;
+                    background-color: color("txt_ERM");
+                    margin-right: rem(12);
+                }
+                &--answer {
+                    &:before {
+                        display: none;
+                    }
+                }
+            }
+            &-text {
+                font-size: rem(14);
+                color: color("black");
+                padding-right: rem(36);
+                line-height: rem(19);
+            }
+
+            //WITH COMMENTS AND ANSWERS
+            &--answer {
+                display: flex;
+                padding-bottom: rem(25);
+
+                .bid-comments__view-comment {
+                    &-col {
+                        width: 50%;
+
+                        &:first-child {
+                            padding-right: rem(24);
+                            border-right: rem(1) solid color("gray-600");
+                        }
+                        &:last-child {
+                            padding-left: rem(24);
+                            .bid-comments__view-comment-info {
+                                margin-bottom: rem(32);
+                                &:before {
+                                    content: none;
+                                }
+                            }
+                        }
+                    }
+                    &-row {
+                        &:first-child {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                        }
+                    }
+                    &-title {
+                        display: block;
+                        margin-bottom: rem(13);
+                    }
+                }
+            }
+            //WITH EMPTY ANSWERS
+            &--no-answer {
+                display: flex;
+                padding-bottom: rem(25);
+
+                .bid-comments__view-comment {
+                    &-col {
+                        width: 50%;
+
+                        &:first-child {
+                            padding-right: rem(24);
+                            border-right: rem(1) solid color("gray-600");
+                        }
+                        &:last-child {
+                            padding-left: rem(24);
+                            .bid-comments__view-comment-row {
+                                &:first-child {
+                                    justify-content: flex-end;
+                                }
+                                &:last-child {
+                                    height: calc(100% - 25px);
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+
+                                    .bid-comments__view-comment-text {
+                                        font-size: rem(16);
+                                        font-style: italic;
+                                        color: color("gray-500");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    &-row {
+                        &:first-child {
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                    }
+                    &-title {
+                        display: block;
+                        margin-bottom: rem(13);
+                    }
+                }
+            }
+        }
+
+        &-kendo-placeholder {
+            top: rem(112);
+            position: absolute;
+            left: rem(30);
+            font-weight: normal;
+            font-size: rem(14);
+            line-height: rem(19);
+            color: color("gray-800", 0.8);
+        }
+
+        //WITH NO COMMENTS
+        &--no-entries {
+            background-color: color("gray-100");
+            width: 100%;
+            height: rem(312);
+            border-radius: rem(12);
+            padding: 0 rem(18);
+            padding-top: rem(93);
+
+            .bid-comments {
+                &__view {
+                    &-title {
+                        display: block;
+                        font-size: rem(18);
+                        font-weight: bold;
+                        color: color("gray-600");
+                        text-align: center;
+                        margin-bottom: rem(10);
+                    }
+                    &-description {
+                        color: color("gray-600");
+                        font-style: italic;
+                        text-align-last: center;
+                        max-width: rem(400);
+                        margin: 0 auto;
+                    }
+                }
+            }
+        }
+    }
+    &__filter-label {
+        display: block;
+        font-size: rem(14);
+        color: color("black");
+    }
+}

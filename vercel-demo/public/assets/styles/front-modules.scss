@@ -1,0 +1,226 @@
+///*-------------------------------------------------------------------------
+//   # FRONT MODULES CONFIG
+//--------------------------------------------------------------------------*/
+//	CONTENT THIS FILE:
+//		# IMPORT FILE CONFIG SCSS
+//      # SETTINGS
+//		# TOOLS
+//      # GENERIC
+//		# BASE
+//		# OBJETCS
+//      # COMPONENTS
+//      # TRUMPS
+//*--------------------------------------------------------
+//    # SETTINGS
+//----------------------------------------------------------*/
+
+@import "../../../node_modules/@progress/kendo-theme-default/dist/all.css";
+
+// Boostrap functions & settings
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+
+@import "00-settings/_settings__basics";
+@import "00-settings/_settings__colors";
+@import "00-settings/_settings__ds2-tokens";
+@import "00-settings/_settings__responsive";
+@import "00-settings/_settings__headings";
+@import "00-settings/_settings__objects";
+@import "00-settings/_settings__trumps";
+
+//*----------------------------------------------------------
+//    # TOOLS
+//----------------------------------------------------------*/
+@import "../../../node_modules/bootstrap/scss/mixins";
+@import "01-tools";
+//*----------------------------------------------------------
+//     # GENERIC
+// ----------------------------------------------------------*/
+@import "../../../node_modules/bootstrap/scss/grid";
+@import "02-generic/_generic__fonts";
+@import "02-generic/_generic__ds2-properties";
+
+//*----------------------------------------------------------
+//     # BASE
+// ----------------------------------------------------------*/
+@import "../../../node_modules/bootstrap/scss/type";
+@import "../../../node_modules/bootstrap/scss/images";
+@import "../../../node_modules/bootstrap/scss/code";
+@import "../../../node_modules/bootstrap/scss/tables";
+@import "../../../node_modules/bootstrap/scss/forms";
+// @import "../../../../node_modules/bootstrap/scss/buttons";
+@import "03-elements/_elements__html";
+@import "03-elements/_elements__body";
+@import "03-elements/_elements__button";
+@import "03-elements/_elements__headings";
+@import "03-elements/_elements__image";
+@import "03-elements/_elements__a";
+@import "03-elements/elements__txt";
+@import "03-elements/elemtents__textarea";
+// @import '03-elements/_elements__lists';
+// @import '03-elements/_elements__scrollbar';
+// /*----------------------------------------------------------
+//     # OBJECTS
+// ----------------------------------------------------------*/
+
+@import "04-objects";
+
+// /*----------------------------------------------------------
+//     # COMPONENTS
+// ----------------------------------------------------------*/
+
+// /*----------------------------------------------------------
+//     # COMPONENTS BOOTSTRAP
+// ----------------------------------------------------------*/
+
+@import "../../../node_modules/bootstrap/scss/dropdown";
+@import "../../../node_modules/bootstrap/scss/button-group";
+@import "../../../node_modules/bootstrap/scss/input-group";
+@import "../../../node_modules/bootstrap/scss/nav";
+@import "../../../node_modules/bootstrap/scss/navbar";
+
+@import "05-components/_components__sprites";
+@import "05-components/_components__textbox";
+@import "05-components/_components__datepicker";
+@import "05-components/_components__textarea";
+@import "05-components/_components__checkbox";
+@import "05-components/components__howtolink";
+@import "05-components/_components__card-document.scss";
+@import "05-components/_components__card";
+@import "05-components/_components__dropdown-list";
+@import "05-components/_components__tooltip";
+@import "05-components/components_title-description";
+@import "05-components/components_no-content";
+@import "05-components/_components_avatar";
+@import "05-components/_components_table_aggregates";
+@import "05-components/component__input-currency";
+@import "05-components/component__procurement-process";
+@import "05-components/component__disbursement_information";
+@import "05-components/_components__procurement";
+@import "05-components/components_error-list";
+@import "05-components/component__user-side-menu";
+@import "05-components/components__secondary-nav";
+@import "05-components/component__floating-setting";
+@import "05-components/components__participant-bidder-search";
+@import "05-components/components__mobile-table";
+@import "05-components/components__options-menu";
+@import "05-components/components__contracts";
+@import "05-components/components__contract-details";
+@import "05-components/components__upload-contract-information";
+@import "05-components/components__accordion-panel";
+@import "05-components/components__alert";
+@import "05-components/components__docs-list";
+@import "05-components/components__files-list";
+@import "05-components/components__documents";
+@import "05-components/components__documents-tab";
+@import "05-components/components__document-detail";
+@import "05-components/components__gpn";
+@import "05-components/components__aea-documents";
+@import "05-components/components__disbursement";
+@import "05-components/components__transactions";
+@import "05-components/shared";
+@import "05-components/components__header-feature";
+@import "05-components/components__profile-card";
+@import "05-components/_components__row-detail";
+@import "05-components/component__file-selector";
+@import "05-components/_component__contract-amendments";
+@import "05-components/components__preview-documents";
+@import "05-components/_component__project-sidebar";
+@import "05-components/components__amendment";
+@import "05-components/_component__approval-flow";
+@import "05-components/_component__add-amendment";
+@import "05-components/component__status-label";
+@import "05-components/_component__sustainability";
+@import "05-components/_component__comments";
+@import "05-components/components__comments-list";
+@import "05-components/components_add-comment";
+@import "05-components/_component__sticky-footer";
+@import "05-components/_components__workflow";
+@import "05-components/_component__activities";
+@import "05-components/components__equivalent-amount";
+@import "05-components/_component__workflow-list";
+@import "05-components/components__ani-header-detail";
+@import "05-components/_components__procurement-changes";
+@import "05-components/_component_notifications-tab";
+@import "05-components/_component_comment-filter";
+@import "05-components/component_comments";
+@import "05-components/component_workflow-comments-modal.component";
+
+@import "05-components/component_delayed-milestone-table";
+@import "05-components/component__ubo";
+@import "05-components/component__spn";
+@import "05-components/component__r-contracts";
+//     # COMPONENTS REPOSITORY
+// ----------------------------------------------------------*/
+
+// /*----------------------------------------------------------
+//     # COMPONENTS KENDO UI
+// ----------------------------------------------------------*/
+@import "05-components/kendo/kendo-notifications";
+@import "05-components/kendo/kendo-panelbar";
+@import "05-components/kendo/kendo-dialog";
+@import "05-components/kendo/kendo-drawer";
+@import "05-components/kendo/kendo-card";
+@import "05-components/kendo/kendo-popup";
+@import "05-components/kendo/kendo-upload";
+@import "05-components/kendo/kendo-grid";
+@import "05-components/kendo/kendo-multiselect";
+@import "05-components/kendo/kendo-switch";
+@import "05-components/kendo/kendo_label";
+@import "05-components/kendo/kendo_radioButton";
+@import "05-components/kendo/kendo_tabstrip";
+@import "05-components/kendo/kendo-textbox";
+@import "05-components/kendo/kendo_numeric-textbox";
+@import "05-components/kendo/kendo-fi-dropdown-list";
+@import "05-components/kendo/kendo_breadcrumbs";
+@import "05-components/kendo/kendo_tooltip";
+@import "05-components/kendo/kendo_datepicker";
+@import "05-components/kendo/kendo_checkbox";
+@import "05-components/kendo/kendo_loader";
+@import "05-components/kendo/kendo_dropdownbutton";
+@import "05-components/kendo/kendo_datetimepicker";
+@import "05-components/kendo/_kendo_listview";
+@import "05-components/kendo/kendo_editor";
+@import "05-components/kendo/kendo_combobox";
+
+// /*----------------------------------------------------------
+//     # OTHER COMPONENTS
+// ----------------------------------------------------------*/
+@import "05-components/phone-input/_component__phone-input";
+
+//*----------------------------------------------------------
+//     # TRUMPS
+// ----------------------------------------------------------*/
+@import "../../../node_modules/bootstrap/scss/utilities";
+@import "../../../node_modules/bootstrap/scss/print";
+@import "06-utilities/_trumps__colors";
+@import "06-utilities/_trumps__display";
+@import "06-utilities/_trumps__padding";
+@import "06-utilities/_trumps__z-index";
+@import "06-utilities/_trumps__separations";
+@import "06-utilities/_trumps__ds2-separations";
+@import "06-utilities/_trumps__text-align";
+@import "06-utilities/trumps__blank_input";
+
+@import "07-themes/fi";
+
+//*----------------------------------------------------------
+//     # FORMS
+// ----------------------------------------------------------*/
+@import "08-forms";
+
+@import "09-notifications";
+
+//*----------------------------------------------------------
+//     # ANGULAR MATERIAL THEMING
+// ----------------------------------------------------------*/
+@import "./material-theme/theme.scss"; /*----------------------------------------------------------
+//     # END OF ANGULAR MATERIAL THEMING
+// ----------------------------------------------------------*/
+
+//*----------------------------------------------------------
+//     # PAYMENT RECORD
+// Last on purpose: it corrects the global .k-dialog rules for this module
+// only, and those rules are declared further down than the components layer.
+// ----------------------------------------------------------*/
+@import "05-components/_component__payment-record";

@@ -1,0 +1,15 @@
+# Carpeta local de la CLI de Vercel (contiene los IDs del proyecto)
+.vercel
+
+# Dependencias (este despliegue no tiene ninguna, pero por si acaso)
+node_modules
+
+# Variables locales: las credenciales van en el panel de Vercel, NUNCA en git
+.env
+.env.*
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# NOTA: public/ SI se sube. Es el sitio ya compilado y Vercel lo sirve tal cual.

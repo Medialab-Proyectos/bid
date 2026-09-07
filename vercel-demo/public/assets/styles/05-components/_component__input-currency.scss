@@ -1,0 +1,50 @@
+.c-input-currency {
+  width: 100%;
+  .k-label {
+    width: 100%;
+  }
+  .c-numerictextbox.k-numerictextbox {
+    width: calc(100% - 65px);
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-right: 0px;
+  }
+  .c-dropdown-list.k-dropdown {
+    width: 65px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    .k-dropdown-wrap {
+      flex-direction: row-reverse;
+      .k-input {
+        justify-content: flex-end;
+      }
+    }
+    & .k-select {
+      width: 0;
+    }
+    & .k-icon {
+      &::before {
+        font-size: 20px;
+        display: inline-block;
+        background: transparent;
+        position: absolute;
+        top: -2px;
+      }
+    }
+  }
+  .amount-dropdown {
+    width: 95px !important;
+    button {
+      span {
+        left: -16px !important;
+      }
+    }
+  }
+
+  .amount-input {
+    width: calc(100% - 95px) !important;
+    input {
+      width: 135px
+    }
+  }
+}

@@ -1,0 +1,13 @@
+.scroll-button {
+  &__button {
+    margin: 2rem 0;
+    min-width: auto;
+  }
+
+  .far {
+    display: block;
+    color: $brand-color-light-blue;
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+}

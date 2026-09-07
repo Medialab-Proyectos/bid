@@ -1,0 +1,19 @@
+::-webkit-scrollbar {
+  width: rem(10);
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background-color: color(default-lighter);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: $brand-color-light-blue;
+  @include border-radius(10px);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: color(default-darker);
+}

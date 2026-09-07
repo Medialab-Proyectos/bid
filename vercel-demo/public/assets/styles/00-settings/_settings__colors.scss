@@ -1,0 +1,200 @@
+////
+/// Colors variable
+///
+/// You must put all colors here and name them.
+/// @access public
+/// @author Dfront Specialist Team
+/// @example scss color:color(primary);
+///    color : #007bff;
+/// @group Settings
+/// @name color-map
+/// @see $color
+/// @since version 1.0.0
+/// @type Map
+////
+
+$brand-color-light-blue: #0070d2;
+$brand-color-blue: #184481;
+$gray-color-400: #c9c7c5;
+$gray-color-200: #f3f2f2;
+$gray-color-100: #fafaf9;
+$state-color-destructive: #d72e2d;
+
+$input-light-gray: #ecebea;
+$input-medium-gray: #706e6b;
+$input-dark-gray: #3e3e3c;
+$input-blue: #4496f7;
+
+$primary: #2c6ac0;
+$primary-fi: #e75db0;
+$primary-light: #3288ff;
+$primary-dark: #2559a1;
+$primary-darker: #234068;
+
+$secondary: #eaf0f9;
+$secondary-hover: #f4f7fc;
+$tertiary: #6d6d6d;
+
+$success: #478150;
+$info: #706e6b;
+$warning: #ef974e;
+$warning-lighter: #faf2cc;
+$danger: #d72e2d;
+$transparent: rgba(0, 0, 0, 0);
+
+$gray-800: #333333;
+$gray-700: #4f4f4f;
+$gray-600: #6c757d;
+$gray-500: #cccccc;
+$gray-400: #f2f4f6;
+$gray-300: #f7f9ff;
+$gray-200: #f3f3f3;
+$gray-100: #f8f9fa;
+$gray-1: #e0e0e0;
+$gray-2: #514f4d;
+$gray-3: #737b7d;
+$gray-disabled: #f2f2f2;
+$gray-bg: #969fab;
+
+$black: #000000;
+$white: #fff;
+$yellow: #f8c512;
+$orange: #ff5c00;
+$purple-light: #e4c4f0;
+$green: #23d98c;
+
+$success-lighter: #f8fffa;
+$success-border: #bed5c6;
+$danger-lighter: #fff9f9;
+$info-lighter: #f7f9ff;
+
+$blue: #2fa9dd;
+$blue-bg-500: #d2dbe9;
+$blue-bg-400: #e2ebf1;
+$blue-bg-300: #e1e7f3;
+$blue-bg-200: #eef2f5;
+
+$error: #d30001;
+$error2: #c23934;
+$error3: #d72e2d;
+$error-light: #f5e5e8;
+$error-lighter: #fdf2f2;
+
+$bg_InProgress: #eddda1;
+$txt_InProgress: #c78b00;
+$bg_ERM: #fbe2f5;
+$txt_ERM: #d72199;
+$bg_Answer: #ffd3b3;
+$txt_Answer: #ff5c00;
+$popup-header: #2476cb;
+
+$bg_Awaiting: #e8f2cc;
+$gray-border: #868686;
+$blue-input: #1589ee;
+$main-text: #080707;
+
+$main: #252d32;
+$disabled: #e9ecef;
+
+$colors: map-merge(
+  $colors,
+  (
+    // Project
+    "primary": $primary,
+    "primary-fi": $primary-fi,
+    "secondary": $secondary,
+    "secondary-hover": $secondary-hover,
+    "tertiary": $tertiary,
+    "danger": $danger,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "main": $main,
+    "black": $black,
+    "white": $white,
+    "yellow": $yellow,
+    "orange": $orange,
+    "disabled": $disabled,
+    "transparent": $transparent,
+    "gray-800": $gray-800,
+    "gray-700": $gray-700,
+    "gray-600": $gray-600,
+    "gray-500": $gray-500,
+    "gray-400": $gray-400,
+    "gray-300": $gray-300,
+    "gray-200": $gray-200,
+    "gray-100": $gray-100,
+    "purple-light": $purple-light,
+    "blue": $blue,
+    "blue-bg-500": $blue-bg-500,
+    "blue-bg-400": $blue-bg-400,
+    "blue-bg-300": $blue-bg-300,
+    "blue-bg-200": $blue-bg-200,
+    "gray-bg": $gray-bg,
+    "green": $green,
+    "error": $error,
+    "error2": $error2,
+    "error-light": $error-light,
+    "error-lighter": $error-lighter,
+    "gray-disabled": $gray-disabled,
+    //Tags
+    "bg_InProgress": $bg_InProgress,
+    "txt_InProgress": $txt_InProgress,
+    "bg_ERM": $bg_ERM,
+    "txt_ERM": $txt_ERM,
+    "bg_Answer": $bg_Answer,
+    "txt_Answer": $txt_Answer,
+    "bg_Awaiting": $bg_Awaiting,
+    "primary-light": $primary-light,
+    "primary-dark": $primary-dark,
+    "primary-darker": $primary-darker,
+    // // Success
+    "success-lighter": $success-lighter,
+    "success-border": $success-border,
+    // // Danger
+    "danger-lighter": $danger-lighter,
+    "warning-lighter": $warning-lighter,
+    // // Info
+    "info-lighter": $info-lighter,
+    "popup-header": $popup-header,
+    "gray-border": $gray-border,
+    "blue-input": $blue-input,
+    "main-text": $main-text
+  )
+);
+$theme-colors: map-merge(
+  $theme-colors,
+  (
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "light": $light,
+    "dark": $dark,
+  )
+);
+
+$grays: map-merge(
+  $grays,
+  (
+    "100": $gray-100,
+    "200": $gray-200,
+    "300": $gray-300,
+    "400": $gray-400,
+    "500": $gray-500,
+    "600": $gray-600,
+    "700": $gray-700,
+    "800": $gray-800,
+    "900": $gray-900,
+  )
+);
+
+/*
+* Buttons
+*/
+
+$icon-button-color: #707070;
+
+$neutral-button-border: #d8dde6 1px solid;

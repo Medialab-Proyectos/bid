@@ -1,0 +1,37 @@
+.c-filter {
+  .k-textbox {
+    padding-left: 7px;
+
+    .k-input-prefix {
+      align-items: flex-start;
+      margin-top: -7px;
+      margin-left: 7px;
+      .k-icon-button {
+        font-weight: 700;
+        color: #72706d;
+        span {
+          &:before {
+            font-size: 20px;
+            font-weight: 700;
+          }
+        }
+      }
+    }
+
+    .k-input-suffix > button {
+      &:focus::after {
+        opacity: 0;
+      }
+      &:hover {
+        color: #a0a0a0;
+      }
+    }
+    .k-input-inner {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      outline: 0;
+    }
+  }
+}

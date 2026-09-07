@@ -1,0 +1,59 @@
+.c-comments-filters {
+  &__text {
+    margin: 20px 4rem;
+    i {
+      cursor: pointer;
+    }
+  }
+  &__container {
+    padding: 1rem;
+    margin: 1rem;
+    border: 1px solid $gray-color-400;
+    border-radius: 2rem;
+
+    .input-error {
+      color: red;
+    }
+    .date-filter {
+      &__label {
+        width: 25%;
+        margin-right: 5px;
+      }
+      &__input-container {
+        width: 72%;
+        align-items: center;
+        justify-content: center;
+        div {
+          width: 100%;
+          kendo-datepicker {
+            width: 100%;
+          }
+        }
+      }
+    }
+    .process-filter {
+      &__label {
+        width: 50%;
+      }
+    }
+    .marked-filter {
+      &__label {
+        width: 80%;
+        word-break: break-word;
+      }
+    }
+    .dropdown-section {
+      &__btn {
+        width: 100%;
+      }
+    }
+    .visiblity-filter {
+      &__option-text {
+        width: 90%;
+      }
+      &__radio-button {
+        width: 10%;
+      }
+    }
+  }
+}

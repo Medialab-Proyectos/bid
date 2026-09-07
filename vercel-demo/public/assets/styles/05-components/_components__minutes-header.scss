@@ -1,0 +1,81 @@
+////
+/// MINUTES HEADER component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}minutes-header
+/// @since version 1.0.0
+////
+.#{$ns}minutes-header {
+    &__header {
+        &-wrapper {
+            display: inline-block;
+            width: 50%;
+            vertical-align: middle;
+            margin-bottom: rem(32);
+
+            &:last-child {
+                text-align: right;
+            }
+        }
+        &-title {
+            font-size: rem(24);
+            color: color('black');
+            margin-top: rem(22);
+        }
+        &-btn {
+            &:last-child {
+                margin-left: rem(32);
+            }
+        }
+    }
+    &__form {
+        background-color: color('gray-400');
+        border-radius: rem(10);
+        padding: rem(32);
+        margin-bottom: rem(64);
+
+        &-title {
+            font-size: rem(14);
+            color: color('gray-700');
+            display: inline-block;
+            margin-bottom: rem(40);
+        }
+        &-label {
+            color: color('gray-800');
+            font-size: rem(14);
+            display: block;
+            margin-bottom: rem(7);
+            font-weight: bold;
+        }
+        &-textbox {
+            margin-bottom: rem(37);
+            &--error {
+                .bid-minutes-header__form-input {
+                    border-color: color('red');
+                }
+                .bid-minutes-header__form-hint {
+                    display: block;
+                    color: color('red');
+                    font-size: rem(12);
+                    font-style: italic;
+                }
+            }
+        }
+        &-input {
+            width: 100%;
+        }
+        &-hint {
+            display: none;
+        }
+        &-info {
+            color: color('black');
+            display: inline-block;
+            margin-bottom: rem(37);
+        }
+    }
+    &__textarea {
+        margin-bottom: rem(35);
+    }
+}

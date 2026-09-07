@@ -1,0 +1,25 @@
+.o-header-group {
+  padding-left: 15px;
+  padding-right: 15px;
+
+  &__item {
+    align-items: center;
+    background-color: #fafaf9;
+    border-bottom: 1px #e3e3e3 solid;
+    border-left: 1px #e3e3e3 solid;
+    color: #514f4d;
+    display: flex;
+    height: 30px;
+    font-family: "salesforce-sans-700", arial, sans-serif;
+    font-size: 13px;
+    padding-left: 8px;
+
+    &:first-child {
+      border-left: none;
+    }
+
+    &--no-left-border {
+      border-left: none;
+    }
+  }
+}

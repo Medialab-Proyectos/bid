@@ -1,0 +1,32 @@
+////
+/// SEPARATION TRUMPS
+///
+/// .t-#{$type}[-#{$position}]-#{$size-separation}[-#{$breakpoint}]
+/// This trumps is composed by 2 mandatory sections and 2 optional sections:
+/// - $type (mandatory) -> type of separation. Values: margin or padding
+/// - $position (optional) -> position of separation.
+///         Values: left, right, x (x axis or left and right), top, bottom, or y (y axis or top and bottom)
+/// - $size-separation (mandatory) ->size of separation (@see _seetings__basics).
+///         Values: none, xxsmall, xsmall, small, medium, normal, large, xlarge, xxlarge, xxxlarge, huge, jumbo, outsize
+/// - $breakpoint (optional) -> breakpoint for media queries (@see _seetings__responsive). Values:  xs, sm, md, lg, xl
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group trumps of margin & padding
+/// @example .t-margin-none .t-padding-none -> remove all margins / paddings
+/// @example .t-margin-left-xsmall .t-padding-left-xsmall -> set left margin / padding to xsmall size
+/// @example .t-margin-left-jumbo-lg .t-padding-left-jumbo-lg ->
+///         set left margin / padding to jumbo size for @include media-query($breakpoint)
+/// @example .t-margin-y-normal-lg .t-padding-y-normal-lg ->
+///         set top margin, top padding and bottom margin, bottom padding to normal size for @include media-query($breakpoint)
+////
+@each $size-alias, $size-measure in $sizes-separations {
+    @include separation('padding',$size-alias, $size-measure,'');
+    @include separation('margin',$size-alias, $size-measure,'');
+    @each $breakpoint, $measure in $breakpoints {
+        @include media-query($breakpoint) {
+            @include separation('padding',$size-alias, $size-measure,'-#{$breakpoint}');
+            @include separation('margin',$size-alias, $size-measure,'-#{$breakpoint}');
+        }
+    }
+}

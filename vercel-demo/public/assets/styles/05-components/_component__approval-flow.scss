@@ -1,0 +1,53 @@
+@import "../00-settings/settings__colors";
+
+.approval-flow {
+  background-color: white;
+  min-height: calc(100vh - 154px);
+  box-shadow: 0px 3px 6px #00000033;
+
+  &__container {
+    padding: 16px;
+  }
+
+  &__header {
+    border-bottom: 1px solid $gray-500;
+
+    &-icon {
+      margin-top: 5px;
+      margin-right: 16px;
+    }
+
+    &-title {
+      font-size: 15px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    &-subtitle {
+      color: $gray-2;
+      font-size: 12px;
+      margin: 0;
+    }
+  }
+
+  &__labels {
+    display: flex;
+
+    &-title {
+      font-size: 12px;
+      color: $gray-2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &-value {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &__button_container {
+    display: flex;
+    justify-content: space-between;
+  }
+}

@@ -1,0 +1,33 @@
+.o-form-actions {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 54px;
+
+  button {
+    display: flex;
+    height: 28px;
+    margin-left: 8px;
+    min-width: 140px;
+
+    &.btn-primary--grey {
+      background-color: #c9c7c5;
+    }
+    &.btn-secondary {
+      background-color: $white !important;
+    }
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  @include media(tablet) {
+    flex-direction: column-reverse;
+
+    button {
+      margin-bottom: 10px;
+      width: 100%;
+    }
+  }
+}

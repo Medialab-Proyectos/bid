@@ -1,0 +1,64 @@
+////
+/// Hold our breakpoint aliases and conditions in a list.
+///
+/// These can be invoked later on via the `breakpoint()` function and `media-query()` mixin found in `_tools.responsive`.
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Settings
+/// @name config responsive
+/// @see $media-query
+/// @since version 1.0.0
+///
+/// Defines if our project is mobile first
+/// @group Settings
+/// @type Boolean
+
+///*-----------------------------------------------------
+///		# CONFIG - RESPONSIVE TYPE AND MEDIAQUERIES 
+///-----------------------------------------------------*/
+
+
+$ns-mobile-first: true !default;
+// Include grid nora
+$include__grid-nora : false;
+// Include grid reflex
+$include__grid-reflex : true;
+
+// Breakpoints
+$breakpoint-xs: 480 !default;
+$breakpoint-sm: 768 !default;
+$breakpoint-md: 992 !default;
+$breakpoint-lg: 1024 !default;
+$breakpoint-xl: 1200 !default;
+
+
+///
+/// This makes de media's ready
+///
+/// WARNING: Do not write anything here, if you want to make a change, please go to _config__project.scss file.
+/// @group Settings
+/// @see config__project
+/// @type Map
+$breakpoints: (
+    xs: $breakpoint-xs,
+    sm: $breakpoint-sm,
+    md: $breakpoint-md,
+    lg: $breakpoint-lg,
+    xl: $breakpoint-xl,
+) !default;
+
+
+
+///
+/// List of available values for display property
+/// @group Settings
+/// @see config__project
+/// @type List
+$displays: none inline inline-block block table table-cell table-row flex inline-flex !default;
+
+/// If we have included this file, set a variable to tell the rest of the
+/// framework that we have some responsive settings.
+/// @group Settings
+/// @type Boolean
+$ns-responsive-settings: true;

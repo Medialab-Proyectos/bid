@@ -1,0 +1,19 @@
+////
+/// blank input trump
+///
+/// This reset an input to remove all styles
+////
+
+.blank-input {
+  background-color: transparent !important;
+  all: unset;
+  padding: 10px 8px;
+  display: flex;
+  & span {
+    all: unset;
+  }
+}
+
+.k-input {
+  font-size: 13px;
+}

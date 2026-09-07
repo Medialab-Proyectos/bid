@@ -1,0 +1,14 @@
+.input-error {
+  @extend .sf400;
+  color: color("error2");
+  font-size: 12px;
+  margin: 6px 0;
+}
+
+.o-input-error {
+  @extend .sf400;
+  color: $error3;
+  font-size: rem(12);
+  margin: rem(4) 0;
+  min-height: rem(15);
+}

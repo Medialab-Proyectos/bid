@@ -1,0 +1,83 @@
+////
+/// PADDING trump
+///
+/// This is the padding triumphs styles
+////
+@if $include__trump--padding {
+    @for $i from $ns-trumps-padding-init through $ns-trumps-padding-end {
+        $value: $i * $ns-trumps-padding-steps;
+        /// Padding trump
+        /// @access public
+        /// @author Dfront Specialist Team
+        /// @group trumps
+        /// @name .t-padding-#{$value}
+        /// @see ns-trumps-padding-init
+        /// @see ns-trumps-padding-steps
+        /// @see ns-trumps-padding-end
+        /// @since version 1.0.0
+
+        .t-padding-#{$value} {
+            padding: #{$value}px !important;
+        }
+
+        /// Padding top trump
+        /// @access public
+        /// @author Dfront Specialist Team
+        /// @group trumps
+        /// @name .t-padding-top-#{$value}
+        /// @see ns-trumps-padding-init
+        /// @see ns-trumps-padding-steps
+        /// @see ns-trumps-padding-end
+        /// @since version 1.0.0
+
+        .t-padding-top-#{$value} {
+            padding-top: #{$value}px !important;
+        }
+
+        /// Padding right trump
+        /// @access public
+        /// @author Dfront Specialist Team
+        /// @group trumps
+        /// @name .t-padding-right-#{$value}
+        /// @see ns-trumps-padding-init
+        /// @see ns-trumps-padding-steps
+        /// @see ns-trumps-padding-end
+        /// @since version 1.0.0
+
+        .t-padding-right-#{$value} {
+            padding-right: #{$value}px !important;
+        }
+
+        /// Padding bottom trump
+        /// @access public
+        /// @author Dfront Specialist Team
+        /// @group trumps
+        /// @name .t-padding-bottom-#{$value}
+        /// @see ns-trumps-padding-init
+        /// @see ns-trumps-padding-steps
+        /// @see ns-trumps-padding-end
+        /// @since version 1.0.0
+
+        .t-padding-bottom-#{$value} {
+            padding-bottom: #{$value}px !important;
+        }
+
+        /// Padding left trump
+        /// @access public
+        /// @author Dfront Specialist Team
+        /// @group trumps
+        /// @name .t-padding-left-#{$value}
+        /// @see ns-trumps-padding-init
+        /// @see ns-trumps-padding-steps
+        /// @see ns-trumps-padding-end
+        /// @since version 1.0.0
+
+        .t-padding-left-#{$value} {
+            padding-left: #{$value}px !important;
+        }
+    }
+
+    /*------------------------------------
+     # END TRUMP padding
+    ------------------------------------*/
+}

@@ -1,0 +1,9 @@
+{
+  "name": "fiduciary-interface-demo",
+  "private": true,
+  "type": "module",
+  "description": "Despliegue estatico de la demo en Vercel. Sin dependencias y sin script de build: Vercel solo sirve public/ y ejecuta middleware.js en el edge.",
+  "scripts": {
+    "preview": "node serve-local.mjs"
+  }
+}

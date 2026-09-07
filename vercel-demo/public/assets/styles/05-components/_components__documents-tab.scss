@@ -1,0 +1,76 @@
+.c-document-tab {
+  padding-top: 16px;
+  .process-tab__instructions {
+    margin: auto;
+    width: 100%;
+  }
+  .documents-table {
+    table {
+      th:first-of-type {
+        font-weight: 700;
+      }
+    }
+  }
+
+  .header-tab {
+    :nth-child(2),
+    :nth-child(3),
+    :nth-child(4) {
+      &::before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 1px;
+        background: #e0e0e0;
+        right: 0;
+        height: calc(100% + 20px);
+        top: -10px;
+      }
+    }
+  }
+
+  .c-package-doc {
+    div {
+      color: #080707;
+    }
+    .k-datepicker {
+      width: 100%;
+    }
+  }
+
+  .c-documents {
+    margin-top: 5px;
+  }
+
+  .dates-offer-validity {
+    display: flex;
+    gap: 50px;
+  }
+}
+
+@include media(tablet) {
+  .c-document-tab {
+    padding: 0;
+    .process-tab__instructions {
+      margin: auto;
+      width: 92%;
+    }
+  }
+}
+
+.c-mobile-table {
+  table tr td {
+    &.first-column {
+      @extend .sf700;
+      padding-left: 14px;
+      text-align: left;
+    }
+    &:nth-child(2) {
+      padding-left: 14px;
+      color: #706e6b;
+    }
+    &.options-column {
+      width: 40px;
+    }
+  }
+}

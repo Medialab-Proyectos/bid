@@ -11,7 +11,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build:demo": "ng build --configuration=demo"
+    "build:demo": "ng build --configuration=demo",
+    "build:vercel": "ng build --configuration=vercel && node vercel-demo/prepare.mjs"
   },
   "private": true,
   "dependencies": {

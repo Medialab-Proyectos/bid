@@ -1,0 +1,11 @@
+@import "/src/assets/styles/00-settings/_settings__colors.scss";
+
+.add-amendment {
+  box-shadow: 0px 3px 6px #00000033;
+  background-color: white;
+  border-radius: 3px;
+
+  &__section {
+    margin: 16px 30px 36px;
+  }
+}

@@ -1,0 +1,16 @@
+.c-no-content {
+  border-bottom: 1px solid #dddbda;
+  &--wrapper {
+    min-height: 90px;
+    font-size: 20px !important;
+    align-items: center;
+    display: grid;
+
+    p {
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      color: #4f4f4f;
+    }
+  }
+}

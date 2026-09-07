@@ -1,0 +1,36 @@
+////
+/// IDB Design System 2.0 -- accessor functions
+///
+/// Mirrors the legacy `color()` function in `_tools__colors.scss`, scoped to
+/// the `$ds2-colors` / `$ds2-spacing` maps in `_settings__ds2-tokens.scss`.
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @example scss color: ds2-color(icon-danger);
+///    color: #a31f37;
+/// @example scss padding: ds2-spacing("24");
+///    padding: 1.5rem;
+/// @group Tools
+/// @name ds2-color
+/// @see $ds2-colors
+/// @see $ds2-spacing
+/// @require rem() function
+/// @since version 1.0.0
+////
+@function ds2-color($name, $opacity: 1, $schema: $ds2-colors) {
+  @if map-has-key($schema, $name) {
+    @return rgba(map-get($schema, $name), $opacity);
+  } @else {
+    @warn "The value #{$name} is not in the map '$schema'";
+    @return null;
+  }
+}
+
+@function ds2-spacing($name, $schema: $ds2-spacing) {
+  @if map-has-key($schema, $name) {
+    @return rem(map-get($schema, $name));
+  } @else {
+    @warn "The value #{$name} is not in the map '$schema'";
+    @return null;
+  }
+}

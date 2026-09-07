@@ -1,0 +1,60 @@
+////
+/// Override kendo-textbox component
+///
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group components of kendo ui
+/// @name .k-textbox
+/// @since version 1.0.0
+////
+.k-textbox {
+  height: rem(40);
+  border-radius: rem(5);
+  font-size: rem(16);
+
+  &::placeholder {
+    font-weight: normal;
+    font-style: italic;
+    color: color("gray-500");
+  }
+
+  &:hover {
+    background-color: unset;
+  }
+  &.k-input {
+    .k-input-prefix,
+    .k-input-suffix {
+      button {
+        background-color: transparent;
+        border: none;
+        padding-left: 0px;
+        padding-top: 13px;
+        &:hover {
+          background-image: none;
+        }
+      }
+    }
+  }
+  &.k-input {
+    .k-input-prefix {
+      button {
+        padding-left: 0px;
+        padding-top: 13px;
+      }
+    }
+  }
+  &.k-input {
+    .k-input-suffix {
+      button {
+        padding-left: 16px;
+        padding-top: 6px;
+      }
+    }
+  }
+}
+.k-input {
+  &::placeholder {
+    color: #706e6b;
+  }
+}

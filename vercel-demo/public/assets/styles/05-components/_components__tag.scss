@@ -1,0 +1,63 @@
+////
+/// TEAG component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}tag
+/// @since version 1.0.0
+////
+.#{$ns}tag {
+    font-size: rem(12);
+    letter-spacing: rem(2);
+    padding: rem(4) rem(7);
+    border-radius: rem(3);
+    font-weight: bold;
+    display: inline-block;
+    min-height: rem(24);
+    height: fit-content;
+    white-space: nowrap;
+
+    /* MODIFIERS */
+    &--progress {
+        color: color('txt_InProgress');
+        background-color: color('bg_InProgress');
+    }
+
+    &--finished {
+        color: color('gray-700');
+        background-color: color('gray-500');
+    }
+
+    &--erm {
+        color: color('txt_ERM');
+        background-color: color('bg_ERM');
+    }
+    &--answer {
+        color: color('txt_Answer');
+        background-color: color('bg_Answer');
+    }
+    &--awaiting {
+        color: color(('txt_Awaiting'));
+        background-color: color('bg_Awaiting');
+    }
+    &--subtag {
+        background-color: color('gray-100');
+        border-radius: rem(8);
+        padding: rem(11) rem(10);
+
+        span:first-child {
+            font-size: rem(16);
+            letter-spacing: normal;
+            display: inline-block;
+            margin-right: rem(16);
+        }
+        span:last-child {
+            color: color('purple');
+            background-color: color('purple-light');
+            border-radius: rem(3);
+            padding: rem(4) rem(7);
+            display: inline-block;
+        }
+    }
+}

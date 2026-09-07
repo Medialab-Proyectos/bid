@@ -1,0 +1,25 @@
+.c-comments {
+  position: relative;
+  height: 100%;
+
+  &__list {
+    height: calc(100% - 305px);
+    overflow: auto;
+    border-bottom: 1px solid #cccccc;
+    max-height: 19rem;
+  }
+
+  &__add {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  &__add-no-radio {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}

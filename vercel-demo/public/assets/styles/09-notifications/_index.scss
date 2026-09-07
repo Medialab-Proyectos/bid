@@ -1,0 +1,25 @@
+.detail-template {
+  .text-container {
+    width: 700px;
+  }
+
+  li {
+    list-style: disc;
+
+    p {
+      display: inline;
+    }
+  }
+  a {
+    color: #007bff;
+    text-decoration: none;
+  }
+}
+
+.email-notifacion-template {
+  color: blue;
+}
+
+.etiqueta {
+  margin-right: 10px;
+}

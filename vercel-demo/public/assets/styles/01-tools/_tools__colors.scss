@@ -1,0 +1,25 @@
+////
+/// Color function
+///
+/// Every color we write in the project must be put via this color function
+/// @access public
+/// @author Dfront Specialist Team
+/// @example scss color : color(primary);
+///    color : #98a92a;
+/// @group Tools
+/// @name color
+/// @param {String} $name - Put a value that exists at $colors variable
+/// @param {Number} $opacity [1] - If you want to define an opacity, just declare it like a second parameter.
+/// @param {Array} $schema [$colors] - Color palette
+/// @see $colors
+/// @since version 1.0.0
+/// @return {String} hexadecimal color
+////
+@function color($name, $opacity:1, $schema:$colors) {
+  @if map-has-key($schema, $name) {
+    @return rgba(map-get($schema, $name),$opacity);
+  } @else {
+    @warn "The value #{$name} is not in the map '$schema'";
+    @return null;
+  }
+}

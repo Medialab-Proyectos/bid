@@ -1,8 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "npm run build:vercel",
-  "outputDirectory": "vercel-demo/public",
+  "outputDirectory": "public",
   "trailingSlash": false,
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }

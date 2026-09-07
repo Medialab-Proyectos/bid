@@ -1,0 +1,90 @@
+.c-accordion-panel {
+  .panel-header {
+    align-items: center;
+    background-color: #f3f2f2;
+    display: flex;
+    padding: 5px 0;
+    padding-left: 28px;
+
+    @include media(tablet) {
+      padding-left: 13px;
+    }
+
+    span.number {
+      align-items: center;
+      background: #006dd5;
+      border-radius: 50%;
+      color: #ffffff;
+      display: flex;
+      height: 19px;
+      font-family: "open sans", sans-serif;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 13px;
+      justify-content: center;
+      letter-spacing: 0.2px;
+      width: 19px;
+      min-width: 19px;
+
+      & + p {
+        margin-left: 12px;
+      }
+
+      &:empty {
+        display: none;
+
+        & + p {
+          margin-left: 0;
+        }
+      }
+    }
+
+    p {
+      @extend .sf400;
+      font-size: 16px;
+      font-weight: 400;
+      flex-grow: 1;
+      margin: 0;
+    }
+
+    button {
+      margin-right: 10px;
+      padding: 0;
+      width: 20px;
+      min-width: 20px;
+    }
+  }
+
+  .panel-body {
+    display: none;
+    height: auto;
+    // overflow: hidden;
+
+    &.open {
+      display: block;
+    }
+  }
+
+  &.mode-slim {
+    .panel-header {
+      padding-top: 3px;
+      padding-bottom: 3px;
+
+      .number {
+        width: 15px;
+        height: 15px;
+        font-size: 11px;
+      }
+
+      p {
+        font-size: 13px;
+      }
+
+      button {
+        em {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}

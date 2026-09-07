@@ -1,0 +1,16 @@
+////
+/// Accessibility
+///
+/// This class is used when we have to disclose some relevant
+/// content, but we do not want to show it visually.
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Generic
+/// @name .hide-accessible
+/// @since version 1.0.0
+////
+.hide-accessible {
+    position: absolute;
+    left: -9999rem;
+}

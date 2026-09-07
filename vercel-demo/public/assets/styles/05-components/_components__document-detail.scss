@@ -1,0 +1,37 @@
+.c-document-detail {
+  .c-accordion-panel {
+    margin-top: 5px;
+    
+    .panel-header {
+      background: #fafaf9 0% 0% no-repeat padding-box;
+      padding-left: 14px;
+      p {
+        @extend .sf300;
+        font-weight: 700;
+      }
+    }
+
+    .panel-body {
+      padding: 10px 16px;
+      p {
+        font-size: 12px;
+
+        &.finished-doc__name {
+          em {
+            font-size: 14px;
+            margin-right: 6px;
+          }
+        }
+
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+.not_link{
+  cursor: default;
+  color: initial;
+  word-break: break-word;
+}

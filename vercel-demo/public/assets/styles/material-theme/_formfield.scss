@@ -1,0 +1,24 @@
+/* This is a class used as a workaround to "visually disable" the field and prevent user interaction.*/
+.mat-form-field-readonly {
+  --mdc-filled-text-field-container-color: #fafafa;
+  --mdc-filled-text-field-label-text-color: rgba(0, 0, 0, 0.38);
+  --mdc-filled-text-field-input-text-color: rgba(0, 0, 0, 0.38);
+  --mdc-filled-text-field-active-indicator-color: rgba(0, 0, 0, 0.06);
+  --mdc-outlined-text-field-label-text-color: rgba(0, 0, 0, 0.38);
+  --mdc-outlined-text-field-input-text-color: rgba(0, 0, 0, 0.38);
+  --mdc-outlined-text-field-outline-color: rgba(0, 0, 0, 0.06);
+  --mat-form-field-input-text-placeholder-color: rgba(0, 0, 0, 0.38);
+  --mdc-outlined-text-field-hover-outline-color: rgba(0, 0, 0, 0.06);
+  --mat-select-enabled-trigger-text-color: rgba(0, 0, 0, 0.38);
+  pointer-events: none;
+}
+/* Prevents interaction with the label of mat-form-fields when visually disabled */
+label[matformfieldfloatinglabel],
+.mdc-floating-label .mat-mdc-floating-label {
+  pointer-events: none !important;
+}
+
+// Paints the required mark red
+.mat-mdc-form-field-required-marker {
+  color: red;
+}

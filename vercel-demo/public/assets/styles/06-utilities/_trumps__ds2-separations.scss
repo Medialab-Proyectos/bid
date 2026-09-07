@@ -1,0 +1,19 @@
+////
+/// IDB Design System 2.0 -- separation trumps
+///
+/// `.t-#{$type}[-#{$position}]-ds2-#{$step}`
+/// Same `separation()` mixin as the legacy `_trumps__separations.scss`, run
+/// over `$ds2-spacing` instead of `$sizes-separations`, with the step's
+/// pixel size as the class name (`ds2-24`, not a t-shirt size) so it reads
+/// as a DS 2.0 class on sight and can never collide with `.t-padding-large`.
+///
+/// @access public
+/// @group trumps of margin & padding
+/// @example .t-padding-ds2-8 .t-margin-ds2-8 -> 8px padding / margin
+/// @example .t-margin-left-ds2-24 .t-padding-left-ds2-24 -> 24px left margin / padding
+/// @example .t-margin-y-ds2-48 .t-padding-y-ds2-48 -> 48px top+bottom margin / padding
+////
+@each $step, $size-measure in $ds2-spacing {
+  @include separation("padding", "ds2-#{$step}", $size-measure, "");
+  @include separation("margin", "ds2-#{$step}", $size-measure, "");
+}

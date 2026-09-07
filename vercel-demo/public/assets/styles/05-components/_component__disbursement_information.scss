@@ -1,0 +1,69 @@
+.c-disbursement-info {
+  @extend .process-tab-card;
+  @extend .sf400;
+  background-color: white;
+  font-size: 12px;
+  margin-top: 1rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  padding-top: 1rem;
+
+  .disbursement-title {
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: 700;
+    border-bottom: 1px solid #d3d8e1;
+  }
+  .disbursement-container {
+    .disbursement-table-headers {
+      text-align: center;
+      th {
+        padding: 0.5rem;
+      }
+    }
+    .header-row {
+      display: flex;
+      padding-top: 1rem;
+      justify-content: space-between;
+      .dibursement-card {
+        text-align: center;
+        width: 9rem;
+        height: 5rem;
+      }
+    }
+    tbody {
+      td {
+        padding: 1rem;
+        text-align: end;
+      }
+    }
+    tfoot {
+      td {
+        padding: 1rem;
+        text-align: end;
+        font-weight: bold;
+        &:nth-child(2) {
+          color: $gray-3;
+          text-align: start;
+        }
+      }
+    }
+  }
+  .disbursement-header {
+    display: flex;
+    justify-content: space-between;
+    button {
+      margin: 0.5rem;
+      .k-button-text {
+        margin: 0.5rem;
+      }
+    }
+  }
+
+  .disbursement-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 2rem;
+  }
+}

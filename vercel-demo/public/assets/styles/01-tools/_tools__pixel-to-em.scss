@@ -1,0 +1,21 @@
+////
+/// EM tool
+///
+/// Converts pixels to em
+/// @access public
+/// @author Dfront Specialist Team
+/// @example scss font-size : em(16);
+///    // base font size = 16px
+///    font-size : 1em;
+/// @example scss font-size : em(30, 10);
+///    font-size : 3em;
+/// @group Tools
+/// @name em
+/// @param {String} $pixels - Value in pixels we want
+/// @param {Number} $base [$ns--font-size] - The font-size base
+/// @since version 1.0.0
+/// @return {String} new 'em' value
+////
+@function em($pixels, $context: $ns--font-size) {
+	@return #{$pixels/$context}em
+}

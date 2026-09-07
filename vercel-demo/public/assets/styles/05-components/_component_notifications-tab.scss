@@ -1,0 +1,131 @@
+.subjectCol {
+  padding-bottom: 30px !important;
+
+  .all-addresses {
+    display: flex;
+    position: absolute;
+    margin-left: -30px;
+    margin-top: 10px;
+    margin-right: 100px;
+
+    .addreses {
+      word-break: break-word;
+      color: #0070d2;
+    }
+  }
+}
+
+.c-table-notifications {
+  display: inline-table;
+
+  kendo-pager {
+    .k-pager-info.k-label {
+      display: block;
+    }
+    .k-pager-nav {
+      color: #424242;
+    }
+    kendo-pager-numeric-buttons {
+      .k-dropdownlist.k-pager-nav {
+        display: none;
+      }
+      .k-pager-numbers > .k-pager-nav {
+        color: #333;
+        min-width: 0px;
+        .k-button-icon.k-button-icon {
+          color: #212529;
+        }
+      }
+      ul {
+        li {
+          span.k-selected {
+            background-color: #ccc;
+          }
+        }
+      }
+    }
+  }
+
+  &--usd::before {
+    content: "$";
+  }
+
+  .k-alt {
+    background-color: unset !important;
+  }
+
+  .k-toolbar {
+    display: flex !important;
+    width: 50%;
+    float: right;
+    position: relative;
+    height: 80px;
+    padding: 17px 17px 17px 4px;
+    background-color: transparent;
+    border: none;
+    kendo-dateinput {
+      width: 100%;
+      padding-right: 0px;
+      .k-input-inner {
+        width: inherit;
+      }
+    }
+  }
+
+  .k-grouping-header {
+    width: 50%;
+    position: relative;
+    min-height: 80px;
+    padding: 12px;
+    background-color: unset !important;
+    border: none;
+    display: flex;
+    align-items: center;
+
+    & div {
+      border: 1px dashed #c9c7c5;
+      padding: 10px;
+      border-radius: 4px;
+      width: 100%;
+    }
+  }
+
+  .k-grid-header {
+    background-color: #fafaf9;
+  }
+
+  .k-header,
+  th.k-header {
+    padding: rem(14);
+    font-weight: 700;
+    &:last-child {
+      border-left: none;
+    }
+  }
+
+  & td {
+    border-width: 0 0px 1px 0px !important;
+  }
+
+  &--highlight p {
+    color: $brand-color-light-blue;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .k-i-plus {
+    padding-top: 0 !important;
+    margin-left: 8px;
+    &::before {
+      content: "\e015" !important;
+    }
+  }
+
+  .k-i-minus {
+    padding-top: 0 !important;
+    margin-left: 8px;
+    &::before {
+      content: "\e013" !important;
+    }
+  }
+}

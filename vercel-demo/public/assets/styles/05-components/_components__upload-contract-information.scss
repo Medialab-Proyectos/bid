@@ -1,0 +1,285 @@
+.c-upload-contract-information {
+  background-color: $white;
+  padding-bottom: 8px;
+  min-height: 84.6vh;
+  @include card-shadow;
+
+  &__form-legend {
+    margin-top: 8px;
+  }
+
+  &__form {
+    margin-top: rem(30);
+  }
+
+  .contract-body {
+    margin: 5px 15px;
+  }
+
+  .c-card-subtitle {
+    border-bottom: rem(1) solid #d8dde6;
+    padding: 5px 18px 10px;
+    margin-top: 8px;
+
+    p {
+      font-size: rem(12);
+      margin: 0;
+      &:first-of-type {
+        color: #777777;
+        font-weight: 500;
+      }
+      &:last-of-type {
+        font-weight: 500;
+      }
+    }
+  }
+
+  .sf-toast__container {
+    margin-top: 15px;
+
+    .sf-toast__container--title {
+      align-items: center;
+      display: flex;
+    }
+  }
+
+  .form-title {
+    padding-left: 15px;
+    & > .row {
+      width: 100%;
+    }
+    .circle {
+      & + span {
+        padding: 5px;
+        width: calc(100% - 22px);
+      }
+    }
+
+    @include media(tablet) {
+      padding-left: 0;
+
+      .d-flex {
+        align-items: center !important;
+
+        .circle {
+          align-items: center;
+          display: flex;
+          justify-content: center;
+          height: 22px;
+          padding: 0;
+          width: 22px;
+        }
+      }
+    }
+  }
+
+  /*
+  * Winner informaction component
+  */
+  .c-winner-information {
+    margin-top: 40px;
+
+    .winner-information {
+      .row {
+        & > [class*="col-md-1"]:first-of-type {
+          max-width: 60px;
+        }
+      }
+    }
+  }
+
+  .c-attachments {
+    .docs-list {
+      margin-left: 0;
+    }
+
+    .c-documents {
+      margin-top: 20px;
+    }
+
+    @include media(mobile-large) {
+      .docs-list {
+        ul {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+  }
+
+  /**
+  * Lots
+  **/
+
+  .c-lots {
+    .c-accordion-panel.mode-slim {
+      margin-top: 10px;
+      .panel-header {
+        display: flex;
+        @include mediaMin(mobile-large) {
+          display: none;
+        }
+      }
+    }
+    .c-delete-btn {
+      display: flex;
+      align-items: flex-end;
+    }
+  }
+
+  /**
+  * General information
+  **/
+  .c-contract-general-information {
+    .c-equivalent-dollars {
+      height: rem(41);
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 7px;
+      em {
+        font-size: 20px;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  /**
+  * Cost distribution
+  **/
+
+  .c-cost-distribution {
+    .cost-distribution {
+      padding: 0 12px;
+    }
+  }
+
+  .c-winner-information,
+  .c-contract-general-information,
+  .c-cost-distribution,
+  .c-lots,
+  .c-destination-place,
+  .c-aditional-information,
+  .c-attachments,
+  .c-securities,
+  .c-objetive,
+  .c-contract-amount {
+    margin-top: 10px;
+  }
+
+  .winner-information,
+  .contract-general-information,
+  .lots,
+  .destination-place,
+  .aditional-information,
+  .attachments-container,
+  .objetive,
+  .amount {
+    margin: 12px 35px 30px;
+
+    @include media(tablet) {
+      margin: 12px 8px 30px;
+    }
+  }
+
+  .fi-kendo-label {
+    display: flex;
+    margin-top: 10px;
+  }
+
+  .k-radio-list {
+    display: flex;
+    margin-top: 10px;
+  }
+
+  .actions {
+    margin-bottom: 20px;
+    margin-top: 20px;
+
+    button {
+      display: flex;
+      height: 32px;
+      .btn-secondary {
+        &.flat {
+          border-color: #b9c2ca !important;
+        }
+      }
+    }
+
+    .o-form-actions {
+      align-items: center;
+      display: flex;
+      justify-content: flex-end;
+
+      button {
+        margin-left: 8px;
+        &.btn-primary--grey {
+          background-color: #c9c7c5;
+        }
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      @include media(tablet) {
+        flex-direction: column-reverse;
+
+        button {
+          margin-bottom: 10px;
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .k-textbox,
+  .k-datepicker,
+  .k-dropdown,
+  .k-numerictextbox {
+    margin-top: 5px;
+    width: 100%;
+  }
+
+  textarea {
+    font-size: 13px !important;
+    padding: 5px 5px !important;
+
+    &:focus {
+      border: 1px solid $input-blue !important;
+      box-shadow: 0px 0px 3px $brand-color-light-blue;
+    }
+
+    @include media(tablet) {
+      min-height: 80px;
+    }
+  }
+
+  .c-accordion-panel {
+    .panel-header {
+      button {
+        display: none;
+      }
+    }
+  }
+  @include media(mobile-large) {
+    .c-accordion-panel {
+      .panel-header {
+        button {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+.c-securities {
+  &--readonly {
+    height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}

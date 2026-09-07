@@ -1,0 +1,28 @@
+////
+/// BODY element
+///
+/// Here we got the body styles
+////
+body {
+  position: relative;
+  font-family: $ns-font-family;
+  color: $black;
+  background-color: #f3f3f3;
+  -webkit-text-size-adjust: 100%;
+  font-size: rem($font-size-base);
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  height: -webkit-fill-available;
+}
+.#{$ns}body-embedded {
+  position: relative;
+  width: 100%;
+}
+.#{$ns}app {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+.#{$ns}main-section {
+  min-height: 100vh;
+}

@@ -1,0 +1,19 @@
+.k-combobox {
+  height: rem(42);
+  border: 1px solid #b9c2ca;
+  border-color: #b9c2ca;
+  border-radius: rem(4);
+
+  &:focus-within {
+    border: 1px solid #4496f7 !important;
+    box-shadow: 0px 0px 3px #0070d2;
+  }
+
+  &.ng-invalid.ng-touched {
+    border: 2px solid #d72e2d;
+  }
+}
+
+.combobox-border {
+  border-radius: rem(4) 0 0 rem(4) !important;
+}

@@ -1,0 +1,526 @@
+////
+/// BUTTON element
+///
+/// Here we got the button styles
+////
+@mixin button-size(
+  $padding-y,
+  $padding-x,
+  $font-size,
+  $line-height,
+  $border-radius
+) {
+  padding: $padding-y $padding-x;
+  @include font-size($font-size);
+  line-height: $line-height;
+  // Manually declare to provide an override to the browser default
+  @include border-radius($border-radius);
+}
+
+/** FIX for mat-date-picker buttons **/
+mat-datepicker-toggle,
+mat-datepicker-content,
+mat-form-field {
+  button {
+    min-width: unset;
+  }
+}
+.mdc-label {
+  margin-bottom: 0;
+}
+button:disabled {
+  &.mdc-button,
+  &.mdc-raised-button,
+  &.mdc-flat-button,
+  &.mdc-icon-button,
+  &.mat-mdc-button {
+    border: unset;
+  }
+}
+button[mat-icon-button] {
+  min-width: unset;
+}
+/** END of fix for mat-date-picker buttons **/
+
+button,
+.k-button,
+.btn {
+  background-image: none;
+  min-width: 144px;
+  display: inline-block;
+  font-family: $btn-font-family;
+  font-weight: $btn-font-weight;
+  color: $body-color;
+  text-align: center;
+  white-space: $btn-white-space;
+  vertical-align: middle;
+  cursor: if($enable-pointer-cursor-for-buttons, pointer, null);
+  user-select: none;
+  outline: none;
+  line-height: 0;
+  min-height: rem(32);
+  @include button-size(
+    $btn-padding-y,
+    $btn-padding-x,
+    $btn-font-size,
+    $btn-line-height,
+    $btn-border-radius
+  );
+  @include transition($btn-transition);
+
+  @include hover() {
+    color: $body-color;
+    text-decoration: none;
+  }
+
+  &:focus,
+  &.focus {
+    outline: 0;
+    @include box-shadow(none);
+  }
+
+  fieldset:disabled &,
+  &[disabled],
+  &.disabled,
+  &:disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: $btn-disabled-opacity;
+    @include box-shadow(none);
+  }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active {
+    @include box-shadow($btn-active-box-shadow);
+
+    &:focus {
+      @include box-shadow($btn-focus-box-shadow, $btn-active-box-shadow);
+    }
+  }
+  &-brand {
+    background-color: $brand-color-light-blue;
+    border-color: $brand-color-light-blue;
+    color: $white;
+    &:hover,
+    &:active {
+      background-color: $brand-color-blue;
+      border-color: $brand-color-blue;
+      color: $white;
+    }
+    &:active {
+      box-shadow: 0px 0px 3px $brand-color-light-blue;
+    }
+    &:disabled {
+      background-color: $gray-color-400;
+      color: $white !important;
+      border-color: $gray-color-400;
+    }
+  }
+  &-online-brand {
+    background-color: $white;
+    border-color: $brand-color-light-blue;
+    color: $brand-color-light-blue;
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: $gray-color-100;
+      border-color: $brand-color-blue;
+      color: $brand-color-blue;
+    }
+    &--big {
+      width: 160px;
+    }
+    &:not(:disabled):not(.disabled) {
+      &:active,
+      &.active {
+        box-shadow: 0px 0px 3px $brand-color-light-blue;
+        background-color: $white;
+        color: $brand-color-blue;
+      }
+      &:focus {
+        box-shadow: 0px 0px 3px $brand-color-light-blue;
+        background-color: $white;
+        color: $brand-color-blue;
+      }
+    }
+  }
+  &:disabled {
+    border: 1px solid $gray-color-400;
+    color: $gray-color-400;
+  }
+
+  &.btn-240 {
+    display: block;
+    min-width: 240px;
+  }
+
+  &.btn-100 {
+    display: block;
+    width: 100%;
+    margin-bottom: rem(8);
+  }
+  &.k-icon-button {
+    align-self: center;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    color: $input-blue;
+    width: auto;
+    max-width: 3rem;
+    min-width: 2rem;
+    .participant-save,
+    .participant-options-menu {
+      font-size: 1.5rem;
+    }
+    &:hover {
+      color: #184481;
+    }
+    &:focus {
+      color: #184481;
+    }
+    &:disabled {
+      color: $input-medium-gray;
+    }
+    &.k-state-focused {
+      &::after {
+        box-shadow: none;
+      }
+    }
+  }
+
+  &-destructive {
+    background-color: $state-color-destructive;
+    border: 1px solid $state-color-destructive;
+    color: $white;
+    &:hover {
+      color: $white;
+      background-color: $state-color-destructive;
+    }
+    &:active {
+      background-color: #821918;
+      box-shadow: 0px 0px 3px $brand-color-light-blue;
+    }
+    &:disabled {
+      background-color: $gray-color-400;
+      color: $white;
+      border-color: $gray-color-400;
+    }
+  }
+  &-neutral {
+    color: $brand-color-light-blue;
+    border: 1px solid $gray-color-400;
+    background-color: $white;
+    &:hover {
+      color: $brand-color-blue;
+      background-color: $white;
+    }
+    &:active {
+      background-color: $white;
+      box-shadow: 0px 0px 3px $brand-color-light-blue;
+    }
+    &:disabled {
+      border: 1px solid $gray-color-400;
+      color: $gray-color-400;
+    }
+  }
+  &-base {
+    background-color: $white;
+    border: 1px solid transparent;
+    color: $brand-color-light-blue;
+    background-image: none;
+    &:hover {
+      border-color: $white;
+      background-color: $white;
+      color: $brand-color-blue;
+    }
+    &:active {
+      box-shadow: 0px 0px 3px $brand-color-light-blue;
+    }
+    &:disabled {
+      border: 1px solid $white;
+      color: $gray-color-400;
+    }
+  }
+  //Delete button with icon
+  .btn-delete {
+    background-color: transparent;
+    background-image: none;
+    color: color("black");
+    font-size: rem(14);
+    border: none;
+
+    .bid-icon {
+      display: inline-block;
+      margin-right: rem(3);
+    }
+    &.hover,
+    &:hover {
+      border: none;
+    }
+    &.active,
+    &:active,
+    &.focus,
+    &:focus {
+      box-shadow: none;
+    }
+  }
+  // Upload document button
+  .k-button--document {
+    width: rem(283);
+    min-height: rem(239);
+    background-color: color("white");
+    background-image: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: rem(10);
+    box-shadow: 3px 4px 16px rgba(216, 216, 216, 0.13);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: rem(20);
+
+    .btn-icon {
+      font-size: rem(30);
+      padding: rem(10);
+      color: color("primary");
+      background-color: color("secondary");
+      border-radius: 50%;
+      width: rem(56);
+      height: rem(56);
+      line-height: rem(36);
+      margin-bottom: rem(16);
+    }
+
+    .btn-label {
+      font-size: rem(16);
+      color: color("primary");
+      font-weight: bold;
+      white-space: normal;
+      line-height: rem(22);
+    }
+
+    &[disabled] {
+      .btn-icon {
+        color: color("gray-700");
+        background-color: color("gray-500");
+      }
+      .btn-label {
+        color: color("gray-700");
+      }
+    }
+    &.hover,
+    &:hover {
+      box-shadow: 0 rem(4) rem(8) rgba(0, 0, 0, 0.25);
+    }
+  }
+  //Upload pending
+  &.k-button--waiting {
+    .btn-icon {
+      color: color("primary");
+      background-color: color("secondary");
+    }
+    &[disabled] {
+      .btn-icon {
+        color: color("primary");
+        background-color: color("secondary");
+      }
+    }
+  }
+
+  // Download button
+  &.k-button--download {
+    background-image: none;
+    font-size: rem(16);
+    position: relative;
+    border: none;
+
+    .bid-icon {
+      margin-right: rem(10);
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  // Small button
+  &.k-button--sm {
+    padding: rem(8) rem(16);
+  }
+
+  // Medium button
+  &.btn--medium {
+    padding: rem(8) rem(30);
+    font-size: rem(18);
+  }
+
+  //Footer buttons
+  .btn-footer {
+    color: color("white");
+    background-color: color("primary");
+    &:disabled,
+    &.disabled {
+      background-color: color("gray-500");
+      opacity: 1;
+    }
+    &:hover,
+    &.hover {
+      color: color("white");
+      background-color: color("primary-dark");
+    }
+  }
+
+  //Back button
+  &.back-icon {
+    &:before {
+      content: "\f060";
+      font-family: "Font Awesome 5 Pro", sans-serif;
+      font-weight: 700;
+      font-size: rem(18);
+      vertical-align: middle;
+      margin-right: rem(30);
+    }
+  }
+}
+
+// Specificity overrides
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  &.btn-block {
+    width: 100%;
+  }
+}
+
+.btn-lg {
+  @include button-size(
+    $btn-padding-y-lg,
+    $btn-padding-x-lg,
+    $btn-font-size-lg,
+    $btn-line-height-lg,
+    $btn-border-radius-lg
+  );
+}
+
+.btn-sm {
+  @include button-size(
+    $btn-padding-y-sm,
+    $btn-padding-x-sm,
+    $btn-font-size-sm,
+    $btn-line-height-sm,
+    $btn-border-radius-sm
+  );
+}
+
+.k-button-group {
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+
+  .btn,
+  .k-button {
+    border: rgba(0, 0, 0, 0);
+    padding: rem(10) rem(15);
+    font-weight: $font-weight-normal;
+    background-image: none;
+    font-size: rem(18);
+    &:hover,
+    &.hover,
+    &:focus,
+    &.focus {
+      box-shadow: rem(0) rem(4) rem(8) rgba(0, 0, 0, 0.25);
+      text-shadow: rem(1) rem(0) rem(0) color("primary");
+    }
+    &:active,
+    &.k-state-active,
+    &.k-state-selected {
+      background-color: $brand-color-light-blue;
+      border-color: $brand-color-light-blue;
+      background-image: none;
+      text-shadow: rem(1) rem(0) rem(0) color("white");
+      color: $white;
+      @each $color, $value in $theme-colors {
+        &.btn-#{$color} {
+          background: $value;
+          border-color: color("transparent");
+        }
+      }
+    }
+    &[disabled] {
+      opacity: 1;
+
+      &[aria-checked="false"] {
+        color: color("white");
+        background-color: color("gray-500");
+      }
+    }
+  }
+  //Icon button group
+  .btn-icon {
+    display: flex;
+    font-size: rem(16);
+    padding: rem(6) rem(14);
+    border-radius: rem(6) !important;
+    background-image: none;
+    border: none;
+    background-color: transparent;
+    color: color("black");
+    margin-right: rem(15);
+
+    &.k-state-active {
+      color: color("black");
+      background-color: color("secondary");
+      text-shadow: rem(1) rem(0) rem(0) color("black");
+    }
+
+    figure {
+      background-repeat: no-repeat;
+      height: rem(30);
+      width: rem(33);
+      display: inline-block;
+      margin: 0 rem(14) 0 0;
+    }
+    span {
+      font-size: rem(16) !important;
+    }
+
+    &.hover,
+    &:hover {
+      background-color: color("secondary");
+      text-shadow: rem(1) rem(0) rem(0) color("black");
+      background-image: none;
+      border: none;
+      box-shadow: none;
+    }
+    &.focus,
+    &:focus {
+      box-shadow: none;
+    }
+  }
+}
+
+.btn-group-process {
+  height: 2rem !important;
+  .k-button {
+    padding: 0 !important;
+    font-size: rem(13) !important;
+    height: rem(28) !important;
+    padding-right: 10px !important;
+    padding-left: 10px !important;
+    border: 1px solid #d8dde6 !important;
+    color: color("blue-input") !important;
+    background-color: transparent;
+    &:active,
+    &.k-state-active,
+    &.k-state-selected {
+      background-color: color("primary");
+      border-color: color("primary");
+      box-shadow: none;
+      background-image: none;
+      color: color("white") !important;
+      text-shadow: none;
+    }
+  }
+}
+
+.submitCommentBtnSize {
+  max-width: 170px !important;
+  min-width: 174px !important;
+}

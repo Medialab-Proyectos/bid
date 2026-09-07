@@ -13,7 +13,7 @@ import { createServer } from 'node:http';
 import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import middleware from '../middleware.js';
+import middleware from './middleware.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, 'public');

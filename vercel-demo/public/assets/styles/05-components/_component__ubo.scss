@@ -1,0 +1,35 @@
+.text-left {
+  text-align: left;
+}
+.ubo-modal-container {
+  max-height: 75%;
+  display: grid;
+  padding: 10px 0;
+  overflow-y: auto;
+}
+.round-edge {
+  border-radius: 50%;
+}
+.email-input {
+  margin-left: 0;
+  margin-right: 0;
+}
+.ubo-text {
+  word-break: break-all;
+  padding-right: 0;
+}
+.ubo-add-btn {
+  width: 41% !important;
+  font-size: 1rem !important;
+  span.k-button-icon {
+    min-width: 10px !important;
+    min-height: 10px !important;
+  }
+}
+.ubo-delete-btn {
+  margin-bottom: 25px;
+}
+
+.blank-space {
+  height: 15px;
+}

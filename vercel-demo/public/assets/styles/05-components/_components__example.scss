@@ -1,0 +1,28 @@
+////
+/// BUTTON component
+///
+/// Custom project button example
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group btn
+/// @name .#{$wf__ns}btn
+/// @since version 1.0.0
+////
+$btn__modifiers-colors:	default primary success danger warning info darken;
+
+.#{$ns}btn {
+    // Extend object btn
+    @extend %btn;
+    // We can replace the basic button extender styles
+    font-size: rem(18);
+    line-height: 1;
+    // Extend modifiers colors
+    @each $color in $btn__modifiers-colors {
+        &--#{$color} {
+            @extend %btn--#{$color};
+        }
+    }
+    // Extend other modifiers
+    @extend %btn--block;
+}

@@ -1,0 +1,35 @@
+////
+/// TEXTAREA component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}textarea
+/// @since version 1.0.0
+////0.95rem
+
+.c-text-area {
+  height: auto;
+  line-height: rem(19);
+  width: 100%;
+  border: 1px solid #b9c2ca;
+  border-radius: 4px;
+  textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-top: 10px;
+    font-size: 15px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    height: 40px;
+  }
+  &.k-focus {
+    textarea {
+      border: 1px solid #4496f7 !important;
+      border-radius: 4px;
+    }
+  }
+}

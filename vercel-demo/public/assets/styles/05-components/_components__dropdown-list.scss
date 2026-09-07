@@ -1,0 +1,220 @@
+/// DROPDOWN-LILST component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}dropdown-list
+/// @since version 1.0.0
+////
+
+.c-dropdown-list {
+  display: inline-flex;
+  white-space: nowrap;
+  width: 100%;
+  height: rem(42);
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #b9c2ca;
+  overflow: hidden;
+  &.k-dropdown {
+    &.k-disabled {
+      background-color: #ecebea;
+      & span::before {
+        content: none !important;
+      }  
+      .k-input-inner{
+        background-color: #ecebea;
+      }
+      .k-input-button{
+        height: 100%;
+        border: 1px solid #ecebea;
+        border-radius: 0%;
+        background-color: #ecebea;
+      }
+    }
+    span.k-input-inner {
+      background-color: white;
+      width: inherit;
+      span.k-input-value-text {
+        position: absolute;
+        top: 10px;
+        left: 8px;
+      }
+    }
+    button.k-button {
+      min-width: 0px;
+    }
+  }
+
+  &.ng-invalid {
+    border-color: #b9c2ca;
+  }
+  &.ng-invalid.ng-touched {
+    border: 2px solid #d72e2d;
+  }
+
+  &:focus-within {
+    border: 1px solid #4496f7 !important;
+    box-shadow: 0px 0px 3px #0070d2;
+  }
+
+  .k-dropdown-wrap {
+    background-color: white;
+    background-image: none !important;
+    border-color: #b9c2ca;
+    border-radius: rem(4);
+    display: flex;
+    align-items: center;
+    &:hover {
+      background-color: white;
+      border-color: #868686;
+    }
+
+    .k-select {
+      .k-i-arrow-s::before {
+        content: "\e015";
+      }
+    }
+    &.k-state-disabled {
+      background-color: #ecebea;
+      & span::before {
+        content: none !important;
+      }
+    }
+    &:not([aria-activedescendant]) {
+      .k-input:before {
+        @extend .sf400;
+        content: var(--placeholder);
+        color: #706e6b;
+        font-size: rem(13);
+      }
+    }
+  }
+
+  &--error {
+    .k-dropdown {
+      border: 1px solid;
+      border-color: color("error");
+
+      & .k-dropdown-wrap .k-i-arrow-s:before {
+        color: color("error");
+      }
+    }
+  }
+  span.k-input-inner {
+    width: 7rem;
+    padding-top: 10px;
+    padding-left: 7px;
+  }
+  button {
+    span {
+      margin-right: 3px;
+      color: #424242;
+      &.k-i-caret-alt-down::before {
+        content: "\e015";
+      }
+    }
+  }
+  &.empty span.k-input-inner span::before {
+    content: var(--placeholder);
+    color: #706e6b;
+    font-size: 1rem;
+  }
+}
+.#{$ns}dropdown-list.currency {
+  .k-dropdown-wrap {
+    border-left: none;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+}
+.fi-textbox-amount {
+  &.k-textbox.k-state-focused {
+    .#{$ns}dropdown-list.currency .k-dropdown-wrap {
+      border-color: color("blue-input");
+    }
+  }
+  &:hover {
+    .#{$ns}dropdown-list.currency .k-dropdown-wrap {
+      border-color: #868686;
+    }
+  }
+}
+
+.k-noBorderLeft {
+  .k-dropdown-wrap {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+.k-widget[disabled] {
+  .k-dropdown-wrap {
+    background-color: #ecebea;
+    border: 1px solid #c9c7c5;
+  }
+}
+
+.force-disabled {
+  pointer-events: none !important;
+}
+
+.force-disabled > * {
+  background-color: #ecebea !important;
+}
+
+kendo-list {
+  .k-list-content {
+    ul.k-list-ul {
+      max-height: 200px;
+      overflow-y: scroll;
+      list-style-type: none;
+      padding-left: 0px;
+      margin-bottom: 0px;
+      li.k-list-item {
+        padding-left: 43px;
+        position: relative;
+        word-break: break-word;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        &.k-selected {
+          background-color: #f3f2f2;
+          &::before {
+            color: #080707;
+            font-family: "Font Awesome 5 Pro", sans-serif;
+            content: "\f00c";
+            position: absolute;
+            left: 19px;
+          }
+        }
+      }
+    }
+  }
+}
+
+kendo-dropdownlist {
+  button {
+    width: 25px;
+    &.k-input-button {
+      background-image: none;
+      background-color: white;
+      border: 1px solid white;
+      &:hover {
+        background-color: white;
+        background-image: none;
+        border: none;
+      }
+    }
+  }
+  .ng-invalid {
+    &:not([ng-reflect-data]) {
+      span {
+        span::before {
+          @extend .sf400;
+          content: var(--placeholder);
+          color: #706e6b;
+          font-size: rem(13);
+        }
+      }
+    }
+  }
+}

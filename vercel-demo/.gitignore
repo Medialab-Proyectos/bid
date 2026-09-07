@@ -12,6 +12,4 @@ node_modules
 .DS_Store
 Thumbs.db
 
-# El build ya no se sube a git: Vercel lo genera el mismo en cada deploy
-# corriendo "npm run build:vercel" (ver vercel.json en la raíz del repo).
-public
+# NOTA: public/ SI se sube. Es el sitio ya compilado y Vercel lo sirve tal cual.

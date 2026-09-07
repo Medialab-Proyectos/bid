@@ -1,0 +1,152 @@
+////
+/// TIMEPICKER component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}timepicker
+/// @since version 1.0.0
+////
+.#{$ns}timepicker {
+
+    position: relative;
+    &__title {
+        font-size: rem(14);
+        color: color('black');
+        display: block;
+        margin-bottom: rem(8);
+    }
+    &__hint {
+        display: none;
+    }
+
+    .k-timepicker {
+        width: 100%;
+
+        .k-picker-wrap {
+            border-radius: rem(5);
+            height: rem(40);
+            border-color: color('gray-border');
+
+            &.k-state-focused {
+                border-color: color('primary');
+                .k-i-clock {
+                    color: color('primary');
+                }
+            }
+            .k-dateinput-wrap {
+                border-radius: rem(5);
+
+                &>.k-input {
+                    height: 100%;
+                    font-size: rem(16);
+                }
+            }
+            &:hover {
+                .k-select {
+                    background-image: none;
+                }
+            }
+        }
+        .k-select {
+            background-color: color('white');
+            background-image: none;
+            border-top-right-radius: rem(5);
+            border-bottom-right-radius: rem(5);
+        }
+    }
+
+
+    /* .k-dropdown {
+        width: rem(226);
+        // height: rem(40);
+
+        .k-dropdown-wrap {
+            background-image: none;
+            background-color: color('white');
+            color: color('black');
+            border-radius: rem(5);
+
+            .k-icon {
+                &::before {
+                    content: '\f078';
+                    color: color('black');
+                }
+            }
+            &.k-state-focused {
+                border-color: color('primary-light');
+
+                .k-icon {
+                    &::before {
+                        color: color('primary');
+                    }
+                }
+            }
+            &[aria-expanded="true"] {
+                .k-icon {
+                    &::before {
+                        content: '\f077';
+                    }
+                }
+            }
+        }
+    } */
+
+    //Popup
+    .k-popup--timepicker {
+        // border-radius: rem(5);
+        // background-color: color('white');
+        // padding: rem(9) rem(7);
+
+        // .k-list-optionlabel {
+        //     height: rem(36);
+        //     border-radius: rem(40);
+        //     font-size: rem(16);
+        //     display: flex;
+        //     align-items: center;
+
+        //     &.k-state-selected {
+        //         color: color('gray-500');
+        //         background-color: color('secondary');
+        //         font-weight: bold;
+        //         box-shadow: none;
+        //     }
+        // }
+
+        // .k-list-scroller {
+
+        //     .k-item {
+        //         height: rem(36);
+        //         border-radius: rem(40);
+        //         color: color('black');
+        //         font-size: rem(16);
+
+        //         &:hover {
+        //             background-color: color('secondary');
+        //             font-weight: bold;
+        //         }
+
+        //         &.k-state-selected {
+        //             background-color: color('secondary');
+        //             font-weight: bold;
+        //             box-shadow: none;
+        //         }
+        //     }
+        // }
+    }
+
+    //Modifiers
+
+    //Error
+    &--error {
+        .k-picker-wrap {
+            border-color: color('error') !important;
+        }
+        .bid-timepicker__hint {
+            display: block;
+            font-size: rem(12);
+            font-style: italic;
+            color: color('error');
+        }
+    }
+}

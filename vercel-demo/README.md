@@ -1,33 +1,29 @@
 # Despliegue de la demo en Vercel
 
-Versión ligera de Fiduciary Interface, protegida con usuario y contraseña. No
-hay backend, base de datos ni Azure AD: todas las llamadas HTTP las responde el
-interceptor de demo en el navegador (ver [`../DEMO.md`](../DEMO.md)).
-
-`vercel.json`, `middleware.js` y `package.json` viven en la **raíz del repo**,
-junto al código fuente -- no aquí dentro. Esta carpeta solo guarda lo propio
-del build de Vercel: `prepare.mjs`, `serve-local.mjs` y, una vez compilado,
-`public/`.
+Versión estática y ligera de Fiduciary Interface, protegida con usuario y
+contraseña. No hay backend, base de datos ni Azure AD: todas las llamadas HTTP
+las responde el interceptor de demo en el navegador (ver [`../DEMO.md`](../DEMO.md)).
 
 ## Qué se despliega
 
 | | |
 | --- | --- |
-| Contenido | `public/` -- no se sube a git, Vercel lo genera en cada deploy |
-| Build en Vercel | `npm run build:vercel` (ver `buildCommand` en `../vercel.json`) |
+| Contenido | `public/` -- el sitio ya compilado, se sube a git tal cual |
+| Build en Vercel | Ninguno. Se sube ya compilado |
 | Acceso | Formulario de login en el edge, antes de servir cualquier archivo |
 
 ## 1. Generar el build
 
+Desde la raíz del proyecto (donde está `angular.json`):
+
 ```bash
-cd "<raíz del proyecto>"
 npm run build:vercel
 ```
 
 Esto compila con `--configuration=vercel` (modo demo + optimización de
 producción) y ejecuta `vercel-demo/prepare.mjs`, que copia el resultado a
-`vercel-demo/public/`. Es exactamente lo que corre Vercel en cada push -- se
-puede correr aquí solo para probar antes de subir.
+`vercel-demo/public/`. Después de correrlo, agrega `vercel-demo/public/` al
+commit junto con los cambios de código.
 
 ## 2. Probar en local antes de subir
 
@@ -47,11 +43,10 @@ $env:DEMO_USER="demo"; $env:DEMO_PASSWORD="tu-clave"; node serve-local.mjs
 
 ## 3. Desplegar
 
-Con el repo conectado a Vercel por Git, basta con hacer push a `main`: Vercel
-corre `npm run build:vercel` solo (definido en `buildCommand` de
-`../vercel.json`) y sirve `vercel-demo/public/`. **Root Directory** debe quedar
-vacío/`.` (la raíz del repo), no `vercel-demo` -- el build necesita ver todo el
-código fuente, no solo esta carpeta.
+Con el repo conectado a Vercel por Git, en **Project Settings → General → Root
+Directory** debe quedar `vercel-demo` -- Vercel no construye nada, solo sirve
+lo que ya viene compilado en `vercel-demo/public/`. Basta con hacer push a
+`main` con el build ya generado (paso 1) para que se actualice.
 
 Las credenciales se definen una sola vez en el panel: Project Settings →
 Environment Variables → `DEMO_USER`, `DEMO_PASSWORD` y, opcional,
@@ -84,11 +79,11 @@ incluyen en el bundle ni viajan al cliente.
 
 | Archivo | Para qué |
 | --- | --- |
-| `../middleware.js` | Gate de acceso en el edge (Vercel lo detecta por el nombre, en la raíz) |
-| `../vercel.json` | `buildCommand`, `outputDirectory`, fallback SPA, cabeceras de caché y `noindex` |
+| `middleware.js` | Gate de acceso en el edge (Vercel lo detecta por el nombre) |
+| `vercel.json` | Fallback SPA, cabeceras de caché y `noindex` |
 | `prepare.mjs` | Post-build: copia a `public/` y quita fuentes legacy |
 | `serve-local.mjs` | Previsualización local idéntica a Vercel |
-| `public/` | El sitio compilado. No se sube a git -- se regenera en cada build |
+| `public/` | El sitio compilado. Se regenera, no se edita a mano |
 
 ## De dónde sale la reducción de peso
 

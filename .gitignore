@@ -27,6 +27,9 @@ speed-measure-plugin*.json
 .vscode/*
 .history/*
 
+# Claude Code local config
+/.claude
+
 #sonarqube
 *.bat
 sonar-project.properties

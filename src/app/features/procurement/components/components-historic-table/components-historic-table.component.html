@@ -1,0 +1,37 @@
+<table class="custom-table">
+  <thead>
+    <tr>
+      <th colspan="3">
+        {{ title }}
+      </th>
+      <th>
+        {{ "PROCUREMENT.HISTORIC_CHANGES.COMPONENTS.FIELD_VALUE" | translate }}
+      </th>
+      <th>
+        {{ dateLiteral | translate }}
+      </th>
+      <th colspan="3">
+        {{ "PROCUREMENT.HISTORIC_CHANGES.COMPONENTS.MODIFIED_BY" | translate }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+      <td colspan="6">
+        {{ componentName }}
+      </td>
+      <td></td>
+    </tr>
+    <tr *ngFor="let item of data">
+      <td></td>
+      <td></td>
+      <td>{{ item.outputName }}</td>
+      <td>{{ item.percentageAssigned }}</td>
+      <td>{{ item.modificationDate }}</td>
+      <td>{{ item.modifiedBy }}</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>

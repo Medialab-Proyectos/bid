@@ -1,0 +1,27 @@
+<kendo-popup
+  #popup
+  [anchor]="anchor"
+  popupClass="content"
+  *ngIf="expandedOptions"
+  class="c-options-menu os400"
+>
+  <div class="option-menu-container" *ngIf="options">
+    <ul class="container-pop-up">
+      <ng-container *ngFor="let option of options">
+        <li
+          [id]="'Lst_Item_' + option"
+          data-testid="listitem"
+          class="popup-btn-item cursor"
+          (click)="onOptionClick(option)"
+        >
+          <ng-container *ngIf="translate; else noTranslate">
+            {{ option | translate }}
+          </ng-container>
+          <ng-template #noTranslate>
+            {{ option }}
+          </ng-template>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+</kendo-popup>

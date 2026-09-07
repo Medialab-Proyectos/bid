@@ -1,0 +1,26 @@
+<kendo-tabstrip id="kendoTabstrip" [keepTabContent]="false">
+  <kendo-tabstrip-tab
+    title="{{
+      'PROCUREMENT.HISTORIC_CHANGES.MILESTONES.TAB_HEADER' | translate
+    }}"
+    [selected]="true"
+  >
+    <ng-template kendoTabContent>
+      <fi-milestones-changes
+        [changesMilestones]="tabstripChanges?.milestonesChanges"
+      ></fi-milestones-changes>
+    </ng-template>
+  </kendo-tabstrip-tab>
+
+  <kendo-tabstrip-tab
+    title="{{
+      'PROCUREMENT.HISTORIC_CHANGES.COMPONENTS.TAB_HEADER' | translate
+    }}"
+  >
+    <ng-template kendoTabContent>
+      <fi-components-changes
+        [changesComponents]="tabstripChanges?.componentsChanges"
+      ></fi-components-changes>
+    </ng-template>
+  </kendo-tabstrip-tab>
+</kendo-tabstrip>

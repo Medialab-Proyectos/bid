@@ -1,0 +1,220 @@
+<ng-template #template let-anchor>
+  <span
+    [innerHTML]="
+      anchor.nativeElement.innerText | highlightSearch : highlightValue
+    "
+  ></span>
+</ng-template>
+<div kendoTooltip showOn="none" [tooltipTemplate]="template" class="activities">
+  <kendo-grid
+    class="c-table-aggregates"
+    [groupable]="true"
+    [group]="groups"
+    (groupChange)="groupChange($event)"
+    [pageable]="true"
+    [pageSize]="pageSize"
+    [skip]="skip"
+    (pageChange)="pageChangeEvent($event)"
+    [sortable]="true"
+    [reorderable]="true"
+    [resizable]="true"
+    [data]="gridView"
+    kendoGridSelectBy="code"
+    [height]="400"
+    [columnMenu]="{
+      filter: true,
+      columnChooser: { expanded: true }
+    }"
+    [sort]="sort"
+    (sortChange)="sortChange($event)"
+    [pageSize]="state.take"
+    [skip]="state.skip"
+    [pageable]="true"
+    [loading]="isLoading"
+  >
+    <kendo-grid-messages
+      [groupPanelEmpty]="'ACTIVITIES.MESSAGES.DRAG' | translate"
+      [noRecords]="'ACTIVITIES.TABLE.EMPTY_MSG' | translate"
+    >
+    </kendo-grid-messages>
+
+    <ng-template kendoGridToolbarTemplate position="top">
+      <fi-filter
+        class="d-block"
+        [minLength]="3"
+        (filterValue)="onFilter($event)"
+        [placeholder]="'ACTIVITIES.SEARCH' | translate"
+      ></fi-filter>
+    </ng-template>
+
+    <kendo-grid-column
+      field="workflowCode"
+      [title]="'ACTIVITIES.ID_ACTIVITY' | translate"
+      [columnMenu]="false"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <p
+          [innerHTML]="dataItem.workflowCode | highlightSearch : highlightValue"
+        ></p>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="contractNumber"
+      [title]="'ACTIVITIES.PROJECT' | translate"
+      [columnMenu]="false"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <p
+          *ngIf="dataItem.contractNumber"
+          [id]="'Lnk_Process_' + rowIndex"
+          [innerHTML]="
+            dataItem.contractNumber | highlightSearch : highlightValue
+          "
+        ></p>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="ActivityType"
+      [title]="'ACTIVITIES.TYPE' | translate"
+      [columnMenu]="false"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <p class="txt-max-lines-3">
+          {{ dataItem.ActivityType }}
+        </p>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="activityCode"
+      [title]="'ACTIVITIES.CODE' | translate"
+      [columnMenu]="false"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <p class="txt-max-lines-3">
+          {{ dataItem.activityCode }}
+        </p>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="pendingActionTranslated"
+      [title]="'ACTIVITIES.PENDING_ACTION' | translate"
+      [columnMenu]="false"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <!-- INTERNAL -->
+        <ng-container *ngIf="IS_INTERNAL; else external">
+          <ng-container *ngIf="dataItem.currentStep !== undefined; else noStep">
+            <p
+              *ngIf="!dataItem.showDetails; else enumStepForInternal"
+              (click)="redirectInProgress(dataItem.currentStep, dataItem)"
+              [ngClass]="{
+                'text-link': handleIfShowRedirectAction(dataItem)
+              }"
+            >
+              {{ dataItem.currentStep | translateEnum : enumODSteps }}
+            </p>
+            <ng-template #enumStepForInternal>
+              <p
+                [ngClass]="{
+                  'text-link': handleIfShowRedirectAction(dataItem)
+                }"
+                *ngIf="dataItem.currentStep !== undefined; else noStep"
+                (click)="redirectInProgress(dataItem.currentStep, dataItem)"
+              >
+                {{ dataItem.currentStep | translateEnum : enumSteps }}
+              </p>
+            </ng-template>
+          </ng-container>
+
+          <ng-template #noStep>
+            {{ "ACTIVITIES.NOT_PENDING_ACTION" | translate }}
+          </ng-template>
+        </ng-container>
+        <!-- EXTERNAL -->
+        <ng-template #external>
+          <ng-container *ngIf="dataItem.currentStep !== undefined; else noStep">
+            <p
+              *ngIf="!dataItem.showDetails; else enumStepODForExternal"
+              (click)="redirectInProgress(dataItem.currentStep, dataItem)"
+              [ngClass]="{
+                'text-link': handleIfShowRedirectAction(dataItem)
+              }"
+            >
+              {{ dataItem.currentStep | translateEnum : enumSteps }}
+            </p>
+            <ng-template #enumStepODForExternal>
+              <p
+                [ngClass]="{
+                  'text-link': handleIfShowRedirectAction(dataItem)
+                }"
+                *ngIf="dataItem.currentStep !== undefined; else noStep"
+                (click)="redirectInProgress(dataItem.currentStep, dataItem)"
+              >
+                {{ dataItem.currentStep | translateEnum : enumODSteps }}
+              </p>
+            </ng-template>
+          </ng-container>
+
+          <ng-template #noStep>
+            {{ "ACTIVITIES.NOT_PENDING_ACTION" | translate }}
+          </ng-template>
+        </ng-template>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="createdAt"
+      [title]="'ACTIVITIES.START_DAY' | translate"
+      [columnMenu]="false"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <p [innerHTML]="dataItem.createdAt | date : 'dd MMM yyyy'"></p>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      [width]="100"
+      field="lastExecution"
+      [title]="'ACTIVITIES.FINAL_DAY' | translate"
+      [columnMenu]="false"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <p [innerHTML]="dataItem.lastExecution | date : 'dd MMM yyyy'"></p>
+      </ng-template>
+    </kendo-grid-column>
+    <ng-template
+      kendoGridDetailTemplate
+      let-dataItem
+      [kendoGridDetailTemplateShowIf]="checkVisibility"
+    >
+      <fi-activity-detail-tab
+        [activityTableRow]="dataItem"
+      ></fi-activity-detail-tab>
+    </ng-template>
+
+    <ng-template
+      kendoPagerTemplate
+      let-totalPages="totalPages"
+      let-currentPage="currentPage"
+    >
+      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+      <kendo-pager-numeric-buttons
+        [buttonCount]="3"
+      ></kendo-pager-numeric-buttons>
+      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+      <kendo-pager-input></kendo-pager-input>
+      <kendo-pager-info></kendo-pager-info>
+      <kendo-pager-page-sizes [pageSizes]="sizes"></kendo-pager-page-sizes>
+    </ng-template>
+  </kendo-grid>
+</div>
+
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

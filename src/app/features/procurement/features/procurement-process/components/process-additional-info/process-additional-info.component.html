@@ -1,0 +1,135 @@
+<div class="c-process-additional-info">
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "PROCUREMENT.ADDITIONAL_INFORMATION" | translate
+    }}</ng-container>
+    <ng-container body>
+      <div [formGroup]="adittionalInfo" class="px-md-3 row mb-3">
+        <ng-container *ngIf="showLots">
+          <div class="col-12 col-md-3" role="section-aditional-information">
+            <kendo-label
+              text="{{ 'PROCUREMENT.LOTS' | translate }}"
+            ></kendo-label>
+            <kendo-numerictextbox
+              [decimals]="0"
+              format="n0"
+              [spinners]="false"
+              #lots
+              class="c-numerictextbox"
+              formControlName="lots"
+              ngDefaultControl
+              placeholder=""
+              [maxlength]="18"
+              id="Txb_Lots"
+              [changeValueOnScroll]="false"
+            >
+            </kendo-numerictextbox>
+          </div>
+        </ng-container>
+
+        <div class="col-12 col-md-3">
+          <kendo-label
+            class="fi-kendo-label"
+            text="{{ 'PROCUREMENT.SEPA' | translate }}"
+          ></kendo-label>
+          <kendo-textbox
+            #sepaPlecaId
+            class="c-textbox"
+            formControlName="sepaPlecaId"
+            ngDefaultControl
+            placeholder=""
+            id="Txb_SepaId"
+            [maxlength]="100"
+          ></kendo-textbox>
+        </div>
+        <ng-container *ngIf="showBAFO">
+          <div class="col-12 col-md-2">
+            <div class="c-title-description">
+              <div class="row">
+                <div class="col-12">
+                  <div class="d-flex">
+                    <kendo-label
+                      class="fi-kendo-label"
+                      text="{{ 'PROCUREMENT.BAFO' | translate }}"
+                    ></kendo-label>
+                    <div kendoTooltip>
+                      <em
+                        class="fas fa-info-circle"
+                        [title]= "isPROCT_PFA ?
+                        ('PROCUREMENT.BAFO_TOOLTIP_100_FUNDED_AGENCY' | translate):
+                        ('PROCUREMENT.BAFO_TOOLTIP' | translate)"
+                      ></em>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <ul class="k-radio-list">
+                <li class="k-radio-item">
+                  <label class="k-radio-label">
+                    <input
+                      type="radio"
+                      [value]="true"
+                      #si
+                      formControlName="bafo"
+                      kendoRadioButton
+                      id="Rbn_Procurement_yes"
+                    />
+                    <span>
+                      {{ "PROCUREMENT.YES" | translate }}
+                    </span>
+                  </label>
+                </li>
+                <li class="k-radio-item">
+                  <label class="k-radio-label">
+                    <input
+                      type="radio"
+                      [value]="false"
+                      #no
+                      formControlName="bafo"
+                      kendoRadioButton
+                      id="Rbn_Procurement_no"
+                    />
+                    <span>
+                      {{ "PROCUREMENT.NO" | translate }}
+                    </span>
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </ng-container>
+        <div class="col-12 col-md-4" *ngIf="goodsReferenceVisibility">
+          <kendo-label
+            class="fi-kendo-label fi-kendo-label--required"
+            text="{{ 'PROCUREMENT.GOODS_AND_SERVICES' | translate }}"
+          ></kendo-label>
+          <div>
+            <ul class="k-radio-list">
+              <li
+                class="k-radio-item"
+                *ngFor="let item of radioOption; let i = index"
+              >
+                <label class="k-radio-label">
+                  <input
+                    type="radio"
+                    [value]="item.id"
+                    formControlName="goodsReference"
+                    kendoRadioButton
+                    [id]="'Rbn_Goods_Reference_' + (i + 1)"
+                  />
+                  <span>
+                    {{ item.name | translate }}
+                  </span>
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

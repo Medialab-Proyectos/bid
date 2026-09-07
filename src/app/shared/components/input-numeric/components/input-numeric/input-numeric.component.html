@@ -1,0 +1,38 @@
+<div class="c-fiCounter">
+  <button
+    kendoButton
+    [id]="'Btn_Sub_Number_' + id"
+    data-testId="subNumber"
+    (click)="subNumber()"
+    [disabled]="!isEditMode"
+    icon="minus"
+  ></button>
+  <kendo-numerictextbox
+    class="fiCounter"
+    [changeValueOnScroll]="false"
+    [spinners]="false"
+    format="n"
+    [step]="1"
+    (valueChange)="onChangeNumber($event)"
+    data-testId="counter"
+    [value]="currentValue"
+    [id]="id ? 'Txt_Counter_' + id : 'Txt_Counter'"
+    [decimals]="decimals"
+    [disabled]="!isEditMode"
+    [style]="{ width: '73%' }"
+    [maxlength]="18"
+    [min]="0"
+    [max]="MAX_VALUE"
+    [autoCorrect]="true"
+    [placeholder]="placeholder"
+    [changeValueOnScroll]="false"
+  ></kendo-numerictextbox>
+  <button
+    kendoButton
+    [id]="'Btn_Add_Number_' + id"
+    data-testId="addNumber"
+    (click)="addNumber()"
+    [disabled]="!isEditMode"
+    icon="plus"
+  ></button>
+</div>

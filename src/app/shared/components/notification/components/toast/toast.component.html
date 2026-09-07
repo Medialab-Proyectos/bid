@@ -1,0 +1,9 @@
+<div class="fi_toast">
+  <div class="description">
+    <div class="title_toast">{{ titleToast }}</div>
+    <div class="detail_toast" *ngFor="let detail of detailToast">
+      {{ detail }}
+    </div>
+  </div>
+  <em class="pl-4 far fa-times closeNotification" (click)="close($event)"></em>
+</div>

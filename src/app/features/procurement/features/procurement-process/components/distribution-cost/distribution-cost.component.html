@@ -1,0 +1,152 @@
+<div class="col-12" style="font-size: 12px">
+  <div class="row">
+    <fi-info-process-title
+      class="col-12"
+      [title]="'PROCUREMENT.PROCESS.COST_DISTRIBUTION' | translate"
+      [subtitle]="
+        'PROCUREMENT.PROCESS.INFORMATION_ON_BIDDING_COSTS' | translate
+      "
+      icon="fas fa-coins"
+    >
+    </fi-info-process-title>
+  </div>
+  <div class="row">
+    <div
+      class="mb-0 col-12 col-md-6"
+      [ngClass]="mobileView ? 'distributionCost--topBorder' : null"
+    >
+      <div
+        class="col mt-2"
+        style="text-align: center"
+        [ngClass]="mobileView ? null : 'distributionCost--borderedCard'"
+      >
+        <div class="row">
+          <div class="col-12 col-md-2">
+            <div class="row">
+              <div class="d-flex flex-row flex-md-column col p-0">
+                <div
+                  class="p-0 p-md-2"
+                  [ngClass]="
+                    mobileView
+                      ? 'distributionCost--mobile-width'
+                      : 'distributionCost--bottomBorder'
+                  "
+                >
+                  {{ "PROCUREMENT.PROCESS.IDB_COST" | translate }}
+                </div>
+                <div class="p-0 p-md-2">{{ totalBidAmount }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-5">
+            <div class="row">
+              <div class="d-flex flex-row flex-md-column col p-0">
+                <div
+                  class="p-0 p-md-2"
+                  [ngClass]="
+                    mobileView
+                      ? 'distributionCost--mobile-width'
+                      : 'distributionCost--bottomBorder'
+                  "
+                >
+                  {{ "PROCUREMENT.PROCESS.LOCAL_COUNTERPART" | translate }}
+                </div>
+                <div class="p-0 p-md-2">{{ totalCounterPartCost }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-5">
+            <div class="row">
+              <div class="d-flex flex-row flex-md-column col p-0">
+                <div
+                  class="p-0 p-md-2"
+                  [ngClass]="
+                    mobileView
+                      ? 'distributionCost--mobile-width'
+                      : 'distributionCost--bottomBorder'
+                  "
+                >
+                  {{ "PROCUREMENT.PROCESS.CO_FINANCING" | translate }}
+                </div>
+                <div class="p-0 p-md-2">{{ totalCofinancing }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mb-0 col-12 col-md-6"
+      [ngClass]="mobileView ? 'distributionCost--topBorder' : null"
+    >
+      <div
+        class="col mt-2"
+        style="text-align: center"
+        [ngClass]="mobileView ? null : 'distributionCost--borderedCard'"
+      >
+        <div class="row">
+          <div class="col-12 col-md-2">
+            <div class="row">
+              <div class="d-flex flex-row flex-md-column col p-0">
+                <div
+                  class="p-0 p-md-2"
+                  [ngClass]="
+                    mobileView
+                      ? 'distributionCost--mobile-width'
+                      : 'distributionCost--bottomBorder'
+                  "
+                >
+                  {{ "PROCUREMENT.PROCESS.LOTS" | translate }}
+                </div>
+                <div class="p-0 p-md-2">
+                  {{ details?.lots }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-5">
+            <div class="row">
+              <div class="d-flex flex-row flex-md-column col p-0">
+                <div
+                  class="p-0 p-md-2"
+                  [ngClass]="
+                    mobileView
+                      ? 'distributionCost--mobile-width'
+                      : 'distributionCost--bottomBorder'
+                  "
+                >
+                  {{ "PROCUREMENT.PROCESS.SEPA_ID" | translate }}
+                </div>
+                <div class="p-0 p-md-2">{{ details?.sepaId }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-5">
+            <div class="row">
+              <div class="d-flex flex-row flex-md-column col p-0">
+                <div
+                  class="p-0 p-md-2"
+                  [ngClass]="
+                    mobileView
+                      ? 'distributionCost--mobile-width'
+                      : 'distributionCost--bottomBorder'
+                  "
+                >
+                  {{ "PROCUREMENT.PROCESS.BAFO" | translate }}
+                </div>
+                <div class="p-0 p-md-2">
+                  <div *ngIf="details?.bafo; else noBafo">
+                    {{ "PROCUREMENT.PROCESS.YES" | translate }}
+                  </div>
+                  <ng-template #noBafo>
+                    {{ "PROCUREMENT.PROCESS.NO" | translate }}
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

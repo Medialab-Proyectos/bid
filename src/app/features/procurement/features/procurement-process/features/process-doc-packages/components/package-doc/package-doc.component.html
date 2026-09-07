@@ -1,0 +1,77 @@
+<div
+  class="c-package-doc row"
+  *ngIf="!item.actualDateState.loading; else showSpinner"
+>
+  <div
+    class="d-none d-md-flex col-md-1 align-items-center"
+    style="max-width: 3rem"
+  >
+    <button
+      class="k-icon c-contracts__expand-btn"
+      [ngClass]="
+        !expandedRows ? 'k-i-arrow-chevron-down' : 'k-i-arrow-chevron-up'
+      "
+      (click)="collapseBtn(item)"
+      [id]="'Btn_Expan_Package_doc_' + (id + 1)"
+    ></button>
+  </div>
+  <div
+    class="col-12 col-md-5 d-flex align-items-center justify-content-between"
+  >
+    {{ item.code | translateEnum : Enums.biddingProcessDocumentPackageCodes }}
+  </div>
+  <div class="col-12 col-md-2 d-flex-col">
+    <kendo-datepicker
+      [id]="'Cal_Package_doc_' + (id + 1)"
+      calendarType="classic"
+      format="dd MMM yyyy"
+      class="c-datepicker"
+      [placeholder]="'COMMON.ENTER_DATE' | translate"
+      [disabled]="!planInSync || !disableByPermission || validateActualDateByPackage(id)"
+      [(value)]="date"
+      [min]="min"
+      [max]="max"
+      (valueChange)="updateActualDate($event)"
+      [ngClass]="isBtnClicked && date === null ? 'require-border' : ''"
+    >
+      <kendo-datepicker-messages
+        [today]="'COMMON.CALENDAR.TODAY' | translate"
+        [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+      ></kendo-datepicker-messages>
+    </kendo-datepicker>
+    <P
+      class="o-input-error"
+      *ngIf="isBtnClicked && date === null"
+      [ngClass]="isBtnClicked && date === null ? 'require-message' : ''"
+      >{{ "PROCESS_DOC.DOCUMENT_TAB.ACTUAL_DATE_REQUIRE" | translate }}</P
+    >
+  </div>
+
+  <div class="col-12 col-md-1 d-flex align-items-center justify-content-center">
+    <fi-advance-milestone [totalCompleted]="item.totalUploadedDocuments">
+    </fi-advance-milestone>
+  </div>
+  <div class="col-12 col-md-2 d-flex align-items-center">
+    <div>
+      {{
+        item.status
+          | translateEnum : Enums.biddingProcessDocumentPackageStatuses
+      }}
+    </div>
+  </div>
+  <div class="col-12 col-md-1 d-flex align-items-center">
+    <div class="c-package-doc__comments" (click)="routeToProcessComments()">
+      <fi-comments-counter
+        *ngIf="item.totalComments !== 0"
+        [id]="id"
+        [commentsNumber]="item.totalComments"
+      ></fi-comments-counter>
+    </div>
+  </div>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

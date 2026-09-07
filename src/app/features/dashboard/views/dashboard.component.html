@@ -1,0 +1,199 @@
+<div class="card-dashboard" [ngClass]="mobileView ? 'pt-4 m-0' : 'pt-2'">
+  <div class="">
+    <div class="row">
+      <div
+        class="col-sm-12 col-md-6 col-lg-5 dashboard-header align-self-center"
+      >
+        <div class="d-flex">
+          <div class="">
+            <div class="icon-project">
+              <em class="fas fa-briefcase"></em>
+            </div>
+          </div>
+          <span class="dashboard-header__title">
+            {{ "DASHBOARD.TITLE" | translate }}
+          </span>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-3 col-lg-2 align-self-center">
+        <kendo-dropdownlist
+          class="c-dropdown-list k-dropdown"
+          style="--placeholder: '{{ 'COMMON.SELECT_AN_OPTION' | translate }}'"
+          [data]="countryOptions"
+          textField="text"
+          valueField="countryCode"
+          [disabled]="isLoading"
+          [(ngModel)]="selectedCountry"
+          (valueChange)="changeCountry()"
+        >
+          <ng-template kendoDropDownListValueTemplate let-item>
+            <span
+              *ngIf="item?.countryCode"
+              class="fi fi-{{ item?.isoCountryCode?.toLowerCase() }}"
+            ></span>
+            {{ item?.name | translate }}
+          </ng-template>
+
+          <ng-template kendoDropDownListItemTemplate let-item>
+            <span
+              class="fi fi-{{ item?.isoCountryCode?.toLowerCase() }}"
+            ></span>
+            {{ item?.name | translate }}
+          </ng-template>
+        </kendo-dropdownlist>
+      </div>
+      <div class="col-sm-12 col-md-4 col-lg-2 align-self-center">
+        <kendo-dropdownlist
+          class="c-dropdown-list k-dropdown"
+          style="--placeholder: '{{ 'COMMON.SELECT_AN_OPTION' | translate }}'"
+          [data]="optionsToSearch"
+          textField="text"
+          valueField="value"
+          [disabled]="isLoading"
+          [(ngModel)]="selectedSearchValue"
+          (valueChange)="valueSearchChange()"
+        >
+          <ng-template kendoDropDownListValueTemplate let-item>
+            {{ item?.text | translate }}
+          </ng-template>
+          <ng-template kendoDropDownListItemTemplate let-item>
+            {{ item?.text | translate }}
+          </ng-template>
+        </kendo-dropdownlist>
+      </div>
+      <div class="col-sm-12 col-md-3 col-lg-3 align-self-center">
+        <fi-filter
+          #searchInputField
+          [minLength]="2"
+          class="col-3"
+          [placeholder]="'DASHBOARD.ADVANCED_SEARCH' | translate"
+          (filterValue)="filterValue($event)"
+          [(ngModel)]="filterString"
+        ></fi-filter>
+      </div>
+    </div>
+    <div
+      class="row"
+      *ngIf="highlightValue !== null && highlightValue?.length !== 0"
+    >
+      <div class="search-result col-12">
+        <div class="search-result__label os700">
+          {{ "DASHBOARD.SEARCH_RESULTS" | translate }}
+        </div>
+        <div class="search-result__counter os400">
+          {{ filterResults }}
+          {{ "DASHBOARD.SEARCH_PROJECT" | translate }}
+          {{ "DASHBOARD.SEARCH_FOUND" | translate }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="">
+    <div class="row">
+      <div class="col-12" [ngClass]="mobileView ? 'p-0' : null">
+        <div
+          class="qa-dashboardComponent-onGoingProjects"
+          [ngClass]="mobileView ? null : 'card-projects'"
+        >
+          <div class="qa-dashboardComponent-onGoingProjects">
+            <div class="card-projects__title pb-3">
+              <span>{{ "DASHBOARD.ONGOING_PROJECTS" | translate }}</span>
+              <div style="width: 200px">
+                <kendo-dropdownlist
+                  class="c-dropdown-list k-dropdown"
+                  style="--placeholder: '{{
+                    'COMMON.SELECT_AN_OPTION' | translate
+                  }}'"
+                  [data]="optionsToFilter"
+                  textField="text"
+                  valueField="value"
+                  [disabled]="isLoading"
+                  [(ngModel)]="selectedValue"
+                  (valueChange)="valueChange($event)"
+                >
+                  <ng-template kendoDropDownListValueTemplate let-item>
+                    {{ item?.text | translate }}
+                  </ng-template>
+                  <ng-template kendoDropDownListItemTemplate let-item>
+                    {{ item?.text | translate }}
+                  </ng-template>
+                </kendo-dropdownlist>
+              </div>
+            </div>
+            <ng-container *ngIf="!isLoading; else showSpinner">
+              <ng-container *ngIf="selectedValue?.value">
+                <fi-project-card
+                  role="qa-card-ongoing-projects"
+                  *ngFor="let project of allProjectsCollection"
+                  [data]="cardComponentBuilder(project, highlightValue)"
+                  (selectedCardEmitter)="selectedCard($event)"
+                  [actualPreference]="preferences"
+                ></fi-project-card>
+              </ng-container>
+              <ng-container *ngIf="!selectedValue?.value">
+                <fi-project-card
+                  role="qa-card-ongoing-projects"
+                  *ngFor="let project of filteredProjectFavoriteCollection"
+                  [data]="cardComponentBuilder(project, highlightValue)"
+                  (selectedCardEmitter)="selectedCard($event)"
+                  [actualPreference]="preferences"
+                ></fi-project-card>
+              </ng-container>
+              <div *ngIf="isLoadingData" style="height: 80px">
+                <ng-container>
+                  <div class="text-center py-5">
+                    <fi-loader></fi-loader>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12" [ngClass]="mobileView ? 'p-0' : null">
+        <div
+          [ngClass]="mobileView ? null : 'card-projects'"
+          class="qa-dashboardComponent-finishedProjects"
+        >
+          <div class="card-projects__title">
+            <span> {{ "DASHBOARD.FINISHED_PROJECTS" | translate }}</span>
+          </div>
+          <ng-container *ngIf="!isLoading; else showSpinner">
+            <fi-project-card
+              *ngFor="
+                let project of filteredFinishedProjectCollection
+                  | async
+                  | slice : 0 : show
+              "
+              [data]="cardComponentBuilder(project, highlightValue)"
+              (selectedCardEmitter)="selectedCard($event)"
+            ></fi-project-card>
+          </ng-container>
+          <button
+            *ngIf="
+              (show < finishedProjectCollection.length &&
+                highlightValue === null) ||
+              highlightValue?.length === 0
+            "
+            kendoButton
+            [style.width]="'100%'"
+            look="clear"
+            class="customBorder"
+          >
+            <span class="k-icon k-i-arrow-chevron-down"></span>
+            {{ "DASHBOARD.SEE_MORE" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

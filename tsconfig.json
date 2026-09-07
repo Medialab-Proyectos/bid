@@ -1,0 +1,30 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@angular/*": ["./node_modules/@angular/*"],
+      "@core/*": ["src/app/core/*"],
+      "@fiduciary-interface/*": ["src/*"],
+      "@fiduciary-interface-test": ["src/test/index.ts"],
+      "@fiduciary-interface/core*": ["src/app/core*"],
+      "@fiduciary-interface-contracts*": [
+        "src/app/features/procurement/features/procurement-process/features/process-contracts/*"
+      ]
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "es2020",
+    "lib": ["ES2022", "DOM"],
+    "useDefineForClassFields": false,
+    "allowSyntheticDefaultImports": true
+  }
+}

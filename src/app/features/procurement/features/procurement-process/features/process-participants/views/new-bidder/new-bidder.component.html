@@ -1,0 +1,234 @@
+<div
+  id="top"
+  class="col-12"
+  style="
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0px 3px 6px #00000033;
+  "
+>
+  <div
+    class="row"
+    style="
+      border-bottom: 1px solid #dddbda;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    "
+  >
+    <div class="col-12 col-md-6">
+      <div class="d-flex align-items-baseline">
+        <div class="project-header__icon">
+          <div class="icon-header icon-header_procurement">
+            <em class="fas fa-list-alt"></em>
+          </div>
+        </div>
+        <span class="pl-2 sf700" style="font-size: 16px">{{
+          (isReadOnly
+            ? "BIDDER.BIDDER_DETAILS"
+            : editMode
+            ? "BIDDER.EDIT_BIDDER"
+            : "BIDDER.REGISTER_BIDDER"
+          ) | translate
+        }}</span>
+      </div>
+    </div>
+    <div class="col-6 d-flex justify-content-end">
+      <ng-container
+        *ngIf="
+          isReadOnly &&
+          !isBidderLoading &&
+          isEnumLoaded &&
+          !isProcurementComplete
+        "
+      >
+        <ng-container *ngIf="planInSync">
+          <button
+            class="btn btn-online-brand"
+            id="Btn_edit"
+            data-testid="editionModeBtn"
+            kendoButton
+            *fiDisplayByPermissions="editButtonPermission"
+            (click)="edit()"
+          >
+            {{ "BIDDER.EDIT" | translate }}
+          </button>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <ng-container *ngIf="formErrorCollection.length > 0">
+        <fi-error-list
+          data-testid="ErrorMessage"
+          [errorList]="formErrorCollection"
+          [errorListTitle]="'BIDDER.VALIDATION_ERRORS_TITLE'"
+        ></fi-error-list>
+      </ng-container>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <fi-form-title
+        number="1"
+        [title]="'BIDDER.BIDDER_DETAILS' | translate"
+      ></fi-form-title>
+    </div>
+  </div>
+  <form [formGroup]="participantForm">
+    <div
+      *ngIf="
+        !isBidderLoading && isEnumLoaded && !isSubmiting && !loadingPlan;
+        else loader
+      "
+    >
+      <fi-bidder-registration-form
+        [bidderForm]="bidder"
+        [isParticipant]="true"
+        [requiredErrorMessage]="requiredErrorMessage | translate"
+        [typeList]="bidderTypeList"
+        [economicSectorList]="economicSectorList"
+        (bidderType)="bidderTypeChange($event)"
+        [isReadOnly]="isReadOnly"
+        [memberCountries]="memberCountries"
+        [countries]="countries"
+        [allUnfilterCountries]="allUnfilterCountries"
+        [hideAditionalFields]="hideAditionalFields"
+      ></fi-bidder-registration-form>
+
+      <ng-container *ngIf="visibleSectionVenture">
+        <div class="row" data-testid="qa-jointVentureSection">
+          <div class="col-12">
+            <fi-form-title
+              number="2"
+              [title]="'BIDDER.JOINT_VENTURE' | translate"
+            ></fi-form-title>
+          </div>
+        </div>
+        <ng-container *ngIf="!jointVentureBiddersLoading; else loader">
+          <ng-container
+            *ngFor="let item of jointVentures.controls; let bidderIndex = index"
+          >
+            <fi-joint-venture-bidder
+              data-testid="qa-jointVentureSection-element"
+              [jointventureBidderIndex]="bidderIndex"
+              [bidderForm]="item"
+              [requiredErrorMessage]="requiredErrorMessage | translate"
+              (bidder)="removeJointventureBidder($event)"
+              (deleteJointBidder)="deleteBidder($event)"
+              (onNewJointVenture)="onNewJointVenture($event)"
+              [searchPermission]="registerNewBidderButtonPermission"
+              [removeJointVenturePermission]="removeJointVenturePermission"
+              [isDetailMode]="isDetailMode"
+            ></fi-joint-venture-bidder>
+          </ng-container>
+          <div class="row mt-3">
+            <div class="col-12">
+              <div
+                *ngIf="!isDetailMode"
+                class="d-flex justify-content-between ml-3"
+              >
+                <ng-container *ngIf="visibleSectionVenture">
+                  <button
+                    kendoButton
+                    class="btn btn-neutral mb-3 mx-md-2"
+                    data-testid="qa-add-bidder-jointVenture"
+                    icon="plus"
+                    id="Btn_add_joint_venture"
+                    *fiDisplayByPermissions="addJointVentureButtonPermission"
+                    (click)="addJointventureBidder()"
+                  >
+                    {{ "BIDDER.ADD_JOINT_VENTURE" | translate }}
+                  </button>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <div class="row mt-2 mb-4">
+      <div class="col-12">
+        <div
+          class="d-flex justify-content-end"
+          *ngIf="!isBidderLoading && isEnumLoaded && !isSubmiting"
+        >
+          <div>
+            <ng-container *ngIf="!isReadOnly && !editMode">
+              <button
+                kendoButton
+                class="btn mb-3 mx-md-2 btn-online-brand"
+                data-testid="qa-goBackBtn"
+                id="Btn_cancel"
+                type="button"
+                *fiDisplayByPermissions="cancelButtonPermission"
+                (click)="goBack()"
+              >
+                {{ "BIDDER.CANCEL" | translate }}
+              </button>
+            </ng-container>
+            <ng-container *ngIf="editMode">
+              <button
+                kendoButton
+                class="btn mb-3 mx-md-2 btn-online-brand"
+                data-testid="qa-goBackBtn"
+                id="Btn_cancel"
+                type="button"
+                *fiDisplayByPermissions="cancelButtonPermission"
+                (click)="goBackFromDetails()"
+              >
+                {{ "BIDDER.CANCEL" | translate }}
+              </button>
+            </ng-container>
+            <button
+              *ngIf="isReadOnly"
+              kendoButton
+              class="btn mb-3 mx-md-2 btn-brand"
+              data-testid="qa-goBackBtn"
+              id="Btn_return"
+              type="button"
+              (click)="goBackFromDetails()"
+            >
+              {{ "BIDDER.RETURN" | translate }}
+            </button>
+            <ng-container *ngIf="!isReadOnly && !editMode">
+              <button
+                kendoButton
+                class="btn btn-brand mb-3 mx-md-2"
+                data-testid="createProcessbtn"
+                id="Btn_save"
+                data-testid="createProcessbtn"
+                kendoButton
+                [disabled]="saveDisabled"
+                *fiDisplayByPermissions="saveButtonPermission"
+                (click)="submitBidderForm()"
+              >
+                {{ "BIDDER.SAVE" | translate }}
+              </button>
+            </ng-container>
+            <ng-container *ngIf="editMode">
+              <button
+                id="Btn_edit_bidder"
+                data-testid="editBidderBtn"
+                kendoButton
+                [disabled]="saveDisabled"
+                *fiDisplayByPermissions="saveButtonPermission"
+                (click)="updateBidder()"
+                class="btn btn-brand mb-3 mx-md-2"
+              >
+                {{ "BIDDER.SAVE" | translate }}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

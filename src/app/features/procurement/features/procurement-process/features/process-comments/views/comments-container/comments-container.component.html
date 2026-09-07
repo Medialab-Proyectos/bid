@@ -1,0 +1,18 @@
+<div class="process-header-card">
+  <div class="col-12 mb-0">
+    <div class="c-procurement-process-tab not-mobile">
+      <ul class="sf400">
+        <li class="desktop-item" *ngFor="let link of navLinks; let i = index">
+          <a
+            class="tab-item"
+            [routerLink]="link.link"
+            [routerLinkActive]="['tab-active']"
+            [id]="'Lnk_Procurement_tab_' + (i + 1)"
+            >{{ link.label | translate }}</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div><router-outlet></router-outlet></div>

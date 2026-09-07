@@ -1,0 +1,25 @@
+<div class="container-fluid c-procurement--tabstrip mt-3 p-0">
+  <div class="form-header">
+    <h1 class="sf700 form-header-text" *ngIf="spnSvc.isSDP$ | async">
+      {{ "SPN.TITLE.SDP" | translate | uppercase }}
+    </h1>
+    <h1 class="sf700 form-header-text" *ngIf="!(spnSvc.isSDP$ | async)">
+      {{ "SPN.TITLE.SDO" | translate | uppercase }}
+    </h1>
+  </div>
+  <div class="row p-4" style="font-family: 'open-sans' !important">
+    <div class="col col-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<ng-template #loader>
+  <div class="mt-5 d-flex justify-content-center">
+    <mat-progress-spinner
+      diameter="44"
+      color="primary"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+  </div>
+</ng-template>

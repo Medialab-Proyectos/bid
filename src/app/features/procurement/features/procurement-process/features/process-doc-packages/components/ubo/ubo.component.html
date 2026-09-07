@@ -1,0 +1,33 @@
+<p class="font-weight-bold fi-kendo-label--required">
+  {{ "PROCESS_DOC.UBO.BTN_HELP_TEXT" | translate }}
+</p>
+<div class="d-flex justify-content-between">
+  <button
+    kendoButton
+    class="btn btn-online-brand mb-3"
+    id="Btn_UBO_Modal"
+    (click)="openUBOModal()"
+    [disabled]="disableBtn || loading"
+  >
+    <span
+      [ngClass]="loading ? 'k-i-loading' : 'fal fa-paper-plane'"
+      class="mr-2 ml-2"
+    >
+    </span>
+    <span>
+      {{ "PROCESS_DOC.UBO.BTN_OPEN_MODAL" | translate }}
+    </span>
+  </button>
+  <button
+    kendoButton
+    class="btn btn-online-brand mb-3"
+    (click)="openDialogUBOCheckEmailStatus()"
+    [disabled]="loadingEmailModal"
+  >
+    <span [ngClass]="loadingEmailModal ? 'k-i-loading' : ''" class="mr-3 ml-2">
+    </span>
+    <span>
+      {{ "PROCESS_DOC.UBO.BTN_EMAIL_STATUS_MODAL" | translate }}
+    </span>
+  </button>
+</div>

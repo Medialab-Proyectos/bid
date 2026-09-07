@@ -1,0 +1,89 @@
+<fi-info-banner *ngIf="showEoiInfoBanner()" class="my-5">
+  <span class="sf700 ml-2">{{
+    'UNDB.DOCUMENT_PACKAGES.EOI_REGISTRATION_INFO_STRONG' | translate
+  }}</span>
+  {{ 'UNDB.DOCUMENT_PACKAGES.EOI_REGISTRATION_INFO' | translate }}
+</fi-info-banner>
+
+<fi-finished-docs
+  [mode]="_mode"
+  [files]="allDocuments"
+  [documentDownloadDocumentGuestPermission]="
+    documentDownloadDocumentGuestPermission
+  "
+  [documentDownloadDocumentPermission]="documentDownloadDocumentPermission"
+  (previewFile)="previewFileAction($event)"
+  [docPackage]="docPackage"
+  [docGroups]="_groups"
+  (deleteFile)="deleteFileAction($event)"
+  (confirmNotice)="confirmNotice($event)"
+></fi-finished-docs>
+
+<fi-docs-list
+  [packageId]="docPackage.id"
+  [groupsTabs]="allGroups"
+  [permissions]="viewPermissions"
+  [mode]="_mode"
+  [docPackage]="docPackage"
+  [procurementProcess]="procurementProcess"
+  [allPackages]="allPackages"
+  [category]="procurementProcess.category"
+>
+</fi-docs-list>
+
+<fi-files-list
+  *ngIf="!isUploading; else showSpinner"
+  [mode]="_mode"
+  [isUserInternal]="isUserInternal"
+  [showReadOnly]="showReadOnly"
+  (deleteFile)="deleteFileAction($event)"
+  (editFile)="editFileAction($event)"
+  (previewFile)="previewFileAction($event)"
+  [deletePermission]="deletePermissions"
+  [editPermission]="editPermissions"
+  [cleanSelection]="cleanSelection"
+  [groupEnum]="groupEnum"
+  [docPackage]="docPackage"
+  [files]="allDocuments"
+  [readOnlyFiles]="readonlyDocuments"
+  [groupsList]="groupsList"
+  [statusForm]="statusForm"
+  [procurementProcess]="procurementProcess"
+  [configuration]="filesListConfig"
+  [documentDownloadDocumentGuestPermission]="
+    documentDownloadDocumentGuestPermission
+  "
+  [documentDownloadDocumentPermission]="documentDownloadDocumentPermission"
+  [showBtnDeleteByBussnes]="showBtnDeleteByBussnes"
+  [isAdditionalDoc]="isAdditionalDoc"
+  [docGroups]="_groups"
+></fi-files-list>
+<fi-file-selector
+  *ngIf="showFileSelector"
+  (valueChange)="handlerFilesChanged($event)"
+  [permission]="editPermissions"
+></fi-file-selector>
+<div class="document-card__footer">
+  <ng-container
+    *ngIf="(resultBr | uppercase) === resultBrEnums.PENDINGPUBLICATION"
+  >
+    <button
+      id="{{ btnBidding.id }}"
+      type="button"
+      kendoButton
+      [ngClass]="btnBidding.class !== '' ? btnBidding.class : ''"
+      class="btn btn-brand btn-generate-gpn btn-gpn-margin"
+      (click)="openModalPublic()"
+    >
+      {{ btnBidding.literalAction | translate }}
+      {{ btnBidding.groupCode | translateEnum: groupEnum }}
+      {{ btnBidding.literalPlataform | translate }}
+    </button>
+  </ng-container>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

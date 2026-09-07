@@ -1,0 +1,40 @@
+<div class="c-filter">
+  <form [formGroup]="formFilter">
+    <div class="row">
+      <div class="col-12">
+        <kendo-textbox
+          #textBox
+          class="c-textbox k-textbox qa-filterComponent-filter"
+          id="Txb_filter"
+          formControlName="filter"
+          [placeholder]="placeholder"
+          [style.width]="'100%'"
+          (keydown)="onKeyDown($event)"
+        >
+          <ng-template kendoTextBoxPrefixTemplate>
+            <button kendoButton look="clear" icon="search"></button>
+          </ng-template>
+          <ng-template kendoTextBoxSuffixTemplate>
+            <ng-container *ngIf="loading !== null; else defaultLoadingTemplate">
+              <span *ngIf="loading" class="k-clear-value spinner"></span>
+            </ng-container>
+            <ng-template #defaultLoadingTemplate>
+              <span *ngIf="defaultLoading" class="k-clear-value spinner"></span>
+            </ng-template>
+
+            <button
+              *ngIf="filterControl.value"
+              kendoButton
+              id="Btn_Clear"
+              look="clear"
+              icon="close-circle"
+              class="k-clear-value"
+              style="color: #706e6b; opacity: 1"
+              (click)="clearValue()"
+            ></button>
+          </ng-template>
+        </kendo-textbox>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,129 @@
+////
+/// Override kendo-notification component
+///
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group components of kendo ui
+/// @name .k-notification
+/// @since version 1.0.0
+////
+.k-notification-group {
+  position: fixed;
+  transform: translate(-6px, 60px);
+  max-width: 50%;
+  width: 50%;
+  z-index: 10002;
+  left: 25%;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+
+  .#{$ns}app--embebbed & {
+    transform: translate(-6px, 180px);
+  }
+
+  .k-notification {
+    background-color: $gray-200;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    color: color("main");
+    display: flex;
+    align-items: center;
+
+    &-error {
+      background-color: $danger;
+    }
+    &-success {
+      background-color: #5aa510;
+    }
+    &-warning {
+      background-color: $warning;
+      color: $gray-800;
+    }
+    &-info {
+      background-color: $info;
+    }
+  }
+
+  .k-notification-container {
+    min-height: rem(71);
+
+    & .k-notification-warning {
+      & .k-notification-wrap {
+        & .k-notification-content,
+        .k-i-close {
+          color: $gray-800;
+        }
+      }
+    }
+  }
+
+  .k-notification-content {
+    font-size: rem(14);
+    min-width: rem(180);
+    color: #ffffff;
+  }
+}
+
+.k-notification-status {
+  margin-right: 7px;
+}
+
+.k-notification-wrap {
+  padding: rem(15) rem(15) rem(15) rem(52);
+
+  .k-icon:not(.k-i-close) {
+    position: absolute;
+    top: rem(36);
+    left: rem(16);
+    font-size: rem(28);
+    transform: translateY(-50%);
+
+    &.k-i-error,
+    &.k-i-warning,
+    &.k-i-info,
+    &.k-i-success {
+      font-family: "Font Awesome 5 Pro", sans-serif;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    &.k-i-success {
+      &:before {
+        content: "";
+      }
+    }
+
+    &.k-i-info {
+      &:before {
+        content: "";
+      }
+    }
+
+    &.k-i-warning {
+      color: $gray-800;
+      &:before {
+        content: "";
+      }
+    }
+
+    &.k-i-error {
+      &:before {
+        content: "";
+      }
+    }
+  }
+
+  .k-i-close {
+    position: absolute;
+    top: rem(21);
+    right: rem(16);
+    font-size: rem(27);
+    color: #ffffff;
+
+    &:hover,
+    &:focus {
+      color: #514f4d;
+    }
+  }
+}

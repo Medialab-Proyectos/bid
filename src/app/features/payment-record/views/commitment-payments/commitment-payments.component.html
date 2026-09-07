@@ -1,0 +1,279 @@
+<div class="container-fluid pr-page">
+  <!--
+    Right under the breadcrumb, above the commitment card -- the same spot the
+    trail itself already points back to, just reachable without hunting for
+    the right crumb.
+  -->
+  <button
+    kendoButton
+    class="btn btn-neutral pr-back-button"
+    id="Btn_PaymentRecord_BackToList"
+    iconClass="fas fa-arrow-left"
+    (click)="goBack()"
+  >
+    {{ "PAYMENT_RECORD.COMMITMENT.BACK_TO_LIST" | translate }}
+  </button>
+
+  <fi-payment-record-commitment-card
+    [commitment]="commitment"
+  ></fi-payment-record-commitment-card>
+
+  <div class="pr-card">
+    <div class="pr-tabstrip">
+      <span class="pr-tabstrip__tab pr-tabstrip__tab--active">
+        {{ "PAYMENT_RECORD.DETAIL.TAB" | translate }}
+      </span>
+    </div>
+
+    <div class="pr-toolbar">
+      <p class="pr-toolbar__hint">
+        {{ "PAYMENT_RECORD.DETAIL.HINT" | translate }}
+      </p>
+      <div class="pr-toolbar__actions">
+        <button
+          kendoButton
+          class="btn btn-brand"
+          id="Btn_PaymentRecord_AddPayments"
+          iconClass="fas fa-plus"
+          (click)="openAddPayments()"
+        >
+          {{ "PAYMENT_RECORD.ADD_PAYMENTS.BTN" | translate }}
+        </button>
+        <!--
+          The two bulk actions, separated from the primary action rather than
+          hidden behind a menu: for this audience, what is out of sight is out
+          of reach.
+        -->
+        <span class="pr-toolbar__group">
+          <button
+            kendoButton
+            class="btn btn-neutral"
+            id="Btn_PaymentRecord_DetailExchangeRate"
+            iconClass="fas fa-exchange-alt"
+            (click)="openExchangeRates()"
+          >
+            {{ "PAYMENT_RECORD.EXCHANGE_RATE.BTN" | translate }}
+          </button>
+          <button
+            kendoButton
+            class="btn btn-neutral"
+            id="Btn_PaymentRecord_Mechanism"
+            iconClass="fas fa-random"
+            (click)="openPaymentMechanism()"
+          >
+            {{ "PAYMENT_RECORD.MECHANISM.BTN" | translate }}
+          </button>
+        </span>
+      </div>
+    </div>
+
+    <!--
+      Only present when this screen was opened from a blocker on "Tu
+      situación" -- says why the table below is narrower than usual and how
+      to see everything again.
+    -->
+    <div class="pr-blocked-banner" *ngIf="blockedReason">
+      <div class="pr-blocked-banner__body">
+        <span class="pr-blocked-banner__title">
+          <em class="fas fa-filter" aria-hidden="true"></em>
+          {{
+            "PAYMENT_RECORD.SITUATION.SHOWING_BLOCKED"
+              | translate
+                : {
+                    count: blockedCount,
+                    reason: blockedReasonLabel() | translate
+                  }
+          }}
+        </span>
+        <span class="pr-blocked-banner__fix">{{ blockedReasonFix() | translate }}</span>
+        <span class="pr-blocked-banner__how">
+          {{ "PAYMENT_RECORD.SITUATION.HOW_TO_FIX" | translate }}
+        </span>
+      </div>
+      <button
+        type="button"
+        class="pr-blocked-banner__clear"
+        id="Btn_PaymentRecord_ShowAllPayments"
+        (click)="showAllPayments()"
+      >
+        <em class="fas fa-list" aria-hidden="true"></em>
+        {{ "PAYMENT_RECORD.SITUATION.SHOW_ALL" | translate }}
+      </button>
+    </div>
+
+    <div class="pr-grid">
+      <kendo-grid
+        [kendoGridBinding]="filteredPayments"
+        [groupable]="true"
+        [sortable]="true"
+        [resizable]="true"
+        [loading]="loading"
+      >
+        <ng-template kendoGridToolbarTemplate position="top">
+          <fi-filter
+            class="d-block"
+            [minLength]="3"
+            [placeholder]="'PAYMENT_RECORD.ADVANCED_SEARCH' | translate"
+            (filterValue)="onSearch($event)"
+          ></fi-filter>
+        </ng-template>
+
+        <!--
+          Sticky, not locked. A locked column splits the grid into its own
+          non-scrolling pane, which is what was drawing the heavy border down
+          the middle of the grid and cutting the scrollbar short so it only
+          ever ran under the columns to the right of that pane. Sticky keeps
+          the ID and the state in place through the same single scrollable
+          table everything else sits in, so the scrollbar spans the grid from
+          its actual first column, with no pane seam to draw a hard line at.
+        -->
+        <kendo-grid-column
+          field="id"
+          [sticky]="true"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.ID' | translate"
+          [width]="150"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <a
+              href="javascript:void(0)"
+              class="pr-link"
+              (click)="openPayment(dataItem)"
+            >
+              {{ dataItem.id }}
+            </a>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!--
+          Wide enough that "Pendiente de justificación", the longest state,
+          never shrinks the badge to its ellipsis -- a status column that
+          clips its own text defeats the reason it is pinned in view at all.
+        -->
+        <kendo-grid-column
+          field="status"
+          [sticky]="true"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.STATUS' | translate"
+          [width]="240"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <button
+              type="button"
+              class="pr-status-button"
+              [attr.id]="'Btn_Status_' + dataItem.id"
+              [title]="
+                ('PAYMENT_RECORD.STATUS_HELP.' + dataItem.status | translate) +
+                ' — ' +
+                ('PAYMENT_RECORD.DETAIL.OPEN_PAYMENT' | translate)
+              "
+              (click)="openPayment(dataItem)"
+            >
+              <fi-status-label
+                [cssClass]="statusClass(dataItem.status)"
+                [text]="'PAYMENT_RECORD.STATUS.' + dataItem.status | translate"
+              ></fi-status-label>
+            </button>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="concept"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT' | translate"
+          [width]="220"
+        ></kendo-grid-column>
+
+        <kendo-grid-column
+          field="accountingVoucher"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER' | translate"
+          [width]="220"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span *ngIf="dataItem.accountingVoucher; else noVoucher">
+              {{ dataItem.accountingVoucher }}
+            </span>
+            <ng-template #noVoucher>
+              <span class="pr-cell--muted">
+                {{ "PAYMENT_RECORD.DETAIL.NOT_REGISTERED" | translate }}
+              </span>
+            </ng-template>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="paymentDate"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.DATE' | translate"
+          [width]="140"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.paymentDate | dateIF }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="currency"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY' | translate"
+          [width]="100"
+        ></kendo-grid-column>
+
+        <kendo-grid-column
+          field="amount"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT' | translate"
+          [width]="160"
+          [groupable]="false"
+          class="pr-grid__number"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.amount | ifNumber }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="exchangeRate"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.RATE' | translate"
+          [width]="120"
+          [groupable]="false"
+          class="pr-grid__number"
+        ></kendo-grid-column>
+
+        <kendo-grid-column
+          field="equivalentAmount"
+          [title]="'PAYMENT_RECORD.DETAIL.COLUMNS.EQUIVALENT' | translate"
+          [width]="220"
+          [groupable]="false"
+          class="pr-grid__number"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.equivalentAmount | ifNumber }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <ng-template kendoGridNoRecordsTemplate>
+          <fi-no-content
+            [content]="'PAYMENT_RECORD.DETAIL.EMPTY' | translate"
+          ></fi-no-content>
+        </ng-template>
+      </kendo-grid>
+    </div>
+
+    <!--
+      The currency lives in the label now, not repeated after every number --
+      one bare amount per row, one row per currency these payments are
+      actually in (almost always just one).
+    -->
+    <div class="pr-totals" *ngIf="totals.length > 0">
+      <div class="pr-totals__row" *ngFor="let total of totals">
+        <span class="pr-totals__label">
+          {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.TOTAL_AMOUNT" | translate }}
+          ({{ total.currency }})
+        </span>
+        <span class="pr-totals__value">{{ total.amount | ifNumber }}</span>
+      </div>
+      <div class="pr-totals__row pr-totals__row--highlight">
+        <span class="pr-totals__label">
+          {{ "PAYMENT_RECORD.STATEMENT.EQUIVALENT_TOTAL_LABEL" | translate }}
+          ({{ commitment?.approvalCurrency }})
+        </span>
+        <span class="pr-totals__value">{{ totalsEquivalentSum | ifNumber }}</span>
+      </div>
+    </div>
+  </div>
+</div>

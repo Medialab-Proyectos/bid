@@ -1,0 +1,35 @@
+<div class="w-100 inline-fields">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ label | translate }}</mat-label>
+    <input
+      [required]="isRequired"
+      matInput
+      [min]="minDate"
+      [matDatepicker]="picker"
+      [(ngModel)]="date"
+      (dateChange)="onDateChange($event.value)"
+    />
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-error *ngIf="ngControl && ngControl.control.errors?.required">
+      {{ "BIDDER.REQUIRED" | translate }}
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Hora límite de presentación de ofertas</mat-label>
+    <input
+      [required]="isRequired"
+      matInput
+      type="text"
+      [(ngModel)]="formattedTime"
+      placeholder="--:--"
+      (keydown)="onKeyDown($event)"
+      (input)="onInput($event)"
+      maxlength="5"
+    />
+    <mat-error *ngIf="ngControl && ngControl.control.errors?.required">
+      {{ "BIDDER.REQUIRED" | translate }}
+    </mat-error>
+  </mat-form-field>
+</div>

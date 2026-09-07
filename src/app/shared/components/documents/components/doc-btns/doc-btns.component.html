@@ -1,0 +1,98 @@
+<div class="mt-4" style="display: flex; justify-content: flex-end">
+  <ng-container *ngIf="docPackage.uploadedDocAfterCompletionExist">
+    <button
+      type="button"
+      kendoButton
+      class="btn btn-brand btn-online-brand btn-generate-gpn btn-gpn-margin"
+      *fiDisplayByPermissions="sendAdditionalInfoPermission"
+      (click)="additionalDocAction()"
+    >
+      {{ 'PROCESS_DOC.DOC_BTNS.CONFIRM_ADITIONAL_DOCUMENTATION' | translate }}
+    </button>
+  </ng-container>
+
+  <ng-container *ngIf="!additionalDocs">
+    <ng-container *ngIf="display">
+      <ng-container *ngFor="let btnKey of BPBtnKeys">
+        <ng-container *ngIf="BPBtnDictionary[btnKey]?.showBtn">
+          <ng-container
+            *ngIf="
+              BPBtnDictionary[btnKey]?.showBtn &&
+              BPBtnDictionary[btnKey]?.tooltip !== ''
+            "
+          >
+            <div class="pl-2 pr-2 d-flex align-items-center">
+              <button
+                *fiDisplayByPermissions="sendNotificationUploadedPermission"
+                [disabled]="BPBtnDictionary[btnKey]?.disableBtn"
+                kendoButton
+                class="ml-2 btn btn btn-brand"
+                (click)="sendNotification()"
+              >
+                {{
+                  'PROCESS_DOC.DOC_BTNS.SEND_NOTIFICATION_DOCUMENT_UPLOADED'
+                    | translate
+                }}
+              </button>
+              <button
+                *fiDisplayByPermissions="BPBtnDictionary[btnKey]?.permission"
+                [disabled]="
+                  BPBtnDictionary[btnKey]?.disableBtn || !selectedBidValidity
+                "
+                kendoButton
+                class="ml-2 btn btn btn-brand"
+                (click)="BPBtnDictionary[btnKey]?.btnActionFunction()"
+              >
+                {{ BPBtnDictionary[btnKey].key | translate }}
+              </button>
+              <div
+                class="ml-1"
+                *ngIf="
+                  BPBtnDictionary[btnKey]?.disableBtn || !selectedBidValidity
+                "
+                kendoTooltip
+                [title]="
+                  BPBtnDictionary[btnKey].disableBtn || !selectedBidValidity
+                    ? (BPBtnDictionary[btnKey].tooltip | translate)
+                    : ''
+                "
+              >
+                <em class="fas fa-info-circle"></em>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngIf="additionalDocs">
+    <ng-container *ngFor="let btnKey of BPBtnKeysAdditionals">
+      <ng-container *ngIf="BPBtnDictionaryAdditional[btnKey]?.showBtn">
+        <button
+          *fiDisplayByPermissions="
+            BPBtnDictionaryAdditional[btnKey]?.permission
+          "
+          [disabled]="BPBtnDictionaryAdditional[btnKey]?.disableBtn"
+          kendoButton
+          class="ml-2 btn btn btn-brand"
+          (click)="BPBtnDictionaryAdditional[btnKey]?.btnActionFunction()"
+        >
+          {{ BPBtnDictionaryAdditional[btnKey].key | translate }}
+        </button>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngIf="workAround">
+    <button
+      [disabled]="isDiscloseInProgress"
+      kendoButton
+      class="btn btn-brand"
+      (click)="disclose()"
+      *fiDisplayByPermissions="workAroundPemission"
+    >
+      {{ 'UNBD.PUBLISH_NOTICE' | translate }}
+    </button>
+  </ng-container>
+</div>

@@ -1,0 +1,10 @@
+export enum FormStatusEnum {
+  CREATE = 0,
+  REVIEW,
+  REVIEW_TEAM_LEADER,
+  ADJUST,
+  FINISH,
+  EDIT_OPENING_DATE,
+  ADJUST_RETURNED,
+  VIEW,
+}

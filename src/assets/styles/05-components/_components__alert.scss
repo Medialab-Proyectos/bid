@@ -1,0 +1,113 @@
+.c-alert {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+  border-radius: rem(4);
+  min-height: 48px;
+  color: $white;
+
+  &__body {
+    display: flex;
+    align-items: center;
+  }
+  &__close {
+    font-size: 1.83rem;
+    margin-right: rem(7);
+    border: none;
+    background: none;
+    color: #ffffff;
+    width: 30px;
+    min-width: 30px;
+    &:hover {
+      color: #ffffff;
+    }
+  }
+  &__close--warning {
+    color: $gray-800;
+    &:hover {
+      color: $gray-800;
+    }
+  }
+  &__icon {
+    padding-left: 0.8rem;
+    font-size: 1.5rem;
+    color: $white;
+  }
+  &__title {
+    font-size: 1.16rem;
+    padding: 0.8rem;
+  }
+  &__subtitle {
+    @extend .sf400;
+    padding-left: 0.8rem;
+    padding-bottom: 0.8rem;
+    font-size: 14px;
+  }
+  &.red {
+    color: $danger;
+  }
+
+  &--warning {
+    background-color: $warning;
+    color: $gray-800;
+  }
+  &--warning__icon {
+    color: $gray-800;
+  }
+  &--info {
+    background-color: $info;
+    color: $white;
+  }
+  &--error {
+    background-color: $danger;
+    color: $white;
+  }
+  &--success {
+    background-color: $success;
+  }
+}
+
+.k-i-check-outline {
+  &:before {
+    font-family: "Font Awesome 5 Pro", sans-serif;
+    font-weight: 900;
+    color: #ffffff;
+    content: "" !important;
+  }
+}
+
+.k-i-exclamation-circle {
+  &:before {
+    font-family: "Font Awesome 5 Pro", sans-serif;
+    font-weight: 900;
+    color: #ffffff;
+    content: "" !important;
+  }
+}
+
+.k-i-info-circle {
+  &:before {
+    font-family: "Font Awesome 5 Pro", sans-serif;
+    font-weight: 900;
+    color: #ffffff;
+    content: "" !important;
+  }
+}
+
+.k-i-x-outline {
+  &:before {
+    font-family: "Font Awesome 5 Pro", sans-serif;
+    font-weight: 900;
+    color: #ffffff;
+    content: "" !important;
+  }
+}
+
+.bottomAlert {
+  padding-bottom: 15px;
+}
+.bottomAlert-document {
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}

@@ -1,0 +1,83 @@
+<div class="c-create-procurement-process" id="top">
+  <fi-header-feature
+    [title]="'PROCUREMENT.HEADER.PROJECT' | translate"
+    [subtitle]="'PROCUREMENT.HEADER.ADQUISITION_PROCESS' | translate"
+    [feature]="'PROCUREMENT.HEADER.NEW_PROCESS' | translate"
+    [needProcessId]="false"
+  ></fi-header-feature>
+  <div class="divForm" #divForm>
+    <ng-container *ngIf="!isLoading; else showLoading">
+      <div class="row">
+        <div class="col-12">
+          <ng-container *ngIf="formErrorCollection.length > 0">
+            <fi-error-list
+              role="ErrorMessage"
+              [errorList]="formErrorCollection"
+              [errorListTitle]="errorListTitle"
+            ></fi-error-list>
+          </ng-container>
+        </div>
+      </div>
+
+      <fi-procurement-form
+        [form]="form"
+        [formConfig]="formConfig"
+      ></fi-procurement-form>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div
+              class="float-right"
+              [ngClass]="mobileView ? 'footer-mobile-procurement' : null"
+            >
+              <button
+                kendoButton
+                class="btn btn-base mb-3 mx-md-2"
+                id="Btn_Cancel"
+                *fiDisplayByPermissions="cancelButtonPermission"
+                (click)="navigateToProcurement()"
+              >
+                {{ "PROCUREMENT.CANCEL" | translate }}
+              </button>
+
+              <button
+                kendoButton
+                class="btn btn-online-brand mb-3 mx-md-2"
+                id="Btn_Submit_and_add_another"
+                [disabled]="isButtonDisabled"
+                *fiDisplayByPermissions="
+                  createProcessAddAnotherButtonPermission
+                "
+                (click)="submit(false)"
+              >
+                {{ "PROCUREMENT.CREATE_AND_ADD_ANOTHER" | translate }}
+              </button>
+              <button
+                kendoButton
+                class="btn btn-brand mb-3 mx-md-2"
+                id="Btn_Submit"
+                data-testid="Btn_Submit"
+                [disabled]="isButtonDisabled"
+                *fiDisplayByPermissions="createProcessButtonPermission"
+                (click)="submit(true)"
+              >
+                {{ "PROCUREMENT.CREATE_PROCESS" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <ng-container *ngIf="hidden">
+    <div class="text-center py-5">
+      <fi-loader></fi-loader>
+    </div>
+  </ng-container>
+  <ng-template #showLoading>
+    <div class="text-center py-5">
+      <fi-loader></fi-loader>
+    </div>
+  </ng-template>
+</div>

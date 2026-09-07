@@ -1,0 +1,9 @@
+<a
+  [ngClass]="marked ? 'comments-counter-marked' : 'comments-counter'"
+  id="{{ 'Lnk_Comments_' + (id + 1) }}"
+>
+  <em class="far fa-comment comments-counter__icon"></em>
+  <span class="comments-counter__number">
+    {{ commentsNumber }}
+  </span>
+</a>

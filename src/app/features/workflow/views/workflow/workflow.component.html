@@ -1,0 +1,45 @@
+<div
+  class="col-12 process-tab-card mt-3"
+  *fiDisplayByPermissions="displayWorkflowPermission"
+>
+  <div class="pt-4">
+    <fi-alert
+      [title]="
+        'TRANSACTION.WORKFLOWCONFIGURATION.TABLE.DESCRIPTION' | translate
+      "
+      [type]="'info'"
+      [closable]="false"
+    ></fi-alert>
+  </div>
+
+  <div class="pt-4" *ngIf="usersRolUpdated.length > 0">
+    <fi-alert
+      [title]="usersRolUpdatedErrorMsg"
+      [type]="'warning'"
+      [closable]="false"
+    ></fi-alert>
+  </div>
+
+  <div class="pt-4" *ngIf="usersInstitutionUpdated.length > 0">
+    <fi-alert
+      [title]="usersInstitutionUpdatedErrorMsg"
+      [type]="'warning'"
+      [closable]="false"
+    ></fi-alert>
+  </div>
+
+  <div class="pt-3">
+    <fi-workflow-list
+      [data]="workflowConfiguration"
+      [actionList]="actionList"
+      [institutionList]="institutionList"
+      [assignedUsers]="assignedUsers"
+      (onSaveData)="onSaveData($event)"
+      (onSelectInstitution)="onSelectInstitution($event)"
+      [isLoading]="isLoading"
+      [disableButtons]="disableButtons"
+      [isUsersLoading]="isUsersLoading"
+      (formEmmiter)="formValueChanges($event)"
+    ></fi-workflow-list>
+  </div>
+</div>

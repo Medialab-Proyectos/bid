@@ -1,0 +1,16 @@
+<kendo-drawer-container>
+  <kendo-drawer
+    #drawer
+    [mode]="'overlay'"
+    [position]="'start'"
+    [expanded]="false"
+    width="100%"
+    style="min-width: 75vw"
+  >
+    <ng-template kendoDrawerTemplate>
+      <fi-project-sidebar></fi-project-sidebar>
+    </ng-template>
+  </kendo-drawer>
+
+  <kendo-drawer-content class="kendo-drawer-content"> </kendo-drawer-content>
+</kendo-drawer-container>

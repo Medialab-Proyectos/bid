@@ -1,0 +1,9 @@
+<div class="c-file-selector" *fiDisplayByPermissions="permission">
+  <kendo-fileselect
+    id="File_InpFile"
+    data-testid="File_InpFile-test"
+    (select)="onValueChange($event)"
+    style="--select-files-label: '\f093 \00a0\00a0\00a0 {{ 'SHARED.DOCUMENT.UPLOAD_FILES' | translate }} ';
+      --dropzone-hint: '{{ 'SHARED.DOCUMENT.DRAG_DOCUMENT' | translate }}';"
+  ></kendo-fileselect>
+</div>

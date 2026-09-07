@@ -1,0 +1,85 @@
+.fees-summary-header {
+  margin-bottom: 20px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.fees-table {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.fee-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.5fr 1.5fr 60px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+
+  // Remover borde del último elemento
+  &:last-child {
+    border-bottom: none;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+.col-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-number {
+  font-weight: 600;
+  color: #666;
+}
+
+.readonly-value {
+  display: block;
+  padding: 8px 12px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  color: #666;
+  font-family: 'Roboto Mono', monospace;
+  text-align: right;
+}
+
+.fees-total {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+
+  .total-label {
+    font-weight: 600;
+    font-size: 16px;
+    color: #666;
+  }
+
+  .total-value {
+    font-weight: 700;
+    font-size: 18px;
+    color: #333;
+    font-family: 'Roboto Mono', monospace;
+  }
+}
+
+.col-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

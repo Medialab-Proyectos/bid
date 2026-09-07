@@ -1,0 +1,12 @@
+////
+/// TEXT-ALIGN trump
+///
+/// This is the text-align triumphs styles
+////
+@if $include__trump--text-align{
+    @each $pos in right, center, left{
+        .t-text-align-#{$pos} {
+            text-align: #{$pos} !important;
+        }
+    }
+}// end if

@@ -1,0 +1,13 @@
+<div class="advance" *ngIf="total !==null; else other_content">
+  <span class="advance__data">
+    {{ this.totalCompleted }}/{{ this.total }}
+  </span>
+</div>
+
+<ng-template #other_content>
+  <div class="advance" #other_content>
+    <span class="advance__data">
+      {{ this.totalCompleted }}
+    </span>
+  </div>
+</ng-template>

@@ -1,0 +1,35 @@
+<div
+  class="d-flex flex-column justify-content-between"
+  style="width: 560px; height: 200px; padding: 24px"
+>
+  <div class="d-flex">
+    <mat-icon *ngIf="data?.headerIcon; else defaultIcon">{{
+      data.headerIcon
+    }}</mat-icon>
+    <ng-template #defaultIcon>
+      <mat-icon>report_problem</mat-icon>
+    </ng-template>
+    <span class="sf700 py-auto ml-3" style="font-size: 16px">{{
+      data.headerEnum | translate
+    }}</span>
+    <mat-icon (click)="closeDialog()" style="margin-left: auto; cursor: pointer"
+      >close</mat-icon
+    >
+  </div>
+  <p>{{ data.bodyTextEnum | translate }}</p>
+  <div class="ml-auto">
+    <button
+      mat-button
+      color="primary"
+      class="mr-4"
+      mat-dialog-close
+      *ngIf="data.cancelButtonEnum"
+      [mat-dialog-close]="false"
+    >
+      {{ data.cancelButtonEnum | translate | uppercase }}
+    </button>
+    <button mat-flat-button color="primary" [mat-dialog-close]="true">
+      {{ data.confirmButtonEnum | translate | uppercase }}
+    </button>
+  </div>
+</div>

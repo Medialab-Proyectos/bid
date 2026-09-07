@@ -1,0 +1,80 @@
+<div class="c-profile-card">
+  <div class="c-profile-card__header">
+    <kendo-avatar
+      class="c-profile-card__header__icon"
+      [shape]="'circle'"
+      [initials]="userInfo?.initials"
+    ></kendo-avatar>
+
+    <div class="c-profile-card__header__info">
+      <div class="c-profile-card__header__info__name">{{ userInfo?.name }}</div>
+      <div class="c-profile-card__header__info__email">
+        {{ userInfo?.email }}
+      </div>
+      <div class="c-profile-card__header__info__links">
+        <a href="#" (click)="($event.preventDefault)" id="Lnk_Settings">{{
+          "SHARED.HEADERS.HEADER_OPTIONS.SETTINGS" | translate
+        }}</a>
+        <a href="#" (click)="logOut()" id="Lnk_Logout">{{
+          "SHARED.HEADERS.HEADER_OPTIONS.LOGOUT" | translate
+        }}</a>
+      </div>
+    </div>
+  </div>
+
+  <p class="c-profile-card__option__title">
+    {{ "SHARED.HEADERS.HEADER_OPTIONS.ROLES" | translate }}
+  </p>
+  <ng-container *ngIf="roles.length > 0; else noRoles">
+    <p class="c-profile-card__option__item" *ngFor="let role of roles">
+      {{ name(role) }}
+    </p>
+  </ng-container>
+  <ng-template #noRoles>
+    <p class="c-profile-card__option__item">
+      {{ noRolesText | translate }}
+    </p>
+  </ng-template>
+
+  <p class="c-profile-card__option__title">
+    {{ "SHARED.HEADERS.HEADER_OPTIONS.LANGUAGE" | translate }}
+  </p>
+
+  <div class="c-profile-card__option__item-dropdown">
+    <div
+      class="c-profile-card__option__item-dropdown__value"
+      (click)="toggleDropdown()"
+    >
+      <span data-testid="value">{{ selectedLanguage?.name }}</span>
+
+      <div class="c-profile-card__option__item-dropdown__value__caret">
+        <button
+          kendoButton
+          id="Btn_Profile"
+          [icon]="isDropdownOpen ? 'arrow-chevron-up' : 'arrow-chevron-down'"
+        ></button>
+      </div>
+    </div>
+
+    <div
+      class="c-profile-card__option__item-dropdown__items-wrapper"
+      data-testid="list"
+      [ngClass]="{
+        'c-profile-card__option__item-dropdown__items-wrapper--closed':
+          !isDropdownOpen
+      }"
+    >
+      <button
+        kendoButton
+        class="c-profile-card__option__item-dropdown__item"
+        data-testid="listItem"
+        *ngFor="let language of languages"
+        (click)="onChangeLanguageModalLogic(language)"
+        [disabled]="language.code === selectedLanguage?.code"
+        [icon]="language.code === selectedLanguage?.code && 'check'"
+      >
+        {{ language.name }}
+      </button>
+    </div>
+  </div>
+</div>

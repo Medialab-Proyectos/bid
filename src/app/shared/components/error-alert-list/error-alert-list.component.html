@@ -1,0 +1,18 @@
+<div class="fi-error-alert w-100" role="alert" aria-live="assertive">
+  <div class="fi-error-alert__content w-100">
+    <mat-icon class="fi-error-alert__icon" color="warn">error</mat-icon>
+
+    <div class="fi-error-alert__list">
+      <div class="fi-error-alert__item">
+        <div class="fi-error-alert__title">{{ title | translate }}</div>
+        <ul class="fi-error-alert__message">
+          <li
+            *ngFor="let error of formErrorCollection; let i = index"
+            [translate]="error.key"
+            [translateParams]="{ index: error.key }"
+          ></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

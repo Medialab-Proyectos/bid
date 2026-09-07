@@ -1,0 +1,31 @@
+<ng-container *ngIf="previousMilestonesData?.length > 0; else noData">
+  <kendo-panelbar id="milestonePanelbar">
+    <kendo-panelbar-item
+      title="{{
+        'PROCUREMENT.HISTORIC_CHANGES.MILESTONES.APPROVED_VALUE' | translate
+      }}"
+      [expanded]="true"
+    >
+      <ng-template kendoPanelBarContent>
+        <fi-milestones-historic-changes
+          [data]="previousMilestonesData"
+        ></fi-milestones-historic-changes>
+      </ng-template>
+    </kendo-panelbar-item>
+    <kendo-panelbar-item
+      title="{{
+        'PROCUREMENT.HISTORIC_CHANGES.MILESTONES.AFTER_MODIFICATION' | translate
+      }}"
+      [expanded]="true"
+    >
+      <ng-template kendoPanelBarContent>
+        <fi-milestones-historic-changes
+          [data]="newMilestonesData"
+        ></fi-milestones-historic-changes>
+      </ng-template>
+    </kendo-panelbar-item>
+  </kendo-panelbar>
+</ng-container>
+<ng-template kendoTabContent #noData>
+  <div>{{ "PROCUREMENT.HISTORIC_CHANGES.NO_UPDATES" | translate }}</div>
+</ng-template>

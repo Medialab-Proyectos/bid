@@ -1,0 +1,18 @@
+.recipient-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  .field-group {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    span {
+      width: 120px;
+    }
+
+    mat-form-field {
+      min-width: 500px;
+    }
+  }
+}

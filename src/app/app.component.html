@@ -1,0 +1,18 @@
+<ng-container *ngIf="loadedPreferences && !loadingTranslations; else spinner">
+  <fi-header
+    role="header"
+    [userInfo]="userInfo"
+    (pathEmitter)="navigateTo($event)"
+  ></fi-header>
+  <fi-loader-spinner *ngIf="isLoading$ | async"></fi-loader-spinner>
+  <main role="main">
+    <router-outlet></router-outlet>
+  </main>
+</ng-container>
+<div kendoDialogContainer></div>
+<ng-template #spinner>
+  <div class="spinner-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>
+<app-redirect></app-redirect>

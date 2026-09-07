@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ajustes de Pagos Efectuados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+
+<style>
+  :root {
+    --paper: #ffffff;
+    --surface: #f2f5fa;
+    --surface-2: #e7edf6;
+    --line: #d3dcea;
+    --line-soft: #e6ecf5;
+    --ink: #16202e;
+    --ink-soft: #4d5b6e;
+    --ink-faint: #77849a;
+    --accent: #2e70cb;
+    --done: #1c7a52;
+    --done-soft: #dff2e8;
+    --check: #9a6300;
+    --check-soft: #fbeeda;
+    --gap: #b3352c;
+    --gap-soft: #fae4e2;
+    --before-ground: #f4f5f7;
+    --before-rule: #b9c1cd;
+    --after-ground: #eef4fd;
+
+    --measure: 60ch;
+    --step-0: 1rem;
+    --step-1: 1.125rem;
+    --step-2: 1.375rem;
+    --step-3: 1.75rem;
+    --step-4: 2.5rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0f1620;
+      --surface: #161f2b;
+      --surface-2: #1d2836;
+      --line: #2c3a4c;
+      --line-soft: #223040;
+      --ink: #e7edf6;
+      --ink-soft: #a9b7ca;
+      --ink-faint: #7d8ca1;
+      --accent: #74a6ef;
+      --done: #63c79a;
+      --done-soft: #16302a;
+      --check: #e0ac54;
+      --check-soft: #33280f;
+      --gap: #ef8b82;
+      --gap-soft: #38201e;
+      --before-ground: #171d26;
+      --before-rule: #46536a;
+      --after-ground: #16233a;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #0f1620;
+    --surface: #161f2b;
+    --surface-2: #1d2836;
+    --line: #2c3a4c;
+    --line-soft: #223040;
+    --ink: #e7edf6;
+    --ink-soft: #a9b7ca;
+    --ink-faint: #7d8ca1;
+    --accent: #74a6ef;
+    --done: #63c79a;
+    --done-soft: #16302a;
+    --check: #e0ac54;
+    --check-soft: #33280f;
+    --gap: #ef8b82;
+    --gap-soft: #38201e;
+    --before-ground: #171d26;
+    --before-rule: #46536a;
+    --after-ground: #16233a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.6;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    margin: 0 auto;
+    max-width: 66rem;
+    padding: 3.5rem 1.5rem 6rem;
+  }
+
+  h1, h2, h3 {
+    font-family: "IBM Plex Serif", Georgia, serif;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h1 { font-size: var(--step-4); letter-spacing: -0.01em; }
+  h2 { font-size: var(--step-3); }
+  h3 { font-size: var(--step-1); }
+
+  p { margin: 0; max-width: var(--measure); }
+
+  code {
+    background: var(--surface-2);
+    border-radius: 3px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.86em;
+    padding: 0.1em 0.35em;
+  }
+
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  .eyebrow {
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-bottom: 1.75rem;
+  }
+
+  .masthead p { color: var(--ink-soft); font-size: var(--step-1); }
+
+  .masthead__meta {
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.8rem;
+  }
+
+  /* ---------- verdict ---------- */
+
+  .verdict {
+    background: var(--check-soft);
+    border-left: 4px solid var(--check);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+    padding: 1.5rem 1.75rem;
+  }
+
+  .verdict h2 { font-size: var(--step-2); }
+  .verdict p { color: var(--ink); }
+
+  /* ---------- stats ---------- */
+
+  .stats {
+    background: var(--line);
+    border: 1px solid var(--line);
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    margin-top: 2.5rem;
+  }
+
+  .stat {
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 1.1rem 1.25rem;
+  }
+
+  .stat__value {
+    font-family: "IBM Plex Serif", Georgia, serif;
+    font-size: var(--step-3);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  .stat__label { color: var(--ink-faint); font-size: 0.82rem; }
+  .stat--done .stat__value { color: var(--done); }
+  .stat--gap .stat__value { color: var(--gap); }
+
+  /* ---------- rounds ---------- */
+
+  .round { margin-top: 3.5rem; }
+
+  .round__head {
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .round__num {
+    color: var(--accent);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  .round__source {
+    color: var(--ink-faint);
+    font-size: 0.88rem;
+    margin-left: auto;
+  }
+
+  .items {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .item {
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1.5rem 0;
+  }
+
+  .item__head {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    justify-content: space-between;
+  }
+
+  /* ---------- before / after ---------- */
+
+  .ba {
+    display: grid;
+    gap: 1px;
+    grid-template-columns: 1fr;
+    background: var(--line-soft);
+    border: 1px solid var(--line-soft);
+  }
+
+  @media (min-width: 44rem) {
+    .ba { grid-template-columns: 1fr 1fr; }
+  }
+
+  .ba__side {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.95rem 1.1rem;
+  }
+
+  .ba__side--before {
+    background: var(--before-ground);
+    border-left: 3px solid var(--before-rule);
+  }
+
+  .ba__side--after {
+    background: var(--after-ground);
+    border-left: 3px solid var(--accent);
+  }
+
+  .ba__label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .ba__side--before .ba__label { color: var(--ink-faint); }
+  .ba__side--after .ba__label { color: var(--accent); }
+
+  .ba__side--before p { color: var(--ink-faint); }
+  .ba__side--after p { color: var(--ink); }
+
+  .ba p { font-size: 0.94rem; max-width: none; }
+
+  /* ---------- chips ---------- */
+
+  .chip {
+    border-radius: 2px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 0.25rem 0.5rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .chip--done { background: var(--done-soft); color: var(--done); }
+  .chip--check { background: var(--check-soft); color: var(--check); }
+  .chip--gap { background: var(--gap-soft); color: var(--gap); }
+
+  .asked { color: var(--ink-faint); font-size: 0.85rem; }
+  .asked strong { color: var(--ink-soft); font-weight: 500; }
+
+  /* ---------- closing ---------- */
+
+  .note {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 3.5rem;
+    padding: 1.5rem 1.75rem;
+  }
+
+  .note h2 { font-size: var(--step-2); }
+  .note p { color: var(--ink-soft); }
+
+  .lede { color: var(--ink-soft); margin-top: 1.25rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="eyebrow">Interfaz Fiduciaria · BID</span>
+    <h1>Reporte de Pagos Efectuados</h1>
+    <p>Cómo estaba la primera versión y cómo quedó después de cada ronda de feedback.</p>
+    <div class="masthead__meta">
+      <span>19 ago 2026</span>
+      <span>Modo demo · sin backend</span>
+      <span>Angular 16</span>
+    </div>
+  </header>
+
+  <section class="verdict">
+    <h2>Cubierto, salvo tres puntos que decide el equipo</h2>
+    <p>
+      De los nueve pendientes que dejó la sesión, <strong>seis están implementados
+      y verificados</strong>: el pago acumulado, el registro manual, el export del
+      estado de gastos, el control de monto por moneda, los KPIs de plazo con
+      alertas y las traducciones a francés y portugués.
+    </p>
+    <p>
+      Los <strong>tres restantes no dependen del desarrollo</strong>: la tasa de
+      cambio la aplazó el propio equipo, la fuente de datos de otras actividades
+      todavía no existe del lado del Banco, y el híbrido ATJ quedó fuera del MVP
+      por decisión de Rafael. Construir cualquiera ahora sería inventar la regla.
+    </p>
+  </section>
+
+  <div class="stats">
+    <div class="stat stat--done">
+      <span class="stat__value">53</span>
+      <span class="stat__label">ajustes aplicados</span>
+    </div>
+    <div class="stat stat--gap">
+      <span class="stat__value">3</span>
+      <span class="stat__label">bloqueados por el equipo</span>
+    </div>
+    <div class="stat">
+      <span class="stat__value">5</span>
+      <span class="stat__label">decisiones tomadas</span>
+    </div>
+    <div class="stat">
+      <span class="stat__value">62</span>
+      <span class="stat__label">comprobaciones en verde</span>
+    </div>
+    <div class="stat">
+      <span class="stat__value">0</span>
+      <span class="stat__label">errores de consola</span>
+    </div>
+  </div>
+
+  <p class="lede">
+    Las seis rondas siguen el orden real en que llegó el feedback. Dentro de cada
+    ronda los ajustes no llevan orden: son un conjunto, no una secuencia.
+  </p>
+
+  <!-- ================= RONDA 1 ================= -->
+  <section class="round">
+    <div class="round__head">
+      <span class="round__num">RONDA 01</span>
+      <h2>Sidebar del producto en vivo</h2>
+      <span class="round__source">Captura del producto en producción</span>
+    </div>
+
+    <ul class="items">
+      <li class="item">
+        <div class="item__head">
+          <h3>Entradas del menú</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Cuatro entradas inventadas por mí: Gestión de Adquisiciones, Gestión Financiera, Gestión Flujo de Trabajo y Ayuda y soporte.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Las nueve del producto en vivo, en el mismo orden y con su icono, incluidas Cronograma de Pagos, Thresholds and UCS y Estructura de Componentes.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Iconos del menú</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p><code>icon: 'k-i-cart'</code>. El panel bar copia ese valor tal cual al atributo <code>class</code>, y sin las clases base la tipografía de iconos no se aplica: no se veía nada.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p><code>icon: 'k-icon k-font-icon k-i-file-txt'</code>. El glifo se pinta en las nueve entradas.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Resaltado del ítem activo</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Ninguna entrada traía <code>index</code>. <code>createArrayRoute()</code> hace <code>parseInt(item.index)</code>, obtenía <code>NaN</code> y la clave calculada nunca coincidía con nada.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Numeradas 1 a 9, con <code>5.1</code> y <code>5.2</code> para las hijas de Gestión Financiera, que es el formato que espera el componente.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Aviso General de Adquisiciones</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Anidado como hijo de Gestión de Adquisiciones, dentro de un grupo desplegable.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Entrada hermana de primer nivel. El único grupo desplegable es Gestión Financiera, como en producción.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Secciones sin pantalla</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Simplemente no aparecían, así que el menú se veía incompleto frente al producto real.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Presentes y marcadas <code>routeTo: 'null'</code>: el componente ignora el clic, en vez de expulsar al usuario al dashboard por la ruta comodín.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El activo no se ilumina</h3>
+          <span class="chip chip--check">Reportado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El componente calcula <code>selectedKeys</code> y <code>expandedKeys</code> pero la plantilla nunca los enlaza al panel bar.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Igual: es código de producto, no del demo. Se arregla añadiendo los dos enlaces en <code>project-sidebar.component.html</code>.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= RONDA 2 ================= -->
+  <section class="round">
+    <div class="round__head">
+      <span class="round__num">RONDA 02</span>
+      <h2>Llamada con el experto de negocio</h2>
+      <span class="round__source">Rafael Pérez · Christian Benavides</span>
+    </div>
+
+    <ul class="items">
+      <li class="item">
+        <div class="item__head">
+          <h3>Estados del pago</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Dos: Programado y Pagado. Sin estado final, el mismo pago podía justificarse dos veces contra el préstamo.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Tres: Programado, Pagado y Justificado. Y un cuarto, Acumulado, que llegó en la ronda 5.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Cuándo un pago queda justificado</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Nada registraba que un pago ya se hubiera enviado al Banco ni que hubiera vuelto aprobado.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Solo con la aprobación del Banco, no al generar el estado de gastos. Textual de Rafael: «cuando se manda la justificación y se ha aprobado por el banco».</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Edición de un pago justificado</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Cualquier pago se podía editar y borrar, incluido uno ya aprobado por el Banco.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Abre en solo lectura, con el motivo a la vista y sin los botones de confirmar y eliminar.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El mismo pago en dos envíos</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Nada impedía incluir un pago en dos estados de gastos distintos mientras el Banco decidía sobre el primero.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>El pago guarda el número de la transacción que ya lo reclama y deja de aparecer entre los candidatos.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Componente y Producto</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El pago no los tenía. Tampoco el Figma: «este diseño era antiguo y en su momento no se pensó».</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>En la grilla, en el diálogo de edición, en la plantilla de importación y como criterio de agrupación del estado de gastos.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Estado de Gastos</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>No existía. El módulo terminaba en el registro de pagos, sin la mitad que da sentido al registro.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Pantalla completa: tipo, rango de fechas, candidatos de todos los compromisos del préstamo agrupados por componente, selección, total en vivo y generación de la transacción.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Filtro de candidatos</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>No había filtro porque no había pantalla que filtrar.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Cuatro condiciones combinadas: dentro del rango, estado Pagado, sin transacción previa y flag de reembolso acorde al tipo elegido.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Tipos de transacción</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El audio los nombraba de forma entrecortada y sin códigos.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>ANJ justificación, DRP reembolso y DPS pago directo, deducidos contrastando el audio con <code>TransactionsTypes</code> y las rutas existentes. ATJ queda fuera del MVP.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Flag de reembolso</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Se capturaba en el formulario, se guardaba, y no lo leía nadie. Dato muerto.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Es el clasificador que decide si un pago puede viajar en una justificación o en un reembolso.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= RONDA 3 ================= -->
+  <section class="round">
+    <div class="round__head">
+      <span class="round__num">RONDA 03</span>
+      <h2>Sesión de feedback con el equipo</h2>
+      <span class="round__source">Gina · Juan Carlos · Marcela · Gustavo · David · Karen · Dani</span>
+    </div>
+
+    <ul class="items">
+      <li class="item">
+        <div class="item__head">
+          <h3>Origen de los pagos por defecto</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Implementé «desde cronograma de pagos», justo la que el equipo puso en duda, y dejé como stub la que dijeron que más se usaría.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Importar desde archivo es la opción por defecto; el cronograma sigue disponible detrás.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Importación de archivo</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Un estado vacío que decía «esta fuente todavía no está disponible».</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Descarga de plantilla, aviso de primera vez, carga con progreso, informe de filas duplicadas y errores bloqueantes fila a fila, y reintento con el archivo corregido.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Revisión de lo importado</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>No existía. No había punto entre subir el archivo y que los pagos quedaran registrados.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Pantalla «Pagos importados» con organismo ejecutor, contrato y fecha; contadores de filas, seleccionadas y monto que se actualizan en vivo; búsqueda y selección antes de registrar nada.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Quién parsea el Excel</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Sin decidir. La salida fácil habría sido meter una librería de hojas de cálculo en el bundle.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>El backend. El front solo sube el fichero y muestra filas, duplicados y errores tal como vuelven.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Codificación de la subida</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p><code>EncodeInterceptor</code> codifica en base64 el cuerpo de todo POST, lo que habría convertido el <code>FormData</code> en un objeto vacío y roto la subida en producción.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>La llamada de importación desactiva <code>REQUEST_IS_ENCODED</code>, como ya hacen las subidas existentes de la app.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Mecanismo de pago del contrato</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El tercer botón del detalle, visible en las capturas originales, no existía en mi versión.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Diálogo que reclasifica en bloque cómo se financiaron los gastos, que es el mismo interruptor que decide por qué rama salen los pagos.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= RONDA 4 ================= -->
+  <section class="round">
+    <div class="round__head">
+      <span class="round__num">RONDA 04</span>
+      <h2>Bugs encontrados al verificar</h2>
+      <span class="round__source">Automatización del navegador, no revisión visual</span>
+    </div>
+
+    <ul class="items">
+      <li class="item">
+        <div class="item__head">
+          <h3>Los diálogos no guardaban</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Se cerraban y no pasaba nada. Kendo avisa que un componente con <code>kendo-dialog-actions</code> propio debe heredar <code>DialogContentBase</code>; sin eso el resultado nunca llegaba al llamador.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Los tres diálogos heredan de la clase base y devuelven su resultado por <code>close()</code>.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Cuerpo de los POST en base64</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El backend simulado veía una cadena opaca en vez del payload, así que «guardar» no guardaba nada y no había error visible.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Lo decodifica igual que la API real, y para todo el demo, no solo para este módulo.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Confirmación de la transacción</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El banner de «Transacción generada» se borraba solo: el refresco posterior reiniciaba el estado. Nadie lo habría visto nunca.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>El refresco recarga los candidatos sin tocar el resultado que el usuario acaba de obtener.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Cabecera de proyecto duplicada</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Dos tarjetas de proyecto en la misma pantalla: la del contenedor y la del módulo.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Se oculta la genérica mientras se está en estas pantallas, como ya hacen otros módulos del producto.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Compilación desde cero</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El proyecto no compilaba. Faltaban <code>moment</code>, <code>@angular/cdk</code> y <code>@progress/kendo-angular-utils</code> en <code>package.json</code>: seis errores de TypeScript, uno de ellos engañoso en el módulo de EOI.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Declaradas. Un <code>npm install</code> limpio compila sin errores.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= RONDA 5 ================= -->
+  <section class="round">
+    <div class="round__head">
+      <span class="round__num">RONDA 05</span>
+      <h2>Cierre de los pendientes</h2>
+      <span class="round__source">Construido sin esperar validación previa</span>
+    </div>
+
+    <ul class="items">
+      <li class="item">
+        <div class="item__head">
+          <h3>Pago acumulado</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Solo pago a pago. El ejecutor que no quisiera detallar cada factura no tenía forma de reportar el avance del contrato.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Cuarta opción en la primera pregunta del diálogo, donde la pidió Gina: fecha de corte, moneda y una línea por componente. Tiene estado propio y nunca entra en un estado de gastos, tal como planteó Juan Carlos.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Registro manual</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Stub con estado vacío, pese a que Rafael acordó habilitarlo para corregir un pago suelto.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Formulario completo: componente, producto, concepto, comprobante, fecha, moneda del contrato, monto y tasa.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Export del estado de gastos</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>No había forma de sacar la hoja del portal. Sin ella, el ejecutor carga el detalle y no gana nada a cambio.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Descarga con el desglose por componente y las líneas seleccionadas, con el separador y la marca de orden de bytes que Excel espera en español.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Monto por moneda</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Se podía registrar cualquier importe en cualquier moneda, incluso una que el contrato no tuviera y por encima de lo firmado.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Solo monedas del contrato y sin superar lo firmado en cada una. El formulario muestra el disponible antes de escribir y el rechazo dice cuánto queda.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>KPIs de plazo</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>La cabecera del compromiso solo mostraba montos: pagado, pendiente, justificado, a justificar.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>El proxy que pidió el equipo: plazo transcurrido contra dinero pagado, días restantes, y aviso cuando los pagos van por detrás, cuando el contrato está por vencer o cuando ya venció.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Francés y portugués</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Los dos idiomas llevaban el texto en inglés como marcador, para que al menos no se vieran las claves crudas.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Las 178 claves del módulo traducidas. Solo coinciden con el inglés las palabras que son iguales en el idioma, como «Total» o «Date».</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El backend simulado rechaza</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Solo sabía responder correctamente. Ninguna regla de negocio se podía probar de punta a punta porque nunca había un error que manejar.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Un handler puede devolver un error y el interceptor lo convierte en respuesta fallida, con su código y su mensaje traducible.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Datos del demo</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Los importes sembrados excedían lo firmado en cada contrato, así que el control de moneda rechazaba cualquier registro nuevo. La regla estaba bien; el fixture no la respetaba.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Los importes se derivan del contrato, y las fechas de vigencia terminan en el futuro, que es lo propio de un contrato todavía en ejecución.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= RONDA 6 ================= -->
+  <section class="round">
+    <div class="round__head">
+      <span class="round__num">RONDA 06</span>
+      <h2>Estado de gastos y usabilidad</h2>
+      <span class="round__source">Figma del estado de gastos, llamada con Rafael y revisión en pantalla</span>
+    </div>
+
+    <ul class="items">
+      <li class="item">
+        <div class="item__head">
+          <h3>El código del reembolso estaba mal</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El módulo generaba una transacción <code>DRP</code>. El propio catálogo del proyecto ya distingue las dos: <code>DRP</code> es el reembolso <em>retroactivo</em> de gastos anteriores a la firma del préstamo.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p><code>DPB</code>, el reembolso durante la ejecución, que es el que corresponde a este flujo. Los cuatro códigos son ahora los mismos que usa el Banco: ATJ, ANJ, DPB y DPS.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Un solo importe por componente</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>La tabla mostraba un total por componente. El Figma muestra seis columnas: el monto a justificar y el saldo disponible, cada uno abierto en BID, aporte local y cofinanciamiento.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Las seis columnas, con encabezado agrupado y fila de totales. Sin ese desglose el estado de gastos no se puede conciliar con la transacción que genera.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Los pagos colgaban de la misma pantalla</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Todos los pagos del periodo se listaban bajo cada componente en la misma vista. Con cientos de pagos era ilegible, y el Figma tiene una pantalla aparte para eso.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Pantalla propia de <strong>Detalle de componente</strong>, con su breadcrumb: monto actual, monto a justificar y saldo disponible arriba; abajo la grilla de pagos con «Pagos seleccionados: 5 de 13» y el monto total seleccionado. Volver recalcula la tabla anterior.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Generar era la única salida</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El único botón era «Generar transacción». Preparar un estado de gastos largo y tener que terminarlo de una sentada.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p><strong>Guardar</strong> deja el estado de gastos como borrador y <strong>Generar transacción</strong> lo convierte en solicitud. Son dos acciones distintas, como en el Figma.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>No había forma de ver lo ya enviado</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Una sola pestaña. Lo generado desaparecía de la pantalla.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Pestañas <strong>Actual</strong> y <strong>Anteriores</strong>. La segunda lista cada transacción con su número, tipo, fecha, usuario, monto y estado: borrador, pendiente de aprobación del BID o aprobada.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El pago directo se trataba como los demás</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>DPS pedía un rango de fechas y barría pagos ya efectuados. Pero en un pago directo el Banco todavía no le pagó a nadie: no hay nada que barrer.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>DPS oculta las fechas y ofrece «Seleccionar o añadir pagos». Los pagos se eligen a mano entre todos los contratos y pueden estar aún programados. La pantalla avisa de que se pedirá la cuenta del tercero.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El ciclo de vida saltaba un paso</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Un pago pasaba de Pagado a Justificado al generar la transacción. Pero el Banco todavía no la aprobó: si la rechaza, ese pago tiene que volver.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Estado intermedio <strong>Pendiente de justificación</strong>. El pago queda comprometido, no puede entrar en otro estado de gastos, y solo pasa a Justificado cuando el Banco aprueba.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>ATJ no aparecía en ningún lado</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El tipo híbrido estaba excluido del MVP y por eso no se listaba. Quien abría la pantalla no sabía si existía.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Aparece en el desplegable, deshabilitado y con el motivo: necesita el plan financiero del anticipo, que todavía no existe en la Interfaz.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Faltaban las filas que no son componentes</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Solo se listaban componentes. El Figma tiene además «Anticipo de fondos» y «Pendiente», que vienen de los balances.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Las dos filas están, numeradas 86 y 88 como en el diseño, en gris y sin enlace: se muestran pero no se abren, porque no tienen pagos detrás.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El pie del diálogo tapaba el formulario</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Los botones se montaban sobre los últimos campos. Kendo pone la clase <code>k-window-actions</code> tanto en el botón de cerrar del título como en el pie, y el tema le da <code>margin: -5em 0</code>. Esos −70px sacaban la barra del layout y la subían encima del contenido.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>El diálogo es una grilla de tres filas —título, cuerpo, acciones— y el pie no hereda ese margen. El cuerpo hace scroll solo; la barra nunca pisa nada.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El botón principal salía sin texto</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>«Continuar» se veía como un recuadro vacío. La regla global del pie pone fondo blanco a todo botón, y el estado deshabilitado trae <code>color: white !important</code>: letra blanca sobre blanco.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Deshabilitado se ve gris con la etiqueta legible; habilitado, azul lleno. Se lee en los dos estados.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Todo centrado, sin jerarquía</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>La regla global del diálogo centra el texto, así que cada etiqueta quedaba centrada sobre su campo y el pie llevaba una sangría fija de 370px.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Alineación a la izquierda y sangría normal, acotado a los diálogos de este módulo para no mover el resto del producto.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Cuatro opciones sin explicación</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>«Desde cronograma», «Registro manual», «Importar desde un archivo» y «Monto acumulado» eran cuatro radios sueltos. Elegir mal es caro: lo acumulado nunca podrá viajar en un estado de gastos.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Cuatro tarjetas en una fila, cada una con lo que hace y cuándo usarla. La del monto acumulado dice de entrada lo que se pierde.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El botón muerto no decía por qué</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>«Continuar» estaba deshabilitado sin ninguna pista de qué faltaba.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>El pie nombra los campos que faltan —«Falta completar: componente, concepto, fecha de pago, monto»— y cuando está listo dice qué va a pasar al continuar.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>La importación no decía qué esperar</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Un aviso naranja, dos barras vacías tituladas «Documentos» y un selector de archivo. Nada sobre formato, tamaño ni qué se valida.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Tres pasos numerados y un bloque con las reglas: formatos admitidos, tamaño máximo, orden de columnas, campos obligatorios y detección de duplicados. El selector rechaza en el momento lo que no cumple.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El selector de archivo hablaba en inglés</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>«Select files…» y «Drop files here to select». El servicio de mensajes de Kendo solo llevaba claves de grilla, así que el resto caía al inglés por defecto.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Traducido en los cuatro idiomas por dos vías: mensajes propios en el selector y las claves de carga añadidas al servicio compartido, que también arreglan el mismo texto en el módulo de documentos.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>El «1/10» de Actualizar pago</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Un «1/10» suelto al final del formulario, sin decir qué contaba.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>«Pago 1 de 10 de este compromiso», arriba, antes del formulario. Y los campos quedaron agrupados en identificación, imputación, fecha e importe, financiamiento y mecanismo de pago.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>La pregunta del reembolso sin contexto</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>«¿Es sujeto a reembolso?» con dos opciones y nada más, siendo el dato que decide por dónde viaja el pago.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Encima de la pregunta se explica la consecuencia: con recursos del Banco va en una justificación; con recursos propios, en un reembolso.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>La flecha del desplegable en medio del campo</h3>
+          <span class="chip chip--done">Corregido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>El estilo compartido da al texto del desplegable <code>width: inherit</code>, que resuelve al 100% de la caja; la flecha caía donde terminaba ese lapso, no en el borde. Se veía un control flotando en mitad del campo.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>La flecha va al borde derecho y el texto se recorta con puntos suspensivos. Acotado al módulo.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Tipografía pensada para otra vista</h3>
+          <span class="chip chip--done">Aplicado</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Antes</span>
+            <p>Textos de apoyo a 11 y 12px y casillas de 13px, heredados del sistema. Este módulo lo usan sobre todo personas de más de cincuenta años, y es donde pasan la tarde: cientos de filas de importes, fechas y códigos.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Después</span>
+            <p>Escala propia con piso en 13px, texto de ayuda en 14px, interlineado 1,5, casillas y radios de 20px, campos de 40px de alto y foco visible. Nada de esto sale del módulo.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= BLOQUEADO ================= -->
+  <section class="round">
+    <div class="round__head">
+      <span class="round__num">BLOQUEADO</span>
+      <h2>Lo que no depende del desarrollo</h2>
+      <span class="round__source">Decisiones abiertas del equipo</span>
+    </div>
+
+    <ul class="items">
+      <li class="item">
+        <div class="item__head">
+          <h3>Tasa de cambio</h3>
+          <span class="chip chip--gap">Decisión abierta</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Hoy</span>
+            <p>Una tasa por proyecto que recalcula todos los pagos al guardar. Asume tasa acordada o manual global.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">El riesgo</span>
+            <p>Si eligen «tasa de la fecha del pago», recalcular hacia atrás reescribiría importes ya justificados al Banco. Por eso no lo toqué.</p>
+          </div>
+        </div>
+        <p class="asked">Aplazado por <strong>Gina</strong>: «este tema es bien importante y bien delicado».</p>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Otras actividades como compromisos</h3>
+          <span class="chip chip--gap">Sin fuente de datos</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Hoy</span>
+            <p>El tipo «No adquisición» ya existe en el modelo y se muestra en la lista de compromisos.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Lo que falta</span>
+            <p>La fuente de datos de becas y actividades sin contrato, que el Banco todavía está construyendo.</p>
+          </div>
+        </div>
+        <p class="asked">Explicado por <strong>Rafael</strong>: «todavía no la tenemos, estamos empezando a trabajar en ello».</p>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Transacción híbrida ATJ</h3>
+          <span class="chip chip--gap">Fuera de MVP</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">Hoy</span>
+            <p>El selector ofrece ANJ, DRP y DPS.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">Lo que falta</span>
+            <p>Adelanto de fondos y justificación al mismo tiempo, que depende además del plan financiero del anticipo.</p>
+          </div>
+        </div>
+        <p class="asked">Excluido del MVP por <strong>Rafael</strong>.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= DECISIONES ================= -->
+  <section class="round">
+    <div class="round__head">
+      <span class="round__num">DECIDIDO</span>
+      <h2>Decisiones tomadas sin respaldo explícito</h2>
+      <span class="round__source">Implementadas; revertibles si el criterio es otro</span>
+    </div>
+
+    <ul class="items">
+      <li class="item">
+        <div class="item__head">
+          <h3>Qué convierte un pago en Pagado</h3>
+          <span class="chip chip--check">Decidido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">El feedback dice</span>
+            <p>Que los pagos registrados quedan en estado Pagado. No dice qué dato dispara ese cambio.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">La implementación hace</span>
+            <p>Cargar el número de comprobante contable. Podría ser la fecha de pago o una confirmación explícita.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Bloqueo total de los justificados</h3>
+          <span class="chip chip--check">Decidido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">El feedback dice</span>
+            <p>Que un pago justificado no se puede volver a enviar.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">La implementación hace</span>
+            <p>Además impide editarlo y borrarlo, para no desincronizar el reporte de lo que aprobó el Banco.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Pagos en un envío pendiente</h3>
+          <span class="chip chip--check">Decidido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">El feedback dice</span>
+            <p>Excluir los que ya se justificaron.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">La implementación hace</span>
+            <p>Excluye también los que están en un estado de gastos pendiente de aprobación, para que no entren en dos a la vez.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Estado inicial del diálogo de mecanismo</h3>
+          <span class="chip chip--check">Decidido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">El Figma muestra</span>
+            <p>Siempre «Financiamiento BID» preseleccionado al abrir.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">La implementación hace</span>
+            <p>Abre reflejando la clasificación guardada, que es lo propio de un diálogo de edición.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="item">
+        <div class="item__head">
+          <h3>Monto a solicitar reembolso</h3>
+          <span class="chip chip--check">Decidido</span>
+        </div>
+        <div class="ba">
+          <div class="ba__side ba__side--before">
+            <span class="ba__label">El Figma muestra</span>
+            <p>Lo que parece un campo de entrada, aunque aparece en gris.</p>
+          </div>
+          <div class="ba__side ba__side--after">
+            <span class="ba__label">La implementación hace</span>
+            <p>Un valor calculado en vivo: la suma de los pagos tildados, no editable.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section class="note">
+    <h2>Sobre los endpoints</h2>
+    <p>
+      Los 22 endpoints del módulo están inventados bajo <code>/api/v3/payment-records/</code>,
+      porque no existen en este código. Si el backend ya tiene contrato definido, se ajustan
+      el servicio y los modelos; el resto del módulo no cambia.
+    </p>
+    <p>
+      Todo corre contra el backend simulado del modo demo, que responde 60 rutas dentro del
+      navegador. El único que guarda estado mutable es este módulo: añadir, editar y borrar
+      pagos persiste durante la sesión para poder recorrer el flujo completo.
+    </p>
+    <p>
+      El control de monto por moneda se aplica al registro manual y al acumulado. Para la
+      importación masiva pertenece al paso de validación del archivo, donde ya viven los
+      errores por fila: ahí es donde el backend real debe rechazarlo.
+    </p>
+  </section>
+
+</div>
+</body>
+</html>

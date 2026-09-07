@@ -1,0 +1,55 @@
+<kendo-drawer-container>
+  <kendo-drawer #drawer [mode]="'overlay'" [position]="'end'" [expanded]="false" width="100%">
+    <ng-template kendoDrawerTemplate>
+      <div class="container-fluid c-user-side-menu--margin-top">
+        <div class="row">
+          <div class="col-2">
+            <kendo-avatar role="initials" class="curPoint" [shape]="'circle'" [initials]="userInfo?.initials">
+            </kendo-avatar>
+          </div>
+          <div class="col-10 c-user-side-menu--padding">
+            <p class="word-break qa-headerInfoComponent-username" [innerHTML]="userInfo?.name"></p>
+
+            <span class="word-break qa-headerInfoComponent-popUp-email">{{
+              userInfo?.email
+              }}</span>
+            <div class="qa-logout">
+              <span class="logout-button">{{ 'SHARED.HEADERS.USER_SIDE_MENU.SETTINGS' | translate }}</span>
+              <span class="logout-button" (click)="logout()">{{ 'SHARED.HEADERS.USER_SIDE_MENU.LOGOUT' | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container-popup__item container-popup__item--title">
+        {{ 'SHARED.HEADERS.USER_SIDE_MENU.ROLES' | translate }}
+      </div>
+      <div class="container-popup__item">
+        <div class="qa-headerInfoComponent-popUp-rolesList">
+          <div *ngFor="let rol of userInfo?.roles; let indice = index">
+            <span>
+              {{ rol.name }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="container-popup__item container-popup__item--title">
+        {{ 'SHARED.HEADERS.USER_SIDE_MENU.LANGUAGE' | translate }}
+      </div>
+      <div class="container-popup__item">
+        <div (click)="toggleLanguage()" class="container-popup__lang-button qa-language-selector">
+          <span>{{ selectedLangSpan }}</span>
+          <em [ngClass]="[expandedLanguage ? 'revertIcon' : 'defaultIcon']" class="fas fa-caret-right"></em>
+        </div>
+        <div *ngIf="expandedLanguage">
+          <ul class="container-popup__lang-list">
+            <li class="qa-lang-op" *ngFor="let item of languages" (click)="changeLang(item)">
+              {{ item.label }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ng-template>
+  </kendo-drawer>
+
+  <kendo-drawer-content class="kendo-drawer-content"> </kendo-drawer-content>
+</kendo-drawer-container>

@@ -1,0 +1,120 @@
+<ng-container>
+  <div class="delayedMilestoneTableContainer">
+    <p class="delayedMilestoneTableTittle">
+      <i
+        [ngClass]="_showtable ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"
+        (click)="showTableToggle()"
+      ></i>
+      {{ tittle | translate }}
+    </p>
+    <table
+      *ngIf="!loading; else spinner"
+      class="delayedMilestoneTable"
+      [ngStyle]="!_showtable && { display: 'none' }"
+      [ngClass]="
+        delayedMilestoneType === delayedMilestoneTableTypeEnum.PROCESS && 'mt-5'
+      "
+    >
+      <thead>
+        <tr
+          *ngIf="delayedMilestoneType === delayedMilestoneTableTypeEnum.PROCESS"
+        >
+          <th rowspan="1">
+            {{ "DELAYED_MILESTONE.PROCESS_COL.PROCESS_STATUS" | translate }}
+          </th>
+
+          <ng-container *ngFor="let header of newProcessCols">
+            <th colspan="2">{{ header.title | translate }}</th>
+          </ng-container>
+        </tr>
+        <tr
+          *ngIf="delayedMilestoneType === delayedMilestoneTableTypeEnum.PROCESS"
+        >
+          <th rowspan="1"></th>
+          <ng-container *ngFor="let item of newProcessCols">
+            <th>
+              {{ "DELAYED_MILESTONE.PROCESS_COL.ON_TIME" | translate }}
+            </th>
+            <th>{{ "DELAYED_MILESTONE.PROCESS_COL.DELAYED" | translate }}</th>
+          </ng-container>
+        </tr>
+
+        <tr>
+          <ng-container
+            *ngIf="
+              delayedMilestoneType === delayedMilestoneTableTypeEnum.CONTRACTS
+            "
+          >
+            <th *ngFor="let col of contractsStaticCol">
+              {{ col | translate }}
+            </th>
+          </ng-container>
+          <ng-container
+            *ngIf="
+              delayedMilestoneType === delayedMilestoneTableTypeEnum.AMENDMENTS
+            "
+          >
+            <th *ngFor="let col of amendmentsStaticCol">
+              {{ col | translate }}
+            </th>
+          </ng-container>
+        </tr>
+      </thead>
+
+      <tbody>
+        <ng-container
+          *ngIf="
+            delayedMilestoneType === delayedMilestoneTableTypeEnum.PROCESS;
+            else otherTable
+          "
+        >
+          <tr *ngFor="let row of newData; index as iRow">
+            <td>{{ staticRow[iRow] | translate }}</td>
+            <ng-container *ngFor="let items of row; index as iCol">
+              <td>
+                <span
+                  (click)="selectData(iRow, iCol)"
+                  [ngClass]="
+                    iCol === selectedCol &&
+                    iRow === selectedRow &&
+                    selectedTableType === delayedMilestoneType
+                      ? 'selected'
+                      : ''
+                  "
+                >
+                  {{ items.length }}
+                </span>
+              </td>
+            </ng-container>
+          </tr>
+        </ng-container>
+
+        <ng-template #otherTable>
+          <tr *ngFor="let fila of staticRow; index as iRow">
+            <td>{{ fila | translate }}</td>
+            <td *ngFor="let data of newData[iRow]; index as iCol">
+              <span
+                (click)="selectData(iRow, iCol)"
+                [ngClass]="
+                  iCol === selectedCol &&
+                  iRow === selectedRow &&
+                  selectedTableType === delayedMilestoneType
+                    ? 'selected'
+                    : ''
+                "
+              >
+                {{ data.totalCount }}
+              </span>
+            </td>
+          </tr>
+        </ng-template>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
+
+<ng-template #spinner>
+  <div style="text-align: center" *ngIf="_showtable">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

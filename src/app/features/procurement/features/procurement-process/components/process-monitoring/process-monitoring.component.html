@@ -1,0 +1,59 @@
+<div class="container-fluid pb-3">
+  <div class="row position-relative">
+    <ng-container *fiDisplayByPermissions="procurementProcessTablePermission">
+      <div class="d-flex flex-column col-11" *ngIf="!isProcessLoading">
+        <fi-delayed-milestone-table
+          [tableTye]="delayedMilestoneTableTypeEnum.PROCESS"
+          [tittle]="'PROCUREMENT.DELAYED_MILESTONE.TABLE.PROCESS_TITTLE'"
+          [planId]="procurementId"
+          (changeTableVisibility)="changeTablePreference($event)"
+          [showTable]="expandedProcess"
+        ></fi-delayed-milestone-table>
+
+        <fi-delayed-milestone-table
+          [tableTye]="delayedMilestoneTableTypeEnum.CONTRACTS"
+          [tittle]="'PROCUREMENT.DELAYED_MILESTONE.TABLE.CONTRACTS_TITTLE'"
+          [planId]="procurementId"
+          (changeTableVisibility)="changeTablePreference($event)"
+          [showTable]="expandedContracts"
+        ></fi-delayed-milestone-table>
+
+        <fi-delayed-milestone-table
+          [tableTye]="delayedMilestoneTableTypeEnum.AMENDMENTS"
+          [tittle]="'PROCUREMENT.DELAYED_MILESTONE.TABLE.AMENDMENTS_TITTLE'"
+          [planId]="procurementId"
+          (changeTableVisibility)="changeTablePreference($event)"
+          [showTable]="expandedAmendments"
+        ></fi-delayed-milestone-table>
+
+        <button
+          kendoButton
+          class="btn btn-online-brand btn-block btn-under-line delayed-milestone--btn"
+          (click)="clearSelection()"
+          id="Btn_Clear_Selection"
+        >
+          {{ "PROCUREMENT.CLEAR_SELECTION_BTN" | translate }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<div class="container-fluid d-none d-md-block">
+  <div class="row" *fiDisplayByPermissions="procurementProcessTablePermission">
+    <div class="col-12 p-0">
+      <fi-table-aggregates
+        [procurementPlanCollection]="procurementPlanCollection"
+        (actionitemID)="actionitemID($event)"
+        [countryCode]="countryCodeProject"
+        [isLoading]="isProcessLoading"
+      ></fi-table-aggregates>
+    </div>
+  </div>
+</div>
+
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

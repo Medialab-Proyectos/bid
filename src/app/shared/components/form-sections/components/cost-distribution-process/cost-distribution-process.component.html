@@ -1,0 +1,444 @@
+<div class="c-cost-distribution">
+  <fi-accordion-panel [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "PROCESS.COST_DISTRIBUTION.TITLE" | translate
+    }}</ng-container>
+    <ng-container body>
+      <div class="row">
+        <div class="col-12">
+          <kendo-label
+            text="{{ 'PROCESS.COST_DISTRIBUTION.ADDCOSTBY' | translate }}"
+          ></kendo-label>
+        </div>
+        <div class="col-12">
+          <kendo-label
+            [for]="amount"
+            text="{{ 'PROCESS.COST_DISTRIBUTION.AMOUNTS' | translate }}"
+          ></kendo-label>
+          <input
+            type="radio"
+            name="costDistribution"
+            value="amount"
+            #amount
+            [(ngModel)]="optionSelected.option"
+            (click)="amountSelected()"
+            checked="checked"
+            kendoRadioButton
+          />
+
+          <kendo-label
+            [for]="percentage"
+            text="{{ 'PROCESS.COST_DISTRIBUTION.PERCENTAGE' | translate }}"
+          ></kendo-label>
+          <input
+            type="radio"
+            name="costDistribution"
+            value="percentage"
+            #percentage
+            [(ngModel)]="optionSelected.option"
+            (click)="percentageSelected()"
+            kendoRadioButton
+          />
+        </div>
+      </div>
+      <div class="mb-3 cost-distribution" [formGroup]="form">
+        <div class="row pb-3">
+          <div class="col-12 col-md-3 m-auto">
+            <kendo-label
+              class="fi-kendo-label d-block"
+              text="{{ 'PROCESS.COST_DISTRIBUTION.TOTAL_AMOUNT' | translate }}"
+            >
+            </kendo-label>
+            <kendo-numerictextbox
+              [changeValueOnScroll]="false"
+              [spinners]="false"
+              #contractTotalAmount
+              formControlName="contractTotalAmount"
+              [decimals]="2"
+              data-testid="contractTotalAmount"
+              class="c-numerictextbox k-numerictextbox o-input-no-box d-none"
+              [placeholder]="0 | ifNumber"
+              [min]="0"
+              [fiDisableControl]="true"
+              [maxlength]="18"
+            ></kendo-numerictextbox>
+            <span> USD {{ totalAmount | ifNumber }} </span>
+            <input type="hidden" formControlName="maxThresholdExceed" />
+          </div>
+
+          <div class="col-12 col-md-3">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="BIDAmount"
+              text="{{ 'PROCESS.COST_DISTRIBUTION.IDB_AMOUNT' | translate }}"
+            ></kendo-label>
+            <kendo-numerictextbox
+              [changeValueOnScroll]="false"
+              [spinners]="false"
+              #BIDAmount
+              formControlName="bidAmount"
+              data-testid="bidAmount"
+              [decimals]="2"
+              [maxlength]="18"
+              class="c-numerictextbox k-numerictextbox"
+              [placeholder]="0 | ifNumber"
+              [min]="minAmount"
+              [autoCorrect]="true"
+              [fiDisableControl]="
+                settings.disabled ||
+                disabledBidAmount ||
+                (optionSelected.option != undefined &&
+                  optionSelected.option == optionPercentage)
+              "
+            ></kendo-numerictextbox>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="localCounterpartAmount"
+              text="{{
+                'PROCESS.COST_DISTRIBUTION.COUNTERPART_AMOUNT' | translate
+              }}"
+            ></kendo-label>
+            <kendo-numerictextbox
+              [changeValueOnScroll]="false"
+              [spinners]="false"
+              #localCounterpartAmount
+              formControlName="localCounterpartAmount"
+              [decimals]="2"
+              [maxlength]="18"
+              data-testid="localCounterpartAmount"
+              class="c-numerictextbox k-numerictextbox"
+              [placeholder]="0 | ifNumber"
+              [min]="minAmount"
+              [autoCorrect]="true"
+              [fiDisableControl]="
+                settings.disabled ||
+                (optionSelected.option != undefined &&
+                  optionSelected.option == optionPercentage)
+              "
+            >
+            </kendo-numerictextbox>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="cofinancingAmount"
+              text="{{
+                'PROCESS.COST_DISTRIBUTION.COFINANCING_AMOUNT' | translate
+              }}"
+            ></kendo-label>
+            <kendo-numerictextbox
+              [changeValueOnScroll]="false"
+              [spinners]="false"
+              #cofinancingAmount
+              formControlName="cofinancingAmount"
+              [decimals]="2"
+              [maxlength]="18"
+              data-testid="cofinancingAmount"
+              class="c-numerictextbox k-numerictextbox"
+              [placeholder]="0 | ifNumber"
+              [min]="minAmount"
+              [autoCorrect]="true"
+              [fiDisableControl]="
+                settings.disabled ||
+                (optionSelected.option != undefined &&
+                  optionSelected.option == optionPercentage)
+              "
+            >
+            </kendo-numerictextbox>
+          </div>
+        </div>
+        <div class="row pb-3">
+          <div class="col-12 col-md-3">
+            <div
+              *ngIf="
+                optionSelected.option != undefined &&
+                optionSelected.option == optionPercentage
+              "
+            >
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                [for]="TotalAmountPercentage"
+                text="{{
+                  'PROCESS.COST_DISTRIBUTION.TOTAL_AMOUNT' | translate
+                }}"
+                disabled="settings.disabled || (optionSelected.option !=undefined && optionSelected.option == optionAmount)"
+              ></kendo-label>
+              <kendo-numerictextbox
+                [changeValueOnScroll]="false"
+                [spinners]="false"
+                #TotalAmountPercentage
+                formControlName="totalAmountPercentage"
+                [decimals]="2"
+                [maxlength]="18"
+                data-testid="totalAmountPercentage"
+                class="c-numerictextbox k-numerictextbox"
+                [placeholder]="0 | ifNumber"
+                [min]="minAmount"
+                [autoCorrect]="true"
+                [fiDisableControl]="
+                  settings.disabled ||
+                  (optionSelected.option != undefined &&
+                    optionSelected.option == optionAmount)
+                "
+              ></kendo-numerictextbox>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="bidAmountPercentage"
+              text="% {{ 'PROCESS.COST_DISTRIBUTION.IDB_AMOUNT' | translate }}"
+            ></kendo-label
+            ><br />
+            <kendo-numerictextbox
+              [changeValueOnScroll]="false"
+              [spinners]="false"
+              #bidAmountPercentage
+              formControlName="bidAmountPercentage"
+              [decimals]="2"
+              [maxlength]="6"
+              data-testid="bidAmountPercentage"
+              class="k-numerictextbox k-percentage qa-procurementCreate-percentage"
+              [placeholder]="0 | ifNumber"
+              [min]="0"
+              [max]="100"
+              [autoCorrect]="true"
+              [fiDisableControl]="
+                settings.disabled ||
+                (optionSelected.option != undefined &&
+                  optionSelected.option == optionAmount)
+              "
+            ></kendo-numerictextbox>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="localCounterpartAmountPercentage"
+              text="% {{
+                'PROCESS.COST_DISTRIBUTION.COUNTERPART_AMOUNT' | translate
+              }}"
+            ></kendo-label
+            ><br />
+            <kendo-numerictextbox
+              [changeValueOnScroll]="false"
+              [spinners]="false"
+              #localCounterpartAmountPercentage
+              formControlName="localCounterpartAmountPercentage"
+              [decimals]="2"
+              [maxlength]="6"
+              data-testid="localCounterpartAmountPercentage"
+              class="k-numerictextbox k-percentage qa-procurementCreate-percentage"
+              [placeholder]="0 | ifNumber"
+              [min]="0"
+              [max]="100"
+              [autoCorrect]="true"
+              [fiDisableControl]="
+                settings.disabled ||
+                (optionSelected.option != undefined &&
+                  optionSelected.option == optionAmount)
+              "
+            >
+            </kendo-numerictextbox>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="cofinancingAmountPercentage"
+              text="% {{
+                'PROCESS.COST_DISTRIBUTION.COFINANCING_AMOUNT' | translate
+              }}"
+            ></kendo-label
+            ><br />
+            <kendo-numerictextbox
+              [changeValueOnScroll]="false"
+              [spinners]="false"
+              #cofinancingAmountPercentage
+              formControlName="cofinancingAmountPercentage"
+              [decimals]="2"
+              [maxlength]="6"
+              data-testid="cofinancingAmountPercentage"
+              class="k-numerictextbox k-percentage qa-procurementCreate-percentage"
+              [placeholder]="0 | ifNumber"
+              [min]="0"
+              [max]="100"
+              [autoCorrect]="true"
+              [fiDisableControl]="
+                settings.disabled ||
+                (optionSelected.option != undefined &&
+                  optionSelected.option == optionAmount)
+              "
+            >
+            </kendo-numerictextbox>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-12" *ngIf="showJustification">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="justification"
+              [text]="'CONTRACT.COST_DISTRIBUTION.JUSTIFICATION' | translate"
+            ></kendo-label>
+            <kendo-textbox
+              #justification
+              formControlName="justification"
+              data-testid="justification"
+              class="c-textbox k-textbox"
+              (valueChange)="onChangeJustification($event)"
+            >
+            </kendo-textbox>
+          </div>
+        </div>
+      </div>
+      <div>
+        <ng-container
+          *ngIf="
+            data.groupMethod === GroupMethodEnum.NationalSystem && threshold
+          "
+        >
+          <fi-alert
+            type="error"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.AMOUNT_MAXIMUM.NS' | translate
+            }}"
+            [closable]="true"
+            *ngIf="
+              threshold?.max !== 0 &&
+              form.controls['contractTotalAmount'].value > threshold?.max
+            "
+          >
+          </fi-alert>
+          <fi-alert
+            type="error"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.AMOUNT_MINIMUM.NS' | translate
+            }}"
+            [closable]="true"
+            *ngIf="
+              threshold?.min !== 0 &&
+              form.controls['contractTotalAmount'].value < threshold?.min
+            "
+          >
+          </fi-alert>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            data.groupMethod === GroupMethodEnum.DirectContractBidding &&
+            threshold
+          "
+        >
+          <fi-alert
+            type="error"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.SUPERIOR_AMOUNT_DIRECT_CONTRACT'
+                | translate
+            }}"
+            [closable]="true"
+            *ngIf="
+              threshold?.max !== 0 &&
+              form.controls['contractTotalAmount'].value > threshold?.max
+            "
+          >
+          </fi-alert>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            data.groupMethod === GroupMethodEnum.InternationalBidding &&
+            threshold
+          "
+        >
+          <fi-alert
+            type="warning"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.SUPERIOR_AMOUNT' | translate
+            }}"
+            [closable]="true"
+            *ngIf="
+              threshold?.max != 0 &&
+              form.controls['contractTotalAmount'].value >= threshold?.max
+            "
+          >
+          </fi-alert>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            threshold &&
+            (data.groupMethod === GroupMethodEnum.InternationalBidding ||
+              data.groupMethod === GroupMethodEnum.NationalBidding ||
+              data.groupMethod === GroupMethodEnum.ShoppingBidding)
+          "
+        >
+          <fi-alert
+            type="info"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.INFERIOR_AMOUNT' | translate
+            }}"
+            [closable]="true"
+            *ngIf="form.controls['contractTotalAmount'].value < threshold?.min"
+          >
+          </fi-alert>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            (data.groupMethod === GroupMethodEnum.ShoppingBidding ||
+              data.groupMethod === GroupMethodEnum.NationalBidding) &&
+            showErrorMaximunThreshols
+          "
+        >
+          <fi-alert
+            type="error"
+            title="{{ 'CONTRACT.COST_DISTRIBUTION.EXCEED_AMOUNT' | translate }}"
+            [closable]="true"
+            *ngIf="showErrorMaximunThreshols"
+          >
+          </fi-alert>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            threshold &&
+            data.groupMethod === GroupMethodEnum.ShoppingBidding &&
+            form.controls['contractTotalAmount'].value > threshold?.max &&
+            form.controls['contractTotalAmount'].value <=
+              nationalBiddingThreshold?.max
+          "
+        >
+          <fi-alert
+            type="warning"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.JUSTIFY_AMOUNT' | translate
+            }}"
+            [closable]="true"
+            *ngIf="
+              form.controls['contractTotalAmount'].value > threshold?.max &&
+              form.controls['contractTotalAmount'].value <=
+                nationalBiddingThreshold?.max
+            "
+          >
+          </fi-alert>
+        </ng-container>
+
+        <ng-container *ngIf="data.groupMethod === GroupMethodEnum.CQSBidding">
+          <fi-alert
+            type="error"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.EXCEED_AMOUNT_CQS' | translate
+            }}"
+            [closable]="true"
+            *ngIf="showErrorMaximunThreshols"
+          >
+          </fi-alert>
+        </ng-container>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

@@ -1,0 +1,201 @@
+////
+/// NEW EDIT COMMENTS COMPONENT component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}new-edit-comments
+/// @since version 1.0.0
+////
+.#{$ns}new-edit-comments {
+  font-size: rem(14);
+
+  &__main {
+    width: 100%;
+    border-radius: rem(5);
+    background-color: color("gray-100");
+    padding: rem(24);
+    list-style-type: none;
+  }
+
+  &__comment {
+    animation: slide-up 0.7s ease;
+  }
+  @keyframes slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  &__row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: rem(15);
+    flex-wrap: wrap;
+    position: relative;
+
+    &--b-bottom {
+      border-bottom: rem(1) solid color("gray-500");
+    }
+  }
+  &__label {
+    display: block;
+    width: 100%;
+    color: color("black");
+    margin-bottom: rem(10);
+
+    &--bold {
+      font-weight: bold;
+    }
+  }
+  &__add-input {
+    border-color: color("gray-500");
+    color: color("black");
+    width: 100%;
+  }
+  &__title-input {
+    width: 60%;
+    border-color: color("gray-500");
+    color: color("black");
+
+    &--w-100 {
+      width: 100%;
+    }
+  }
+  &__editor {
+    width: 100%;
+
+    &.k-editor {
+      height: rem(190);
+      border: 0;
+      min-width: rem(200);
+      & > .k-toolbar {
+        background: color("gray-100");
+        border-bottom: none;
+        & > * {
+          margin-top: 4px;
+          margin-bottom: 4px;
+          margin-right: 8px;
+        }
+      }
+      .k-button-group .btn,
+      .k-button-group .k-button {
+        border-radius: 0;
+        min-width: inherit;
+        padding: rem(4) rem(8);
+        border: 0;
+        background: transparent;
+        color: color("black");
+        &:hover,
+        &.hover,
+        &:focus,
+        &.focus {
+          box-shadow: rem(0) rem(4) rem(8) rgba(0, 0, 0, 0.25);
+          text-shadow: rem(1) rem(0) rem(0) color("primary");
+          background-color: color("white");
+        }
+        &:active,
+        &.k-state-active,
+        &.k-state-selected {
+          background-color: color("orange");
+          border-color: color("orange");
+          background-image: none;
+          text-shadow: rem(1) rem(0) rem(0) color("white");
+          color: $black;
+          color: $white;
+          @each $color, $value in $theme-colors {
+            &.btn-#{$color} {
+              background: $value;
+              border-color: color("transparent");
+            }
+          }
+        }
+        &[disabled] {
+          opacity: 1;
+
+          &[aria-checked="false"] {
+            color: color("white");
+            background-color: color("gray-500");
+          }
+        }
+        .k-icon {
+          left: 0;
+        }
+      }
+      .k-editor-content {
+        border-radius: rem(5);
+        border: rem(1) solid color("gray-500");
+        cursor: text;
+        padding-bottom: rem(25);
+      }
+      .ProseMirror p {
+        margin: 0;
+      }
+    }
+  }
+  &__editing {
+    position: absolute;
+    right: rem(20);
+    bottom: rem(55);
+
+    .far.fa-user-edit {
+      display: inline-block;
+      margin-right: rem(3);
+    }
+  }
+  &__saved {
+    position: absolute;
+    right: rem(20);
+    bottom: rem(55);
+    color: color("green");
+
+    .far.fa-comment-check {
+      display: inline-block;
+      margin-right: rem(3);
+    }
+  }
+  &__last-edited {
+    margin-top: rem(10);
+    font-size: rem(13);
+    margin-bottom: rem(20);
+
+    span:nth-child(2) {
+      font-weight: bold;
+    }
+  }
+  &__footer {
+    padding: rem(10) 0;
+    text-align: right;
+  }
+  &__info-wrapper {
+    position: relative;
+    display: inline-block;
+    max-width: 46%;
+    margin-right: rem(31);
+  }
+  &__info {
+    display: inline-block;
+    width: 100%;
+    text-align: left;
+    vertical-align: middle;
+    font-style: italic;
+    font-size: rem(13);
+    color: color("blue");
+    box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.08);
+    padding: rem(12);
+  }
+  &__info-arrow {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: rem(-8);
+    transform: translateY(-50%);
+    color: color("white");
+    font-size: rem(21);
+  }
+}

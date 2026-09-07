@@ -1,0 +1,20 @@
+<div class="process-header">
+  <fi-procurement-form
+    *ngIf="!isLoading && isEnumLoaded; else showSpinner"
+    [form]="form"
+    [procurementMethods$]="procurementMethods$"
+    [supervisionMethods$]="supervisionMethods$"
+    [justificationVisibility]="justificationVisibility"
+    [goodsReferenceVisibility]="goodsReferenceVisibility"
+    [selectedOutputs$]="selectedOutputs$"
+    [disabledComments]="true"
+    [readOnly]="true"
+    [formConfig]="formConfig"
+  ></fi-procurement-form>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

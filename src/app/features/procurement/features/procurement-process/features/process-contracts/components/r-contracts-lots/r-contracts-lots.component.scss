@@ -1,0 +1,27 @@
+$grid-columns: 1fr 1fr 1fr 1fr 3rem;
+
+.title-lots {
+  margin-bottom: 1rem;
+}
+
+.contracts-lots-from {
+  padding: 1.5rem 0;
+  padding-bottom: 0;
+}
+
+.lot-row {
+  display: grid;
+  grid-template-columns: $grid-columns;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+mat-form-field,
+fi-mat-numeric {
+  width: 100%;
+}

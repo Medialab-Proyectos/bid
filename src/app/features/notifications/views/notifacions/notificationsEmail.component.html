@@ -1,0 +1,163 @@
+<div class="card-dashboard" [ngClass]="false ? 'pt-4 m-0' : 'pt-2'">
+  <div class="">
+    <div class="row">
+      <div
+        class="col-sm-12 col-md-8 col-lg-9 dashboard-header align-self-center"
+      >
+        <div class="d-flex" style="padding: 1%">
+          <div class="">
+            <div class="icon-project">
+              <em class="fas fa-briefcase"></em>
+            </div>
+          </div>
+          <span class="dashboard-header__title">
+            {{ "NOTIFICATIONS.TITLE" | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="" *ngIf="!isLoginNotificationEmail; else showSpinner">
+    <div class="row">
+      <div class="col-12" [ngClass]="false ? 'p-0' : null">
+        <div
+          class="qa-dashboardComponent-onGoingProjects"
+          [ngClass]="false ? null : 'card-projects'"
+        >
+          <div class="qa-dashboardComponent-onGoingProjects">
+            <div class="card-projects__title pb-3">
+              <div style="width: 200px"></div>
+            </div>
+            <ng-container>
+              <kendo-grid
+                [data]="gridView"
+                [selectable]="true"
+                class="c-table-notifications"
+                [groupable]="true"
+                [group]="state.group"
+                [sortable]="true"
+                [sort]="state.sort"
+                [reorderable]="true"
+                [pageSize]="pageSize"
+                [skip]="skip"
+                [pageable]="true"
+                (dataStateChange)="dataStateChange($event)"
+                [loading]="loadingData"
+              >
+                <kendo-grid-messages
+                  [groupPanelEmpty]="'NOTIFICATIONS.MESSAGES.DRAG' | translate"
+                  [noRecords]="'NOTIFICATIONS.TABLE.EMPTY_MSG' | translate"
+                >
+                </kendo-grid-messages>
+
+                <ng-template kendoGridToolbarTemplate position="top">
+                  <kendo-datepicker
+                    class="c-datepicker"
+                    format="dd MMM yyyy"
+                    [navigation]="false"
+                    [style.width]="'50%'"
+                    [(value)]="searchDate"
+                    (valueChange)="onChangeDate($event)"
+                    [placeholder]="'NOTIFICATIONS.ENTER_DATE' | translate"
+                    id="Cal_Milestone_estimated_date"
+                    calendarType="classic"
+                  >
+                    <kendo-datepicker-messages
+                      [today]="'COMMON.CALENDAR.TODAY' | translate"
+                      [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+                    ></kendo-datepicker-messages>
+                  </kendo-datepicker>
+
+                  <fi-filter
+                    class="d-block"
+                    [minLength]="0"
+                    (filterValue)="onSearch($event)"
+                    [placeholder]="'NOTIFICATIONS.SEARCH' | translate"
+                  ></fi-filter>
+                </ng-template>
+
+                <kendo-grid-column
+                  field="formattedCreatedDate"
+                  [title]="'NOTIFICATIONS.SEND_DATE' | translate"
+                  [sortable]="true"
+                  width="200"
+                  ><ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.createDate | date : "dd/MM/yyyy HH:mm" }}
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="subjectDecode"
+                  [title]="'NOTIFICATIONS.SUBJECT' | translate"
+                  class="subjectCol"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div [style.padding-bottom.px]="dataItem?.paddingBottom">
+                      <p class="">{{ dataItem.subjectDecode }}</p>
+                      <div class="all-addresses">
+                        <p class="mr-2">
+                          {{ "NOTIFICATIONS.ALL_ADDRESSES" | translate }}
+                        </p>
+                        <p class="addreses">
+                          {{ dataItem.formattedEmails }}
+                        </p>
+                      </div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [title]="'NOTIFICATIONS.ACTIONS' | translate"
+                  width="90"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <button
+                      kendoButton
+                      class="k-button"
+                      type="button"
+                      (click)="generate(dataItem.id)"
+                      iconClass="fas fa-file-download"
+                    ></button>
+                  </ng-template>
+                </kendo-grid-column>
+                <ng-template kendoGridDetailTemplate let-dataItem>
+                  <div class="detail-template">
+                    <div
+                      [innerHTML]="dataItem.bodyDecode"
+                      id="{{ 'output_' + dataItem.id }}"
+                    ></div>
+                  </div>
+                </ng-template>
+              </kendo-grid>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display: none">
+      <div id="outputDocument">
+        <div>
+          <label>{{ subjectTranslate }}</label>
+          <span class="etiqueta"></span>
+          <label id="lblSubject"></label>
+        </div>
+        <div>
+          <label>{{ allAddressTranslate }}</label>
+          <span class="etiqueta"></span>
+          <label id="lblToEmail" class="email-notifacion-template"></label>
+        </div>
+        <div>
+          <label>{{ notificationsSendDateTranslate }}</label>
+          <span class="etiqueta"></span>
+          <label id="lblDate"></label>
+        </div>
+        <div id="output"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

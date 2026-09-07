@@ -1,0 +1,233 @@
+////
+/// workflow module
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#c-card-workflow
+/// @since version 1.0.0
+////
+$gray-color: #e3e3e3;
+$gray-bg-color: #fafaf9;
+$body-color: #080707;
+$header-color: #514f4d;
+$red-color: #d60f0f;
+
+.container-info {
+  .info {
+    background-color: #6b6d70;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    padding: 1rem;
+    font-size: 2rem;
+    color: #fff;
+    em {
+      margin-right: 0.5rem;
+    }
+    p {
+      margin: unset;
+      color: inherit;
+    }
+  }
+}
+
+.table-workflow__kendo {
+  border: none;
+  .k-grid-header-wrap {
+    border-width: 2px 0px;
+    border-color: #cccccc;
+    thead {
+      tr {
+        background-color: #f5f5f5;
+        th {
+          color: #525252;
+          font-weight: bold;
+          padding: 15px 10px;
+          border-width: 0 0 0px 2px;
+          border-color: #cccccc;
+        }
+      }
+    }
+  }
+
+  .k-grid-container {
+    .k-grid-content {
+      .k-grid-table {
+        tbody {
+          tr {
+            background-color: unset;
+            td {
+              border: none;
+              .k-textbox {
+                &.ng-touched,
+                &.ng-untouched {
+                  padding: 19px 5px;
+                  border-radius: 4px;
+                  border: 2px solid #999999;
+                }
+                &.ng-touched.ng-invalid {
+                  border: 2px solid $red-color;
+                }
+              }
+              .k-dropdown {
+                &.ng-touched,
+                &.ng-untouched {
+                  .k-dropdown-wrap {
+                    background-color: unset;
+                    padding: 5px;
+                    border-radius: 4px;
+                    border: 2px solid #999999;
+                    .k-select {
+                      .k-i-arrow-s::before {
+                        content: "\e015";
+                      }
+                    }
+                  }
+                }
+                &.ng-touched.ng-invalid {
+                  .k-dropdown-wrap {
+                    border: 2px solid $red-color;
+                  }
+                }
+              }
+              .k-multiselect {
+                overflow: hidden;
+                &.ng-touched,
+                &.ng-untouched {
+                  .k-multiselect-wrap {
+                    border-radius: 3px;
+                    border: 2px solid #999999;
+                    padding: 5px;
+                    .k-button {
+                      text-align: justify;
+                      min-width: unset;
+                      background-color: unset;
+                      border-left: 1px solid #cecece;
+                    }
+                  }
+                }
+
+                &.ng-touched.ng-invalid {
+                  .k-multiselect-wrap {
+                    border: 2px solid $red-color;
+                  }
+                }
+              }
+              .k-datepicker {
+                &.ng-untouched,
+                &.ng-touched.ng-valid {
+                  .k-picker-wrap {
+                    border: 2px solid #999999;
+                  }
+                }
+              }
+              .btn.k-button-icon {
+                background: none;
+                border: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .k-toolbar {
+    background: unset;
+    border: none;
+    .btn-add-step {
+      background-color: unset;
+      color: #0089b5;
+    }
+  }
+}
+
+.action-buttons {
+  .btn-save {
+    outline: none;
+    border: none;
+    background-color: #0089b5;
+    color: #fff;
+  }
+}
+
+.btn-cancel {
+  color: #0070d2;
+  cursor: pointer;
+  background-color: transparent;
+  background-image: none;
+  border: none;
+
+  &:disabled {
+    border: none;
+  }
+}
+
+.nowrap {
+  display: block;
+  white-space: nowrap;
+}
+
+.k-multiselect > .k-chip-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.k-multiselect {
+  padding: 0;
+  height: auto;
+  .k-chip-list {
+    display: flex !important;
+    flex-wrap: wrap;
+    height: 100%;
+    .k-chip {
+      height: 3em;
+      border-radius: 4px;
+    }
+  }
+}
+
+.justification_participant {
+  .k-input-values {
+    kendo-searchbar,
+    .k-searchbar {
+      display: none !important;
+    }
+  }
+}
+
+.k-searchbar > * {
+  min-height: 3em;
+  min-width: 2em;
+  width: 100%;
+}
+
+.workflow-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+kendo-taglist {
+  display: block !important;
+  .k-chip {
+    display: flex;
+  }
+}
+
+// FIXME: THIS BREAKS THE MARGIN OF OPTIONS IN OTHER PART OF THE APP
+// .k-animation-container {
+//   .k-popup {
+//     border-radius: 4px;
+//     box-shadow: none!important;
+//     .k-list {
+//       .k-item {
+//         padding-left: rem(11);
+//         margin: 0;
+//       }
+//     }
+//   }
+// }

@@ -1,0 +1,966 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Del registro al resultado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;0,700;1,400&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+  :root {
+    --paper: #e9ecf0;
+    --surface: #ffffff;
+    --surface-2: #f4f6f8;
+    --ink: #1b2330;
+    --ink-2: #47566a;
+    --ink-3: #6f7f92;
+    --line: #d3dae2;
+    --line-2: #e4e9ee;
+    --chain: #2f5d8c;
+    --chain-soft: #e4edf6;
+    --outcome: #2c6b50;
+    --outcome-soft: #e2efe9;
+    --assumption: #8f6512;
+    --assumption-soft: #faf0dc;
+    --risk: #92322a;
+    --risk-soft: #fae7e4;
+    --shadow: 0 1px 2px rgba(27, 35, 48, .05), 0 8px 24px rgba(27, 35, 48, .06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0f151d;
+      --surface: #171f2a;
+      --surface-2: #1d2732;
+      --ink: #e9eef4;
+      --ink-2: #adbccb;
+      --ink-3: #8496a8;
+      --line: #2b3644;
+      --line-2: #222c38;
+      --chain: #7fb0dd;
+      --chain-soft: #17293a;
+      --outcome: #74c0a0;
+      --outcome-soft: #14261e;
+      --assumption: #d9ab5c;
+      --assumption-soft: #2b2314;
+      --risk: #e08e84;
+      --risk-soft: #2b1917;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .32);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #0f151d;
+    --surface: #171f2a;
+    --surface-2: #1d2732;
+    --ink: #e9eef4;
+    --ink-2: #adbccb;
+    --ink-3: #8496a8;
+    --line: #2b3644;
+    --line-2: #222c38;
+    --chain: #7fb0dd;
+    --chain-soft: #17293a;
+    --outcome: #74c0a0;
+    --outcome-soft: #14261e;
+    --assumption: #d9ab5c;
+    --assumption-soft: #2b2314;
+    --risk: #e08e84;
+    --risk-soft: #2b1917;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .32);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.62;
+    margin: 0;
+    padding: 0 20px 100px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { margin: 0 auto; max-width: 61rem; }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    border-bottom: 3px solid var(--ink);
+    margin-bottom: 48px;
+    padding: 60px 0 26px;
+  }
+
+  .eyebrow {
+    color: var(--ink-3);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .76rem;
+    letter-spacing: .16em;
+    margin: 0 0 16px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: Spectral, Georgia, serif;
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.02;
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    color: var(--ink-2);
+    font-size: 1.22rem;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 48ch;
+  }
+
+  h2 {
+    font-family: Spectral, Georgia, serif;
+    font-size: clamp(1.55rem, 3.4vw, 2.05rem);
+    font-weight: 600;
+    letter-spacing: -.012em;
+    line-height: 1.16;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: Spectral, Georgia, serif;
+    font-size: 1.22rem;
+    font-weight: 600;
+    line-height: 1.28;
+    margin: 0 0 8px;
+  }
+
+  section { margin-bottom: 76px; }
+
+  .lead {
+    color: var(--ink-2);
+    margin: 0 0 30px;
+    max-width: 64ch;
+  }
+
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  em.term { color: var(--ink); font-style: italic; }
+
+  code {
+    background: var(--surface-2);
+    border: 1px solid var(--line-2);
+    border-radius: 3px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .85em;
+    padding: 1px 5px;
+  }
+
+  /* ---------- the chain, read backwards ---------- */
+  .chain { margin: 0; padding: 0; }
+
+  .rung {
+    display: grid;
+    gap: 0 24px;
+    grid-template-columns: 148px 1fr;
+    position: relative;
+  }
+
+  .rung__rail {
+    padding-top: 22px;
+    text-align: right;
+  }
+
+  .rung__level {
+    color: var(--chain);
+    display: block;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .74rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .rung__horizon {
+    color: var(--ink-3);
+    display: block;
+    font-size: .84rem;
+    margin-top: 4px;
+  }
+
+  .rung__body {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--chain);
+    border-radius: 0 6px 6px 0;
+    box-shadow: var(--shadow);
+    padding: 20px 24px;
+  }
+
+  .rung--impact .rung__body { border-left-color: var(--outcome); }
+  .rung--impact .rung__level { color: var(--outcome); }
+
+  .rung__body p { color: var(--ink-2); }
+  .rung__body p:first-of-type { color: var(--ink); }
+
+  /* the assumption that has to hold for one rung to reach the next */
+  .bridge {
+    display: grid;
+    gap: 0 24px;
+    grid-template-columns: 148px 1fr;
+  }
+
+  .bridge__rail {
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 2px;
+  }
+
+  .bridge__arrow {
+    color: var(--ink-3);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    letter-spacing: .08em;
+  }
+
+  .bridge__body {
+    background: var(--assumption-soft);
+    border-left: 4px solid var(--assumption);
+    margin: 10px 0;
+    padding: 14px 22px;
+  }
+
+  .bridge__label {
+    color: var(--assumption);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .bridge__body p {
+    color: var(--ink);
+    margin: 6px 0 0;
+  }
+
+  .bridge__status {
+    color: var(--ink-2);
+    display: block;
+    font-size: .92rem;
+    margin-top: 6px;
+  }
+
+  /* ---------- tables ---------- */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+
+  table { border-collapse: collapse; min-width: 44rem; width: 100%; }
+
+  th, td {
+    border-bottom: 1px solid var(--line-2);
+    padding: 13px 18px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    background: var(--surface-2);
+    color: var(--ink-3);
+    font-size: .78rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+
+  td.level {
+    color: var(--chain);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ---------- elements list ---------- */
+  .elements { display: grid; gap: 18px; margin: 0; padding: 0; }
+
+  .element {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    list-style: none;
+    padding: 20px 24px;
+  }
+
+  .element__head {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-bottom: 10px;
+  }
+
+  .tag {
+    border-radius: 999px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .07em;
+    padding: 3px 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .tag--chain { background: var(--chain-soft); color: var(--chain); }
+  .tag--outcome { background: var(--outcome-soft); color: var(--outcome); }
+  .tag--assumption { background: var(--assumption-soft); color: var(--assumption); }
+
+  .element__why {
+    border-top: 1px solid var(--line-2);
+    color: var(--ink-2);
+    font-size: .96rem;
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .element__why strong { color: var(--ink); }
+
+  /* ---------- callouts ---------- */
+  .callout {
+    background: var(--surface);
+    border-left: 4px solid var(--chain);
+    border-radius: 0 6px 6px 0;
+    box-shadow: var(--shadow);
+    margin: 26px 0;
+    padding: 20px 24px;
+  }
+
+  .callout--risk { border-left-color: var(--risk); }
+  .callout--risk .callout__title { color: var(--risk); }
+
+  .callout__title {
+    font-family: Spectral, Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--line);
+    color: var(--ink-2);
+    font-family: Spectral, Georgia, serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    margin: 22px 0;
+    padding-left: 22px;
+  }
+
+  blockquote cite {
+    color: var(--ink-3);
+    display: block;
+    font-family: "Public Sans", sans-serif;
+    font-size: .88rem;
+    font-style: normal;
+    margin-top: 8px;
+  }
+
+  ul.plain { margin: 0 0 14px; padding-left: 22px; }
+  ul.plain li { margin-bottom: 8px; }
+
+  /* ---------- references ---------- */
+  .refs { list-style: none; margin: 0; padding: 0; }
+
+  .refs li {
+    border-bottom: 1px solid var(--line-2);
+    color: var(--ink-2);
+    font-size: .96rem;
+    padding: 12px 0;
+  }
+
+  .refs li:last-child { border-bottom: 0; }
+  .refs strong { color: var(--ink); font-weight: 600; }
+
+  .refs__note {
+    color: var(--ink-3);
+    font-size: .92rem;
+    margin-top: 18px;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    color: var(--ink-3);
+    font-size: .94rem;
+    margin-top: 20px;
+    padding-top: 24px;
+  }
+
+  @media (max-width: 680px) {
+    body { font-size: 16px; }
+    .rung, .bridge { grid-template-columns: 1fr; gap: 8px; }
+    .rung__rail { padding-top: 0; text-align: left; }
+    .bridge__rail { display: none; }
+    table { min-width: 34rem; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Propuesta alterna · Reporte de Pagos Efectuados</p>
+    <h1>Del registro al resultado</h1>
+    <p class="standfirst">
+      El módulo está diseñado para que el dato quede bien guardado. Una teoría
+      del cambio pregunta otra cosa: qué tiene que pasar en el mundo para que
+      haberlo guardado haya servido de algo.
+    </p>
+  </header>
+
+  <section>
+    <h2>La teoría que el módulo ya tiene, sin decirla</h2>
+    <p class="lead">
+      Carol Weiss abrió este campo con una observación incómoda: toda
+      intervención lleva dentro una teoría sobre por qué debería funcionar, y
+      casi ninguna la escribe. Cuando no está escrita, no se puede discutir, no
+      se puede refutar y nadie nota cuándo dejó de ser cierta.
+    </p>
+
+    <blockquote>
+      Los programas se construyen sobre supuestos implícitos acerca de cómo y
+      por qué van a funcionar. Explicitar esos supuestos es lo que permite
+      evaluar de verdad, en lugar de contar actividades.
+      <cite>Carol H. Weiss, <i>Nothing as Practical as Good Theory</i>, 1995</cite>
+    </blockquote>
+
+    <p>
+      La teoría implícita de este módulo, tal como está construido hoy, se puede
+      escribir en una línea: <em class="term">si el ejecutor registra bien sus
+      pagos, el Banco puede verificarlos</em>.
+    </p>
+    <p>
+      Es una teoría contable, y es correcta hasta donde llega. El problema es
+      dónde se detiene: en el producto. No dice qué cambia porque el pago esté
+      registrado. Y como no lo dice, cada decisión de diseño se ha optimizado
+      para la fidelidad del registro —validaciones, trazabilidad, estados— y
+      ninguna para aquello a lo que el registro sirve.
+    </p>
+
+    <div class="callout">
+      <div class="callout__title">La consecuencia práctica</div>
+      <p>
+        El módulo le pide datos al ejecutor y no le devuelve nada. Sabe más que
+        él sobre su propia situación —qué puede justificar, qué lo bloquea,
+        cuánto lleva parado— y no se lo dice. Ese silencio no es una omisión de
+        interfaz: es lo que pasa cuando la teoría termina en el producto.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>La cadena, leída al revés</h2>
+    <p class="lead">
+      Una teoría del cambio se construye hacia atrás: se parte del cambio que se
+      quiere y se pregunta qué tiene que ser cierto un escalón antes. Por eso
+      esta cadena se lee de arriba abajo, del impacto a la actividad. Entre cada
+      par de escalones va lo que de verdad aporta el método: el
+      <strong>supuesto</strong> que tiene que sostenerse para que uno lleve al
+      siguiente.
+    </p>
+
+    <div class="chain">
+
+      <div class="rung rung--impact">
+        <div class="rung__rail">
+          <span class="rung__level">Impacto</span>
+          <span class="rung__horizon">vida del préstamo</span>
+        </div>
+        <div class="rung__body">
+          <h3>Los recursos aprobados se convierten en obra dentro del plazo</h3>
+          <p>
+            El préstamo se ejecuta y se cierra sin saldo ocioso. Nadie devuelve
+            dinero por no haber podido gastarlo a tiempo.
+          </p>
+        </div>
+      </div>
+
+      <div class="bridge">
+        <div class="bridge__rail"><span class="bridge__arrow">↑ porque ↑</span></div>
+        <div class="bridge__body">
+          <span class="bridge__label">Supuesto · el más frágil</span>
+          <p>
+            Que la demora en justificar sea una <em>causa</em> del retraso de
+            ejecución y no solo un síntoma de él.
+          </p>
+          <span class="bridge__status">
+            Sin verificar. Es el supuesto que decide si todo lo demás vale la
+            pena, y el único que este equipo no puede resolver solo: necesita el
+            dato histórico de operaciones del Banco.
+          </span>
+        </div>
+      </div>
+
+      <div class="rung">
+        <div class="rung__rail">
+          <span class="rung__level">Resultado</span>
+          <span class="rung__horizon">semestral</span>
+        </div>
+        <div class="rung__body">
+          <h3>El ciclo de justificación se acorta y se devuelve menos</h3>
+          <p>
+            Menos días entre que el ejecutor paga y el Banco lo acepta. Menos
+            solicitudes devueltas por errores que se podían ver antes de enviar.
+          </p>
+        </div>
+      </div>
+
+      <div class="bridge">
+        <div class="bridge__rail"><span class="bridge__arrow">↑ porque ↑</span></div>
+        <div class="bridge__body">
+          <span class="bridge__label">Supuesto</span>
+          <p>
+            Que el Banco responda en un plazo previsible.
+          </p>
+          <span class="bridge__status">
+            Fuera del alcance del módulo. Conviene declararlo como supuesto y no
+            disfrazarlo de objetivo: si el cuello de botella está del lado del
+            Banco, ninguna mejora de captura lo mueve.
+          </span>
+        </div>
+      </div>
+
+      <div class="rung">
+        <div class="rung__rail">
+          <span class="rung__level">Resultado intermedio</span>
+          <span class="rung__horizon">mensual</span>
+        </div>
+        <div class="rung__body">
+          <h3>El ejecutor se corrige antes de que el Banco lo corrija</h3>
+          <p>
+            Sabe en todo momento cuánto puede justificar hoy, qué se lo impide y
+            qué le caduca. Actúa sobre eso sin que nadie se lo pida.
+          </p>
+        </div>
+      </div>
+
+      <div class="bridge">
+        <div class="bridge__rail"><span class="bridge__arrow">↑ porque ↑</span></div>
+        <div class="bridge__body">
+          <span class="bridge__label">Supuesto · el que rompe hoy</span>
+          <p>
+            Que el módulo le devuelva su situación, no solo se la reciba.
+          </p>
+          <span class="bridge__status">
+            Falso hoy. Es el eslabón que esta propuesta ataca, y el único que se
+            resuelve enteramente con diseño de producto.
+          </span>
+        </div>
+      </div>
+
+      <div class="rung">
+        <div class="rung__rail">
+          <span class="rung__level">Producto</span>
+          <span class="rung__horizon">continuo</span>
+        </div>
+        <div class="rung__body">
+          <h3>Pagos bien imputados y estados de gastos completos</h3>
+          <p>
+            Cada pago con su componente, su producto y su mecanismo. Cada estado
+            de gastos con sus montos atados a los pagos que los sustentan.
+          </p>
+        </div>
+      </div>
+
+      <div class="bridge">
+        <div class="bridge__rail"><span class="bridge__arrow">↑ porque ↑</span></div>
+        <div class="bridge__body">
+          <span class="bridge__label">Supuesto</span>
+          <p>
+            Que el ejecutor entienda qué se le pide en el momento de capturarlo.
+          </p>
+          <span class="bridge__status">
+            Parcialmente resuelto. Es lo que se atacó con la guía en los
+            diálogos, los estados explicados y las confirmaciones que dicen qué
+            se pierde.
+          </span>
+        </div>
+      </div>
+
+      <div class="rung">
+        <div class="rung__rail">
+          <span class="rung__level">Actividad</span>
+          <span class="rung__horizon">diario</span>
+        </div>
+        <div class="rung__body">
+          <h3>Registrar, importar, reclasificar, generar</h3>
+          <p>
+            Las pantallas que ya existen. En la teoría actual son el final del
+            camino; en esta son el principio.
+          </p>
+        </div>
+      </div>
+
+      <div class="bridge">
+        <div class="bridge__rail"><span class="bridge__arrow">↑ porque ↑</span></div>
+        <div class="bridge__body">
+          <span class="bridge__label">Supuesto</span>
+          <p>
+            Que el dato de adquisiciones, contrato y cronograma llegue completo.
+          </p>
+          <span class="bridge__status">
+            Incumplido en un caso conocido: las actividades sin proceso de
+            adquisición —becas y similares— no tienen fuente del lado del Banco.
+          </span>
+        </div>
+      </div>
+
+      <div class="rung">
+        <div class="rung__rail">
+          <span class="rung__level">Insumo</span>
+          <span class="rung__horizon">—</span>
+        </div>
+        <div class="rung__body">
+          <h3>Contratos, cronograma, plan financiero, balances</h3>
+          <p>
+            Lo que otros módulos producen. Sin balances no hay reglas, y sin
+            reglas el módulo no puede avisar de nada: solo registrar.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Qué elementos entran en la interfaz</h2>
+    <p class="lead">
+      Cada uno responde a un escalón concreto de la cadena. Los tres primeros
+      son los que cierran el eslabón que hoy está roto; los dos últimos son los
+      que hacen que la teoría se pueda revisar en vez de solo declarar.
+    </p>
+
+    <ul class="elements">
+
+      <li class="element">
+        <div class="element__head">
+          <h3>Tablero de situación del ejecutor</h3>
+          <span class="tag tag--outcome">Resultado intermedio</span>
+        </div>
+        <p>
+          Lo primero que se ve al entrar, antes de la tabla: cuánto se puede
+          justificar hoy, cuánto está esperando respuesta del Banco, cuánto está
+          registrado pero bloqueado y por qué, y qué contrato vence antes.
+        </p>
+        <p class="element__why">
+          <strong>Por qué:</strong> convierte el módulo de buzón en espejo. Es
+          la pieza que hace verdadero el supuesto que hoy es falso, y la única
+          de esta lista que no necesita permiso de nadie más.
+        </p>
+      </li>
+
+      <li class="element">
+        <div class="element__head">
+          <h3>Precondiciones explícitas antes de generar</h3>
+          <span class="tag tag--outcome">Resultado intermedio</span>
+        </div>
+        <p>
+          Una lista corta de lo que falta para que el estado de gastos pueda
+          salir: pagos sin comprobante, sin componente, con tasa de cambio
+          pendiente, o que superan el saldo del componente. Cada una con el
+          enlace a donde se arregla.
+        </p>
+        <p class="element__why">
+          <strong>Por qué:</strong> mueve la detección del error del lado del
+          Banco al lado del ejecutor. Es exactamente el mecanismo que reduce
+          devoluciones, que es el resultado que se busca.
+        </p>
+      </li>
+
+      <li class="element">
+        <div class="element__head">
+          <h3>Motivo de devolución, capturado y devuelto</h3>
+          <span class="tag tag--chain">Aprendizaje</span>
+        </div>
+        <p>
+          Cuando el Banco devuelve una solicitud, el motivo vuelve al módulo y
+          se agrega: qué se devuelve más, a quién, por qué. Y aparece como aviso
+          en el momento de capturar el pago que suele causarlo.
+        </p>
+        <p class="element__why">
+          <strong>Por qué:</strong> sin este circuito la cadena no tiene
+          retroalimentación y la teoría no se puede corregir. Es lo que Michael
+          Quinn Patton llama el uso formativo de la evaluación: el sistema
+          aprende mientras opera, no al final.
+        </p>
+      </li>
+
+      <li class="element">
+        <div class="element__head">
+          <h3>Indicadores de ciclo, no de volumen</h3>
+          <span class="tag tag--outcome">Resultado</span>
+        </div>
+        <p>
+          Días entre el pago y su justificación aceptada. Porcentaje de pagos
+          registrados que llegan a viajar. Tasa de devolución. Nada de «pagos
+          cargados este mes», que mide actividad y no cambio.
+        </p>
+        <p class="element__why">
+          <strong>Por qué:</strong> Robert Behn muestra que la medición sirve a
+          ocho propósitos distintos y que cada uno pide medidas distintas. Este
+          módulo hoy solo sirve a dos —controlar y presupuestar—; estas medidas
+          añaden los que faltan: aprender y mejorar.
+        </p>
+      </li>
+
+      <li class="element">
+        <div class="element__head">
+          <h3>Panel de supuestos, visible y fechado</h3>
+          <span class="tag tag--assumption">Método</span>
+        </div>
+        <p>
+          Los cinco supuestos de la cadena anterior, escritos en el producto, con
+          su estado y su evidencia: verificado, sin verificar, incumplido. Quien
+          entra ve de qué depende que esto funcione.
+        </p>
+        <p class="element__why">
+          <strong>Por qué:</strong> es la parte del método que casi nadie
+          implementa y la que impide que la teoría del cambio se degrade en un
+          diagrama bonito. Craig Valters lo dice sin rodeos: cuando la teoría del
+          cambio se vuelve un requisito de reporte, deja de servir para aprender.
+        </p>
+      </li>
+
+      <li class="element">
+        <div class="element__head">
+          <h3>Enganche con la matriz de resultados del préstamo</h3>
+          <span class="tag tag--chain">Impacto</span>
+        </div>
+        <p>
+          El componente y el producto que ya se capturan en cada pago son la
+          llave: permiten leer el gasto contra la matriz de resultados de la
+          operación, no solo contra el presupuesto.
+        </p>
+        <p class="element__why">
+          <strong>Por qué:</strong> el Banco ya trabaja con marcos de resultados
+          en sus operaciones. Esta es la conexión más barata entre lo que se
+          gasta y lo que se prometió, y ya está medio construida.
+        </p>
+      </li>
+
+    </ul>
+  </section>
+
+  <section>
+    <h2>Cómo se sabría si funciona</h2>
+    <p class="lead">
+      Una teoría del cambio sin indicadores por escalón es un organigrama. Estos
+      separan lo que se puede ver pronto de lo que solo se ve tarde, que es la
+      distinción que permite corregir a tiempo.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Escalón</th>
+            <th>Indicador adelantado</th>
+            <th>Indicador de resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="level">Producto</td>
+            <td>% de pagos con componente y producto imputados al capturarlos</td>
+            <td>% de estados de gastos generados sin recaptura manual</td>
+          </tr>
+          <tr>
+            <td class="level">Res. intermedio</td>
+            <td>% de bloqueos resueltos por el ejecutor sin intervención del Banco</td>
+            <td>Días que un pago pasa en estado «pagado» antes de viajar</td>
+          </tr>
+          <tr>
+            <td class="level">Resultado</td>
+            <td>Tasa de devolución por causa evitable</td>
+            <td>Días entre el pago y su justificación aceptada</td>
+          </tr>
+          <tr>
+            <td class="level">Impacto</td>
+            <td>Saldo pagado pendiente de justificar, como % del anticipo</td>
+            <td>Saldo sin desembolsar al cierre de la operación</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>El riesgo de medir esto</h2>
+
+    <div class="callout callout--risk">
+      <div class="callout__title">Si se mide la velocidad, se justificará basura rápido</div>
+      <p>
+        Donald Campbell lo formuló en 1979: cuanto más se usa un indicador
+        cuantitativo para tomar decisiones, más presión recibe para corromperse y
+        más distorsiona lo que pretendía medir. Jerry Muller documenta el mismo
+        patrón en sector tras sector: se mide lo fácil, se sustituye el fin por
+        la métrica, y el desempeño real empeora mientras el tablero mejora.
+      </p>
+      <p>
+        <strong>Mitigación concreta:</strong> ningún indicador de velocidad viaja
+        solo. «Días hasta justificar» va siempre junto a «tasa de devolución».
+        Un ejecutor que acelera empeorando la calidad se ve de inmediato, porque
+        las dos cifras se mueven en direcciones opuestas.
+      </p>
+      <p>
+        <strong>Y una regla de uso:</strong> estos indicadores son para que el
+        ejecutor se vea a sí mismo, no para rankear ejecutores. En cuanto se
+        conviertan en meta impuesta desde fuera, dejarán de informar.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Dónde interviene realmente un módulo</h2>
+    <p class="lead">
+      Donella Meadows ordenó los puntos de intervención de un sistema por su
+      capacidad de cambiarlo. Sirve para no prometer de más.
+    </p>
+    <ul class="plain">
+      <li>
+        <strong>Flujos de información</strong> — punto de apalancamiento alto y
+        barato. Es exactamente lo que hace este módulo: pone en manos de quien
+        decide un dato que antes no tenía. Aquí sí puede mover la aguja.
+      </li>
+      <li>
+        <strong>Reglas del sistema</strong> — más alto todavía, pero fuera de
+        alcance: quién puede justificar qué, con qué plazos, lo fija el contrato
+        de préstamo y las políticas del Banco.
+      </li>
+      <li>
+        <strong>Objetivos y paradigma</strong> — lo más alto, y no es esto. Si el
+        problema real es que el ejecutor no tiene capacidad de gestión, ninguna
+        interfaz lo resuelve.
+      </li>
+    </ul>
+    <p>
+      La consecuencia honesta: esta propuesta puede reclamar contribución sobre
+      el resultado intermedio, y solo argumentar contribución plausible sobre el
+      resultado. Es la distinción que John Mayne formalizó en el análisis de
+      contribución, pensado justo para intervenciones donde no se puede montar un
+      contrafactual.
+    </p>
+  </section>
+
+  <section>
+    <h2>Qué no propongo</h2>
+    <ul class="plain">
+      <li>
+        <strong>No sustituye la matriz de resultados</strong> de la operación ni
+        el marco de efectividad del Banco. Se engancha con ellos.
+      </li>
+      <li>
+        <strong>No mide impacto en desarrollo.</strong> Mide ejecución
+        financiera, que es una condición del impacto, no el impacto.
+      </li>
+      <li>
+        <strong>No es un plan.</strong> Una teoría del cambio es una hipótesis
+        con supuestos declarados. Sirve mientras se pueda refutar; si se aprueba
+        y se archiva, se convirtió en el papeleo que Valters describe.
+      </li>
+      <li>
+        <strong>No pide construir todo.</strong> El tablero de situación y las
+        precondiciones son suficientes para probar el eslabón que hoy falla.
+        Si ese no se mueve, el resto no vale la pena.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>De dónde sale esto</h2>
+    <ul class="refs">
+      <li>
+        <strong>Carol H. Weiss</strong> (1995). «Nothing as Practical as Good
+        Theory: Exploring Theory-Based Evaluation…», en Connell et al.,
+        <i>New Approaches to Evaluating Community Initiatives</i>, Aspen
+        Institute. El origen del uso moderno del término.
+      </li>
+      <li>
+        <strong>Isabel Vogel</strong> (2012). <i>Review of the use of «Theory of
+        Change» in international development</i>, revisión encargada por DFID.
+        La síntesis de referencia sobre cómo se usa y cómo se deforma.
+      </li>
+      <li>
+        <strong>Dana H. Taplin y Heléne Clark</strong> (2012). <i>Theory of
+        Change Basics</i>, ActKnowledge. Y <strong>Andrea A. Anderson</strong>
+        (2005), <i>The Community Builder's Approach to Theory of Change</i>,
+        Aspen Institute. De aquí viene construir la cadena hacia atrás y colocar
+        los supuestos entre escalones.
+      </li>
+      <li>
+        <strong>John Mayne</strong> (2008). <i>Contribution Analysis: An approach
+        to exploring cause and effect</i>, ILAC Brief 16; y trabajos posteriores
+        sobre teorías del cambio robustas. Cómo sostener una afirmación causal
+        sin contrafactual.
+      </li>
+      <li>
+        <strong>Craig Valters</strong> (2014-2015). <i>Theory of Change in
+        international development: communication, learning or accountability?</i>
+        y <i>Theories of Change: Time for a radical approach to learning in
+        development</i>, ODI. La crítica de que la herramienta se volvió trámite.
+      </li>
+      <li>
+        <strong>Michael Quinn Patton</strong>. <i>Utilization-Focused
+        Evaluation</i> y <i>Developmental Evaluation</i> (2010). El uso formativo:
+        el sistema aprende mientras opera.
+      </li>
+      <li>
+        <strong>Robert D. Behn</strong> (2003). «Why Measure Performance?
+        Different Purposes Require Different Measures», <i>Public Administration
+        Review</i> 63(5). Los ocho propósitos de medir y por qué cada uno pide
+        medidas distintas.
+      </li>
+      <li>
+        <strong>Donella H. Meadows</strong> (1999). <i>Leverage Points: Places to
+        Intervene in a System</i>. Dónde puede y dónde no puede intervenir un
+        cambio de información.
+      </li>
+      <li>
+        <strong>Donald T. Campbell</strong> (1979). «Assessing the impact of
+        planned social change», <i>Evaluation and Program Planning</i>. Y
+        <strong>Jerry Z. Muller</strong> (2018), <i>The Tyranny of Metrics</i>,
+        Princeton University Press. Los dos avisos sobre medir.
+      </li>
+      <li>
+        <strong>Banco Interamericano de Desarrollo</strong>. Marco de Efectividad
+        en el Desarrollo, Matriz de Efectividad en el Desarrollo y las matrices
+        de resultados de operación; evaluaciones de OVE. El marco propio del
+        Banco con el que esta propuesta se engancha.
+      </li>
+    </ul>
+
+    <p class="refs__note">
+      Las referencias están citadas de memoria y son correctas en autoría y
+      argumento; conviene verificar página y edición antes de circular el
+      documento fuera del equipo.
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      Propuesta de trabajo. No sustituye lo construido: reordena para qué sirve.
+      El único elemento que se sugiere probar primero es el tablero de situación
+      del ejecutor, porque es el que cierra el supuesto que hoy está roto y el
+      que no depende de decisiones ajenas al equipo.
+    </p>
+  </footer>
+
+</div>

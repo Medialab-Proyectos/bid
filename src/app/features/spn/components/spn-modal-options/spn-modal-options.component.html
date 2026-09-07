@@ -1,0 +1,33 @@
+<div>
+  <div mat-dialog-title>{{ "SPN.REGISTER_SPN.MODAL.TITLE" | translate }}</div>
+  <mat-dialog-content>
+    <div mat-icon-button (click)="closeModal()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </div>
+    <p>{{ "SPN.REGISTER_SPN.MODAL.SUBTITLE" | translate }}</p>
+    <mat-radio-group color="primary" [(ngModel)]="selectedOption">
+      <mat-radio-button value="sdp">
+        <span>{{ "SPN.REGISTER_SPN.MODAL.OPTION.SDP.TITLE" | translate }}</span>
+        <span>{{
+          "SPN.REGISTER_SPN.MODAL.OPTION.SDP.DESCRIPTION" | translate
+        }}</span>
+      </mat-radio-button>
+      <mat-radio-button value="sdo">
+        <span>{{ "SPN.REGISTER_SPN.MODAL.OPTION.SDO.TITLE" | translate }}</span>
+        <span>{{
+          "SPN.REGISTER_SPN.MODAL.OPTION.SDO.DESCRIPTION" | translate
+        }}</span>
+      </mat-radio-button>
+    </mat-radio-group>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div style="gap: 1rem" class="ml-auto d-flex">
+      <button (click)="closeModal()" mat-button color="primary" type="button">
+        {{ "SPN.REGISTER_SPN.MODAL.CANCEL" | translate }}
+      </button>
+      <button (click)="redirectToSpn()" mat-flat-button color="primary">
+        {{ "SPN.REGISTER_SPN.MODAL.CONTINUE" | translate }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

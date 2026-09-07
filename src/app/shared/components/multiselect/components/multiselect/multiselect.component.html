@@ -1,0 +1,21 @@
+<div class="c-multiselect d-block">
+  <div class="d-block w-100 mb-1">
+    <kendo-label class="c-multiselect__label" [for]="id" [text]="label">
+    </kendo-label>
+  </div>
+  <div class="d-block w-100">
+    <kendo-multiselect
+      [id]="id"
+      [data]="data"
+      [textField]="textField"
+      [valueField]="valueField"
+      [(ngModel)]="_values"
+      (valueChange)="valueChange($event)"
+      [disabled]="disabled"
+    >
+      <ng-template kendoMultiSelectNoDataTemplate>
+        {{ "PROCESS_DOC.FILES_LIST.NO_AWARDEDS" | translate }}
+      </ng-template>
+    </kendo-multiselect>
+  </div>
+</div>

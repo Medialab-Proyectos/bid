@@ -1,0 +1,23 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": [],
+    "baseUrl": "./",
+    "paths": {
+      "@core/*": ["src/app/core/*"],
+      "@fiduciary-interface/*": ["src/*"],
+      "@fiduciary-interface-test": ["src/test/index.ts"],
+      "@fiduciary-interface/core*": ["src/app/core*"],
+      "@fiduciary-interface-contracts*": [
+        "src/app/features/procurement/features/procurement-process/features/process-contracts/*"
+      ]
+    },
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "useDefineForClassFields": false
+  },
+  "files": ["src/main.ts", "src/polyfills.ts"],
+  "include": ["src/**/*.d.ts"]
+}

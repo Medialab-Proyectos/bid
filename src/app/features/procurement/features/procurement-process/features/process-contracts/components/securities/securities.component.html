@@ -1,0 +1,138 @@
+<div class="c-securities">
+  <div
+    class="row"
+    data-testid="securityRow"
+    *ngFor="let group of form.controls; index as i"
+    [formGroup]="group"
+  >
+    <div class="col-12 col-md-4">
+      <mat-form-field class="w-100" *ngIf="!isAmendment">
+        <mat-label>{{
+          "CONTRACT.ADDITIONAL_INFO.SECURITY" | translate
+        }}</mat-label>
+        <mat-select
+          #securityType
+          formControlName="securityType"
+          data-testid="securityType"
+          [id]="'Down_Security_' + (i + 1)"
+        >
+          <mat-option
+            *ngFor="let securityType of baseConfig.data.securityTypes"
+            [value]="securityType.id"
+            >{{ securityType.name | translate }}</mat-option
+          ></mat-select
+        >
+      </mat-form-field>
+      <div class="c-securities--readonly" *ngIf="isAmendment">
+        {{
+          amendmentInfo[i]?.securityType
+            | translateEnum : enum.biddingContractSecurityTypes
+        }}
+      </div>
+    </div>
+
+    <div class="col-12 col-md-2">
+      <mat-form-field class="w-100" *ngIf="!isAmendment">
+        <mat-label>
+          {{ "CONTRACT.ADDITIONAL_INFO.CURRENCY" | translate }}
+        </mat-label>
+        <mat-select
+          #currency
+          formControlName="currency"
+          data-testid="currency"
+          (valueChange)="onCurrencyChange($event, i)"
+          [id]="'Down_Currency_' + (i + 1)"
+        >
+          <mat-option
+            *ngFor="let currency of baseConfig.data.currencies"
+            [value]="currency.id"
+          >
+            {{ currency.currency | translate }}
+          </mat-option></mat-select
+        >
+      </mat-form-field>
+      <div class="c-securities--readonly" *ngIf="isAmendment">
+        {{ amendmentInfo[i]?.currency }}
+      </div>
+    </div>
+
+    <div class="col-12 col-md-2">
+      <fi-mat-numeric
+        [label]="'CONTRACT.ADDITIONAL_INFO.DOLLAR_EQUIVALENT' | translate"
+        [id]="'Txb_Contract_total_amount_' + (i + 1)"
+        [min]="0"
+        [maxlength]="18"
+        #amount
+        formControlName="amount"
+        data-testid="amount"
+        (valueChange)="
+          !isAmendment
+            ? onTotalAmountChange($event, i)
+            : calculateUsdEquivalent($event, i)
+        "
+        [decimals]="
+          isAmendment
+            ? getNumberOfDecimals(amendmentInfo[i]?.currency) === 0
+              ? 0
+              : 2
+            : selectedCurrency[i]?.numberOfDecimals === 0
+            ? 0
+            : 2
+        "
+        [placeholder]="0 | ifNumber"
+      ></fi-mat-numeric>
+    </div>
+
+    <div class="col-12 col-md-2">
+      <div class="d-flex align-items-start flex-column">
+        <p>{{ "CONTRACT.ADDITIONAL_INFO.DOLLAR_EQUIVALENT" | translate }}</p>
+        <p>{{ group.controls.usdEquivalentAmount.value || 0 | ifNumber }}</p>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-2 d-flex">
+      <div class="w-100">
+        <fi-mat-date
+          [label]="'CONTRACT.ADDITIONAL_INFO.SECURITY_DATE' | translate"
+          formControlName="expirationDate"
+          data-testid="expirationDate"
+          [id]="'Cal_Security_date_' + (i + 1)"
+        ></fi-mat-date>
+      </div>
+      <ng-container
+        *ngIf="baseConfig.settings.mode !== ModeEnum.READ && !isAmendment"
+      >
+        <button
+          mat-icon-button
+          color="primary"
+          type="button"
+          data-testid="deleteSecurityButton"
+          [id]="'Btn_Delete_security_' + (i + 1)"
+          *fiDisplayByPermissions="removeSecurityPermission"
+          (click)="deleteSecurity(i)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </ng-container>
+    </div>
+  </div>
+  <div
+    class="row actions mb-0"
+    *ngIf="baseConfig.settings.mode !== ModeEnum.READ && !isAmendment"
+  >
+    <div class="col-12">
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        data-testid="addSecurityButton"
+        id="Btn_Add_security"
+        *fiDisplayByPermissions="addSecurityPermission"
+        (click)="addSecurity()"
+      >
+        <mat-icon slot="start">add</mat-icon>
+        {{ "CONTRACT.ADDITIONAL_INFO.ADD_SECURITY" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

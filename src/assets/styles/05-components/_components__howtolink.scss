@@ -1,0 +1,23 @@
+////
+/// HOW-TO LINK component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}how-to-link
+/// @since version 1.0.0
+////
+.#{$ns}how-to-link {
+
+    &__icon {
+        color: color('yellow');
+    }
+
+    &__label {
+        color: color('gray-800');
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

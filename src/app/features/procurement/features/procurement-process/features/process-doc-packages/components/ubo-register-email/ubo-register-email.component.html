@@ -1,0 +1,85 @@
+<form [formGroup]="bidderForm" *ngIf="!!bidderForm">
+  <div class="font-weight-bold mt-3 mr-0 row">
+    <span class="col-5 px-4 align-self-center ubo-text">
+      {{ bidderName }}
+    </span>
+    <span
+      class="col-4 ml-2 align-self-center email-input fi-kendo-label--required ubo-text"
+    >
+      {{ "UBO.REGISTER_EMAIL.FULL_NAME" | translate }}
+    </span>
+    <div class="d-flex align-items-center col-2 ml-3">
+      <button
+        kendoButton
+        class="btn btn-online-brand mx-md-1 round-edge ubo-add-btn"
+        iconClass="fas fa-plus"
+        (click)="addRow()"
+      ></button>
+    </div>
+  </div>
+  <div formArrayName="emails">
+    <div
+      *ngFor="let p of emails.controls; let i = index"
+      class="row my-2 mx-0"
+      [formGroupName]="i"
+    >
+      <div class="col-5 pl-0">
+        <kendo-textbox
+          class="c-textbox email-input"
+          [placeholder]="'UBO.REGISTER_EMAIL.PLACEHOLDER' | translate"
+          formControlName="email"
+          (input)="preventSpaces(i)"
+        ></kendo-textbox>
+
+        <div class="o-input-error blank-space">
+          <span
+            *ngIf="
+              emails?.controls[i]?.controls?.email?.errors &&
+              (emails?.controls[i]?.controls?.email?.dirty ||
+                emails?.controls[i]?.controls?.email?.touched) &&
+              !emails?.controls[i]?.controls?.email.value
+            "
+          >
+            {{ "UBO.MODAL.REQUIRE_VALIDATION" | translate }}
+          </span>
+          <span
+            *ngIf="
+              emails?.controls[i]?.controls?.email?.errors &&
+              (emails?.controls[i]?.controls?.email?.dirty ||
+                emails?.controls[i]?.controls?.email?.touched) &&
+              !!emails?.controls[i]?.controls?.email.value
+            "
+          >
+            {{ "UBO.MODAL.WRONG_FORMAT_VALIDATION" | translate }}
+          </span>
+        </div>
+      </div>
+      <div class="col-4 pl-0 ml-3">
+        <kendo-textbox
+          class="c-textbox email-input"
+          formControlName="fullName"
+        ></kendo-textbox>
+
+        <div class="o-input-error blank-space">
+          <span
+            *ngIf="
+              emails?.controls[i]?.controls?.fullName?.errors &&
+              (emails?.controls[i]?.controls?.fullName?.dirty ||
+                emails?.controls[i]?.controls?.fullName?.touched)
+            "
+          >
+            {{ "UBO.MODAL.REQUIRE_VALIDATION" | translate }}
+          </span>
+        </div>
+      </div>
+      <div class="col-2 d-flex">
+        <button
+          kendoButton
+          class="btn btn-online-brand round-edge mx-md-2 ubo-add-btn ubo-delete-btn"
+          iconClass="fas fa-minus"
+          (click)="deleteRow(i)"
+        ></button>
+      </div>
+    </div>
+  </div>
+</form>

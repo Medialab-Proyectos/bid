@@ -1,0 +1,378 @@
+<div>
+  <!-- FIRST ROW -->
+  <div class="c-transactions__container c-transactions__container--top">
+    <div class="c-transactions__container c-transactions__container-dflex">
+      <div>
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.ORIGINAL_IDB" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.originalIdb !== null && !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.originalIdb | ifNumber }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.CURRENT_IDB" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.currentIdb !== null && !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.currentIdb | ifNumber }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.CANCELLATIONS" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.cancellations !== null && !loading;
+                else skeleton
+              "
+            >
+              {{
+                (projectBalances?.cancellations
+                  ? projectBalances?.cancellations
+                  : 0
+                ) | ifNumber
+              }}
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="projectBalances?.retroactiveFinancingInformation.hasRetroactiveFinancing">
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.RF_CURRENT_AMOUNT" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.retroactiveFinancingInformation.rfCurrentAmount !== null && !loading;
+                else skeleton">
+              {{
+                (projectBalances?.retroactiveFinancingInformation.rfCurrentAmount 
+                  ? projectBalances?.retroactiveFinancingInformation.rfCurrentAmount
+                  : 0
+                ) | ifNumber
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mr-3">
+        <div>
+          <div class="c-transactions__container-header o-fieldset__legend-icon">
+            {{ "TRANSACTION.BALANCES.LOCAL_COUNTERPART" | translate }}
+            <em
+              class="fas fa-info-circle"
+              kendoTooltip
+              *ngIf="projectBalances?.localCounterpart !== null"
+              [title]="
+                textTooltip +
+                ': ' +
+                ((projectBalances?.localCounterpartDisbursed
+                  ? projectBalances?.localCounterpartDisbursed
+                  : 0
+                ) | ifNumber)
+              "
+            ></em>
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.localCounterpart !== null && !loading;
+                else skeleton
+              "
+            >
+              {{
+                (projectBalances?.localCounterpart
+                  ? projectBalances?.localCounterpart
+                  : 0
+                ) | ifNumber
+              }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header o-fieldset__legend-icon">
+            {{ "TRANSACTION.BALANCES.COFINANCED" | translate }}
+            <em
+              class="fas fa-info-circle"
+              kendoTooltip
+              *ngIf="projectBalances?.cofinanced !== null"
+              [title]="
+                textTooltip +
+                ': ' +
+                ((projectBalances?.coFinancedDisbursed
+                  ? projectBalances?.coFinancedDisbursed
+                  : 0
+                ) | ifNumber)
+              "
+            ></em>
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.cofinanced !== null && !loading;
+                else skeleton
+              "
+            >
+              {{
+                (projectBalances?.cofinanced ? projectBalances?.cofinanced : 0)
+                  | ifNumber
+              }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.LAST_DISBURSEMET_DATE" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.lastDisbursementDate !== null && !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.lastDisbursementDate | dateIF }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="c-transactions__container c-transactions__container-dflex-secondRow c-transactions__container-box"
+    >
+      <div
+        class="c-transactions__container--trim-width"
+        *ngIf="
+          projectBalances?.budgetContributionAvailableBalance &&
+          projectBalances?.budgetContributionProjectedAvailableBalance !== null
+        "
+      >
+        <div>
+          <div class="c-transactions__container-header">
+            {{
+              "TRANSACTION.BALANCES.BUDGET_CONTRIBUTION_AVAILABLE" | translate
+            }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.budgetContributionAvailableBalance !== null &&
+                  !loading;
+                else skeleton
+              "
+            >
+              {{
+                projectBalances?.budgetContributionAvailableBalance | ifNumber
+              }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header">
+            {{
+              "TRANSACTION.BALANCES.BUDGET_CONTRIBUTION_PROJECTED" | translate
+            }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.budgetContributionProjectedAvailableBalance !==
+                  null && !loading;
+                else skeleton
+              "
+            >
+              {{
+                projectBalances?.budgetContributionProjectedAvailableBalance
+                  | ifNumber
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.AVAILABLE_BALANCE" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.availableBalance !== null && !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.availableBalance | ifNumber }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.PROJECTED_AVAILABLE_BALANCE" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.projectedAvailableBalance !== null && !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.projectedAvailableBalance | ifNumber }}
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="projectBalances?.retroactiveFinancingInformation.hasRetroactiveFinancing">
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.RF_MAX_AVAILABLE_PROJECT_AMOUNT" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div 
+              *ngIf="
+                projectBalances?.retroactiveFinancingInformation.projAvailRfAmount !== null && !loading;
+                else skeleton">
+              {{ 
+                (projectBalances?.retroactiveFinancingInformation.projAvailRfAmount
+                  ? projectBalances?.retroactiveFinancingInformation.projAvailRfAmount
+                  : 0
+                ) | ifNumber 
+              }}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div>
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.DISBURSED_AMOUNT" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.disbursedAmount !== null && !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.disbursedAmount | ifNumber }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.PERCENTAJE_DISBURSED" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.disbursedPercent !== null && !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.disbursedPercent | ifNumber }} %
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.PERCENTAGE_TO_JUSTIFY" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.toJustifyPercent !== null && !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.toJustifyPercent | ifNumber }} %
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.TOTAL_AMOUNT" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.minimumAmountPendingJustification !== null &&
+                  !loading;
+                else skeleton
+              "
+            >
+              {{ projectBalances?.totalAmountPendingJustification | ifNumber }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="c-transactions__container-header">
+            {{ "TRANSACTION.BALANCES.MINIMUM_AMOUNT" | translate }}
+          </div>
+          <div class="c-transactions__container-content">
+            <div
+              *ngIf="
+                projectBalances?.minimumAmountPendingJustification !== null &&
+                  !loading;
+                else skeleton
+              "
+            >
+              {{
+                projectBalances?.minimumAmountPendingJustification | ifNumber
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-3">
+    <fi-alert
+      *ngIf="transactionDetailScreen && showAlert"
+      type="info"
+      title="{{ 'TRANSACTION.PENDING_TRANSACTION.ALERT' | translate }}"
+    ></fi-alert>
+  </div>
+</div>
+
+<ng-template #skeleton>
+  <kendo-skeleton
+    shape="text"
+    animation="pulse"
+    width="100%"
+    class="k-skeleton-pulse k-skeleton-text k-skeleton"
+    data-testid="skeleton"
+  ></kendo-skeleton>
+</ng-template>

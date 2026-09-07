@@ -1,0 +1,21 @@
+.burger-side-menu {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+}
+
+li.k-drawer-item{
+  background-color: blue;
+}
+
+.burger-side-menu .k-drawer-item {
+  border-left: 4px solid transparent;
+}
+.k-drawer-item.k-state-selected {
+  border-left: 4px solid #2e70cb;
+}
+.menu-header {
+  margin-top: 6%;
+  text-align: center;
+}

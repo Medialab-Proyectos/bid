@@ -1,0 +1,134 @@
+<div class="fi-modal">
+  <div class="row">
+    <div class="col-4"></div>
+    <div class="col-4 main-title sf300">Participante</div>
+    <div class="col-4" style="text-align: end">
+      <button
+        (click)="toogleEditing()"
+        *ngIf="!editing"
+        kendoButton
+        class="btn btn-online-brand"
+      >
+        Editar
+      </button>
+    </div>
+  </div>
+  <div class="row fi-modal__title-section">
+    <div class="col-12">
+      <div class="title-section">Datos del participante</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Nombre">
+        <kendo-textbox [disabled]="!editing" class="c-textbox k-textbox">
+        </kendo-textbox>
+      </kendo-label>
+    </div>
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Género (si aplica)">
+        <kendo-textbox [disabled]="!editing" class="c-textbox k-textbox">
+        </kendo-textbox>
+      </kendo-label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Nacionalidad">
+        <kendo-dropdownlist
+          [data]="listItems"
+          [disabled]="!editing"
+          style="width: 100%; --placeholder: '{{'COMMON.SELECT_AN_OPTION' | translate}}'"
+          class="c-dropdown-list k-dropdown"
+        >
+        </kendo-dropdownlist>
+      </kendo-label>
+    </div>
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Representante legal">
+        <kendo-textbox [disabled]="!editing" class="c-textbox k-textbox">
+        </kendo-textbox>
+      </kendo-label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Sector Economico">
+        <kendo-textbox [disabled]="!editing" class="c-textbox k-textbox">
+        </kendo-textbox>
+      </kendo-label>
+    </div>
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Dueño beneficiario">
+        <kendo-dropdownlist
+          [data]="listItems"
+          [disabled]="!editing"
+          style="width: 100%; --placeholder: '{{'COMMON.SELECT_AN_OPTION' | translate}}'"
+          class="c-dropdown-list k-dropdown"
+        >
+        </kendo-dropdownlist>
+      </kendo-label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <kendo-label class="fi-kendo-label" text="Sitio Web">
+        <kendo-textbox [disabled]="!editing" class="c-textbox k-textbox">
+        </kendo-textbox>
+      </kendo-label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 d-flex">
+      <div>
+        <input type="checkbox" id="disabledAttribute" kendoCheckBox />
+        <label class="k-checkbox-label" for="disabledAttribute"
+          >Joint Venture</label
+        >
+      </div>
+      <div class="pl-3">
+        <input type="checkbox" id="disabledAttribute2" kendoCheckBox />
+        <label class="k-checkbox-label" for="disabledAttribute2">SME</label>
+      </div>
+    </div>
+  </div>
+  <div class="row fi-modal__title-section">
+    <div class="col-12">
+      <div class="title-section">Direccion</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Direccion1">
+        <kendo-textbox [disabled]="!editing" class="c-textbox k-textbox">
+        </kendo-textbox>
+      </kendo-label>
+    </div>
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Codigo ZIP">
+        <kendo-textbox [disabled]="!editing" class="c-textbox k-textbox">
+        </kendo-textbox>
+      </kendo-label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <kendo-label class="fi-kendo-label" text="Localizacion participante">
+        <kendo-textbox [disabled]="!editing" class="c-textbox k-textbox">
+        </kendo-textbox>
+      </kendo-label>
+    </div>
+  </div>
+  <div class="row" style="min-height: 6rem; display: flex; align-items: center">
+    <div *ngIf="editing" class="col-12" style="text-align: end">
+      <button
+        (click)="toogleEditing()"
+        kendoButton
+        style="min-width: 10rem"
+        class="btn btn-brand"
+      >
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,222 @@
+<div class="c-documents" class="{{ !loading ? 'd-block' : 'd-none' }}">
+  <fi-card-header [title]="jsonFormData.headerTitle | translate">
+    <button
+      id="Btn_preview_aga"
+      kendoButton
+      role="previewDocument"
+      class="btn btn-online-brand"
+      (click)="openDocumentPreviewDialog()"
+    >
+      {{ "FORMS.DYNAMIC_FORM.PREVIEW" | translate }}
+    </button>
+  </fi-card-header>
+
+  <div class="row">
+    <div class="col-12">
+      <ng-container *ngIf="formErrorCollection.length > 0">
+        <fi-error-list
+          [errorList]="formErrorCollection"
+          [errorListTitle]="errorListTitle"
+        ></fi-error-list>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div
+        [ngClass]="
+          showCommentsList[showCommentIndex] ? 'col-md-7' : 'col-md-12'
+        "
+      >
+        <form
+          class="c-documents__form"
+          [formGroup]="dynamicForm"
+          (ngSubmit)="onSubmit()"
+        >
+          <ng-container
+            *ngFor="let numeral of jsonFormData.numerals; let i = index"
+          >
+            <div class="row">
+              <fieldset class="o-fieldset col-md-12">
+                <legend class="o-fieldset__legend">
+                  <span class="o-fieldset__legend-number">
+                    {{ numeral.number }}</span
+                  >
+                  {{ numeral.title | translate }}
+                  <div
+                    *ngIf="(numeral.tooltip | translate) !== ''"
+                    kendoTooltip
+                    [title]="numeral.tooltip | translate"
+                    class="o-fieldset__legend-icon"
+                  >
+                    <em class="fas fa-info-circle"></em>
+                  </div>
+                </legend>
+                <p
+                  *ngIf="handleRequiredLeyend(numeral)"
+                  class="fi-kendo-label fi-kendo-label--required"
+                >
+                  {{ "FORMS.DYNAMIC_FORM.REQUIRED" | translate }}
+                </p>
+
+                <label
+                  *ngIf="numeral.subtitle !== ''"
+                  class="subtitle"
+                  [innerHTML]="
+                    handleTextSanitization(numeral.subtitle | translate)
+                  "
+                ></label>
+                <ng-container *ngFor="let row of numeral.rows">
+                  <div class="row">
+                    <ng-container *ngFor="let component of row.components">
+                      <div
+                        [class]="component.class"
+                        *ngIf="component.specialOptions === null"
+                      >
+                        <fi-dynamic-kendo
+                          [component]="component"
+                          [dynamicForm]="dynamicForm"
+                          [status]="formStatus"
+                          [rolUser]="rolUser"
+                          [comments]="numeral.comments"
+                        ></fi-dynamic-kendo>
+                      </div>
+
+                      <div
+                        [class]="component.class"
+                        *ngIf="component.specialOptions !== null"
+                      >
+                        <fi-special-components
+                          [component]="component"
+                          [dynamicForm]="dynamicForm"
+                          [status]="formStatus"
+                          [rolUser]="rolUser"
+                          [comments]="numeral.comments"
+                        >
+                        </fi-special-components>
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
+                <button
+                  *ngIf="showBtnPreview(numeral.comments)"
+                  type="button"
+                  (click)="openReview(i)"
+                  kendoButton
+                  class="btn btn-online-brand mt-4 pb-0 pt-0 d-flex"
+                >
+                  {{ "FORMS.REVIEW.BTN_REVIEW" | translate }} ({{
+                    procesComment(numeral.comments)
+                  }})
+                </button>
+              </fieldset>
+            </div>
+          </ng-container>
+
+          <ng-container
+            *ngIf="
+              formName === FormNameEnum.NOA_GOODS ||
+              formName === FormNameEnum.NOA_FIRMS
+            "
+          >
+            <fi-participants-list
+              [form]="dynamicForm"
+              [participantFormArray]="participantsArray"
+              [participants]="participants.noaParticipants"
+              [number]="jsonFormData.numerals.length + 1"
+              [showParticipantsList]="showParticipantsList"
+            ></fi-participants-list>
+
+            <fi-participants-rejected
+              [form]="dynamicForm"
+              [participantFormArray]="participantsArray"
+              [whowComponent]="participants.noaParticipants"
+              [number]="jsonFormData.numerals.length + 2"
+              [showParticipantsRejected]="showParticipantsRejected"
+            ></fi-participants-rejected>
+
+            <fi-participants-awarded
+              [form]="dynamicForm"
+              [participantFormArray]="participantsArray"
+              [participants]="participants.noaParticipants"
+              [number]="jsonFormData.numerals.length + 3"
+              [showParticipantsAwarded]="showParticipantsAwarded"
+            ></fi-participants-awarded>
+          </ng-container>
+
+          <div class="row py-5">
+            <div class="col-12 d-flex justify-content-end">
+              <button
+                (click)="goBack()"
+                id="Btn_cancel_aga"
+                type="button"
+                kendoButton
+                role="cancelBtn"
+                class="btn btn-base"
+              >
+                {{ "FORMS.DYNAMIC_FORM.CANCEL" | translate }}
+              </button>
+              <button
+                *ngIf="checkBtnSave()"
+                id="Btn_save_aga"
+                type="submit"
+                kendoButton
+                class="btn btn-online-brand"
+              >
+                {{ "FORMS.DYNAMIC_FORM.SAVE" | translate }}
+              </button>
+              <button
+                *ngIf="formStatus === FormStatusEnum.CREATE"
+                id="Btn_authorization_aga"
+                type="button"
+                kendoButton
+                (click)="openDocumentPreviewDialog()"
+                class="btn btn-brand"
+              >
+                {{ "FORMS.DYNAMIC_FORM.PREVIEW" | translate }}
+              </button>
+              <div
+                kendoTooltip
+                title="{{ 'FORMS.DYNAMIC_FORM.DOWNLOAD_TOOLTIP' | translate }}"
+                class="doc-package-menu__doc-item-tooltip tooltip-conteiner"
+              >
+                <button
+                  *ngIf="formStatus !== FormStatusEnum.CREATE"
+                  id="Btn_download_aga"
+                  type="button"
+                  kendoButton
+                  (click)="downloadDocumentHandler()"
+                  class="btn btn-brand"
+                >
+                  {{ "FORMS.DYNAMIC_FORM.DOWNLOAD" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-5" *ngIf="showCommentsList[showCommentIndex]">
+        <fi-review
+          [literal]="infoNumeral"
+          [numeralComments]="listComments"
+          (sendComments)="eventComments($event)"
+          (editComment)="eventEditComment($event)"
+          (declineComment)="eventDeclineComment($event)"
+          (declineAnswer)="eventDeclineAnswer($event)"
+          [formStatus]="formStatus"
+          [rolUser]="rolUser"
+        ></fi-review>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="{{ loading ? 'd-block' : 'd-none' }}">
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+  <div class="text-center py-5">
+    {{ "FORMS.DYNAMIC_FORM.SPINNER_TEXT" | translate }}
+  </div>
+</div>

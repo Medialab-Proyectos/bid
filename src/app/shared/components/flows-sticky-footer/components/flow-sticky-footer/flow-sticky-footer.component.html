@@ -1,0 +1,37 @@
+<div *ngIf="displayFooter" class="sticky-footer-container">
+  <div>
+    <button
+      kendoButton
+      class="commentBtn"
+      [disabled]="commentLoading"
+      [icon]="commentLoading && 'loading'"
+      (click)="addComment()"
+    >
+      {{ "PROCUREMENT.WORKFLOWS.ADD_COMMENT" | translate }}
+    </button>
+    <!-- ADD DOC BTN -->
+    <button
+      kendoButton
+      class="commentBtn"
+      [disabled]="documentsLoading"
+      [icon]="documentsLoading && 'loading'"
+      (click)="addDocuments()"
+      *ngIf="displayAddDocument"
+    >
+      {{ "PROCUREMENT.WORKFLOWS.ADD_DOCUMENT" | translate }}
+    </button>
+  </div>
+  <div class="optionsButtons">
+    <ng-container *ngFor="let button of buttons">
+      <button
+        kendoButton
+        class="btn btn-brand btn-240"
+        (click)="triggerAction(button)"
+        [disabled]="disableButtons"
+        [icon]="button.loading && 'loading'"
+      >
+        {{ button.text | translate }}
+      </button>
+    </ng-container>
+  </div>
+</div>

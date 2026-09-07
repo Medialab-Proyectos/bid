@@ -1,0 +1,34 @@
+<div class="t-margin-y-normal">
+  <fi-project-header
+    [projects]="[selectedProject]"
+    [isLoading]="selectedProjectLoading"
+  ></fi-project-header>
+</div>
+<fi-procurement-process
+  *ngIf="biddingProcessProcurementProcessId !== ''"
+  [displayTabMenu]="false"
+  [biddingProcessId]="biddingProcessProcurementProcessId"
+  [displayHeaderOnInit]="false"
+></fi-procurement-process>
+<ng-container *ngIf="!loading; else spinner">
+  <fi-dynamic-form
+    [dynamicForm]="dynamicForm"
+    [jsonFormData]="jsonFormData"
+    [formStatus]="formStatus"
+    [formName]="formName"
+    [selectedProject]="selectedProject"
+    [biddingProcessPlanId]="biddingProcessPlanId"
+    [biddingProcessProcurementProcessId]="biddingProcessProcurementProcessId"
+    [biddingDocumentId]="biddingDocumentId"
+    [fiduciaryProcessDocumentId]="fiduciaryProcessDocumentId"
+    [documentPackageId]="documentPackageId"
+    [language]="language"
+    [nameFile]="nameFile"
+  ></fi-dynamic-form>
+</ng-container>
+
+<ng-template #spinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

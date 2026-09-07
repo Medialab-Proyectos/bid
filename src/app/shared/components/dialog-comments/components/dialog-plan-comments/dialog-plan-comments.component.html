@@ -1,0 +1,20 @@
+<ng-container *ngIf="!loading">
+  <div class="c-comments">
+    <fi-completed-comments
+      [comments]="completedComments"
+      [showComments]="showComments"
+    ></fi-completed-comments>
+    <fi-draft-comments
+      *ngIf="showComments"
+      [visibility]="visibility"
+      [commentsForm]="generalForm"
+      [disabledByProperty]="disabledByProperty"
+    ></fi-draft-comments>
+  </div>
+</ng-container>
+
+<ng-template #spinner>
+  <div class="spinner-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

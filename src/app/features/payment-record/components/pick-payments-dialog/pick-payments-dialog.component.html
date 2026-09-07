@@ -1,0 +1,620 @@
+<div class="pr-dialog">
+  <!-- ---------- 1. where the payments come from ---------- -->
+  <div class="pr-source">
+    <p class="pr-source__question" id="Lbl_PickPayments_Question">
+      {{ "PAYMENT_RECORD.ADD_PAYMENTS.SOURCE_QUESTION" | translate }}
+    </p>
+
+    <div
+      class="pr-source__options"
+      role="radiogroup"
+      [attr.aria-labelledby]="'Lbl_PickPayments_Question'"
+    >
+      <label
+        *ngFor="let option of sourceOptions"
+        class="pr-source__option"
+        [class.pr-source__option--active]="source === option.value"
+      >
+        <input
+          type="radio"
+          name="pickPaymentsSource"
+          [attr.id]="option.inputId"
+          [value]="option.value"
+          [(ngModel)]="source"
+        />
+        <span class="pr-source__body">
+          <span class="pr-source__title">
+            <em class="fas" [ngClass]="option.icon"></em>
+            {{ option.titleKey | translate }}
+          </span>
+          <span class="pr-source__description">
+            {{ option.descriptionKey | translate }}
+          </span>
+        </span>
+      </label>
+    </div>
+  </div>
+
+  <fi-alert
+    *ngIf="failure"
+    type="error"
+    [title]="failure.message | translate : failure.params"
+    [closable]="false"
+  ></fi-alert>
+
+  <!-- ---------- 2. the chosen source ---------- -->
+  <div class="pr-panel">
+    <div class="pr-panel__head">
+      <h3 class="pr-panel__title">{{ activeOption.titleKey | translate }}</h3>
+    </div>
+
+    <!-- ========== from the payment schedule ========== -->
+    <ng-container *ngIf="source === sources.SCHEDULE">
+      <div class="pr-statement__selected-row">
+        <span class="pr-statement__counter">
+          {{ "PAYMENT_RECORD.PICK_PAYMENTS.SELECTED" | translate }}
+          <strong>{{ selectedCount }}</strong>
+        </span>
+        <span
+          class="pr-statement__counter pr-statement__counter--amount"
+          *ngIf="selectedTotals.length > 0"
+        >
+          {{ "PAYMENT_RECORD.STATEMENT.SELECTED_AMOUNT" | translate }}
+          <strong *ngFor="let total of selectedTotals; let last = last">
+            {{ total.amount | ifNumber }} {{ total.currency }}<span *ngIf="!last"> · </span>
+          </strong>
+        </span>
+      </div>
+
+      <div class="pr-toolbar pr-statement__toolbar pr-statement__toolbar--group">
+        <span class="pr-statement__group-hint">
+          {{ "PAYMENT_RECORD.STATEMENT.GROUP_HINT" | translate }}
+        </span>
+        <fi-filter
+          class="pr-statement__filter"
+          [minLength]="3"
+          [placeholder]="'PAYMENT_RECORD.ADVANCED_SEARCH' | translate"
+          (filterValue)="onSearch($event)"
+        ></fi-filter>
+      </div>
+
+      <fi-no-content
+        *ngIf="!loading && payments.length === 0"
+        [content]="'PAYMENT_RECORD.PICK_PAYMENTS.EMPTY' | translate"
+      ></fi-no-content>
+
+      <div class="pr-panel__scroll" *ngIf="filtered.length > 0">
+        <table class="pr-rates pr-rates--wide pr-rates--frozen-3 pr-statement__payments-table">
+          <thead>
+            <tr>
+              <th scope="col" class="pr-rates__check">
+                <input
+                  type="checkbox"
+                  id="Chk_PickPayments_All"
+                  [checked]="allSelected"
+                  (change)="toggleAll()"
+                  [attr.aria-label]="'PAYMENT_RECORD.ADD_PAYMENTS.SELECT_ALL' | translate"
+                />
+              </th>
+              <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.ID" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.STATUS" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.ADD_PAYMENTS.COLUMNS.DATE" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY" | translate }}</th>
+              <th scope="col" class="pr-grid__number">
+                {{ "PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT" | translate }}
+              </th>
+              <th scope="col" class="pr-grid__number">
+                {{ "PAYMENT_RECORD.DETAIL.COLUMNS.RATE" | translate }}
+              </th>
+              <th scope="col" class="pr-grid__number">
+                {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.EQUIVALENT" | translate }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let payment of pagedPayments; trackBy: trackPayment"
+              [class.pr-row--picked]="payment.selected"
+            >
+              <td class="pr-rates__check">
+                <input
+                  type="checkbox"
+                  [attr.id]="'Chk_PickPayments_' + payment.id"
+                  [(ngModel)]="payment.selected"
+                  [attr.aria-label]="payment.concept"
+                />
+              </td>
+              <td>
+                <a
+                  href="javascript:void(0)"
+                  class="pr-link"
+                  [attr.id]="'Lnk_PickPayments_Payment_' + payment.id"
+                  (click)="openPayment(payment)"
+                >
+                  {{ payment.id }}
+                </a>
+              </td>
+              <td>
+                <fi-status-label
+                  [cssClass]="statusClass(payment.status)"
+                  [text]="'PAYMENT_RECORD.STATUS.' + payment.status | translate"
+                  [title]="'PAYMENT_RECORD.STATUS_HELP.' + payment.status | translate"
+                ></fi-status-label>
+              </td>
+              <td class="pr-cell--name" [title]="payment | paymentConcept">
+                {{ payment | paymentConcept }}
+              </td>
+              <td>{{ payment.paymentDate | dateIF }}</td>
+              <td>{{ payment.currency }}</td>
+              <td class="pr-grid__number">{{ payment.amount | ifNumber }}</td>
+              <td class="pr-grid__number">{{ payment.exchangeRate | ifNumber : 4 }}</td>
+              <td class="pr-grid__number">{{ payment.equivalentAmount | ifNumber }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pr-dialog__pager" *ngIf="pageCount > 1">
+        <button
+          type="button"
+          class="pr-dialog__pager-btn"
+          id="Btn_PickPayments_PagePrev"
+          [disabled]="page === 1"
+          [attr.aria-label]="'PAYMENT_RECORD.PICK_PAYMENTS.PAGE_PREVIOUS' | translate"
+          (click)="goToPage(page - 1)"
+        >
+          <em class="fas fa-chevron-left"></em>
+        </button>
+        <button
+          type="button"
+          *ngFor="let pageNumber of pageNumbers"
+          class="pr-dialog__pager-btn"
+          [class.pr-dialog__pager-btn--active]="pageNumber === page"
+          [attr.id]="'Btn_PickPayments_Page_' + pageNumber"
+          (click)="goToPage(pageNumber)"
+        >
+          {{ pageNumber }}
+        </button>
+        <button
+          type="button"
+          class="pr-dialog__pager-btn"
+          id="Btn_PickPayments_PageNext"
+          [disabled]="page === pageCount"
+          [attr.aria-label]="'PAYMENT_RECORD.PICK_PAYMENTS.PAGE_NEXT' | translate"
+          (click)="goToPage(page + 1)"
+        >
+          <em class="fas fa-chevron-right"></em>
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ========== one payment typed by hand, or a file, both need a
+         commitment first: the loan-wide pull above has none of its own to
+         charge a new payment to. ========== -->
+    <ng-container *ngIf="source === sources.MANUAL || source === sources.FILE">
+      <div class="pr-dialog__row">
+        <div class="pr-dialog__field">
+          <span class="pr-dialog__label pr-dialog__required">
+            {{ "PAYMENT_RECORD.PICK_PAYMENTS.COMMITMENT" | translate }}
+          </span>
+          <kendo-dropdownlist
+            class="c-dropdown-list"
+            id="Ddl_PickPayments_Commitment"
+            textField="commitmentNumber"
+            valueField="id"
+            [valuePrimitive]="true"
+            [defaultItem]="{ id: '', commitmentNumber: ('PAYMENT_RECORD.PICK_PAYMENTS.COMMITMENT_PLACEHOLDER' | translate) }"
+            [data]="commitments"
+            [(ngModel)]="selectedCommitmentId"
+            (valueChange)="onCommitmentChange()"
+          ></kendo-dropdownlist>
+          <span class="pr-dialog__help">
+            {{ "PAYMENT_RECORD.PICK_PAYMENTS.COMMITMENT_HELP" | translate }}
+          </span>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ========== one payment typed by hand ========== -->
+    <ng-container *ngIf="source === sources.MANUAL && selectedCommitmentId">
+      <p class="pr-panel__lead">
+        {{ "PAYMENT_RECORD.MANUAL.INTRO" | translate }}
+      </p>
+
+      <fieldset class="pr-fieldset">
+        <legend class="pr-fieldset__legend">
+          {{ "PAYMENT_RECORD.MANUAL.GROUP_ALLOCATION" | translate }}
+          <span class="pr-fieldset__help">
+            {{ "PAYMENT_RECORD.MANUAL.GROUP_ALLOCATION_HELP" | translate }}
+          </span>
+        </legend>
+
+        <div class="pr-dialog__row pr-dialog__row--2col">
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label pr-dialog__required">
+              {{ "PAYMENT_RECORD.COLUMNS.COMPONENT" | translate }}
+            </span>
+            <kendo-dropdownlist
+              class="c-dropdown-list"
+              id="Ddl_PickManual_Component"
+              textField="name"
+              valueField="code"
+              [valuePrimitive]="true"
+              [defaultItem]="componentPlaceholder"
+              [data]="components"
+              [(ngModel)]="manual.componentCode"
+              (valueChange)="onManualComponentChange()"
+            ></kendo-dropdownlist>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.COLUMNS.PRODUCT" | translate }}
+            </span>
+            <kendo-dropdownlist
+              class="c-dropdown-list"
+              id="Ddl_PickManual_Product"
+              textField="name"
+              valueField="code"
+              [valuePrimitive]="true"
+              [defaultItem]="productPlaceholder"
+              [data]="manualProducts"
+              [disabled]="manualProducts.length === 0"
+              [(ngModel)]="manual.productCode"
+              (valueChange)="onManualProductChange()"
+            ></kendo-dropdownlist>
+            <span class="pr-dialog__help">
+              {{
+                (manual.componentCode
+                  ? "PAYMENT_RECORD.MANUAL.PRODUCT_HELP"
+                  : "PAYMENT_RECORD.MANUAL.PRODUCT_BLOCKED"
+                ) | translate
+              }}
+            </span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="pr-fieldset">
+        <legend class="pr-fieldset__legend">
+          {{ "PAYMENT_RECORD.MANUAL.GROUP_IDENTITY" | translate }}
+        </legend>
+
+        <div class="pr-dialog__row pr-dialog__row--2col">
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label pr-dialog__required">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}
+            </span>
+            <kendo-textbox
+              class="c-textbox"
+              id="Txt_PickManual_Concept"
+              [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.CONCEPT_PLACEHOLDER' | translate"
+              [(ngModel)]="manual.concept"
+            ></kendo-textbox>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.MANUAL.CONCEPT_HELP" | translate }}
+            </span>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER" | translate }}
+            </span>
+            <kendo-textbox
+              class="c-textbox"
+              id="Txt_PickManual_Voucher"
+              [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.VOUCHER_PLACEHOLDER' | translate"
+              [(ngModel)]="manual.accountingVoucher"
+            ></kendo-textbox>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.MANUAL.VOUCHER_HELP" | translate }}
+            </span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="pr-fieldset">
+        <legend class="pr-fieldset__legend">
+          {{ "PAYMENT_RECORD.MANUAL.GROUP_AMOUNT" | translate }}
+        </legend>
+
+        <div class="pr-dialog__row">
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label pr-dialog__required">
+              {{ "PAYMENT_RECORD.PICK_PAYMENTS.MANUAL_DATE_LABEL" | translate }}
+            </span>
+            <kendo-datepicker
+              class="c-datepicker"
+              format="dd/MM/yyyy"
+              id="Dtp_PickManual_Date"
+              [max]="today"
+              [(ngModel)]="manualDate"
+            ></kendo-datepicker>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.MANUAL.DATE_HELP" | translate }}
+            </span>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label pr-dialog__required">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY" | translate }}
+            </span>
+            <kendo-dropdownlist
+              class="c-dropdown-list"
+              id="Ddl_PickManual_Currency"
+              [data]="currencies"
+              [(ngModel)]="manual.currency"
+            ></kendo-dropdownlist>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.MANUAL.CURRENCY_HELP" | translate }}
+            </span>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label pr-dialog__required">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT" | translate }}
+            </span>
+            <kendo-numerictextbox
+              id="Num_PickManual_Amount"
+              [format]="'n2'"
+              [min]="0"
+              [max]="availableIn(manual.currency)"
+              [spinners]="false"
+              [placeholder]="'PAYMENT_RECORD.MANUAL.AMOUNT_PLACEHOLDER' | translate"
+              [(ngModel)]="manual.amount"
+            ></kendo-numerictextbox>
+            <span
+              class="pr-ceiling"
+              [class.pr-ceiling--over]="manualExceedsCeiling"
+            >
+              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
+              {{ availableIn(manual.currency) | ifNumber }}
+              {{ manual.currency }}
+            </span>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.MANUAL.RATE_LABEL" | translate }}
+            </span>
+            <kendo-numerictextbox
+              id="Num_PickManual_Rate"
+              [format]="'n4'"
+              [min]="0"
+              [spinners]="false"
+              [(ngModel)]="manual.exchangeRate"
+            ></kendo-numerictextbox>
+          </div>
+        </div>
+
+        <p class="pr-equivalent">
+          {{ "PAYMENT_RECORD.MANUAL.EQUIVALENT" | translate }}
+          <strong>{{ manualEquivalent | ifNumber }} {{ manual.currency }}</strong>
+        </p>
+      </fieldset>
+    </ng-container>
+
+    <!-- ========== import a file ========== -->
+    <ng-container *ngIf="source === sources.FILE && selectedCommitmentId">
+      <div class="pr-panel__lead-row">
+        <p class="pr-panel__lead">
+          {{ "PAYMENT_RECORD.IMPORT.INTRO" | translate }} {{ selectedCommitmentId }}.
+        </p>
+        <button
+          type="button"
+          class="pr-steps__action"
+          id="Btn_PickImport_Template"
+          (click)="downloadTemplate()"
+        >
+          <em class="fas fa-download"></em>
+          {{ "PAYMENT_RECORD.IMPORT.TEMPLATE" | translate }}
+        </button>
+      </div>
+
+      <ol class="pr-steps">
+        <li class="pr-steps__item">
+          <span class="pr-steps__text">{{ "PAYMENT_RECORD.IMPORT.STEP_1" | translate }}</span>
+        </li>
+        <li class="pr-steps__item">
+          <span class="pr-steps__text">{{ "PAYMENT_RECORD.IMPORT.STEP_2" | translate }}</span>
+        </li>
+        <li class="pr-steps__item">
+          <span class="pr-steps__text">{{ "PAYMENT_RECORD.IMPORT.STEP_3" | translate }}</span>
+        </li>
+      </ol>
+
+      <div class="pr-import__rules">
+        <p class="pr-import__rules-title">
+          {{ "PAYMENT_RECORD.IMPORT.RULES_TITLE" | translate }}
+        </p>
+        <ul>
+          <li>
+            {{
+              "PAYMENT_RECORD.IMPORT.RULE_FORMAT"
+                | translate : { formats: acceptedFormats, size: maxFileSizeMb }
+            }}
+          </li>
+          <li>{{ "PAYMENT_RECORD.IMPORT.RULE_COLUMNS" | translate }}</li>
+          <li>{{ "PAYMENT_RECORD.IMPORT.RULE_REQUIRED" | translate }}</li>
+          <li>{{ "PAYMENT_RECORD.IMPORT.RULE_DUPLICATES" | translate }}</li>
+        </ul>
+      </div>
+
+      <div class="pr-import__dropzone" *ngIf="uploading">
+        <div class="pr-import__bar"><span></span></div>
+        <p>{{ "PAYMENT_RECORD.IMPORT.LOADING" | translate }}</p>
+      </div>
+
+      <div *ngIf="!uploading && !importResult">
+        <kendo-fileselect
+          id="File_PickImport_Payments"
+          [multiple]="false"
+          [restrictions]="fileRestrictions"
+          (select)="onFileSelected($event)"
+        >
+          <kendo-fileselect-messages
+            [select]="'PAYMENT_RECORD.IMPORT.PICK_FILE' | translate"
+            [dropFilesHere]="'PAYMENT_RECORD.IMPORT.DROP_HERE' | translate"
+            [remove]="'PAYMENT_RECORD.IMPORT.REMOVE_FILE' | translate"
+            [invalidFileExtension]="'PAYMENT_RECORD.IMPORT.BAD_FORMAT' | translate"
+            [invalidMaxFileSize]="'PAYMENT_RECORD.IMPORT.TOO_BIG' | translate"
+          ></kendo-fileselect-messages>
+        </kendo-fileselect>
+      </div>
+
+      <ng-container *ngIf="importResult">
+        <div class="pr-import__file" [class.pr-import__file--error]="hasImportErrors">
+          <em
+            class="fas"
+            [ngClass]="hasImportErrors ? 'fa-exclamation-circle' : 'fa-check-circle'"
+          ></em>
+          <span class="pr-import__file-name">{{ importResult.fileName }}</span>
+          <span class="pr-import__file-meta">
+            {{ importResult.rowCount }} {{ "PAYMENT_RECORD.IMPORT.ROWS" | translate }}
+          </span>
+          <button
+            type="button"
+            class="pr-dialog__link"
+            id="Btn_PickImport_Replace"
+            (click)="retryUpload()"
+          >
+            {{ "PAYMENT_RECORD.IMPORT.REPLACE" | translate }}
+          </button>
+        </div>
+
+        <div class="pr-import__banner pr-import__banner--warning" *ngIf="importResult.duplicateRows.length > 0">
+          <p class="pr-import__banner-title">
+            <em class="fas fa-exclamation-triangle"></em>
+            {{ "PAYMENT_RECORD.IMPORT.WARNING_TITLE" | translate }}
+          </p>
+          <p class="pr-import__banner-desc">
+            {{ "PAYMENT_RECORD.IMPORT.DUPLICATES_FOUND" | translate }}
+            {{ importResult.duplicateRows.length }}
+            {{ "PAYMENT_RECORD.IMPORT.DUPLICATE_ROWS" | translate }}
+          </p>
+          <div class="pr-import__banner-chips">
+            <span
+              class="pr-import__chip pr-import__chip--warning"
+              *ngFor="let row of importResult.duplicateRows"
+            >
+              {{ "PAYMENT_RECORD.IMPORT.ROW_CHIP" | translate : { row: row } }}
+            </span>
+          </div>
+        </div>
+
+        <div class="pr-import__banner pr-import__banner--danger" *ngIf="importResult.errors.length > 0">
+          <a
+            href="javascript:void(0)"
+            class="pr-import__banner-report"
+            id="Lnk_PickManual_DownloadErrors"
+            (click)="downloadErrorReport()"
+          >
+            <em class="fas fa-download"></em>
+            {{ "PAYMENT_RECORD.IMPORT.DOWNLOAD_REPORT" | translate }}
+          </a>
+          <p class="pr-import__banner-title">
+            <em class="fas fa-ban"></em>
+            {{ "PAYMENT_RECORD.IMPORT.BLOCKING_TITLE" | translate }}
+          </p>
+          <p class="pr-import__banner-desc">
+            <ng-container *ngFor="let error of importResult.errors; let last = last">
+              {{ error.message | translate }} ({{ error.rows.length }}
+              {{ "PAYMENT_RECORD.IMPORT.ROWS" | translate }})<span *ngIf="!last"> · </span>
+            </ng-container>
+          </p>
+          <div class="pr-import__banner-chips">
+            <span
+              class="pr-import__chip pr-import__chip--danger"
+              *ngFor="let row of blockingRowNumbers"
+            >
+              {{ "PAYMENT_RECORD.IMPORT.ROW_CHIP" | translate : { row: row } }}
+            </span>
+          </div>
+        </div>
+
+        <div *ngFor="let error of importResult.errors" class="pr-import__error">
+          <div class="pr-panel__scroll">
+            <table class="pr-rates pr-rates--wide">
+              <thead>
+                <tr>
+                  <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.ROW" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.COMMITMENT" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.RECEIVER" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.DATE" | translate }}</th>
+                  <th scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.EQUIVALENT" | translate }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of error.rows">
+                  <td>{{ row.rowNumber }}</td>
+                  <td>{{ row.commitmentNumber }}</td>
+                  <td class="pr-cell--name" [title]="row.concept">{{ row.concept }}</td>
+                  <td>{{ row.beneficiaryName }}</td>
+                  <td>{{ row.accountingVoucher }}</td>
+                  <td>{{ row.paymentDate }}</td>
+                  <td class="pr-grid__number">{{ row.equivalentAmount | ifNumber }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <p class="pr-dialog__note" *ngIf="hasImportErrors">
+          {{ "PAYMENT_RECORD.IMPORT.FIX_AND_RETRY" | translate }}
+        </p>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <p
+    class="pr-modal__hint"
+    [class.pr-modal__hint--ready]="blockingReason === ''"
+    id="Lbl_PickPayments_Hint"
+  >
+    <em
+      class="fas"
+      [ngClass]="blockingReason === '' ? 'fa-check-circle' : 'fa-info-circle'"
+    ></em>
+    <span>
+      {{
+        (blockingReason || readyMessage)
+          | translate
+            : {
+                fields: missingFieldNames,
+                count: selectedCount,
+                rows: importResult?.rowCount
+              }
+      }}
+    </span>
+  </p>
+
+  <button
+    kendoButton
+    class="btn btn-neutral btn-no-stroke"
+    id="Btn_PickPayments_Cancel"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+  <button
+    *ngIf="source === sources.FILE && hasImportErrors"
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_PickPayments_Retry"
+    (click)="retryUpload()"
+  >
+    {{ "PAYMENT_RECORD.IMPORT.RETRY" | translate }}
+  </button>
+  <button
+    *ngIf="!(source === sources.FILE && hasImportErrors)"
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_PickPayments_Confirm"
+    [disabled]="saving || blockingReason !== ''"
+    (click)="confirm()"
+  >
+    {{ "PAYMENT_RECORD.PICK_PAYMENTS.CONFIRM" | translate }}
+  </button>
+</kendo-dialog-actions>

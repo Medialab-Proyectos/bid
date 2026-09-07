@@ -1,0 +1,174 @@
+////
+/// FACE TO FACE MEETING component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Component
+/// @name .#{$ns}face2face
+/// @since version 1.0.0
+////
+.#{$ns}face2face {
+
+    &__date {
+        padding: rem(25) rem(23);
+        border-radius: rem(10);
+        background-color: color('gray-100');
+        margin-bottom: rem(20);
+
+        .bid-face2face__row {
+            &:first-child {
+                .bid-face2face__col {
+                    width: rem(277);
+
+                    .bid-datepicker {
+                        &__wrapper {
+                            width: 100%;
+                        }
+                        &__input {
+                            width: 100%;
+                            max-width: none;
+                        }
+                    }
+                    .bid-textbox {
+                        &__input-container {
+                            width: 100%;
+                        }
+                        &--rooms {
+                            .k-textbox {
+                                width: 100%;
+                            }
+                        }
+                    }
+
+                    &:last-child {
+                        width: rem(277);
+                    }
+                }
+            }
+            &:nth-child(2) {
+                .bid-face2face__col {
+                    width: rem(277);
+                    &:first-child {
+                        width: rem(578);
+                    }
+                }
+            }
+        }
+    }
+
+    &__row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: rem(32);
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+        &--gray {
+            background-color: color('gray-100');
+            border-radius: rem(10);
+            padding: rem(24);
+        }
+    }
+    &__col {
+        display: inline-block;
+        margin-right: rem(24);
+
+        &:last-child {
+            margin-right: 0;
+        }
+
+        .bid-datepicker {
+            margin-bottom: 0;
+        }
+        .bid-checkbox__info {
+            max-width: rem(515);
+        }
+        .bid-textarea {
+            margin-bottom: 0;
+        }
+        .k-dropdown {
+            width: 100%;
+        }
+    }
+    &__title {
+        display: block;
+        font-size: rem(20);
+        font-weight: bold;
+        color: color('black');
+        margin-bottom: rem(19);
+    }
+    &__label {
+        display: block;
+        margin-bottom: rem(7);
+    }
+    &__tooltip-icon {
+        font-size: rem(24);
+        color: color('blue');
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: rem(9);
+        margin-bottom: rem(12);
+        margin-left: rem(9);
+        cursor: pointer;
+    }
+    &__tooltip-label {
+        display: inline-block;
+        color: color('blue');
+        font-size: rem(14);
+        font-style: italic;
+        font-weight: bold;
+        vertical-align: middle;
+        margin-bottom: rem(12);
+    }
+
+
+    /* New f2f meeting design */
+    &__col-1 {
+        display: inline-block;
+        width: 20%;
+        vertical-align: top;
+    }
+    &__col-2 {
+        display: inline-block;
+        width: 40%;
+        vertical-align: top;
+    }
+    &__col-3 {
+        display: inline-block;
+        width: 60%;
+        vertical-align: top;
+    }
+    &__col-4 {
+        display: inline-block;
+        width: 80%;
+        vertical-align: top;
+    }
+    &__col-5 {
+        display: inline-block;
+        width: 100%;
+        vertical-align: top;
+    }
+    &__col--pt {
+        padding-top: rem(24);
+    }
+    &__col--pr {
+        padding-right: rem(40);
+    }
+    &__col--border-top {
+        border-top: rem(1) solid color('gray-500');
+    }
+    &__col--mb {
+        margin-bottom: rem(15);
+    }
+    .bid-datepicker {
+        margin-bottom: 0;
+    }
+    .bid-timepicker__input {
+        max-width: rem(216);
+    }
+    .k-dropdown {
+        max-width: rem(264);
+        width: 100%;
+    }
+}

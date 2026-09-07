@@ -1,0 +1,17 @@
+.preview-eoi {
+  .title {
+    font-size: 16px;
+    color: #3c3b3b;
+  }
+
+  p {
+    margin-block: 1lh;
+  }
+  .filledInfo,
+  .filledInfo * {
+    font-weight: bold !important;
+  }
+  .filledInfo {
+    overflow-wrap: break-word;
+  }
+}

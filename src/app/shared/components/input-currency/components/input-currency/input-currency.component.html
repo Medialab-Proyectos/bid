@@ -1,0 +1,70 @@
+<div class="c-input-currency" data-testid="inputCurrency">
+  <kendo-label
+    *ngIf="labelText; else noLabelBlock"
+    class="fi-kendo-label"
+    [text]="labelText"
+    [formGroup]="form"
+  >
+    <kendo-numerictextbox
+      #amount
+      class="c-numerictextbox k-numerictextbox"
+      name="amount"
+      formControlName="amount"
+      [decimals]="numberOfDecimals"
+      [format]="format"
+      [id]="id ? 'Txb_Amount_' + id : 'Txb_Amount'"
+      [spinners]="spinnerVisibility"
+      [maxlength]="18"
+      [changeValueOnScroll]="false"
+    >
+    </kendo-numerictextbox>
+    <kendo-dropdownlist
+      #currencyDropdown
+      class="c-dropdown-list k-dropdown"
+      formControlName="currency"
+      [data]="currencies"
+      [fiDropdownFormControl]
+      [id]="id ? 'Down_Currency_' + id : 'Down_Currency'"
+      [textField]="'currency'"
+      [valueField]="'id'"
+      [valuePrimitive]="true"
+    >
+    </kendo-dropdownlist>
+    <fi-form-error-msg
+      [control]="form.controls.amount"
+      [key]="'BIDDER.REQUIRED'"
+    ></fi-form-error-msg>
+  </kendo-label>
+  <ng-template #noLabelBlock>
+    <div [formGroup]="form">
+      <kendo-numerictextbox
+        #amount
+        name="amount"
+        class="c-numerictextbox k-numerictextbox amount-input"
+        formControlName="amount"
+        [decimals]="numberOfDecimals"
+        [id]="id ? 'Txb_Amount_' + id : 'Txb_Amount'"
+        [format]="format"
+        [spinners]="spinnerVisibility"
+        [maxlength]="18"
+        [changeValueOnScroll]="false"
+      >
+      </kendo-numerictextbox>
+      <kendo-dropdownlist
+        #currencyDropdown
+        class="c-dropdown-list k-dropdown amount-dropdown"
+        formControlName="currency"
+        [data]="currencies"
+        [id]="id ? 'Down_Currency_' + id : 'Down_Currency'"
+        [textField]="'currency'"
+        [valueField]="'id'"
+        [valuePrimitive]="true"
+      >
+      </kendo-dropdownlist>
+      <fi-form-error-msg
+        [control]="form.controls.amount"
+        [key]="'BIDDER.REQUIRED'"
+      ></fi-form-error-msg>
+    </div>
+  </ng-template>
+</div>

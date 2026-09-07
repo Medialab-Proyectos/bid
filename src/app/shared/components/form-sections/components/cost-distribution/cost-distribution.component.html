@@ -1,0 +1,226 @@
+<div class="c-cost-distribution">
+  <fi-accordion-panel [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{ titleLabel | translate }}</ng-container>
+    <ng-container body>
+      <div class="mb-3 cost-distribution" [formGroup]="form">
+        <div class="row py-4">
+          <div class="col-12 col-md-3 m-auto">
+            <!-- ? Averiguar porque tienen este campo deshabilitado y oculto, cual es su funcion -->
+            <!--  <kendo-label
+              class="fi-kendo-label d-block"
+              text="{{ totalLabel | translate }}"
+            >
+            </kendo-label>
+            <kendo-numerictextbox
+              [changeValueOnScroll]="false"
+              [spinners]="false"
+              #contractTotalAmount
+              formControlName="contractTotalAmount"
+              [decimals]="2"
+              data-testid="contractTotalAmount"
+              class="c-numerictextbox k-numerictextbox o-input-no-box d-none"
+              [placeholder]="
+                amendmentInfo?.contractTotalAmount
+                  ? (amendmentInfo?.contractTotalAmount | ifNumber)
+                  : ('0' | ifNumber)
+              "
+              [min]="0"
+              [fiDisableControl]="true"
+              [maxlength]="18"
+            ></kendo-numerictextbox> -->
+            <div>
+              <p>{{ totalLabel | translate }}</p>
+              <p>
+                USD
+                {{ totalAmount | ifNumber }}
+              </p>
+            </div>
+            <!-- ? Para que estan vinculando este formControl si el input esta escondido, cual es su funcion-->
+            <input type="hidden" formControlName="maxThresholdExceed" />
+          </div>
+
+          <div class="col-12 col-md-3">
+            <fi-mat-numeric
+              #BIDAmount
+              formControlName="bidAmount"
+              data-testid="bidAmount"
+              [label]="idbLabel | translate"
+              [decimals]="2"
+              [placeholder]="0 | ifNumber"
+              [maxlength]="18"
+              [min]="minAmount"
+              [fiDisableControl]="settings.disabled || disabledBidAmount"
+              textPrefix="USD"
+            ></fi-mat-numeric>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <fi-mat-numeric
+              [label]="counterpartLabel | translate"
+              formControlName="localCounterpartAmount"
+              [decimals]="2"
+              [maxlength]="18"
+              [placeholder]="0 | ifNumber"
+              [min]="minAmount"
+              [fiDisableControl]="settings.disabled"
+              textPrefix="USD"
+            >
+            </fi-mat-numeric>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <fi-mat-numeric
+              [label]="confinancingLabel | translate"
+              formControlName="cofinancingAmount"
+              [decimals]="2"
+              [maxlength]="18"
+              [placeholder]="0 | ifNumber"
+              [min]="minAmount"
+              [fiDisableControl]="settings.disabled"
+              textPrefix="USD"
+            ></fi-mat-numeric>
+          </div>
+        </div>
+
+        <ng-container
+          *ngIf="
+            data.groupMethod === GroupMethodEnum.DirectContractBidding &&
+            threshold
+          "
+        >
+          <fi-alert
+            type="error"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.SUPERIOR_AMOUNT_DIRECT_CONTRACT'
+                | translate
+            }}"
+            [closable]="true"
+            *ngIf="
+              threshold?.max !== 0 &&
+              form.controls['contractTotalAmount'].value > threshold?.max
+            "
+          >
+          </fi-alert>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            data.groupMethod === GroupMethodEnum.InternationalBidding &&
+            threshold
+          "
+        >
+          <fi-alert
+            type="warning"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.SUPERIOR_AMOUNT' | translate
+            }}"
+            [closable]="true"
+            *ngIf="
+              threshold?.max != 0 &&
+              form.controls['contractTotalAmount'].value >= threshold?.max
+            "
+          >
+          </fi-alert>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            threshold &&
+            (data.groupMethod === GroupMethodEnum.InternationalBidding ||
+              data.groupMethod === GroupMethodEnum.NationalBidding ||
+              data.groupMethod === GroupMethodEnum.ShoppingBidding)
+          "
+        >
+          <fi-alert
+            type="info"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.INFERIOR_AMOUNT' | translate
+            }}"
+            [closable]="true"
+            *ngIf="form.controls['contractTotalAmount'].value < threshold?.min"
+          >
+          </fi-alert>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            (data.groupMethod === GroupMethodEnum.ShoppingBidding ||
+              data.groupMethod === GroupMethodEnum.NationalBidding) &&
+            showErrorMaximunThreshols
+          "
+        >
+          <fi-alert
+            type="error"
+            title="{{ 'CONTRACT.COST_DISTRIBUTION.EXCEED_AMOUNT' | translate }}"
+            [closable]="true"
+            *ngIf="showErrorMaximunThreshols"
+          >
+          </fi-alert>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            threshold &&
+            data.groupMethod === GroupMethodEnum.ShoppingBidding &&
+            form.controls['contractTotalAmount'].value > threshold?.max &&
+            form.controls['contractTotalAmount'].value <=
+              nationalBiddingThreshold?.max
+          "
+        >
+          <fi-alert
+            type="warning"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.JUSTIFY_AMOUNT' | translate
+            }}"
+            [closable]="true"
+            *ngIf="
+              form.controls['contractTotalAmount'].value > threshold?.max &&
+              form.controls['contractTotalAmount'].value <=
+                nationalBiddingThreshold?.max
+            "
+          >
+          </fi-alert>
+        </ng-container>
+
+        <ng-container *ngIf="data.groupMethod === GroupMethodEnum.CQSBidding">
+          <fi-alert
+            type="error"
+            title="{{
+              'CONTRACT.COST_DISTRIBUTION.EXCEED_AMOUNT_CQS' | translate
+            }}"
+            [closable]="true"
+            *ngIf="showErrorMaximunThreshols"
+          >
+          </fi-alert>
+        </ng-container>
+
+        <div class="row mt-2">
+          <div class="col-12" *ngIf="showJustification">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="justification"
+              [text]="'CONTRACT.COST_DISTRIBUTION.JUSTIFICATION' | translate"
+            ></kendo-label>
+            <kendo-textbox
+              #justification
+              formControlName="justification"
+              data-testid="justification"
+              class="c-textbox k-textbox"
+              (valueChange)="onChangeJustification($event)"
+            >
+            </kendo-textbox>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="form.errors?.maxExceededCostDistributionAmount" class="pt-3">
+        <fi-alert
+          [type]="'error'"
+          [title]="
+            'CONTRACT.COST_DISTRIBUTION.ERROR.NOT_EQUAL_AMOUNT' | translate
+          "
+        >
+        </fi-alert>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

@@ -1,0 +1,194 @@
+<div class="c-process-outputs">
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "PROCUREMENT.PROCESS_OUTPUTS" | translate
+    }}</ng-container>
+    <ng-container body>
+      <div [formGroup]="componentsForm">
+        <div class="row c-process-outputs__components" role="section-outputs">
+          <div class="col-12">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required d-block"
+              [for]="component"
+              text="{{ 'PROCUREMENT.COMPONENT' | translate }}"
+            >
+              <kendo-dropdownlist
+                [data]="components$ | async"
+                [textField]="'name'"
+                [valueField]="'id'"
+                [valuePrimitive]="true"
+                [fiDropdownFormControl]
+                #component
+                class="c-dropdown-list k-dropdown qa-procurementCreate-component bg-white"
+                formControlName="component"
+                (valueChange)="selectComponent($event)"
+                id="Down_Component"
+              >
+              </kendo-dropdownlist>
+            </kendo-label>
+            <div
+              *ngIf="
+                componentsForm.controls.component.errors &&
+                (componentsForm.controls.component.dirty ||
+                  componentsForm.controls.component.touched)
+              "
+            >
+              <div class="o-input-error pl-4">{{ requiredErrorMessage }}</div>
+            </div>
+          </div>
+        </div>
+        <div
+          formArrayName="outputsAsigned"
+          class="c-process-outputs__output-wrapper"
+        >
+          <div class="row">
+            <div class=""></div>
+            <div class="col-8">
+              <kendo-label
+                class="fi-kendo-label ml-3 fi-kendo-label--required"
+                text="{{ 'PROCUREMENT.OUTPUT' | translate }}"
+              ></kendo-label>
+            </div>
+            <div class="col-2">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                text="{{ 'PROCUREMENT.%_ASSIGNED_AMOUNT' | translate }}"
+              ></kendo-label>
+            </div>
+          </div>
+          <div
+            *ngFor="
+              let item of outputsAsigned.controls;
+              let outputIndex = index
+            "
+            [formGroupName]="outputIndex"
+          >
+            <div class="row c-process-outputs__output">
+              <div class="col-8">
+                <kendo-dropdownlist
+                  #output
+                  class="c-dropdown-list c-process-outputs__output-dropdown k-dropdown qa-procurementCreate-id"
+                  formControlName="id"
+                  [data]="selectedOutputs$ | async"
+                  [textField]="'name'"
+                  [valueField]="'id'"
+                  [valuePrimitive]="true"
+                  [(value)]="outputsAsigned.controls[outputIndex].value.id"
+                  [fiDropdownFormControl]
+                  style="--placeholder: '{{
+                    'COMMON.SELECT_AN_OPTION' | translate
+                  }}'"
+                  [id]="'Down_Output_' + (outputIndex + 1)"
+                  [fiDisableControl]="readOnly"
+                  (valueChange)="onValueChange($event, outputIndex)"
+                >
+                </kendo-dropdownlist>
+                <div
+                  *ngIf="
+                    outputsAsigned.controls[outputIndex].controls.id.errors &&
+                    (outputsAsigned.controls[outputIndex].controls.id.dirty ||
+                      outputsAsigned.controls[outputIndex].controls.id.touched)
+                  "
+                >
+                  <div class="o-input-error">{{ requiredErrorMessage }}</div>
+                </div>
+              </div>
+              <div class="col-3">
+                <kendo-numerictextbox
+                  #percentage
+                  class="c-numerictextbox k-numerictextbox k-percentage qa-procurementCreate-percentage"
+                  formControlName="percentage"
+                  ngDefaultControl
+                  [min]="0"
+                  [max]="100"
+                  [autoCorrect]="true"
+                  [spinners]="false"
+                  format="n2"
+                  (valueChange)="calcTotal(outputIndex)"
+                  [decimals]="2"
+                  id="Txb_Percentage"
+                  [fiDisableControl]="readOnly"
+                  [maxlength]="18"
+                  [changeValueOnScroll]="false"
+                ></kendo-numerictextbox>
+                <div
+                  *ngIf="
+                    outputsAsigned.controls[outputIndex].controls.percentage
+                      .errors &&
+                    (outputsAsigned.controls[outputIndex].controls.percentage
+                      .dirty ||
+                      outputsAsigned.controls[outputIndex].controls.percentage
+                        .touched)
+                  "
+                >
+                  <div class="o-input-error">{{ requiredErrorMessage }}</div>
+                </div>
+              </div>
+              <div class="col-1">
+                <div *ngIf="outputIndex > 0">
+                  <button
+                    *ngIf="!readOnly"
+                    kendoButton
+                    iconClass="far fa-trash-alt"
+                    type="button"
+                    look="clear"
+                    [id]="'Btn_Delete_output_' + (outputIndex + 1)"
+                    (click)="deleteOutputFormGroup(outputIndex)"
+                  ></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!readOnly" class="row c-process-outputs__add-output">
+            <div class="ml-4 mt-2">
+              <div>
+                <button
+                  #addButton
+                  kendoButton
+                  class="btn btn-online-brand"
+                  (click)="addOutputFormGroup()"
+                  icon="plus"
+                  id="Btn_Add_output"
+                >
+                  {{ "PROCUREMENT.ADD_OUTPUT" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <ng-container *ngIf="!readOnly">
+            <div class="container-fluid mt-4">
+              <div
+                class="row qa-error-processOutputs"
+                *ngIf="totalAssigned < 0 || totalAssigned > 0"
+              >
+                <div class="col-12">
+                  <div class="o-input-error float-right">
+                    {{
+                      "PROCUREMENT.PROCESS.OUTPUT_AMOUN_ASSING_ERROR"
+                        | translate
+                    }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="container-fluid wrapBox">
+              <div class="row">
+                <div class="col-6"></div>
+                <div class="col-6">
+                  <div class="c-process-outputs__missing_allocation">
+                    <span
+                      >{{ "PROCUREMENT.TOTAL_MISSING_ALLOCATION" | translate }}
+                    </span>
+                    <span> {{ totalAssigned | ifNumber }} % </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

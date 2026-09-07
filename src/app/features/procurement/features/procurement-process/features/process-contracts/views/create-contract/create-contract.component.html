@@ -1,0 +1,26 @@
+<div class="c-upload-contract-information" id="top">
+  <fi-card-header [title]="'CONTRACT.CREATE_INFORMATION' | translate">
+  </fi-card-header>
+
+  <div class="contract-body" *fiDisplayByPermissions="contractAddPermission">
+    <p class="c-upload-contract-information__form-legend">
+      {{ "CONTRACT.INSTRUCTIONS" | translate }}
+    </p>
+    <div class="row">
+      <div class="col-12">
+        <ng-container *ngIf="formErrorCollection.length > 0">
+          <fi-error-list
+            [errorList]="formErrorCollection"
+            [errorListTitle]="errorListTitle"
+          ></fi-error-list>
+        </ng-container>
+      </div>
+    </div>
+    <fi-contracts-form
+      [stateSubmit]="stateSubmit"
+      [form]="form"
+      [modeEnum]="mode"
+      (errorList)="updateErrorList($event)"
+    ></fi-contracts-form>
+  </div>
+</div>

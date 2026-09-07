@@ -1,0 +1,29 @@
+<ng-container *ngIf="!isLoading(); else loadingTemplate">
+  <fi-error-alert *ngIf="error !== ''" fiErrorFocus [description]="error">
+  </fi-error-alert>
+  <fi-mat-doc-list
+    [mode]="mode"
+    [mandatoryDocs]="mandatoryDocs()"
+    [optionalDocs]="optionalDocs()"
+    [permissions]="viewPermissions"
+  >
+  </fi-mat-doc-list>
+  <fi-mat-file-list
+    (deleteFile)="deleteFileAction($event)"
+    (editFile)="editFileAction($event)"
+    [files]="allDocuments()"
+    [groupEnum]="groupEnums()"
+  >
+  </fi-mat-file-list>
+  <fi-mat-file-selector
+    (valueChange)="handlerFilesChanged($event)"
+    [permission]="editPermissions"
+    [multiple]="true"
+  ></fi-mat-file-selector>
+</ng-container>
+
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>

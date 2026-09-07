@@ -1,0 +1,47 @@
+<div class="c-document-detail o-detail-card">
+  <div class="o-detail-card--header">
+    <button class="o-icon-button" (click)="goBackClick()" id="Btn_Return">
+      <em class="far fa-arrow-left"></em>
+    </button>
+    <span class="o-detail-card--header-icon"
+      ><em class="fas fa-list-alt"></em
+    ></span>
+    <p>{{ document.packageName }}</p>
+  </div>
+  <div class="o-detail-card--content">
+    <p class="o-detail-card--title">
+      {{ "PROCUREMENT.PROCESS.ACTUAL_DATE" | translate }}:
+    </p>
+    <p>{{ document.actualDate }}</p>
+
+    <p class="o-detail-card--title">
+      {{ "PROCUREMENT.PROCESS.FILES" | translate }}:
+    </p>
+    <p>{{ document.currentFiles }}/{{ document.maximumFiles }}</p>
+
+    <p class="o-detail-card--title">
+      {{ "PROCUREMENT.PROCESS.STATUS" | translate }}:
+    </p>
+    <p>{{ document.state }}</p>
+
+    <fi-accordion-panel *ngFor="let file of document.files" mode="slim">
+      <ng-container title>{{
+        "PROCUREMENT.PROCESS.FILE" | translate
+      }}</ng-container>
+      <ng-container body>
+        <p class="finished-doc__name">
+          <em class="fas fa-file"></em> {{ file.name }}
+        </p>
+        <p class="o-detail-card--title">
+          {{ "PROCUREMENT.PROCESS.DOCUMENT_TYPE" | translate }}:
+        </p>
+        <p *ngIf="file.types">{{ file.types.join(", ") }}</p>
+
+        <p class="o-detail-card--title">
+          {{ "PROCUREMENT.PROCESS.DOCUMENT_ID" | translate }}:
+        </p>
+        <p>{{ file.ezShareId }}</p>
+      </ng-container>
+    </fi-accordion-panel>
+  </div>
+</div>

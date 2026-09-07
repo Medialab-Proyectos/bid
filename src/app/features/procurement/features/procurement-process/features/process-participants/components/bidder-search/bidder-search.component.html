@@ -1,0 +1,42 @@
+<ng-container>
+  <kendo-combobox
+    #kendoComboBoxInstance="kendoComboBox"
+    placeholder="{{ 'PARTICIPANT.SEARCH_PARTICIPANT' | translate }}"
+    class="c-bidder-search"
+    [id]="id ? 'Cmb_participant_search_' + id : 'Cmb_participant_search'"
+    [data]="bidderSuggestionList"
+    [textField]="'name'"
+    [valueField]="'id'"
+    [filterable]="true"
+    [suggest]="true"
+    [clearButton]="true"
+    [kendoDropDownFilter]="filterSettings"
+    (filterChange)="filterChangeSearchBidder($event)"
+    (selectionChange)="selectionChange($event)"
+    (blur)="blur()"
+    (open)="searchText <= 1 && $event.preventDefault()"
+  >
+    <ng-template kendoComboBoxItemTemplate let-dataItem>
+      <span>{{ dataItem.searchName }}</span>
+    </ng-template>
+    <ng-template kendoAutoCompleteNoDataTemplate>
+      <fi-loader *ngIf="isloading; else defaultLoadingTemplate"></fi-loader>
+      <ng-template #defaultLoadingTemplate>
+        <div>
+          <p class="no-results">
+            {{ "BIDDER.NO_RESULTS" | translate }}
+          </p>
+          <button
+            id="Btn_SearchBidder"
+            kendoButton
+            icon="plus"
+            *fiDisplayByPermissions="searchPermission"
+            (click)="onNewBidder(kendoComboBoxInstance)"
+          >
+            {{ "BIDDER.REGISTER_NEW_BIDDER" | translate }}
+          </button>
+        </div>
+      </ng-template>
+    </ng-template>
+  </kendo-combobox>
+</ng-container>

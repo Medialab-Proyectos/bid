@@ -1,0 +1,34 @@
+<div class="d-flex flex-row flex-nowrap">
+  <kendo-combobox
+    #combobox
+    [data]="data"
+    class="c-textbox k-combobox combobox-border"
+    textField="code"
+    valueField="code"
+    [filterable]="true"
+    placeholder="+1"
+    [popupSettings]="{ width: 'auto' }"
+    (filterChange)="handleFilter($event)"
+    (valueChange)="onValueChange($event)"
+    [allowCustom]="true"
+    [(ngModel)]="selectedValue"
+    [disabled]="disabled"
+    [formControl]="form.get('dialCode')"
+    (click)="onTouched()"
+    [valuePrimitive]="true"
+  >
+    <ng-template kendoComboBoxItemTemplate let-dataItem>
+      <span class="template">{{ dataItem.country }}</span>
+    </ng-template>
+  </kendo-combobox>
+  <kendo-textbox
+    class="c-textbox k-textbox textbox-border"
+    [clearButton]="true"
+    (valueChange)="onValueChangeTextBoxPhone($event)"
+    [disabled]="disabled"
+    [formControl]="form.get('number')"
+    [maxlength]="12"
+    (click)="onTouched()"
+  >
+  </kendo-textbox>
+</div>

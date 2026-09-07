@@ -1,0 +1,58 @@
+<div class="c-docs-list" *fiDisplayByPermissions="permissions">
+  <mat-tab-group
+    class="doc-package-menu"
+    mat-stretch-tabs="false"
+    mat-align-tabs="start"
+    animationDuration="0ms"
+    dynamicHeight
+  >
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span id="Tab_docsLitst_0">
+          {{ "PROCESS_DOC.DOCS_LIST.MANDATORY_DOCS" | translate }}
+          <span *ngIf="quantityMandatoryDocs > 0">
+            ({{ quantityMandatoryDocs }})
+          </span>
+        </span>
+      </ng-template>
+
+      <div
+        *ngFor="let item of mandatoryDocs"
+        class="doc-package-menu__doc-item"
+      >
+        <div class="icon-col">
+          <em
+            *ngIf="item.fiduciaryProcessDocuments?.length > 0"
+            data-testid="checkedIcon"
+            class="fas fa-check-circle"
+          ></em>
+        </div>
+        <div class="doc-package-menu__doc-item-title">
+          {{ item.groupCode | translateEnum : groupEnum }}
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span id="Tab_docsLitst_1">
+          {{ "PROCESS_DOC.DOCS_LIST.OPTIONAL_DOCS" | translate }}
+          <span *ngIf="quantityOptionalDocs > 0">
+            ({{ quantityOptionalDocs }})
+          </span>
+        </span>
+      </ng-template>
+
+      <div *ngFor="let item of optionalDocs" class="doc-package-menu__doc-item">
+        <div class="icon-col">
+          <em
+            *ngIf="item.fiduciaryProcessDocuments?.length > 0"
+            class="fas fa-check-circle"
+          ></em>
+        </div>
+        <div class="doc-package-menu__doc-item-title">
+          {{ item.groupCode | translateEnum : groupEnum }}
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

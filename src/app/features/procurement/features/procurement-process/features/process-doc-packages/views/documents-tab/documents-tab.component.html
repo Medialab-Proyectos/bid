@@ -1,0 +1,255 @@
+<ng-container *ngIf="visibilityPackage">
+  <div
+    class="c-document-tab col-12"
+    *fiDisplayByPermissions="documentSectionViewPermission"
+  >
+    <ng-container
+      *ngIf="
+        !loadingPackagesAndParticipants &&
+          !loading &&
+          isEnumLoaded &&
+          !loadingPlan;
+        else showSpinner
+      "
+    >
+      <ng-container *ngIf="!selectedDocument; else showDetail">
+        <ng-container *ngIf="showMessageShoppingOrRequest; else infoMsg">
+          <fi-alert
+            type="info"
+            title="{{
+              'PROCESS_DOC.DOCUMENT_TAB.SHOPPING_REQUEST_INFO' | translate
+            }}"
+            [closable]="true"
+          ></fi-alert>
+        </ng-container>
+        <ng-template #infoMsg>
+          <fi-alert
+            *ngIf="!prodIsInternal"
+            type="info"
+            title="{{ 'PROCESS_DOC.DOCUMENT_TAB.INFORMATION' | translate }}"
+            [closable]="true"
+          ></fi-alert>
+        </ng-template>
+        <div class="dates-offer-validity">
+          <fi-process-update-bid-validity-date
+            *ngIf="showBidValidityExtension"
+            [date]="procurementProcess.bidValidity"
+            [procurementProcessId]="processProcurementProcessId"
+            [disabled]="
+              !planNotInSync ||
+              disabledValidityDate ||
+              originalDateRules ||
+              !hasPermissionToEditbidValidityDate
+            "
+            [allowPastDates]="!isExAnte"
+            [notificationText]="notificationText"
+            (dateSelected)="onDateReceived($event)"
+            labelTitle="{{
+              'PROCUREMENT.UPDATE_BID_VALIDITY_DATE' | translate
+            }}"
+          >
+            ></fi-process-update-bid-validity-date
+          >
+
+          <div *ngIf="showBidValidityExtension">
+            <kendo-label
+              class="fi-kendo-label"
+              text="{{ 'PROCUREMENT.EXTENDED_BID_VALIDITY_DATE' | translate }}"
+            ></kendo-label>
+            <kendo-datepicker
+              class="c-datepicker k-datepicker k-input k-input-md k-rounded-md k-input-solid"
+              style="width: 20rem"
+              [calendarType]="'classic'"
+              [format]="'dd/MMM/yyyy'"
+              [(value)]="lastBidValidityExtensionDate"
+              [disabled]="true"
+            >
+            </kendo-datepicker>
+          </div>
+        </div>
+
+        <div class="sf700 row header-tab mt-3" *ngIf="!mobileView">
+          <div class="col-1" style="max-width: 3rem"></div>
+          <div class="col-5">
+            {{ "PROCESS_DOC.DOCUMENT_TAB.PACKAGES_DOC" | translate }}
+          </div>
+          <div class="col-2 d-flex">
+            {{ "PROCESS_DOC.DOCUMENT_TAB.ACTUAL_DATE" | translate }}
+            <div
+              kendoTooltip
+              [title]="
+                'PROCESS_DOC.DOCUMENT_TAB.ACTUAL_DATE_TOOLTIP' | translate
+              "
+              class="o-fieldset__legend-icon ml-1"
+            >
+              <em class="fas fa-info-circle"></em>
+            </div>
+          </div>
+          <div class="col-1">
+            {{ "PROCESS_DOC.DOCUMENT_TAB.FILES" | translate }}
+          </div>
+          <div class="col-2">
+            {{ "PROCESS_DOC.DOCUMENT_TAB.STATUS" | translate }}
+          </div>
+          <div class="col-1"></div>
+        </div>
+        <ng-container *ngIf="documentPackages.length > 0; else noContent">
+          <div
+            *ngFor="let documentPackage of documentPackages; let i = index"
+            attr.id="Row_Doc-package_{{ i + 1 }}"
+            class="document-row"
+            [class.expanded]="expandedRows[i]"
+          >
+            <div
+              class="col process-row"
+              [ngClass]="
+                isBtnClicked[i] === true && documentPackage.actualDate === null
+                  ? 'process-row-error'
+                  : null
+              "
+            >
+              <fi-package-doc
+                [processPlan]="processPlan"
+                [id]="i"
+                [items]="documentPackages"
+                [item]="documentPackage"
+                [supervisionMethod]="procurementProcessSupervisionMethod"
+                (collapse)="collapseDetail(i)"
+                [expandedRows]="expandedRows[i]"
+                [actualDatePermission]="documentActualDateEditPermission"
+                [isBtnClicked]="isBtnClicked[i]"
+              >
+              </fi-package-doc>
+            </div>
+            <div
+              class="content"
+              *ngIf="
+                !documentPackage.groupsState.loading &&
+                  !documentPackage.documentsState.loading &&
+                  !groupLoading[i];
+                else showSpinner
+              "
+            >
+              <div
+                *ngIf="
+                  !groupLoadingBusiness[i] && !loadingSetting;
+                  else showSpinner
+                "
+              >
+                <fi-alert
+                  *ngIf="btnBidding?.groupCode"
+                  type="info"
+                  title="
+                  {{ 'PROCESS_DOC.DOCUMENT_TAB.STICKY_1' | translate }}{{
+                    'BIDDINDG.BUTTON.GENERATE' | translate
+                  }} {{ btnBidding?.groupCode | translateEnum : groupEnum }}{{
+                    'PROCESS_DOC.DOCUMENT_TAB.STICKY_2' | translate
+                  }} {{ 'PROCESS_DOC.DOCUMENT_TAB.STICKY_3' | translate }}
+                "
+                  [closable]="true"
+                  [customClass]="'mb-3'"
+                ></fi-alert>
+
+                <div
+                  *ngIf="availableAlertUNDB.includes(documentPackage.code)"
+                  class="my-4"
+                >
+                  <fi-alert
+                    title="{{ 'ALTER_UNDB_PUBLICH_AVAILABLE' | translate }}"
+                  >
+                  </fi-alert>
+                </div>
+
+                <fi-ubo
+                  *ngIf="showUBOBtn[i]"
+                  [disableBtn]="disableUBOBtn[i]"
+                  [packageId]="documentPackage.id"
+                  [processId]="processProcurementProcessId"
+                ></fi-ubo>
+
+                <fi-document-group
+                  [processPlan]="processPlan"
+                  [groups]="packagesGroups[i]"
+                  [groupEnum]="enumBiddingProcessDocumentGroupCodes"
+                  [groupParentId]="documentPackage.id"
+                  [viewPermissions]="documentSectionViewPermission"
+                  [editPermissions]="documentEditPermission"
+                  [deletePermissions]="documentDeletePermission"
+                  [isUserInternal]="isUserInternal"
+                  [showReadOnly]="packagesVisbility[i]"
+                  [documentsToUpload]="documentPackage.documentsToUpload"
+                  [isUploading]="isUploading"
+                  [cleanSelection]="cleanSelection"
+                  (fileChange)="handlerFilesChanged($event)"
+                  (deleteFile)="deleteAction($event)"
+                  (editFile)="editFileAction($event, i)"
+                  (viewFile)="viewFileAction($event, i)"
+                  (refreshFiles)="refreshFiles(i)"
+                  [docPackage]="documentPackage"
+                  [allPackages]="documentPackages"
+                  [procurementProcess]="procurementProcess"
+                  [mode]="mode"
+                  [statusForm]="statusForm"
+                  [showBtnOpenDate]="displayBtnOpenDate"
+                  [documentDownloadDocumentGuestPermission]="
+                    documentDownloadDocumentGuestPermission
+                  "
+                  [documentDownloadDocumentPermission]="
+                    documentDownloadDocumentPermission
+                  "
+                  [btnBidding]="btnBidding"
+                  [resultBr]="resultBr"
+                  [showBtnDeleteByBussnes]="showBtnDeleteByBussnes"
+                >
+                </fi-document-group>
+                <fi-doc-btns
+                  *ngIf="planNotInSync"
+                  [statusForm]="statusForm"
+                  [groups]="packagesGroups[i]"
+                  [projectBucketId]="projectBucketId"
+                  [projectContractId]="projectContractId"
+                  [instAcronym]="instAcronym"
+                  [procurementProcess]="procurementProcess"
+                  [supervisionMethod]="procurementProcessSupervisionMethod"
+                  [docPackage]="documentPackage"
+                  [documentPackages]="documentPackages"
+                  [docIndex]="i"
+                  (isBtnClicked)="btnClicked($event)"
+                  [btnBidding]="groupBtnBidding[i]"
+                  [resultBr]="groupResultBr[i]"
+                  (completeDocs)="completeDocs(i)"
+                  [index]="i"
+                  [participantsDisabled]="participantsDisabled"
+                  [additionalDocs]="false"
+                  [selectedBidValidityDate]="onDateSelected"
+                  [applyUBORules]="applyUBORules[i]"
+                  [hasUboDocumentGroup]="hasUboDocumentGroup[i]"
+                  (closePackage)="closePackage($event)"
+                ></fi-doc-btns>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-template #noContent>
+        <fi-no-content
+          [content]="'PROCESS_DOC.DOCUMENT_TAB.NO_DOCUMENTS' | translate"
+        ></fi-no-content>
+      </ng-template>
+      <ng-template #showDetail>
+        <fi-document-detail
+          [document]="selectedDocument"
+          (goBack)="hideDetails()"
+        ></fi-document-detail>
+      </ng-template>
+    </ng-container>
+
+    <ng-template #showSpinner>
+      <div class="text-center py-5">
+        <fi-loader></fi-loader>
+      </div>
+    </ng-template>
+  </div>
+</ng-container>
+
+<router-outlet></router-outlet>

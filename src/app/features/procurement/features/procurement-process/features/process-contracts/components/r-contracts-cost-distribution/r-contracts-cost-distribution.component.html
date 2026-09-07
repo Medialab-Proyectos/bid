@@ -1,0 +1,498 @@
+<fi-accordion-panel [collapsible]="false">
+  <ng-container title>
+    <b> {{ 'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TITLE' | translate }} </b>
+  </ng-container>
+  <ng-container body>
+    <form [formGroup]="form">
+      <div class="cost-distribution">
+        <div class="cost-distribution__header">
+          <b class="cost-distribution__instructions">
+            {{ 'EX.R_CONTRACTS.DISTRIBUTION_COSTS_INSTRUCTIONS' | translate }}
+          </b>
+        </div>
+
+        <div formArrayName="currencies" class="currencies-container">
+          <ng-container
+            *ngFor="let currency of currenciesList.controls; let i = index"
+            [formGroupName]="i"
+          >
+            <ng-container *ngIf="formErrorNonZeroRows()[i]">
+              <fi-error-alert
+                fiErrorFocus
+                [description]="
+                  'R.CONTRACT.VALIDATION_ERRORS.PRODUCTS.NON_ZERO_TOTAL'
+                    | translate
+                "
+              >
+              </fi-error-alert>
+            </ng-container>
+            <!-- Currency Card -->
+            <div class="currency-card">
+              <!-- Loading Overlay - Ahora solo sobre este card -->
+              <div *ngIf="isLoading(i)" class="currency-card__loading-overlay">
+                <mat-progress-spinner
+                  class="currency-card__spinner"
+                  [color]="color"
+                  [mode]="mode"
+                >
+                </mat-progress-spinner>
+              </div>
+
+              <!-- Currency Header -->
+              <div class="currency-card__header">
+                <div class="currency-card__currency-info">
+                  <mat-form-field class="w-100">
+                    <mat-label>
+                      {{
+                        'EX.R_CONTRACTS.DISTRIBUTION_COSTS_CURRENCY_TYPE'
+                          | translate
+                      }}
+                    </mat-label>
+                    <mat-select
+                      formControlName="currency"
+                      [id]="'Down_Currency_type_' + i"
+                      (selectionChange)="selectCurrency($event, i)"
+                    >
+                      <mat-option
+                        *ngFor="let curr of allCurrencies$ | async"
+                        [value]="curr.currency"
+                        [disabled]="isCurrencySelected(curr.currency, i)"
+                      >
+                        {{ curr.currency }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="currency-card__actions">
+                  <!-- Add Component Button -->
+                  <div class="currency-card__add-component">
+                    <ng-container
+                      *ngIf="
+                        (allProjectTasks$ | async)?.length !==
+                        currencyCalculations()[i]?.components?.length
+                      "
+                    >
+                      <button
+                        (click)="addComponent(i)"
+                        mat-raised-button
+                        class="fi-flat-btn"
+                        type="button"
+                      >
+                        <mat-icon>add</mat-icon>
+                        {{
+                          'EX.R_CONTRACTS.DISTRIBUTION_COSTS_ADD_COMPONENT_BTN'
+                            | translate
+                        }}
+                      </button>
+                    </ng-container>
+                  </div>
+
+                  <!-- Delete Currency Button -->
+                  <div class="currency-card__action-button">
+                    <ng-container *ngIf="i !== 0">
+                      <button
+                        mat-button
+                        (click)="deleteCurrency(i)"
+                        class="currency-card__button"
+                        type="button"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </ng-container>
+                  </div>
+
+                  <!-- Collapse/Expand Button -->
+                  <div class="currency-card__action-button">
+                    <button
+                      (click)="collapseCurrency(i)"
+                      mat-button
+                      class="currency-card__button"
+                      type="button"
+                    >
+                      <mat-icon>
+                        {{
+                          isExpanded(i)
+                            ? 'keyboard_arrow_up'
+                            : 'keyboard_arrow_down'
+                        }}
+                      </mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Currency Body (Components) -->
+              <div class="currency-card__body" formArrayName="componentsArray">
+                <ng-container *ngIf="isExpanded(i)">
+                  <ng-container
+                    *ngFor="
+                      let componentGroup of getComponentsArray(i).controls;
+                      let j = index
+                    "
+                    [formGroupName]="j"
+                  >
+                    <div class="component">
+                      <!-- Component Header -->
+                      <div class="component__header">
+                        <div
+                          class="component__header-item component__header-item--component"
+                        >
+                          <mat-form-field class="w-100">
+                            <mat-label>{{
+                              'COST_DISTRIBUTION_COMPONENT' | translate
+                            }}</mat-label>
+                            <mat-select
+                              [id]="'Down_Component_type_' + i + '_' + j"
+                              formControlName="component"
+                              (selectionChange)="selectComponent($event, i, j)"
+                            >
+                              <mat-option
+                                [value]="component.id"
+                                *ngFor="
+                                  let component of allProjectTasks$ | async
+                                "
+                                [disabled]="
+                                  isComponentSelected(component.id, i, j)
+                                "
+                              >
+                                {{ component.name }}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                        <div class="component__header-item">
+                          {{
+                            'CONTRACT.COST_DISTRIBUTION.IADB_AMOUNT' | translate
+                          }}
+                        </div>
+                        <div class="component__header-item">
+                          {{ 'COST_DISTRIBUTION_LOCAL_AMOUNT' | translate }}
+                        </div>
+                        <div class="component__header-item">
+                          {{
+                            'COST_DISTRIBUTION_CONFINANCING_AMOUNT' | translate
+                          }}
+                        </div>
+                        <div class="component__header-item">
+                          {{ 'COST_DISTRIBUTION_TOTAL_CURRENCY' | translate }}
+                        </div>
+                        <div
+                          class="component__header-item component__header-item--actions"
+                        >
+                          <button
+                            (click)="deleteComponent(i, j)"
+                            mat-button
+                            class="currency-card__button"
+                            type="button"
+                          >
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Component Body (Products) -->
+                      <div class="component__body" formArrayName="products">
+                        <ng-container
+                          *ngFor="
+                            let productGroup of getProductsArray(i, j).controls;
+                            let k = index
+                          "
+                          [formGroupName]="k"
+                        >
+                          <div class="product-row">
+                            <!-- Product Select -->
+                            <div
+                              class="product-row__item product-row__item--product"
+                            >
+                              <mat-form-field class="w-100">
+                                <mat-label>{{
+                                  'COST_DISTRIBUTION_PRODUCT' | translate
+                                }}</mat-label>
+                                <mat-select
+                                  [id]="
+                                    'Down_Product_type_' + i + '_' + j + '_' + k
+                                  "
+                                  formControlName="output"
+                                  (selectionChange)="
+                                    selectProduct(i, j, k, $event)
+                                  "
+                                >
+                                  <mat-option
+                                    [value]="product.id"
+                                    *ngFor="
+                                      let product of getComponentProducts(i, j)
+                                        | async
+                                    "
+                                    [disabled]="
+                                      isProductSelected(product.id, i, j, k)
+                                    "
+                                  >
+                                    {{ product.name }}
+                                  </mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                            </div>
+
+                            <!-- Bid Amount -->
+                            <div class="product-row__item">
+                              <fi-mat-numeric
+                                [label]="
+                                  'CONTRACT.COST_DISTRIBUTION.IADB_AMOUNT'
+                                    | translate
+                                "
+                                [step]="0.1"
+                                formControlName="bidAmount"
+                                [decimals]="getCurrencyDecimal(i)"
+                                min="0"
+                              >
+                              </fi-mat-numeric>
+                            </div>
+
+                            <!-- Local Amount -->
+                            <div class="product-row__item">
+                              <fi-mat-numeric
+                                [label]="
+                                  'COST_DISTRIBUTION_LOCAL_AMOUNT' | translate
+                                "
+                                [step]="0.1"
+                                [decimals]="getCurrencyDecimal(i)"
+                                formControlName="localCounterPartAmount"
+                                min="0"
+                              >
+                              </fi-mat-numeric>
+                            </div>
+
+                            <!-- Cofinancing Amount -->
+                            <div class="product-row__item">
+                              <fi-mat-numeric
+                                [label]="
+                                  'COST_DISTRIBUTION_CONFINANCING_AMOUNT'
+                                    | translate
+                                "
+                                [step]="0.1"
+                                formControlName="cofinancingAmount"
+                                [decimals]="getCurrencyDecimal(i)"
+                                min="0"
+                              >
+                              </fi-mat-numeric>
+                            </div>
+
+                            <!-- Total Amount (Computed) -->
+                            <div class="product-row__item">
+                              {{
+                                currencyCalculations()[i]?.components[j]
+                                  ?.products[k]?.totalAmount | ifNumber
+                              }}
+                            </div>
+
+                            <!-- Delete Product Button -->
+                            <div class="product-row__item">
+                              <button
+                                (click)="deleteProduct(i, j, k)"
+                                mat-button
+                                class="currency-card__button"
+                                type="button"
+                              >
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                        </ng-container>
+
+                        <!-- Add Product Button -->
+                        <ng-container
+                          *ngIf="
+                            (getComponentProducts(i, j) | async)?.length !==
+                            currencyCalculations()[i]?.components[j]?.products
+                              ?.length
+                          "
+                        >
+                          <div class="component__add-product">
+                            <button
+                              (click)="addProduct(i, j)"
+                              class="fi-basic-btn"
+                              type="button"
+                            >
+                              <mat-icon>add</mat-icon>
+                              {{
+                                'EX.R_CONTRACTS.DISTRIBUTION_COSTS_ADD_PRODUCT_BTN'
+                                  | translate
+                              }}
+                            </button>
+                          </div>
+                        </ng-container>
+                      </div>
+
+                      <!-- Component Footer (Totals) -->
+                      <div class="component__footer">
+                        <div
+                          class="component__footer-item component__footer-item--label"
+                        >
+                          {{
+                            'COST_DISTRIBUTION_AMOUNT_PER_COMPONENT' | translate
+                          }}
+                          ({{ getCurrencyName(i) }})
+                        </div>
+                        <div class="component__footer-item">
+                          {{
+                            currencyCalculations()[i]?.components[j]
+                              ?.bidComponentTotalAmount | ifNumber
+                          }}
+                        </div>
+                        <div class="component__footer-item">
+                          {{
+                            currencyCalculations()[i]?.components[j]
+                              ?.localCounterpartComponentAmount | ifNumber
+                          }}
+                        </div>
+                        <div class="component__footer-item">
+                          {{
+                            currencyCalculations()[i]?.components[j]
+                              ?.cofinancingComponentAmount | ifNumber
+                          }}
+                        </div>
+                        <div class="component__footer-item">
+                          {{
+                            currencyCalculations()[i]?.components[j]
+                              ?.totalComponentAmount | ifNumber
+                          }}
+                        </div>
+                        <div class="component__footer-item"></div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </div>
+
+              <!-- Currency Footer (Currency Totals) -->
+              <div class="currency-card__footer">
+                <div class="currency-total">
+                  <div class="currency-total__section">
+                    <b class="currency-total__title">
+                      {{
+                        'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL_AMOUNT_OF_CURRENCY'
+                          | translate
+                      }}<br />
+                    </b>
+                    <div class="currency-total__subtitle">
+                      <b>({{ getCurrencyName(i) }})</b>
+                      <div
+                        class="currency-total__help"
+                        [matTooltip]="
+                          'R.CONTRACT.COST_DISTRIBUTION.TOTAL_CURRENCY_TOOLTIP'
+                            | translate
+                        "
+                        matTooltipClass="fi-tooltip"
+                      >
+                        <mat-icon class="currency-total__help-icon">
+                          question_mark
+                        </mat-icon>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="currency-total__amounts">
+                    <!-- Total Bid Amount -->
+                    <div class="amount-item">
+                      <div class="amount-item__value">
+                        <b>
+                          {{
+                            currencyCalculations()[i]?.totalAmountBid | ifNumber
+                          }}
+                        </b>
+                      </div>
+                      <div class="amount-item__label">
+                        {{
+                          'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL_AMOUNT_OF_BID'
+                            | translate
+                        }}
+                      </div>
+                    </div>
+
+                    <!-- Total Local Contribution -->
+                    <div class="amount-item">
+                      <div class="amount-item__value">
+                        <b>
+                          {{
+                            currencyCalculations()[i]?.totalAmountCounterPart
+                              | ifNumber
+                          }}
+                        </b>
+                      </div>
+                      <div class="amount-item__label">
+                        {{
+                          'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL-LOCAL_CONSTRIBUTION_AMOUNT'
+                            | translate
+                        }}
+                      </div>
+                    </div>
+
+                    <!-- Total Cofinancing -->
+                    <div class="amount-item">
+                      <div class="amount-item__value">
+                        <b>
+                          {{
+                            currencyCalculations()[i]?.totalAmountCofinancing
+                              | ifNumber
+                          }}
+                        </b>
+                      </div>
+                      <div class="amount-item__label">
+                        {{
+                          'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL_AMOUNT_CO_FINANCING'
+                            | translate
+                        }}
+                      </div>
+                    </div>
+
+                    <!-- Total Currency -->
+                    <div class="amount-item">
+                      <div class="amount-item__value">
+                        <b>
+                          {{
+                            currencyCalculations()[i]?.totalAmountEquivalent
+                              | ifNumber
+                          }}
+                        </b>
+                      </div>
+                      <div class="amount-item__label">
+                        {{
+                          'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL_CURRENCY'
+                            | translate
+                        }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Add Currency Button -->
+        <ng-container
+          *ngIf="currencyCalculations().length < MAXIMUM_CURRENCIES"
+        >
+          <div class="cost-distribution__add-currency">
+            <button
+              (click)="addCurrencies()"
+              mat-raised-button
+              class="fi-flat-btn"
+              type="button"
+            >
+              <mat-icon>add</mat-icon>
+              {{ 'COST_DISTRIBUTION_ADD_CURRENCY_BTN' | translate }}
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </form>
+
+    <!-- Total Summary -->
+    <div class="cost-distribution__total-summary mb-4">
+      {{ 'COST_DISTRIBUTION_TOTAL_EQUIVALENT' | translate }}
+      {{ getCurrenciesTotalEquivalent() | ifNumber }}
+    </div>
+  </ng-container>
+</fi-accordion-panel>

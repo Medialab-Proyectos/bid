@@ -1,0 +1,46 @@
+<div class="col-12">
+  <div class="row header-options__container flex-nowrap">
+    <button
+      kendoButton
+      class="btn btn-online-brand"
+      style="min-width: unset !important; width: auto !important; white-space: nowrap; font-size: 12px; padding: 8px 16px;"
+      (click)="navigateToClientPortal()"
+      id="Btn_client_portal"
+    >
+      {{ "HEADERS.CLIENT_PORTAL" | translate }}
+    </button>
+    <div class="col-2 header-options__item">
+      <em class="fas fa-cog"></em>
+    </div>
+    <div class="col-2 header-options__item">
+      <kendo-badge-container>
+        <em class="fas fa-bell"></em>
+        <!-- <kendo-badge class="badge-edge--notification">4</kendo-badge> -->
+      </kendo-badge-container>
+    </div>
+    <div class="col-2 header-options__item" style="cursor: pointer;">
+      <kendo-badge-container>
+        <em class="fas fa-headset" (click)="navigateToHelpSupport()"></em>
+      </kendo-badge-container>
+    </div>
+    <div class="col-2 header-options__item" #anchor (click)="toggle()">
+      <kendo-avatar
+        role="initials"
+        class="curPoint"
+        [shape]="'circle'"
+        [initials]="userInfo?.initials"
+      ></kendo-avatar>
+    </div>
+  </div>
+  <kendo-popup
+    #popup
+    [offset]="offset"
+    [anchor]="anchor"
+    *ngIf="expandedOptions"
+    [anchorAlign]="anchorAlign"
+    [popupAlign]="popupAlign"
+    style="margin-top: 16px"
+  >
+    <fi-profile-card [userInfo]="userInfo"></fi-profile-card>
+  </kendo-popup>
+</div>

@@ -1,0 +1,7 @@
+export enum ODWorkflowSteps {
+  ENTER_AND_SUBMIT = 0,
+  VALIDATE,
+  REVIEW,
+  AUTHORIZE,
+  FINAL_AUTHORIZE,
+}

@@ -1,0 +1,162 @@
+<div class="c-process-comments" id="commentsSection">
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{ "PROCUREMENT.COMMENTS" | translate }}</ng-container>
+    <ng-container body>
+      <div class="row" [formGroup]="commentsProcess">
+        <div class="col-12 mt-2" role="section-comments">
+          <div formArrayName="commentsList" class="px-md-3">
+            <div
+              *ngFor="
+                let item of formCommentsList.controls;
+                let commentsIndex = index
+              "
+              [formGroupName]="commentsIndex"
+              class="c-process-comments__comment"
+            >
+              <div class="row">
+                <div class="col-12 col-md-1 c-process-comments__avatar">
+                  <fi-avatar
+                    [userNameInitials]="comments[commentsIndex]?.createdBy"
+                  ></fi-avatar>
+                </div>
+                <input type="hidden" formControlName="id" />
+                <div class="col-12 col-md-11">
+                  <kendo-editor
+                    class="c-process-coments__editor"
+                    formControlName="text"
+                    ngDefaultControl
+                    [fiDisableControl]="
+                      commentsDisabled[commentsIndex] ||
+                      commentsDisabledBy[commentsIndex] ||
+                      readonly
+                    "
+                    [placeholder]="'PROCUREMENT.ADD_COMMENT' | translate"
+                  >
+                    <kendo-toolbar>
+                      <kendo-toolbar-buttongroup>
+                        <kendo-toolbar-button
+                          kendoEditorBoldButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorItalicButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorUnderlineButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorIndentButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorOutdentButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorInsertUnorderedListButton
+                        >
+                        </kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorInsertOrderedListButton
+                        ></kendo-toolbar-button>
+                      </kendo-toolbar-buttongroup>
+                    </kendo-toolbar>
+
+                    <kendo-editor-messages
+                      [bold]="'COMMON.EDITOR_BOLD' | translate"
+                      [italic]="'COMMON.EDITOR_ITALIC' | translate"
+                      [underline]="'COMMON.EDITOR_UNDERLINE' | translate"
+                      [indent]="'COMMON.EDITOR_INDENT' | translate"
+                      [outdent]="'COMMON.EDITOR_OUTDENT' | translate"
+                      [insertUnorderedList]="
+                        'COMMON.EDITOR_INSERT_UL' | translate
+                      "
+                      [insertOrderedList]="
+                        'COMMON.EDITOR_INSERT_OL' | translate
+                      "
+                    >
+                    </kendo-editor-messages>
+                  </kendo-editor>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-1"></div>
+                <div class="col-11">
+                  <div class="pt-3 pb-2">
+                    {{
+                      "PROCUREMENT.PROCESS.COMMENT_FOR_EXECUTING_AGENCY"
+                        | translate
+                    }}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-1"></div>
+                <div class="col-11 d-flex justify-content-between">
+                  <div>
+                    <ul class="k-radio-list">
+                      <li
+                        class="k-radio-item"
+                        *ngFor="let item of visibility; let i = index"
+                      >
+                        <label class="k-radio-label">
+                          <input
+                            type="radio"
+                            value="{{ item.id }}"
+                            formControlName="visibility"
+                            kendoRadioButton
+                            [id]="'Rbn_Visibility_' + (i + 1)"
+                            #visibility
+                            [fiDisableControl]="
+                              commentsDisabled[commentsIndex] ||
+                              !hasPermission ||
+                              readonly
+                            "
+                          />
+                          <span>
+                            {{ item.name | translate }}
+                          </span>
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
+                  <ng-container
+                    *ngIf="
+                      !commentsDisabled[commentsIndex] &&
+                      !commentsDisabledBy[commentsIndex] &&
+                      !readonly
+                    "
+                  >
+                    <button
+                      *fiDisplayByPermissions="deleteCommentPermission"
+                      kendoButton
+                      iconClass="far fa-trash-alt"
+                      type="button"
+                      look="clear"
+                      id="Btn_Delete_comment"
+                      (click)="deleteComment(commentsIndex)"
+                    ></button>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="separator1em fi-procurement--border"></div>
+            </div>
+            <div class="row c-process-comments__button" *ngIf="!readonly">
+              <ng-container *ngIf="canEnterNewCommentForInternal">
+                <button
+                  *fiDisplayByPermissions="addCommentPermission"
+                  kendoButton
+                  #commentInput
+                  class="btn btn-online-brand mb-3 mx-md-2"
+                  icon="plus"
+                  id="Btn_Add_comment"
+                  (click)="addNewCommentFormGroup()"
+                >
+                  {{ "PROCUREMENT.ENTER_A_NEW_COMMENT" | translate }}
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

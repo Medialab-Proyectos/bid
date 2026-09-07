@@ -1,0 +1,155 @@
+<fieldset class="c-participants" [formGroup]="form">
+  <legend class="o-fieldset__legend">
+    <span class="o-fieldset__legend-number"> {{ number }}</span>
+    {{ "FORMS.PARTICIPANTS.LIST.STATIC_TEXT3" | translate }}
+  </legend>
+
+  <div
+    class="c-participants__container"
+    formArrayName="participants"
+    *ngIf="showParticipantsList; else noContent"
+  >
+    <div
+      *ngFor="let participant of participantFormArray?.controls; let i = index"
+    >
+      <div
+        *ngIf="
+          participant.get('result')?.value === ParticipantsResult.PARTICIPANT
+        "
+      >
+        <fieldset [formGroupName]="i">
+          <div class="row">
+            <div class="col-4">
+              <kendo-label
+                class="fi-kendo-label"
+                [for]="bidderName"
+                text="{{ 'FORMS.PARTICIPANTS.LIST.BIDDER_NAME' | translate }}"
+              >
+              </kendo-label>
+              <kendo-textbox
+                #bidderName
+                class="c-textbox"
+                formControlName="bidderName"
+                [id]="'Txb_bidder_name' + i"
+              >
+              </kendo-textbox>
+            </div>
+
+            <div class="col-4">
+              <kendo-label
+                class="fi-kendo-label"
+                [for]="bidderNationality"
+                text="{{
+                  'FORMS.PARTICIPANTS.LIST.BIDDER_NATIONALITY' | translate
+                }}"
+              >
+              </kendo-label>
+              <kendo-textbox
+                #bidderNationality
+                class="c-textbox"
+                formControlName="nationality"
+                [id]="'Txb_bidder_nationality' + i"
+              ></kendo-textbox>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-4">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                [for]="openingPrice"
+                text="{{ 'FORMS.PARTICIPANTS.LIST.OPENING_PRICE' | translate }}"
+              >
+              </kendo-label>
+              <kendo-numerictextbox
+                #openingPrice
+                class="c-numerictextbox"
+                [id]="'Txb_opening_price' + i"
+                [changeValueOnScroll]="false"
+                [spinners]="false"
+                [format]="format"
+                [decimals]="decimals"
+                [min]="0"
+                [maxlength]="18"
+                [autoCorrect]="true"
+                [placeholder]="
+                  'FORMS.PARTICIPANTS.LIST.OPENING_PRICE_PLACEHOLDER'
+                    | translate
+                "
+                formControlName="openingPrice"
+              >
+              </kendo-numerictextbox>
+              <div
+                *ngIf="
+                  participant.controls.openingPrice?.errors &&
+                  (participant.controls.openingPrice?.dirty ||
+                    participant.controls.openingPrice?.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "FORMS.VALIDATIONS.IS_REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                [for]="evaluatedPrice"
+                text="{{
+                  'FORMS.PARTICIPANTS.LIST.EVALUATED_PRICE' | translate
+                }}"
+              >
+              </kendo-label>
+              <kendo-numerictextbox
+                #evaluatedPrice
+                class="c-numerictextbox"
+                [id]="'Txb_evaluated_price' + i"
+                [changeValueOnScroll]="false"
+                [spinners]="false"
+                [format]="format"
+                [decimals]="decimals"
+                [min]="0"
+                [maxlength]="18"
+                [autoCorrect]="true"
+                [placeholder]="
+                  'FORMS.PARTICIPANTS.LIST.PRICE_OFFER' | translate
+                "
+                formControlName="evaluatedPrice"
+              >
+              </kendo-numerictextbox>
+              <div
+                *ngIf="
+                  participant.controls.evaluatedPrice?.errors &&
+                  (participant.controls.evaluatedPrice?.dirty ||
+                    participant.controls.evaluatedPrice?.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "FORMS.VALIDATIONS.IS_REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="c-participants__total_score">
+          <span>{{ "FORMS.PARTICIPANTS.LIST.FINAL_SCORE" | translate }}:</span>
+          <span>{{
+            participant.get("totalScore")?.value !== null
+              ? (participant.get("totalScore")?.value | number: "1.2-2")
+              : (0 | number: "1.2-2")
+          }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</fieldset>
+
+<ng-template #noContent>
+  <fi-no-content
+    [content]="'FORMS.PARTICIPANTS.LIST.NO_PARTICIPANT' | translate"
+  ></fi-no-content>
+</ng-template>

@@ -1,0 +1,32 @@
+<kendo-tabstrip>
+  <kendo-tabstrip-tab
+    title="{{
+      'PROCUREMENT.COMMENTS_BY_PLAN.TABLE.DETAILS.HEADER.ACTUAL' | translate
+    }}"
+    [selected]="true"
+  >
+    <ng-template kendoTabContent>
+      <fi-completed-comments
+        [comments]="actualComments"
+        [noCommentsKey]="
+          'PROCUREMENT.COMMENTS_BY_PLAN.TABLE.ACTUAL_COMMENT.NO_RECORD'
+        "
+      ></fi-completed-comments>
+    </ng-template>
+  </kendo-tabstrip-tab>
+
+  <kendo-tabstrip-tab
+    title="{{
+      'PROCUREMENT.COMMENTS_BY_PLAN.TABLE.DETAILS.HEADER.HISTORIC' | translate
+    }}"
+  >
+    <ng-template kendoTabContent>
+      <fi-completed-comments
+        [comments]="historicComments"
+        [noCommentsKey]="
+          'PROCUREMENT.COMMENTS_BY_PLAN.TABLE.HISTORIC_COMMENT.NO_RECORD'
+        "
+      ></fi-completed-comments>
+    </ng-template>
+  </kendo-tabstrip-tab>
+</kendo-tabstrip>

@@ -1,0 +1,117 @@
+<form class="recipient-fields" [formGroup]="recipientFormGroup">
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.ADDRESS" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.ADDRESS_LABEL" | translate
+      }}</mat-label>
+      <input type="text" matInput formControlName="address" maxlength="500" />
+      <mat-hint align="end">
+        {{ recipientFormGroup.controls.address.value?.length || 0 }}/500
+      </mat-hint>
+      <mat-error *ngIf="recipientFormGroup.controls.address.errors?.required">
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.EXECUTING_AGENCY" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.EXECUTING_AGENCY_LABEL" | translate
+      }}</mat-label>
+      <input
+        type="text"
+        matInput
+        formControlName="executingAgency"
+        maxlength="500"
+      />
+      <mat-hint align="end">
+        {{ recipientFormGroup.controls.executingAgency.value?.length || 0 }}/500
+      </mat-hint>
+      <mat-error
+        *ngIf="recipientFormGroup.controls.executingAgency.errors?.required"
+      >
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+      <mat-error
+        *ngIf="recipientFormGroup.controls.executingAgency.errors?.email"
+        >{{ "COMMON.FORMS.MUST_BE_EMAIL" | translate }}</mat-error
+      >
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span> {{ "UNDB.FORM.RECIPIENT.ATTENTION" | translate }} </span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.ATTENTION_LABEL" | translate
+      }}</mat-label>
+      <input
+        type="text"
+        matInput
+        formControlName="responsible"
+        maxlength="500"
+      />
+      <mat-hint align="end">
+        {{ recipientFormGroup.controls.responsible.value?.length || 0 }}/500
+      </mat-hint>
+      <mat-error
+        *ngIf="recipientFormGroup.controls.responsible.errors?.required"
+      >
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.PHONE_NUMBER" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.PHONE_NUMBER_LABEL" | translate
+      }}</mat-label>
+      <input type="text" matInput formControlName="phone" maxlength="50" />
+      <mat-hint align="end">
+        {{ recipientFormGroup.controls.phone.value?.length || 0 }}/50
+      </mat-hint>
+      <mat-error *ngIf="recipientFormGroup.controls.phone.errors?.required">
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.EMAIL" | translate }}</span>
+    <mat-form-field [hintLabel]="'UNDB.FORM.RECIPIENT.EMAIL_HINT' | translate">
+      <mat-label>{{ "UNDB.FORM.RECIPIENT.EMAIL_LABEL" | translate }}</mat-label>
+      <textarea
+        type="text"
+        matInput
+        formControlName="email"
+        cdkTextareaAutosize
+        placeholder="e.g. alex.jordan92@example.com; emily.ross87@mail.com; marco_diaz21@test.org;"
+      ></textarea>
+      <mat-hint align="end">
+        {{ recipientFormGroup.controls.email.value?.length || 0 }}/500
+      </mat-hint>
+      <mat-error *ngIf="recipientFormGroup.controls.email.errors?.required">
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+      <mat-error *ngIf="recipientFormGroup.controls.email.errors?.email">
+        {{ "COMMON.FORMS.MUST_BE_EMAIL" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.WEBSITE" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.WEBSITE_LABEL" | translate
+      }}</mat-label>
+      <input type="text" matInput formControlName="website" maxlength="500" />
+      <mat-hint align="end">
+        {{ recipientFormGroup.controls.website.value?.length || 0 }}/500
+      </mat-hint>
+      <mat-error *ngIf="recipientFormGroup.controls.website.errors?.required">
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+</form>

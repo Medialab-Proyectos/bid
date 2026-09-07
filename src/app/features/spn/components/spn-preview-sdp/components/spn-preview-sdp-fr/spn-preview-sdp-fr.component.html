@@ -1,0 +1,329 @@
+<ng-container *ngIf="data">
+  <p>
+    Le présent Avis d’Appel d’Offres fait suite à l’Avis Général de Passation
+    des Marchés (AGPM) numéro
+    <span class="sf700">{{ data.notice.agaCode }}</span> pour ce projet publié
+    sur le site Internet de la Banque Interaméricaine de Développement le
+    <span class="sf700">{{
+      data.notice.agaPublicationDate | dateIF : "dd MMMM YYYY"
+    }}</span
+    >.
+  </p>
+  <p>
+    <span class="sf700">{{ data.projectData.country }}</span>
+    {{
+      data.notice.spnType === spnType.SDP || isSDOGoods || isSDONCSVC
+        ? "a reçu un financement de la Banque Interaméricaine de Développement pour financer partiellement le coût de"
+        : "a reçu un financement auprès de la Banque Interaméricaine de Développement pour financer partiellement le coût de"
+    }}
+    <span class="sf700">{{ data.notice.projectName }}</span
+    >,
+    {{
+      isSDOGoods || isSDONCSVC
+        ? "et a l’intention d’utiliser une partie du produit de ce financement pour effectuer des paiements au titre du Marché dont les détails sont fournis dans cet appel à"
+        : "et entend affecter une partie du produit de ce financement pour effectuer des paiements au titre du Marché dont les détails sont fournis dans cet appel à"
+    }}
+    {{ data.notice.spnType === "SDP" ? "propositions" : "soumissions" }}.
+    <ng-container *ngIf="data.notice.agenciesWillBeCofinanced">
+      Ce Marché sera financé conjointement par
+      <span class="sf700">{{ data.notice.agenciesWillBeCofinanced }}</span
+      >. La passation du marché sera régie par les modalités alternatives de
+      passation de marchés définies dans les politiques relatives à la passation
+      des marchés de biens et de travaux financés par la Banque Interaméricaine
+      de Développement.</ng-container
+    >
+  </p>
+  <p>
+    <span *ngIf="!data.notice.withLots">
+      Le
+      <span class="sf700">{{ data.projectData.selectedProject.executor }}</span>
+      <ng-container
+        *ngIf="!(isSDOGoods || isSDONCSVC); else notSdoGoodsOrNcsvc"
+      >
+        invite les soumissionnaires éligibles et qualifiés à présenter leur
+        {{
+          data.notice.spnType === spnType.SDP ? "propositions" : "soumission"
+        }}
+        cachetée en vue de
+      </ng-container>
+      <ng-template #notSdoGoodsOrNcsvc>
+        sollicite maintenant des offres fermées de la part de Soumissionnaires
+        éligibles pour
+      </ng-template>
+      <span class="sf700">{{ data.notice.worksToBeAcquired }}</span
+      >.
+      <ng-container
+        *ngIf="!(isSDOGoods || isSDONCSVC) && !data.notice.withLots"
+      >
+        Le délai d'exécution estimé est
+        <span class="sf700">
+          {{ data.notice.timeQuantity }}
+          {{ getValueOptions(data.unitsOfTime, data.notice.unitOfTime) }}</span
+        >.
+      </ng-container>
+    </span>
+    <span *ngIf="data.notice.withLots && !isSDOGoods">
+      Le
+      <span class="sf700">{{ data.projectData.selectedProject.executor }}</span>
+      invite les soumissionnaires éligibles et qualifiés à présenter leur
+      {{
+        data.notice.spnType === "SDP" || !isSDOGOOds
+          ? "propositions"
+          : "soumission"
+      }}
+      cachetée en vue de</span
+    >
+  </p>
+
+  <ng-container *ngIf="data.notice.withLots">
+    <table
+      mat-table
+      [dataSource]="data.notice.lots"
+      class="mat-elevation-z1 my-4"
+    >
+      <ng-container matColumnDef="lotNumber">
+        <th mat-header-cell *matHeaderCellDef class="sf700">
+          {{ "SPN.REGISTER.LOTS_TABLE.HEADER.NUMBER" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let lot">{{ lot.number }}</td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef class="sf700">
+          {{ "SPN.REGISTER.LOTS_TABLE.HEADER.NAME" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let lot">{{ lot.name }}</td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="expectedTime">
+        <th mat-header-cell *matHeaderCellDef class="sf700">
+          {{ "SPN.REGISTER.LOTS_TABLE.HEADER.EXPECTED_TIME" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let lot">
+          {{ lot.expectedTime }}
+          {{ getUnitOfTimeName(data.unitsOfTime, lot.unitOfTime) }}
+        </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="specifications">
+        <th mat-header-cell *matHeaderCellDef class="sf700">
+          {{ "SPN.REGISTER.LOTS_TABLE.HEADER.SPECIFICATION" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let lot">
+          {{ lot.technicalSpecifications }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="lotsTableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: lotsTableColumns"></tr>
+    </table>
+  </ng-container>
+
+  <p>
+    La passation du marché sera conduite par
+    <span class="sf700">
+      {{
+        "PROCUREMENT.PROCUREMENT_METHOD." +
+          data.projectData.procurementProcess.procurementMethod.name | translate
+      }}
+    </span>
+    tel que défini dans les
+    <a
+      href="https://projectprocurement.iadb.org/en/policies"
+      target="_blank"
+      style="font-style: italic"
+    >
+      Politiques de la Banque Interaméricaine de Développement relatives à la
+      passation de marchés de Biens et de Travaux financés par la Banque
+      Interaméricaine de Développement
+    </a>
+    (édition applicable selon le contrat de prêt) et ouvert à tous les
+    Soumissionnaires de pays éligibles tels que définis dans les documents
+    d'appel
+    {{ data.notice.spnType === spnType.SDP ? "d'offres" : "à soumissions" }}.
+    <ng-container *ngIf="data.notice.exceptionalEligibilityRules"
+      >Éligibilité exceptionnelle:
+      <span class="sf700">{{ data.notice.exceptionalEligibilityRules }}</span
+      >.</ng-container
+    >
+  </p>
+  <p>
+    {{
+      isSDOGoods || isSDONCSVC
+        ? "Les exigences en matière de qualifications comprennent:"
+        : "Les soumissionnaires doivent répondre aux critères de qualification suivants:"
+    }}
+    <br />
+    <br />
+    <span [innerHtml]="data.notice.qualificationRequirements"></span
+    ><ng-container *ngIf="isSDOGoods || isSDONCSVC">
+      Une marge de préférence
+      <span class="sf700">
+        {{
+          data.notice.marginOfPreferenceWillBeGranted ? "sera" : "ne sera pas"
+        }} </span
+      >, selon le cas octroyée aux entreprises locales ou aux groupements
+      d’entreprises locales. Des informations plus détaillées sont fournies dans
+      le dossier d’Appel à soumissions.
+      <ng-container
+        *ngIf="data.notice.mofMethod || data.notice.negotiationMethod"
+      >
+        <ng-container
+          *ngIf="data.notice.mofMethod && !data.notice.negotiationMethod"
+        >
+          Dans ce processus, il sera appliqué
+          <span class="sf700">Meilleure Offre Finale (M.O.F.)</span>.
+        </ng-container>
+        <ng-container
+          *ngIf="!data.notice.mofMethod && data.notice.negotiationMethod"
+        >
+          Dans ce processus, il sera appliqué
+          <span class="sf700">Négociation</span>.
+        </ng-container>
+        <ng-container
+          *ngIf="!(data.notice.mofMethod && !data.notice.negotiationMethod) && !(!data.notice.mofMethod && data.notice.negotiationMethod)"
+        >
+          Dans ce processus, il sera appliqué
+          <span class="sf700">
+            Meilleure Offre Finale (M.O.F.) et Négociation.
+          </span>.
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </p>
+  <p>
+    Les Soumissionnaires intéressés peuvent obtenir un jeu complet du dossier
+    d’Appel à
+    {{ data.notice.spnType === spnType.SDP ? "propositions" : "soumissions" }}
+    en
+    <span class="sf700">
+      {{
+        getKeyByValue(data.notice.languageOfBiddingDocuments)
+          | translate
+          | titlecase
+      }}</span
+    >
+    en formulant une demande écrite à l’adresse indiquée à la fin de cet avis.
+    <ng-container
+      *ngIf="
+        data.notice.nonRefundableCurrency &&
+        data.notice.nonRefundableAmount &&
+        data.notice.nonRefundablePaymentMethod
+      "
+    >
+      Les documents seront fournis contre un paiement non remboursable de
+      <span class="sf700"
+        >{{ data.notice.nonRefundableCurrency }}
+        {{ data.notice.nonRefundableAmount | ifNumber }}</span
+      >. La méthode de paiement sera
+      <span class="sf700">{{ data.notice.nonRefundablePaymentMethod }}</span
+      >.</ng-container
+    >
+    Le dossier d’Appel à
+    {{ data.notice.spnType === spnType.SDP ? "propositions" : "soumissions" }}
+    sera acheminé par
+    <span class="sf700">{{ data.notice.howToSendBiddingDocument }}</span
+    >.
+  </p>
+
+  <ng-container *ngIf="data.notice.linksRelatedWithTheDocument.length > 0">
+    <p style="margin-block: 1lh">Documents liés à cet avis:</p>
+    <ul>
+      <li
+        *ngFor="let linkedDocument of data.notice.linksRelatedWithTheDocument"
+      >
+        <a [href]="linkedDocument" target="_blank" rel="noopener noreferrer">{{
+          linkedDocument
+        }}</a>
+      </li>
+    </ul>
+  </ng-container>
+
+  <p>
+    Les offres devront être remises à l’adresse ci-dessous au plus tard le
+    <span class="sf700"
+      >{{ data.notice.dateOfSubmissionOfBids | dateIF : "dd MMMM yyyy" }}
+      à
+      {{
+        data.notice.dateOfSubmissionOfBids | date : "shortTime" : "UTC"
+      }}</span
+    >. La soumission des offres par voie électronique
+    <ng-container *ngIf="!data.notice.electronicOffers">
+      <span class="sf700">ne sera pas</span>
+    </ng-container>
+    <ng-container *ngIf="data.notice.electronicOffers">
+      <span class="sf700">sera</span>
+    </ng-container>
+    autorisée. Les offres remises en retard ne seront pas acceptées.
+    <br />
+  </p>
+  <p>
+    Les offres seront ouvertes en présence des représentants des
+    Soumissionnaires présents en personne
+    <ng-container *ngIf="data.notice.electronicOffers"
+      ><span class="sf700">ou en ligne</span></ng-container
+    >
+    à l'adresse ci-dessous à
+    <span class="sf700">
+      {{ data.notice.bidOpeningDate | dateIF : "dd MMMM yyyy" }} et
+      {{ data.notice.bidOpeningDate | date : "shortTime" : "UTC" }}</span
+    >.
+  </p>
+  <p>
+    Les offres doivent comprendre
+    <ng-container *ngIf="data.notice.typeOfAccompaniment === 0">
+      une Garantie de Soumission pour
+      <ng-container
+        *ngIf="
+          data.notice.bidMaintenanceGuaranteeCurrency &&
+          data.notice.bidMaintenanceAmountInCurrency
+        "
+        >un montant de
+        <span class="sf700">
+          {{ data.notice.bidMaintenanceGuaranteeCurrency }}
+          {{ data.notice.bidMaintenanceAmountInCurrency | ifNumber }}</span
+        >, selon le cas.</ng-container
+      >
+      <ng-container *ngIf="data.notice.bidMaintenancePercentageOfBidPrice">
+        un
+        <span class="sf700"
+          >{{ data.notice.bidMaintenancePercentageOfBidPrice }}%</span
+        >
+        minimum du Prix de l’Offre, selon le cas.
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="data.notice.typeOfAccompaniment === 1">
+      <span class="sf700">une Déclaration de Garantie de la Soumission</span>,
+      selon le cas.
+    </ng-container>
+  </p>
+  <p>
+    <ng-container *ngIf="data.notice.isSameOpeningAddress">
+      L’adresse pour la soumission des offres et d’ouverture
+      <span class="sf700">{{ data.notice.bidOpeningAddress }}</span
+      >.
+    </ng-container>
+    <ng-container *ngIf="!data.notice.isSameOpeningAddress">
+      L’adresse pour la soumission des offres
+      <span class="sf700">{{ data.notice.bidOpeningSubmission }}</span
+      >. l’adresse pour d’ouverture des offres
+      <span class="sf700">{{ data.notice.bidOpeningAddress }}</span
+      >.
+    </ng-container>
+    Adresse pour obtenir des informations additionnelles ou pour solliciter les
+    documents d’appel d’offres:
+    <span class="sf700">{{ data.notice.responsibleAddress }}</span
+    >, à l’attention de:
+    <span class="sf700">{{ data.notice.responsibleName }}</span
+    >, Email: <span class="sf700">{{ data.notice.responsibleEmail }}</span
+    ><ng-container *ngIf="data.notice.responsiblePhone"
+      >, Phone:
+      <span class="sf700">{{
+        data.notice.responsiblePhone
+      }}</span></ng-container
+    >.
+  </p>
+</ng-container>

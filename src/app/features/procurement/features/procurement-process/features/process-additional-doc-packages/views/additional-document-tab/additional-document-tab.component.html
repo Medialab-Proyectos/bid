@@ -1,0 +1,209 @@
+<div class="c-document-tab col-12">
+  <div *fiDisplayByPermissions="documentSectionViewPermission">
+    <ng-container
+      *ngIf="
+        !loading && isEnumLoaded && !loadingAddPackage && !loadingPlan;
+        else showSpinner
+      "
+    >
+      <ng-container *ngIf="!selectedDocument; else showDetail">
+        <fi-alert
+          type="info"
+          title="{{ 'PROCESS_DOC.DOCUMENT_TAB.INFORMATION' | translate }}"
+          [closable]="true"
+        ></fi-alert>
+        <div class="dates-offer-validity">
+          <div>
+            <kendo-label
+              class="fi-kendo-label"
+              text="{{ 'PROCUREMENT.UPDATE_BID_VALIDITY_DATE' | translate }}"
+            ></kendo-label>
+            <kendo-datepicker
+              class="c-datepicker k-datepicker k-input k-input-md k-rounded-md k-input-solid"
+              style="width: 20rem"
+              [calendarType]="'classic'"
+              [format]="'dd/MMM/yyyy'"
+              [(value)]="originalBidValidityDate"
+              [disabled]="true"
+            >
+            </kendo-datepicker>
+          </div>
+          <div>
+            <kendo-label
+              class="fi-kendo-label"
+              text="{{ 'PROCUREMENT.EXTENDED_BID_VALIDITY_DATE' | translate }}"
+            ></kendo-label>
+            <kendo-datepicker
+              class="c-datepicker k-datepicker k-input k-input-md k-rounded-md k-input-solid"
+              style="width: 20rem"
+              [calendarType]="'classic'"
+              [format]="'dd/MMM/yyyy'"
+              [(value)]="lastBidValidityExtensionDate"
+              [disabled]="true"
+            >
+            </kendo-datepicker>
+          </div>
+        </div>
+
+        <div class="sf700 row header-tab mt-3" *ngIf="!mobileView">
+          <div class="col-1" style="max-width: 3rem"></div>
+          <div class="col-4">
+            {{ 'PROCESS_DOC.DOCUMENT_TAB.PACKAGES_DOC' | translate }}
+          </div>
+          <div class="col-2 d-flex">
+            {{ 'PROCESS_DOC.DOCUMENT_TAB.ACTUAL_DATE' | translate }}
+            <div
+              kendoTooltip
+              [title]="
+                'PROCESS_DOC.DOCUMENT_TAB.ACTUAL_DATE_TOOLTIP' | translate
+              "
+              class="o-fieldset__legend-icon ml-1"
+            >
+              <em class="fas fa-info-circle"></em>
+            </div>
+          </div>
+          <div class="col-2">
+            {{
+              'PROCESS_DOC.ADDITIONAL_PACKAGES_TAB.NEW_BID_VALIDITY' | translate
+            }}
+          </div>
+          <div class="col-1 col-document-id">
+            {{ 'PROCESS_DOC.ADDITIONAL_PACKAGES_TAB.FILES' | translate }}
+          </div>
+          <div class="col-2">
+            {{ 'PROCESS_DOC.DOCUMENT_TAB.STATUS' | translate }}
+          </div>
+        </div>
+        <ng-container *ngIf="documentPackages.length > 0; else noContent">
+          <div
+            *ngFor="let documentPackage of documentPackages; let i = index"
+            attr.id="Row_Doc-package_{{ i + 1 }}"
+            class="document-row"
+            [class.expanded]="expandedRows[i]"
+          >
+            <div
+              class="col process-row"
+              [ngClass]="
+                isBtnClicked[i] === true &&
+                (documentPackage.actualDate === null ||
+                  documentPackage.bidValidityExtensionDate === null)
+                  ? 'process-row-error'
+                  : null
+              "
+            >
+              <fi-package-doc-additional
+                [processPlan]="processPlan"
+                [id]="i"
+                [item]="documentPackage"
+                (collapse)="collapseDetail(i)"
+                [expandedRows]="expandedRows[i]"
+                [actualDatePermission]="documentActualDateEditPermission"
+                [isBtnClicked]="isBtnClicked[i]"
+                [bidValidityOriginalDate]="procurementProcess?.bidValidity"
+                [lastBidValidityExtensionDate]="lastBidValidityExtensionDate"
+              >
+              </fi-package-doc-additional>
+            </div>
+            <div
+              class="content"
+              *ngIf="
+                !documentPackage.groupsState.loading &&
+                  !documentPackage.documentsState.loading &&
+                  !groupLoading[i];
+                else showSpinner
+              "
+            >
+              <div>
+                <fi-document-group
+                  [processPlan]="processPlan"
+                  [groups]="packagesGroups[i]"
+                  [groupEnum]="enumBiddingProcessDocumentGroupCodes"
+                  [groupParentId]="documentPackage.id"
+                  [viewPermissions]="documentSectionViewPermission"
+                  [editPermissions]="documentEditPermission"
+                  [deletePermissions]="documentDeletePermission"
+                  [isUserInternal]="isUserInternal"
+                  [showReadOnly]="packagesVisbility[i]"
+                  [documentsToUpload]="documentPackage.documentsToUpload"
+                  [isUploading]="isUploading"
+                  [cleanSelection]="cleanSelection"
+                  (fileChange)="handlerFilesChanged($event)"
+                  (deleteFile)="deleteAction($event)"
+                  (editFile)="editFileAction($event, i)"
+                  [docPackage]="documentPackage"
+                  [allPackages]="documentPackages"
+                  [procurementProcess]="procurementProcess"
+                  [mode]="mode"
+                  [statusForm]="statusForm"
+                  [isAdditionalDoc]="true"
+                  [documentDownloadDocumentGuestPermission]="
+                    documentDownloadDocumentGuestPermission
+                  "
+                  [documentDownloadDocumentPermission]="
+                    documentDownloadDocumentPermission
+                  "
+                >
+                </fi-document-group>
+                <fi-doc-btns
+                  *ngIf="planNotInSync"
+                  [statusForm]="statusForm"
+                  [groups]="packagesGroups[i]"
+                  [projectBucketId]="projectBucketId"
+                  [projectContractId]="projectContractId"
+                  [instAcronym]="instAcronym"
+                  [procurementProcess]="procurementProcess"
+                  [supervisionMethod]="procurementProcessSupervisionMethod"
+                  [docPackage]="documentPackage"
+                  [documentPackages]="documentPackages"
+                  [docIndex]="i"
+                  [footerVisibility]="!packagesVisbility[i]"
+                  (isBtnClicked)="btnClicked($event)"
+                  [index]="i"
+                  [additionalDocs]="true"
+                  [originalBidValidityDate]="originalBidValidityDate"
+                  (completeDocs)="completeDocs(i)"
+                ></fi-doc-btns>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-template #noContent>
+        <fi-no-content
+          [content]="
+            'PROCESS_DOC.ADDITIONAL_DOCUMENT_TAB.NO_ADDITIONAL_PACKAGES'
+              | translate
+          "
+        ></fi-no-content>
+      </ng-template>
+      <ng-template #showDetail>
+        <fi-document-detail
+          [document]="selectedDocument"
+          (goBack)="hideDetails()"
+        ></fi-document-detail>
+      </ng-template>
+      <div *ngIf="displayAddPackageBtn">
+        <div
+          *fiDisplayByPermissions="addAdditionalPackagePermission"
+          class="col-12 d-flex justify-content-center align-items-center p-5"
+        >
+          <button
+            kendoButton
+            [id]="'add_Additional_Package_Btn'"
+            class="btn btn-online-brand"
+            (click)="addPackage()"
+          >
+            {{
+              'PROCESS_DOC.ADDITIONAL_DOCUMENT_TAB.ADD_PACKAGE_BTN' | translate
+            }}
+          </button>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #showSpinner>
+      <div class="text-center py-5">
+        <fi-loader></fi-loader>
+      </div>
+    </ng-template>
+  </div>
+</div>

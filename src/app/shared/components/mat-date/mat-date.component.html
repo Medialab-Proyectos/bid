@@ -1,0 +1,34 @@
+<div class="w-100 inline-fields">
+  <mat-form-field style="width: 100%" appearance="outline">
+    <mat-label>{{ label | translate }}</mat-label>
+    <input
+      matInput
+      readonly
+      [min]="minDate"
+      [max]="maxDate"
+      [matDatepicker]="picker"
+      [formControl]="innerControl"
+      (dateChange)="onDateChange($event.value)"
+      (blur)="onTouched()"
+    />
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-error *ngIf="innerControl.hasError('required')">
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+    <!-- mat-error JUST FOR R-CONTRACTS -->
+    <mat-error *ngIf="innerControl.hasError('mustBeAfterSignature')">
+      {{
+        'CONTRACT.VALIDATION_ERRORS.START_DATE_LOWER_SIGNATURE_DATE' | translate
+      }}
+    </mat-error>
+    <mat-error *ngIf="innerControl.hasError('mustBeAfterStart')">
+      {{ 'CONTRACT.VALIDATION_ERRORS.END_DATE_LOWER_START_DATE' | translate }}
+    </mat-error>
+    <mat-error *ngIf="innerControl.hasError('endDateMustBeGreater')">
+      {{
+        'R.CONTRACTS.VALIDATION_ERRORS.END_DATE_LOWER_START_DATE' | translate
+      }}
+    </mat-error>
+  </mat-form-field>
+</div>

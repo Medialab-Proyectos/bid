@@ -1,0 +1,70 @@
+////
+/// Replace function
+/// 
+/// You do not have to worry about this function
+/// @access private
+/// @author Dfront Specialist Team
+/// @group Tools
+/// @since version 1.0.0
+/// @return {String} 
+///
+@function _str-replace($string, $search, $replace: "") {
+	$index: str-index($string, $search);
+	@if $index {
+		@return str-slice($string, 1, $index - 1) + $replace + _str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+	}
+
+	@return $string;
+}
+////
+/// FONT-FACE tool
+///
+/// This mixin tries to deal with all required fonts
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Tools
+/// @name font-face
+/// @output @font-face {
+///	
+/// 	font-family: font-family;
+/// 	font-style: style;
+/// 	font-weight: weigth;
+/// 	src: path;
+/// }
+/// @param {String} $name The name of the font-family property.
+/// @param {String} $path The path where you must find the font.
+/// @param {Number} $weight [null] Declares the weight of the font.
+/// @param {String} $style [null] Declares the font-style of the font.
+/// @param {List} $exts [eot woff2 woff ttf svg] List of resources font's extensions
+/// @since version 1.0.0
+////
+@mixin font-face($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+	$src: null;
+
+	$extmods: (
+		eot: "?",
+		svg: "#" + _str-replace($name, " ", "_")
+	);
+
+	$formats: (
+		eot: "embedded-opentype",
+		otf: "opentype",
+		ttf: "truetype",
+		woff2: "woff2",
+		woff: "woff",
+		svg: "svg"
+	);
+
+	@each $ext in $exts {
+		$extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
+		$format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
+		$src: append($src, url(quote($path + "." + $extmod)) format(quote($format)), comma);
+	}
+
+	@font-face {
+		font-family: quote($name);
+		font-style: $style;
+		font-weight: $weight;
+		src: $src;
+	}
+}

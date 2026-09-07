@@ -1,0 +1,126 @@
+<div class="col-12 c-transactions-amount dpb pb-3">
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "TRANSACTION.REQUEST_AMOUNTS.TITLE" | translate
+    }}</ng-container>
+
+    <ng-container body [formGroup]="form">
+      <div class="c-transactions-amount__container dpb">
+        <div class="c-transactions-amount__table-header dpb">
+          <div class="column">
+            {{ "ANT_TRANSACTION.AMOUNTS.APPROVED_CURRENCY" | translate }}
+          </div>
+          <div class="column fi-kendo-label--required">
+            {{ "ANT_TRANSACTION.AMOUNTS.REQUEST_CURRENCY" | translate }}
+          </div>
+        </div>
+        <div class="c-transactions-amount__table-body dpb dpb--first-row">
+          <div class="column">
+            <span class="column__text">
+              {{ approvedCurrency | async }}
+            </span>
+          </div>
+          <div class="column">
+            <kendo-dropdownlist
+              #selectedRequestedCurrency
+              formControlName="selectedRequestedCurrency"
+              class="c-dropdown-list k-dropdown"
+              [data]="currencyList | async"
+              [valueField]="'currency'"
+              [textField]="'currency'"
+              [fiDropdownFormControl]
+              data-testid="currencyDropList"
+              id="Down_Requested_Currency"
+              [ngClass]="readonly ? 'force-disabled' : ''"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="c-transactions-amount__table-header dpb">
+          <div class="column">
+            {{ "TRANSACTION.AMOUNTS.SOURCE" | translate }}
+          </div>
+          <div class="column">
+            {{ "ANT_TRANSACTION.AMOUNTS.REQUEST_AMOUNT" | translate }}
+          </div>
+          <div class="column">
+            {{
+              "ANT_TRANSACTION.AMOUNTS.EQUIVALENT_APPROVED_CURRENCY" | translate
+            }}
+          </div>
+          <div class="column">
+            {{ "ANT_TRANSACTION.AMOUNTS.EXPECTED_BALANCE" | translate }}
+          </div>
+        </div>
+        <div
+          class="c-transactions-amount__table-body dpb"
+          formArrayName="totalItems"
+        >
+          <div
+            class="w-100"
+            *ngFor="let group of totalItems.controls; let i = index"
+            [formGroupName]="i"
+          >
+            <div class="dpb-row flex-wrap">
+              <div
+                class="column"
+                [ngClass]="i === 0 && 'fi-kendo-label--required'"
+              >
+                <span class="column__text">
+                  {{ "TRANSACTION.ANJ.AMOUNTS." + rows[i] | translate }}
+                </span>
+              </div>
+              <div class="column column--double">
+                <fi-equivalent-amount
+                  [form]="group"
+                  [currency]="form.controls.selectedRequestedCurrency"
+                  [rowIndex]="i"
+                  [balances]="balances"
+                  [readonly]="readonly"
+                ></fi-equivalent-amount>
+              </div>
+              <div class="column">
+                <span class="column__text">
+                  {{
+                    totalItems.controls[i].controls.expectedBalances.value
+                      | ifNumber
+                  }}
+                </span>
+              </div>
+              <ng-container
+                *ngIf="
+                  i === 0 &&
+                  bidExpectedBalance?.errors &&
+                  balances?.budgetContributionProjectedAvailableBalance === null &&
+                  !readonly
+                "
+              >
+                <p class="o-input-error pt-2">
+                  {{
+                    "TRANSACTION.AMOUNT.ERROR.EXCEEDS_AVAILABLE_BALANCE"
+                      | translate
+                  }}
+                </p>
+              </ng-container>
+              <ng-container
+                *ngIf="
+                  i === 0 &&
+                  bidExpectedBalance?.errors &&
+                  balances?.budgetContributionProjectedAvailableBalance !== null
+                "
+              >
+                <p class="o-input-error pt-2">
+                  {{
+                    "TRANSACTION.AMOUNT.ERROR.EXCEEDS_AVAILABLE_BUDGET_CONTRIBUTION"
+                      | translate
+                  }}
+                </p>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

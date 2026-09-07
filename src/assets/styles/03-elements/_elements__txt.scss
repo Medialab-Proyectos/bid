@@ -1,0 +1,79 @@
+////
+/// TXT element
+///
+/// This is the texts' style sheet
+////
+.txt {
+  font-family: $ns-font-family;
+  color: $black;
+  font-weight: $font-weight-normal;
+  font-size: rem($font-size-base);
+  line-height: $line-height-base;
+
+  //
+  //Modifiers
+  //
+
+  &--black {
+    color: color("black");
+  }
+  &--gray {
+    color: color(tertiary);
+  }
+  &--bold {
+    font-weight: $font-weight-bold;
+  }
+  &--italic {
+    font-style: italic;
+  }
+
+  //Sizes
+  &--xxlarge {
+    font-size: rem(20);
+  }
+  &--xlarge {
+    font-size: rem(18);
+  }
+  &--large {
+    font-size: rem(16);
+  }
+  &--small {
+    font-size: rem(12);
+  }
+}
+
+p,
+.txt-parragraph {
+  @extend .txt;
+  display: block;
+  margin-bottom: rem(8);
+  font-family: "salesforce-sans-400", arial, sans-serif;
+  color: #080707;
+}
+
+.text-reason {
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.txt-max-lines-3 {
+  display: -webkit-box;
+  line-height: 1.5em;
+  max-height: 4.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.text-link {
+  word-break: break-word;
+  color: #0070d2 !important;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.filledInfo,
+.filledInfo * {
+  font-weight: bold !important;
+}

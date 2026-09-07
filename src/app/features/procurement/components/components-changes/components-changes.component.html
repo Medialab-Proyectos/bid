@@ -1,0 +1,45 @@
+<ng-template #template let-anchor>
+  <span
+    [innerHTML]="
+      anchor.nativeElement.innerText | highlightSearch : highlightValue
+    "
+  ></span>
+</ng-template>
+
+<ng-container *ngIf="previousComponentsData?.length > 0; else noData">
+  <kendo-panelbar id="componentChangesPanelbar">
+    <kendo-panelbar-item
+      title="{{
+        'PROCUREMENT.HISTORIC_CHANGES.MILESTONES.APPROVED_VALUE' | translate
+      }}"
+      [expanded]="true"
+    >
+      <ng-template kendoPanelBarContent>
+        <fi-components-historic-table
+          [title]="'PROCUREMENT.HISTORIC_CHANGES.COMPONENTS.OUTPUT' | translate"
+          [data]="previousComponentsData"
+          [componentName]="previousComponentName"
+          [isPreviousData]="true"
+        ></fi-components-historic-table>
+      </ng-template>
+    </kendo-panelbar-item>
+    <kendo-panelbar-item
+      title="{{
+        'PROCUREMENT.HISTORIC_CHANGES.MILESTONES.AFTER_MODIFICATION' | translate
+      }}"
+      [expanded]="true"
+    >
+      <ng-template kendoPanelBarContent>
+        <fi-components-historic-table
+          [title]="'PROCUREMENT.HISTORIC_CHANGES.COMPONENTS.OUTPUT' | translate"
+          [data]="newComponentsData"
+          [componentName]="newComponentName"
+          [isPreviousData]="false"
+        ></fi-components-historic-table>
+      </ng-template>
+    </kendo-panelbar-item>
+  </kendo-panelbar>
+</ng-container>
+<ng-template kendoTabContent #noData>
+  <div>{{ "PROCUREMENT.HISTORIC_CHANGES.NO_UPDATES" | translate }}</div>
+</ng-template>

@@ -1,0 +1,17 @@
+export enum PermissionEnum {
+  SPECIAL = 'Special',
+  VIEW_PROCUREMENT_INFORMATION = 'ViewProcurementInformation',
+  ENTER_UPDATE_CONTRACT_PROCUREMENT_INFORMATION = 'EnterAndUpdateProcurementInformation',
+  SEND_OFFICIAL_PROCUREMENT_COMUNICATIONS = 'SendOfficialProcurementCommunications',
+  VIEW_DISBURSEMENT_INFORMATION = 'ViewDisbursementInformation',
+  TRANSACTION_MANAGEMENT = 'TransactionManagementEnterValidateReviewAndOrAuthorize',
+  ENTERPROCUREMENTCOMMENTS = 'EnterProcurementComments',
+  WORKFLOW_MANAGEMENT = 'WorkflowManagement',
+  MANAGE_PROCUREMENT_COMMENTS = 'ManageProcurementComments',
+  ADD_DELETE_BANK_RESPONSE_DOCUMENT = 'AddDeleteBankResponseDocument',
+  SEND_INTERNAL_NOTIFICATIONS = 'SendInternalNotifications',
+  DOWNLOAD_RAW_DATA = 'DownloadRawData',
+  DOWNLOAD_PACKAGE_DOCUMENTS = 'DownloadPackageDocuments',
+  INELIGIBILITYDECLARATIONLEVEL0 = 'Ineligibility Declaration Level 0',
+  INELIGIBILITYDECLARATIONLEVEL3 = 'Ineligibility Declaration Level 3',
+}

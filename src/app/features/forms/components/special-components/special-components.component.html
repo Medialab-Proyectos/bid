@@ -1,0 +1,174 @@
+<form [formGroup]="dynamicForm">
+  <!-- CHECKBOX SPECIAL -->
+  <div *ngIf="component.type === types.CHECKBOXSPECIAL">
+    <div>
+      <input
+        type="checkbox"
+        kendoCheckBox
+        class="mr-2"
+        [formControlName]="component.formControlName"
+        (click)="
+          dynamicForm.get(component.formControlName).value
+            ? removeControl(component)
+            : addControl(component)
+        "
+      />
+      <kendo-label
+        *ngIf="component.kendoLabel !== null"
+        class="fi-kendo-label"
+        [for]="component.kendoLabel.for"
+        [text]="component.kendoLabel.text | translate"
+      ></kendo-label>
+    </div>
+
+    <div *ngIf="dynamicForm.get(component.formControlName).value === true">
+      <ng-container *ngFor="let row of component.specialOptions.rows">
+        <div class="row">
+          <ng-container *ngFor="let component of row.components; let i = index">
+            <div [class]="component.class">
+              <fi-dynamic-kendo
+                [component]="component"
+                [dynamicForm]="dynamicForm"
+                [status]="status"
+                [rolUser]="rolUser"
+                [comments]="comments"
+              ></fi-dynamic-kendo>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- RADIOBUTTON SPECIAL -->
+  <div *ngIf="component.type === types.RADIOBUTTONSPECIAL">
+    <kendo-label
+      *ngIf="component.kendoLabel !== null"
+      class="fi-kendo-label"
+      [for]="component.kendoLabel.for"
+      [text]="component.kendoLabel.text | translate"
+    ></kendo-label>
+    <div>
+      <div class="row">
+        <div class="col-12">
+          <ul class="k-radio-list">
+            <ng-container *ngFor="let radio of component.radioButtonList">
+              <li class="k-radio-item">
+                <input
+                  type="radio"
+                  [value]="radio.value"
+                  [data-testid]="radio.dataTestId"
+                  [formControlName]="component.formControlName"
+                  [id]="radio.idRadioButton"
+                  (click)="handlerRadioButton(component)"
+                  kendoRadioButton
+                />
+                <label class="k-radio-label">{{
+                  radio.label | translate
+                }}</label>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngFor="let row of component.specialOptions.rows">
+      <div class="row">
+        <ng-container *ngFor="let c of row.components; let i = index">
+          <div
+            [class]="c.class"
+            *ngIf="
+              dynamicForm.get(component.formControlName).value ===
+              c.associationNumber
+            "
+          >
+            <fi-dynamic-kendo
+              [component]="c"
+              [dynamicForm]="dynamicForm"
+              [status]="status"
+              [rolUser]="rolUser"
+              [comments]="comments"
+            ></fi-dynamic-kendo>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- DROPDOWNSPECIAL SPECIAL -->
+  <div *ngIf="component.type === types.DROPDOWNSPECIAL">
+    <div class="row">
+      <div class="col-12">
+        <kendo-dropdownlist
+          [data]="component.dropdownOptions"
+          textField="value"
+          valueField="value"
+          [valuePrimitive]="true"
+          [formControlName]="component.formControlName"
+          [data-testid]="component.dataTestId"
+          class="c-dropdown-list k-dropdown"
+          place
+          style="--placeholder: '{{ 'COMMON.SELECT_AN_OPTION' | translate }}'"
+          [id]="component.id"
+          [defaultItem]="getDefaultItemSpecial()"
+          (valueChange)="handlerDropdownList($event, component)"
+        >
+          <ng-template kendoDropDownListValueTemplate let-item>
+            {{ item?.text | translate }}
+          </ng-template>
+          <ng-template kendoDropDownListItemTemplate let-item>
+            {{ item?.text | translate }}
+          </ng-template>
+        </kendo-dropdownlist>
+      </div>
+    </div>
+
+    <ng-container *ngFor="let row of component.specialOptions.rows">
+      <div class="row">
+        <ng-container *ngFor="let c of row.components; let i = index">
+          <div
+            [class]="c.class"
+            *ngIf="
+              dynamicForm.get(component.formControlName).value ===
+              c.associationNumber
+            "
+          >
+            <fi-dynamic-kendo
+              [component]="c"
+              [dynamicForm]="dynamicForm"
+              [status]="status"
+              [rolUser]="rolUser"
+              [comments]="comments"
+            ></fi-dynamic-kendo>
+          </div>
+          <div
+            class="col-md-12"
+            style="margin-top: 1%"
+            *ngIf="
+              dynamicForm.get(component.formControlName).value ===
+                c.associationNumber && c.specialOptions !== null
+            "
+          >
+            <kendo-label
+              *ngIf="c.kendoLabel !== null && c.kendoLabel.text !== ''"
+              class="fi-kendo-label"
+              [ngClass]="{
+                'fi-kendo-label--required': handleRequiredField(c) === true
+              }"
+              [for]="c.kendoLabel.for"
+              [text]="c.kendoLabel.text | translate"
+            ></kendo-label>
+            <fi-special-components
+              [component]="c"
+              [dynamicForm]="dynamicForm"
+              [status]="status"
+              [rolUser]="rolUser"
+              [comments]="comments"
+            ></fi-special-components>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</form>

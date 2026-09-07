@@ -1,0 +1,116 @@
+<div class="c-damages">
+  <div
+    class="row"
+    data-testid="damagesRow"
+    *ngFor="let group of form.controls; index as i"
+    [formGroup]="group"
+  >
+    <div class="col-12 col-md-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{
+          "CONTRACT.ADDITIONAL_INFO.DAMAGES" | translate
+        }}</mat-label>
+        <mat-select
+          #damagesType
+          formControlName="damagesType"
+          data-testid="damagesType"
+          id="Down_Damages_type"
+        >
+          <mat-option
+            *ngFor="let damage of baseConfig.data.damagesTypes"
+            [value]="damage.id"
+          >
+            {{ damage.name | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <fi-mat-numeric
+        [label]="'CONTRACT.ADDITIONAL_INFO.PERCENTAGE' | translate"
+        [max]="1"
+        [decimals]="2"
+        [min]="0"
+        [step]="0.1"
+        [maxlength]="18"
+        #damagesPercentage
+        formControlName="damagesPercentage"
+        data-testid="damagesPercentage"
+        [placeholder]="'COMMON.ENTER_PERCENTAGE' | translate"
+        id="Txb_Damages_percentage"
+      ></fi-mat-numeric>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <mat-form-field class="w-100">
+        <mat-label>
+          {{ "CONTRACT.ADDITIONAL_INFO.DAILY_WEEKLY_PAYMENT" | translate }}
+        </mat-label>
+        <mat-select
+          #damagesPaymentFrequency
+          formControlName="damagesPaymentFrequency"
+          data-testid="damagesPaymentFrequency"
+          id="Down_Damages_payment_frequency"
+        >
+          <mat-option
+            *ngFor="let frequency of baseConfig.data.frequencies"
+            [value]="frequency.id"
+            >{{ frequency?.name | translate }}</mat-option
+          ></mat-select
+        >
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 col-md-3 d-flex">
+      <div class="flex-grow-1">
+        <fi-mat-numeric
+          [label]="'CONTRACT.ADDITIONAL_INFO.MAXIMUM_PERCENTAGE' | translate"
+          [max]="10"
+          [decimals]="2"
+          [maxlength]="18"
+          [min]="0"
+          #damagesMaxPercentage
+          formControlName="damagesMaxPercentage"
+          data-testid="damagesMaxPercentage"
+          [placeholder]="'COMMON.ENTER_PERCENTAGE' | translate"
+          id="Txb_Damages_max_percentage"
+        ></fi-mat-numeric>
+      </div>
+      <ng-container *ngIf="baseConfig.settings.mode !== ModeEnum.READ">
+        <button
+          mat-icon-button
+          type="button"
+          color="primary"
+          data-testid="deleteDamagesButton"
+          [id]="'Btn_Delete_damages'"
+          *fiDisplayByPermissions="removeLiqDamagesPermission"
+          (click)="deleteDamages(i)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </ng-container>
+    </div>
+  </div>
+  <div
+    class="row actions"
+    *ngIf="
+      baseConfig.settings.mode !== ModeEnum.READ && form.controls.length === 0
+    "
+  >
+    <div class="col-12">
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        data-testid="addDamagesButton"
+        id="Btn_Add_damages"
+        *fiDisplayByPermissions="addLiqDamagesPermission"
+        (click)="addDamages()"
+      >
+        <mat-icon slot="start">add</mat-icon>
+        {{ "CONTRACT.ADDITIONAL_INFO.ADD_DAMAGES" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

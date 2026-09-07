@@ -1,0 +1,231 @@
+<div class="col-12 fi-transaction-detail">
+  <div class="c-transactions__pdf" *ngIf="showExporToPdfButton">
+    <button
+      kendoButton
+      class="btn btn-online-brand"
+      (click)="exportToPdf()"
+      id="Btn_Export_pdf"
+      [icon]="isLoading ? 'loading' : 'download'"
+      [disabled]="isLoading"
+    >
+      {{ "TRANSACTION_DETAILS.DOWNLOAD" | translate }}
+    </button>
+  </div>
+
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{ title | translate }}</ng-container>
+    <ng-container body>
+      <div class="attachments">
+        <div class="c-transactions__table-header atj">
+          <div class="column">
+            {{ "TRANSACION_DETAILS.TRANSACTION_TYPE" | translate }}
+          </div>
+          <div class="column fi-kendo-label--required">
+            {{ "TRANSACION_DETAILS.REQ_#" | translate }}
+            <em
+              class="fas fa-info-circle"
+              kendoTooltip
+              style="margin-left: 5px"
+              [title]="'REQUEST_NUMBER.TOOLTIP_TEXT' | translate"
+            ></em>
+          </div>
+          <div class="column fi-kendo-label--required">
+            {{ "TRANSACION_DETAILS.PART_#" | translate }}
+          </div>
+          <div class="column fi-kendo-label--required">
+            {{ "TRANSACION_DETAILS.FINANCIAL_PLANNING_PERIOD" | translate }}
+          </div>
+          <div class="column">
+            {{ "TRANSACION_DETAILS.TRANSACTION_#" | translate }}
+          </div>
+          <div class="column">
+            {{ "TRANSACION_DETAILS.STATUS" | translate }}
+          </div>
+        </div>
+        <div class="c-transactions__table-body td-atj" [formGroup]="detailForm">
+          <div class="row w-100">
+            <div class="column">
+              <span>{{ "TRANSACTION.ATJ.JUSTIFICATION" | translate }}</span>
+            </div>
+            <div
+              class="column d-flex justify-content-center align-items-center"
+            >
+              <div
+                *ngIf="
+                  transactionStatusId !== transactionsStatus.EREJECTEDBYIDB &&
+                    transactionStatusId !== transactionsStatus.EREJECT;
+                  else rejectedTransaction
+                "
+              >
+                <fi-input-numeric
+                  (add)="addRequestNumberANJ()"
+                  (sub)="subRequestNumberANJ()"
+                  (typed)="typedRequestNumberANJ($event)"
+                  [isEditMode]="isEditMode"
+                  formControlName="requestNumberJustification"
+                  [id]="1"
+                  class="c-detail-numeric"
+                  [placeholder]="currentAvailableNumbers.requestNumber"
+                ></fi-input-numeric>
+              </div>
+              <ng-template #rejectedTransaction>
+                <span>&mdash;</span>
+              </ng-template>
+            </div>
+            <div
+              class="column d-flex justify-content-center align-items-center"
+            >
+              <div
+                *ngIf="
+                  transactionStatusId !== transactionsStatus.EREJECTEDBYIDB &&
+                    transactionStatusId !== transactionsStatus.EREJECT;
+                  else rejectedTransaction
+                "
+              >
+                <fi-input-numeric
+                  (add)="addPartNumberANJ()"
+                  (sub)="subPartNumberANJ()"
+                  (typed)="typedPartNumberANJ($event)"
+                  [isEditMode]="isEditMode"
+                  formControlName="partNumberJustification"
+                  [id]="2"
+                  class="c-detail-numeric"
+                  [placeholder]="currentAvailableNumbers.partNumber"
+                ></fi-input-numeric>
+              </div>
+            </div>
+            <div
+              class="column d-flex justify-content-center align-items-center"
+            >
+              <span>&mdash;</span>
+            </div>
+            <div class="column">
+              <span class="column__text">
+                {{
+                  !transactionNumberANJ
+                    ? ("TRANSACION_DETAILS.NOT_ASIGNED" | translate)
+                    : transactionNumberANJ
+                }}
+              </span>
+            </div>
+            <div class="column">
+              <span class="column__text">
+                {{
+                  !transactionStatusId
+                    ? ("TRANSACION_DETAILS.NOT_ASIGNED" | translate)
+                    : (transactionStatusId
+                      | fiMaskingState
+                      | translateEnum : enum.TransactionStatuses)
+                }}
+              </span>
+            </div>
+            <div class="mt-4 w-100" *ngIf="isOcupiedANJ">
+              <fi-alert
+                [type]="'warning'"
+                [closable]="false"
+                [title]="'TRANSACION_DETAILS.ERROR_TEXT' | translate"
+              ></fi-alert>
+            </div>
+          </div>
+          <div class="row w-100">
+            <div class="column">
+              <span>{{ "TRANSACTION.ATJ.ADVANCEOFFUNDS" | translate }}</span>
+            </div>
+
+            <div
+              class="column d-flex justify-content-center align-items-center"
+            >
+              <div
+                *ngIf="
+                  transactionStatusId !== transactionsStatus.EREJECTEDBYIDB &&
+                    transactionStatusId !== transactionsStatus.EREJECT;
+                  else rejectedTransaction
+                "
+              >
+                <fi-input-numeric
+                  (add)="addRequestNumberANT()"
+                  (sub)="subRequestNumberANT()"
+                  (typed)="typedRequestNumberANT($event)"
+                  [isEditMode]="isEditMode"
+                  formControlName="requestNumberAdvanceOfFunds"
+                  [id]="3"
+                  class="c-detail-numeric"
+                  [placeholder]="requestNumberANT"
+                ></fi-input-numeric>
+              </div>
+            </div>
+            <div
+              class="column d-flex justify-content-center align-items-center"
+            >
+              <div
+                *ngIf="
+                  transactionStatusId !== transactionsStatus.EREJECTEDBYIDB &&
+                    transactionStatusId !== transactionsStatus.EREJECT;
+                  else rejectedTransaction
+                "
+              >
+                <fi-input-numeric
+                  (add)="addPartNumberANT()"
+                  (sub)="subPartNumberANT()"
+                  (typed)="typedPartNumberANT($event)"
+                  [isEditMode]="isEditMode"
+                  formControlName="partNumberAdvanceOfFunds"
+                  [id]="4"
+                  class="c-detail-numeric"
+                  [placeholder]="currentAvailableNumbers.partNumber"
+                ></fi-input-numeric>
+              </div>
+            </div>
+            <div class="column">
+              <kendo-numerictextbox
+                class="c-numerictextbox k-numerictextbox"
+                #numberDaysFinancialPlanning
+                formControlName="numberDaysFinancialPlanning"
+                [spinners]="false"
+                [min]="0"
+                [autoCorrect]="true"
+                [format]="'n0'"
+                [decimals]="0"
+                [min]="1"
+                [max]="360"
+                [maxlength]="18"
+                id="Txb_Financial_planning"
+                placeholder="180"
+                [changeValueOnScroll]="false"
+              >
+              </kendo-numerictextbox>
+            </div>
+            <div class="column">
+              <span class="column__text">
+                {{
+                  !transactionNumberANT
+                    ? ("TRANSACION_DETAILS.NOT_ASIGNED" | translate)
+                    : transactionNumberANT
+                }}
+              </span>
+            </div>
+            <div class="column">
+              <span class="column__text">
+                {{
+                  !transactionStatusId
+                    ? ("TRANSACION_DETAILS.NOT_ASIGNED" | translate)
+                    : (transactionStatusId
+                      | fiMaskingState
+                      | translateEnum : enum.TransactionStatuses)
+                }}
+              </span>
+            </div>
+            <div class="mt-4 w-100" *ngIf="isOcupiedANT">
+              <fi-alert
+                [type]="'warning'"
+                [closable]="false"
+                [title]="'TRANSACION_DETAILS.ERROR_TEXT' | translate"
+              ></fi-alert>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

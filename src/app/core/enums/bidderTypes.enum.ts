@@ -1,0 +1,8 @@
+export enum BidderTypes {
+  JOINT_VENTURE = 0,
+  FIRM,
+  INDIVIDUAL,
+  SME,
+  NON_PROFIT_ORGANIZATION,
+  SPECIALIZED_AGENCY,
+}

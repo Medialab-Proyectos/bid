@@ -1,0 +1,213 @@
+<div class="preview-eoi" *ngIf="vm$ | async as vm; else loader">
+  <fi-info-banner>
+    <span class="sf700 ml-3">{{ 'UNDB.PREVIEW.REMAINDER' | translate }}</span>
+  </fi-info-banner>
+
+  <h1 class="sf700 title">{{ 'UNDB.PREVIEW.TITLE' | translate }}</h1>
+  <p>
+    {{ 'UNDB.PREVIEW.SUBTITLE_PART_1' | translate }}
+    <span class="sf700">{{ 'UNDB.PREVIEW.SUBTITLE_PART_2' | translate }}</span>
+    {{ 'UNDB.PREVIEW.SUBTITLE_PART_3' | translate }}
+  </p>
+  <ng-container>
+    <fi-form-divider />
+    <p>
+      {{ 'UNDB.NOTICE.PUBLICATION_REFERENCE_NUMBER' | translate }}
+      <span class="sf700">{{ publicationNumber }}</span>
+    </p>
+  </ng-container>
+  <fi-form-divider />
+  <fi-project-info
+    [projectInfo]="vm.projectInfo.projectInfo"
+    [isPreview]="false"
+  ></fi-project-info>
+  <p>
+    {{ 'EOI.HEADING.SUMMARY.TITLE' | translate }}
+    <span class="sf700">{{ vm.paragraphs.currentEoi.processSummary }}</span>
+  </p>
+
+  <p>
+    {{ 'EOI.PREVIEW.LIMIT_DATE' | translate }}
+    <span class="sf700">
+      {{ vm.paragraphs.currentEoi.receptionDeadLine | dateIF: 'dd MMMM yyyy' }}
+    </span>
+  </p>
+
+  <p *ngIf="!vm.paragraphs.currentEoi.receptionDeadLine.includes('T00:00')">
+    {{ 'EOI.PREVIEW.LIMIT_HOUR' | translate }}
+    <span class="sf700">
+      {{ vm.paragraphs.currentEoi.receptionDeadLine.substring(11, 16) }}
+    </span>
+  </p>
+
+  <p>
+    <span *ngIf="vm.paragraphs.projectData.selectedLanguage === 'pt'">
+      {{ 'GPN.FORM.SECTION_1.PARAGRAPH_1' | translate }} </span
+    ><span class="sf700">{{
+      vm.paragraphs.projectData.projectCountry | titlecase
+    }}</span>
+    {{ 'EOI.SECTION_1.PARAGRAPH_1.PART_3' | translate }}
+    <span class="sf700">{{
+      vm.paragraphs.projectData.selectedProject.projectName[
+        vm.paragraphs.projectData.selectedLanguage
+      ].trim() ||
+        vm.paragraphs.currentEoi.projectName ||
+        vm.paragraphs.projectData.selectedProject.nameEn
+    }}</span>
+    {{ 'EOI.SECTION_1.PARAGRAPH_1.PART_5' | translate }}
+  </p>
+
+  <p>{{ 'EOI.SECTION_1.REQUIRED_FIELD.DESCRIPTION' | translate }}</p>
+  <div
+    class="filledInfo"
+    [innerHTML]="vm.paragraphs.currentEoi.consultingServices"
+  ></div>
+
+  <p>
+    {{ 'GPN.FORM.SECTION_1.ARTICLE' | translate }}
+    <span class="sf700">{{
+      vm.paragraphs.projectData.selectedProject.executor
+    }}</span>
+    {{ 'EOI.SECTION_1.PARAGRAPH_2.PART_3' | translate }}
+  </p>
+
+  <p>
+    {{ 'EOI.SECTION_2.PARAGRAPH_1.PART_1' | translate }}
+    <a href="https://projectprocurement.iadb.org/en/policies">{{
+      'EOI.SECTION_2.PARAGRAPH_1.PART_2' | translate
+    }}</a>
+    {{ 'EOI.SECTION_2.PARAGRAPH_1.PART_3' | translate }}
+  </p>
+
+  <p class="sf700" style="white-space: pre-line">
+    {{ vm.paragraphs.currentEoi.exceptionalEligibilityRules }}
+  </p>
+
+  <p>
+    {{ 'EOI.SECTION_2.PARAGRAPH_2' | translate }}
+  </p>
+
+  <p>
+    {{ 'EOI.SECTION_2.PARAGRAPH_3' | translate }}
+  </p>
+
+  <p>
+    {{ 'EOI.SECTION_2.PARAGRAPH_4' | translate }}
+    <span class="sf700">
+      {{
+        formatWorkingHours(
+          vm.paragraphs.currentEoi.startOperationHour,
+          vm.paragraphs.currentEoi.endOperationHour
+        )
+      }}</span
+    >.
+  </p>
+
+  <p>
+    {{ 'EOI.SECTION_3.PARAGRAPH_1' | translate }}
+    <span class="sf700">{{
+      vm.paragraphs.currentEoi.receptionDeadLine | dateIF: 'dd MMMM yyyy'
+    }}</span>
+    <span
+      class="sf700"
+      [ngClass]="
+        vm.paragraphs.currentEoi.receptionDeadLine.includes('T00:00')
+          ? 'display: hidden'
+          : 'display: block'
+      "
+      *ngIf="!vm.paragraphs.currentEoi.receptionDeadLine.includes('T00:00')"
+    >
+      &nbsp;{{ 'EOI.PREVIEW.LIMIT_HOUR_PREFIX' | translate }}
+      {{ vm.paragraphs.currentEoi.receptionDeadLine.substring(11, 16) }} </span
+    >.
+    {{ 'UNDB.PREVIEW.ELECTRONIC_OFFERS.PART_1' | translate }}
+    <span class="sf700">
+      {{
+        (vm.paragraphs.currentEoi.electronicOffers
+          ? vm.paragraphs.projectData.selectedLanguage !== 'pt'
+            ? 'UNDB.PREVIEW.ELECTRONIC_OFFERS.ANSWER_YES'
+            : ''
+          : 'UNDB.PREVIEW.ELECTRONIC_OFFERS.ANSWER_NO'
+        ) | translate
+      }}
+    </span>
+    {{ 'UNDB.PREVIEW.ELECTRONIC_OFFERS.PART_2' | translate }}
+  </p>
+
+  <p>{{ 'EOI.SECTION_3.PARAGRAPH_2' | translate }}</p>
+
+  <div
+    class="filledInfo"
+    [innerHTML]="vm.paragraphs.currentEoi.qualificationDemonstration"
+  ></div>
+
+  <ng-container
+    *ngIf="vm.paragraphs.currentEoi.linksRelatedWithTheDocument.length > 0"
+  >
+    <p>{{ 'UNDB.LINKED_DOCUMENTS.SUBTITLE' | translate }}</p>
+    <ul>
+      <li
+        *ngFor="
+          let link of vm.paragraphs.currentEoi.linksRelatedWithTheDocument
+        "
+      >
+        <a target="_blank" rel="noopener noreferrer" [href]="link">
+          {{ link }}
+        </a>
+      </li>
+    </ul>
+  </ng-container>
+  <br />
+  <br />
+
+  <p>
+    {{ 'UNDB.FORM.RECIPIENT.ADDRESS' | translate }}
+    <span class="sf700">{{ vm.paragraphs.currentEoi.address }}</span>
+  </p>
+  <p>
+    {{ 'UNDB.FORM.RECIPIENT.EXECUTING_AGENCY' | translate }}
+    <span class="sf700">{{ vm.paragraphs.currentEoi.executingAgency }}</span>
+  </p>
+  <p>
+    {{ 'UNDB.FORM.RECIPIENT.ATTENTION' | translate }}
+    <span class="sf700">{{ vm.paragraphs.currentEoi.responsible }}</span>
+  </p>
+  <p *ngIf="vm.paragraphs.currentEoi.phone">
+    {{ 'UNDB.FORM.RECIPIENT.PHONE_NUMBER' | translate }}
+    <span class="sf700">{{ vm.paragraphs.currentEoi.phone }}</span>
+  </p>
+  <p>
+    {{ 'UNDB.FORM.RECIPIENT.EMAIL' | translate }}
+    <span class="sf700">{{ vm.paragraphs.currentEoi.email }}</span>
+  </p>
+  <p *ngIf="vm.paragraphs.currentEoi.webSite">
+    {{ 'UNDB.FORM.RECIPIENT.WEBSITE' | translate }}
+    <span class="sf700">{{ vm.paragraphs.currentEoi.webSite }}</span>
+  </p>
+
+  <div class="d-flex w-100 mt-5">
+    <button mat-button color="primary" (click)="exitPreview()">
+      {{ 'UNDB.FORM.ACTIONS.COMMON.EXIT' | translate | titlecase }}
+    </button>
+    <div class="ml-auto">
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="goToEditNotice()"
+        *ngIf="!isReadonly"
+      >
+        {{ 'UNDB.PREVIEW.EDIT_EOI_BTN' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #loader>
+  <div class="mt-5 d-flex justify-content-center">
+    <mat-progress-spinner
+      diameter="44"
+      color="primary"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+  </div>
+</ng-template>

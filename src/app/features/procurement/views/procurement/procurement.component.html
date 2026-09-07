@@ -1,0 +1,165 @@
+<div class="container-fluid pb-3 mb-5">
+  <div class="row d-flex justify-content-between ml-0 mt-5 mr-0">
+    <div class="d-flex col-9" style="padding-left: 0">
+      <div style="width: 35%">
+        <span class="d-block"
+          >{{ 'PROCUREMENT.PLAN_STATUS' | translate }}:</span
+        >
+        <span class="d-block">
+          {{ planStatus | translateEnum: planStatuses }}
+        </span>
+      </div>
+      <div>
+        <span> {{ 'PROCUREMENT.DELAYED_MILESTONES' | translate }}: </span>
+        <span class="font-weight-bold">
+          {{
+            delayedMilestones > 0 && delayedMilestones < 10
+              ? delayedMilestones.toString().padStart(2, '0')
+              : delayedMilestones
+          }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="row d-flex justify-content-between ml-0 mt-5 mr-0">
+    <div class="d-flex col-9" style="padding-left: 0"></div>
+    <div class="row justify-content-end col-3">
+      <div *ngIf="showDownloadRawDataBtn">
+        <button
+          kendoButton
+          class="btn btn-online-brand btn-block btn-under-line"
+          id="Btn_DownloadRawData"
+          *fiDisplayByPermissions="downloadRawDataPermission"
+          (click)="downloadRawData()"
+          href="javascript:void(0);"
+          [disabled]="downloadingRawData"
+        >
+          {{ 'PROCUREMENT.DOWNLOAD_RAW_DATA' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row position-relative">
+    <div
+      class="d-flex justify-content-between col-1 position-absolute"
+      style="right: 0"
+      *ngIf="!isProcessLoading"
+    >
+      <div class="d-flex" style="width: 100%; justify-content: flex-end">
+        <div class="px-2">
+          <button
+            kendoButton
+            class="btn btn-online-brand btn-block"
+            id="Btn_Plancomments"
+            *fiDisplayByPermissions="addCommentPermission"
+            (click)="goToComments()"
+            [disabled]="isCommentsLoading || !processPlan?.id"
+            [icon]="isCommentsLoading && 'loading'"
+          >
+            {{ 'PROCUREMENT.ADD_COMMENT' | translate }}
+          </button>
+        </div>
+        <div
+          *ngIf="
+            anyProcessAsDraftOrModified &&
+            processPlanStatus !== processPlanStatusEnum.COMPLETED &&
+            processPlanStatus !== processPlanStatusEnum.UNDER_REVIEW &&
+            processPlanStatus !== processPlanStatusEnum.IN_SYNC
+          "
+          class="ml-2"
+        >
+          <button
+            kendoButton
+            class="btn btn-online-brand btn-block"
+            id="Btn_Approval"
+            *fiDisplayByPermissions="requestApprovalButtonPermission"
+            (click)="newRequestApproval(procurementApprovalActions)"
+          >
+            {{ 'PROCUREMENT.REQUEST_APPROVAL' | translate }}
+          </button>
+        </div>
+
+        <div
+          *ngIf="
+            processPlanStatus !== processPlanStatusEnum.COMPLETED &&
+            processPlanStatus !== processPlanStatusEnum.IN_SYNC
+          "
+          class="ml-2"
+        >
+          <button
+            kendoButton
+            class="btn btn-brand btn-block ml-0 qa-add-process-btn"
+            id="Btn_AddProcess"
+            *fiDisplayByPermissions="createProcessButtonPermission"
+            (click)="navigateToCreateProcessForm()"
+            [disabled]="!projectSelected?.projectBucketId"
+          >
+            {{ 'PROCUREMENT.ADD_PROCESS' | translate }}
+          </button>
+        </div>
+        <div
+          *ngIf="
+            anyProcessAsDraftOrModified &&
+            processPlanStatus !== processPlanStatusEnum.COMPLETED &&
+            processPlanStatus !== processPlanStatusEnum.UNDER_REVIEW
+          "
+          class="ml"
+        >
+          <ng-container *ngIf="!isInternal">
+            <button
+              kendoButton
+              class="btn btn-online-brand btn-block"
+              id="Btn_Sendnotification"
+              *fiDisplayByPermissions="
+                procurementSendNotificationButtonPermission
+              "
+              (click)="sendNotification()"
+            >
+              {{ 'PROCUREMENT.PLAN_LOADED_OR_UPDATED' | translate }}
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid d-none d-md-block">
+  <div class="row" *fiDisplayByPermissions="procurementProcessTablePermission">
+    <div class="col-12 p-0">
+      <fi-table-aggregates
+        [procurementPlanCollection]="procurementPlanCollection"
+        (actionitemID)="actionitemID($event)"
+        [countryCode]="countryCodeProject"
+        [isLoading]="isProcessLoading"
+      ></fi-table-aggregates>
+    </div>
+  </div>
+</div>
+
+<ng-template #procurementApprovalActions>
+  <button
+    kendoButton
+    (click)="closeWorkflowCommentsModal()"
+    [disabled]="sendingProcurementForApproval"
+  >
+    {{ 'WORKFLOWS.COMMENTS_MODAL.PROCUREMENT.PLAN.CANCEL.BTN' | translate }}
+  </button>
+  <button
+    kendoButton
+    (click)="sentApprovalRequest()"
+    [disabled]="sendingProcurementForApproval"
+    class="k-primary"
+  >
+    <ng-container *ngIf="sendingProcurementForApproval">
+      <kendo-loader size="small" type="converging-spinner"> </kendo-loader>
+    </ng-container>
+    {{ 'WORKFLOWS.COMMENTS_MODAL.PROCUREMENT.PLAN.CONFIRM_BTN' | translate }}
+  </button>
+</ng-template>
+
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

@@ -1,0 +1,27 @@
+<div class="c-contract-details">
+  <div class="c-contract-details--header">
+    <button class="o-icon-button" (click)="goBackClick()" id="Btn_Return">
+      <em class="far fa-arrow-left"></em>
+    </button>
+    <span class="c-contract-details--header-icon"
+      ><em class="fas fa-list-alt"></em
+    ></span>
+    <p>{{ contract.id }}</p>
+  </div>
+  <div class="c-contract-details--content">
+    <p class="c-contract-details--title">Nombre de ganador:</p>
+    <p>{{ contract.name }}</p>
+
+    <p class="c-contract-details--title">Nacionalidad:</p>
+    <p>{{ contract.country }}</p>
+
+    <p class="c-contract-details--title">Estado:</p>
+    <p>{{ contract.status }}</p>
+
+    <p class="c-contract-details--title">Actualización:</p>
+    <p>{{ contract.updateDate | date: "dd MMM yyyy" }}</p>
+
+    <p class="c-contract-details--title">Enmienda:</p>
+    <p>{{ contract.amendment }}</p>
+  </div>
+</div>

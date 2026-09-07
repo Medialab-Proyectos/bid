@@ -1,0 +1,28 @@
+<div class="c-alert" [ngClass]="[classAlert, customClass]" *ngIf="open">
+  <div class="c-alert__body">
+    <div class="c-alert__icon">
+      <em [class]="iconClass"></em>
+    </div>
+    <div>
+      <div *ngIf="title" class="c-alert__title">
+        {{ title }}
+        <span *ngIf="transactionNumbers.length > 0">
+          {{ transactionNumbers[0] + " &mdash; " + transactionNumbers[1] }}
+        </span>
+      </div>
+      <div *ngIf="subtitle" class="c-alert__subtitle">
+        {{ subtitle }}
+      </div>
+    </div>
+  </div>
+  <button
+    *ngIf="closable"
+    class="c-alert__close"
+    [ngClass]="type === 'warning' && 'c-alert__close--warning'"
+    [id]="id ? 'Btn_Close_alert_' + id : 'Btn_Close_alert'"
+    data-testid="close_alert"
+    (click)="hide()"
+  >
+    <em class="fal fa-times"></em>
+  </button>
+</div>

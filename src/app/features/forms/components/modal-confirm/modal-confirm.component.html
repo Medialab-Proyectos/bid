@@ -1,0 +1,36 @@
+<div class="pb-md-3 mt-3">
+  <div class="col-md-12">
+    <div class="row">
+      <legend
+        class="o-fieldset__legend"
+        style="display: flex; justify-content: space-evenly"
+      >
+        <kendo-label
+          style="font-size: 14px"
+          text="{{
+            'BIDDINDG.PENDINGPUBLICATION.MODAL.PUBLICATION_LABEL1' | translate
+          }}{{ groupText }}{{
+            'BIDDINDG.PENDINGPUBLICATION.MODAL.PUBLICATION_LABEL2' | translate
+          }}"
+        >
+        </kendo-label>
+      </legend>
+    </div>
+  </div>
+</div>
+<div class="pb-md-3 actions">
+  <div class="col-12" style="display: flex; justify-content: flex-end">
+    <button kendoButton (click)="close()">
+      {{ "BIDDINDG.PENDINGPUBLICATION.MODAL.BUTTON.NO" | translate }}
+    </button>
+    <button
+      kendobutton
+      class="btn btn-brand qa-btn-publication"
+      (click)="saveDate()"
+      id="btn-save"
+      style="margin-left: 2%"
+    >
+      {{ "BIDDINDG.PENDINGPUBLICATION.MODAL.BUTTON.OK" | translate }}
+    </button>
+  </div>
+</div>

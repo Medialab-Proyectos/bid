@@ -1,0 +1,70 @@
+<!-- HEADER -->
+<div class="c-transactions__header" [class.collapsed]="!expandedHeader">
+  <div class="c-transactions__header-container">
+    <div
+      [ngClass]="
+        transaction
+          ? 'c-transactions__icon c-transactions__icon--transaction'
+          : 'c-transactions__icon'
+      "
+    >
+      <em *ngIf="!transaction" class="fas fa-briefcase"></em>
+      <em *ngIf="transaction" class="fas fa-list-alt"></em>
+    </div>
+    <div class="ml-3">
+      <!-- TITLE -->
+      <div class="c-transactions__title">
+        <span> {{ "TRANSACTION.HEADER.PROJECT" | translate }} </span>
+        <span *ngIf="transactionType">
+          <span>&nbsp;>&nbsp;</span>
+          <span>
+            {{ transactionType }}
+          </span>
+        </span>
+      </div>
+      <!-- CODE -->
+      <div
+        class="c-transactions__subtitle"
+        *ngIf="contract$ | async as contract; else skeleton"
+      >
+        <span> {{ contract }} </span>
+        <span *ngIf="transaction">
+          <span>&nbsp;>&nbsp;</span>
+          <span>
+            {{ transaction | translate }}
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+  <!-- COLAPSIBLE BTN -->
+  <button
+    type="button"
+    class="c-transactions__collapse-btn"
+    (click)="expandHeader()"
+    id="Btn_Expand_header"
+  >
+    <em *ngIf="expandedHeader" class="fas fa-chevron-up"></em>
+    <em *ngIf="!expandedHeader" class="fas fa-chevron-down"></em>
+  </button>
+</div>
+<!-- COLAPSIBLE CONTAINER -->
+<div class="c-transactions__collapsible" *ngIf="expandedHeader">
+  <fi-project-balances
+    data-testid="contractBalances"
+    [projectBalances]="projectBalances$ | async"
+    [loading]="loading"
+    [transactionDetailScreen]="transactionDetailScreen"
+  >
+  </fi-project-balances>
+</div>
+
+<ng-template #skeleton>
+  <kendo-skeleton
+    shape="text"
+    animation="pulse"
+    width="100%"
+    class="k-skeleton-pulse k-skeleton-text k-skeleton"
+    data-testid="skeleton"
+  ></kendo-skeleton>
+</ng-template>

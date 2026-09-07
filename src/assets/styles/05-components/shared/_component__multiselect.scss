@@ -1,0 +1,79 @@
+@import "/src/assets/styles/00-settings/_settings__colors.scss";
+
+.c-multiselect {
+  width: 100%;
+
+  li[aria-selected="true"].k-button {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 4px;
+    padding-left: 8px;
+
+    font-size: 14px;
+    background: $gray-400;
+    border: 0;
+    margin-left: 5px;
+  }
+
+  .k-multiselect-wrap {
+    border-radius: 5px;
+    min-height: 42px;
+    cursor: pointer;
+    padding: 5px;
+    border-color: $gray-500;
+  }
+
+  .k-clear-value,
+  .k-input {
+    display: none;
+  }
+}
+
+fi-multiselect,
+fi-multiselect-form {
+  .c-multiselect {
+    div {
+      kendo-multiselect {
+        min-height: 42px;
+        padding: 0px;
+        display: block !important;
+        border: 1px solid #b9c2ca;
+        border-radius: 5px;
+        kendo-taglist {
+          padding: 8px;
+          height: 100%;
+          min-height: 30px;
+          width: inherit;
+          .k-chip {
+            min-width: 144px;
+            border-radius: 0px;
+            border: none;
+          }
+          kendo-searchbar {
+            width: inherit;
+            input {
+              width: inherit;
+              border: none;
+              &:focus-visible {
+                outline: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+fi-multiselect-form {
+  &.invalid .c-multiselect kendo-multiselect {
+    border: 1px solid red;
+  }
+
+  &.empty kendo-multiselect kendo-taglist::before {
+    content: var(--placeholder);
+    color: #706e6b;
+    font-size: 1rem;
+    padding-top: 3px;
+  }
+}

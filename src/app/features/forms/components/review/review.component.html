@@ -1,0 +1,174 @@
+<div class="col-md-12" class="forms-review-comments">
+  <p class="o-fieldset__legend" id="Tlt_section_comment">
+    {{ "FORMS.COMPONENT_REVIEW.SECTION_COMMENT" | translate }} ({{
+      literal.number
+    }}) {{ literal.title | translate }}
+  </p>
+
+  <form [formGroup]="commentForm">
+    <ng-container
+      *ngIf="
+        formStatus === FormStatusEnum.REVIEW ||
+        formStatus === FormStatusEnum.REVIEW_TEAM_LEADER
+      "
+    >
+      <kendo-label
+        class="fi-kendo-label"
+        [text]="'FORMS.COMPONENT_REVIEW.PRORITY' | translate"
+      >
+      </kendo-label>
+      <kendo-dropdownlist
+        [data]="listPriority"
+        textField="value"
+        valueField="id"
+        formControlName="type"
+        [valuePrimitive]="true"
+        [data]="listPriority"
+        class="c-dropdown-list k-dropdown mb-3"
+      >
+        <ng-template kendoDropDownListValueTemplate let-item>
+          {{ item?.value | translate }}
+        </ng-template>
+        <ng-template kendoDropDownListItemTemplate let-item>
+          {{ item?.value | translate }}
+        </ng-template>
+      </kendo-dropdownlist>
+      <div>
+        <textarea
+          id="Txa_newComment_1"
+          formControlName="comment"
+          class="col-12 c-textbox k-textbox c-text-area"
+          [maxlength]="maxlengthComment"
+        ></textarea>
+      </div>
+
+      <button
+        id="Btn_addComment"
+        type="button"
+        (click)="addComments()"
+        kendoButton
+        class="btn btn-online-brand mt-4 pb-0 pt-0 d-flex"
+      >
+        {{ "FORMS.COMPONENT_REVIEW.BUTTON_ADD_COMMENT" | translate }}
+      </button>
+    </ng-container>
+
+    <div *ngFor="let item of numeralComments; let i = index">
+      <ul *ngIf="procesComment(item)" class="c-comment-list">
+        <li [ngClass]="item.class">
+          <div *ngIf="item.userName">
+            <div class="row">
+              <div class="col-md-10">
+                <p class="fi-kendo-label c-comment-item__author">
+                  {{ item.userName }} - {{ item.date }}
+                </p>
+              </div>
+
+              <div class="col-md-1" [hidden]="addOptionComments(item)">
+                <fi-options-menu
+                  [options]="options"
+                  [anchor]="popupButton"
+                  #popup
+                  (optionClick)="onOptioncomentClick($event, item, i)"
+                  [translate]="false"
+                ></fi-options-menu>
+                <button
+                  kendoButton
+                  look="flat"
+                  #popupButton
+                  class="o-icon-button btn-comment"
+                  id="Btn_Options_comment"
+                  (click)="popup.toggle()"
+                >
+                  <em class="fas fa-ellipsis-v"></em>
+                </button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <p class="c-comment-item__description">
+                  {{ item.comment }}
+                </p>
+              </div>
+            </div>
+
+            <div *ngIf="item.reply !== null">
+              <div class="row">
+                <div class="col-md-10">
+                  <p class="fi-kendo-label c-comment-item__answer_author">
+                    {{ item.reply.userName }} - {{ item.reply.date }}
+                  </p>
+                </div>
+
+                <div class="col-md-1" [hidden]="visibleAnswer">
+                  <fi-options-menu
+                    [options]="optionsAnswer"
+                    [anchor]="popupButton"
+                    #popup
+                    (optionClick)="onOptionAnswerClick($event, item, i)"
+                    [translate]="false"
+                  ></fi-options-menu>
+                  <button
+                    kendoButton
+                    look="flat"
+                    #popupButton
+                    class="o-icon-button btn-comment"
+                    id="Btn_Options_comment"
+                    (click)="popup.toggle()"
+                  >
+                    <em class="fas fa-ellipsis-v"></em>
+                  </button>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <p class="c-comment-item__answer">
+                    {{ item.reply.comment }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </form>
+  <form [formGroup]="dialogForm">
+    <div class="col-6 d-flex justify-content-between align-items-center">
+      <kendo-dialog [title]="title" *ngIf="openDialog" (close)="closeDialog()">
+        <div class="dialog-style">
+          <kendo-label
+            class="fi-kendo-label"
+            [text]="'FORMS.REVIEW.DIALOG.NEW_COMMENT' | translate"
+          ></kendo-label>
+          <textarea
+            id="Txa_newComment_2"
+            formControlName="newComment"
+            class="col-12 c-textbox k-textbox c-text-area"
+            [maxlength]="maxlengthComment"
+          >
+          </textarea>
+        </div>
+        <kendo-dialog-actions>
+          <button
+            id="Btn_kdialog_Cancel"
+            kendoButton
+            class="btn btn-online-brand"
+            (click)="closeDialog()"
+          >
+            {{ "FORMS.REVIEW.DIALOG.CANCEL" | translate }}
+          </button>
+          <button
+            kendoButton
+            id="Btn_kdialog_Responder"
+            class="btn btn-online-brand"
+            (click)="addAnswer()"
+          >
+            {{ "FORMS.REVIEW.DIALOG.SAVE" | translate }}
+          </button>
+        </kendo-dialog-actions>
+      </kendo-dialog>
+    </div>
+  </form>
+</div>

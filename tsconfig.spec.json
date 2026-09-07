@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": [
+      "jest", // 1
+      "node",
+      "@testing-library/jest-dom"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@core/*": ["src/app/core/*"],
+      "@fiduciary-interface/*": ["src/*"],
+      "@fiduciary-interface-test": ["src/test/index.ts"],
+      "@fiduciary-interface/core*": ["src/app/core*"],
+      "@fiduciary-interface-contracts*": [
+        "src/app/features/procurement/features/procurement-process/features/process-contracts/*"
+      ]
+    },
+    "esModuleInterop": true, // 3
+    "allowSyntheticDefaultImports": true
+  },
+  "files": ["src/test.ts", "src/polyfills.ts"],
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+}

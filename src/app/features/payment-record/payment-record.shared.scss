@@ -1,0 +1,2596 @@
+// Styles of the payment record module. Shared by its views and cards; Angular
+// scopes a copy per component, so nothing leaks into the global design system.
+$pr-border: #e0e0e0;
+$pr-label: #58595b;
+$pr-value: #1a1a1a;
+// The bank's real primary blue (IDB DS 2.0 -- surface/primary, icon/primary,
+// Text/color-text-link-default, all #007eb6 in the source Figma file), not the
+// #2e70cb this module had been using on its own.
+$pr-brand: #007eb6;
+// Semantic accents. Not invented for this screen -- the same three tones
+// `.pr-import__file` already uses elsewhere in this module for the same
+// meanings (error, on track/imported), named here so every screen that needs
+// "this is fine" or "this needs attention" reaches for the one answer
+// instead of a fresh guess.
+$pr-success: #2e7d32;
+$pr-success-tint: #eef7ee;
+$pr-warning: #8a5b00;
+$pr-warning-tint: #fbeeda;
+$pr-danger: #a3241b;
+$pr-danger-tint: #fae4e2;
+
+// Type scale of the module.
+//
+// The people who keep this report are mostly over fifty, a few in their
+// thirties. The product's default 11-12px secondary text is below what that
+// audience reads without leaning in, and this module is where they spend the
+// afternoon: hundreds of rows of amounts, dates and codes. So it sets its own
+// floor instead of inheriting one. Nothing drops under 13px, helper copy sits
+// at 14px, and line height stays at 1.5 so long labels stay separable.
+$pr-text-xs: 13px;
+$pr-text-sm: 14px;
+$pr-text-md: 15px;
+$pr-text-lg: 16px;
+$pr-text-xl: 18px;
+
+// Click targets. A 12px checkbox is a hard target for anyone whose hand is not
+// steady; these are the sizes the module uses instead of the browser default.
+$pr-control-size: 20px;
+$pr-control-height: 40px;
+
+.pr-page {
+  padding: 24px 0 48px;
+}
+
+// Standing on its own above the commitment card, not tucked inside a header
+// row, so it needs its own breathing room before the card starts.
+.pr-back-button {
+  // `.pr-page` gives every screen 24px of top padding before its content
+  // starts -- right, for a card, wrong here: this button is the one thing on
+  // the page meant to read as part of the breadcrumb trail above it, not a
+  // fresh section starting its own 24px below. Pulling it up most of the
+  // way into that padding keeps a little air without stranding it.
+  margin-top: -16px;
+  margin-bottom: 8px;
+}
+
+.pr-card {
+  background: #fff;
+  border: 1px solid $pr-border;
+  border-radius: 4px;
+  margin-bottom: 24px;
+
+  &__head {
+    align-items: center;
+    // Icon, title size and weight match `fi-card-header` (`.c-card-header`),
+    // the panel header every other feature in this app already uses. The
+    // horizontal padding stays this card's own 24px, not that component's
+    // 18px -- every section, tabstrip and foot below the head already lines
+    // up on that edge, and only the head using something narrower is what
+    // made the tabs read as shifted against everything else on the card.
+    border-bottom: 1px solid #d8dde6;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 24px;
+  }
+
+  &__identity {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+  }
+
+  &__icon {
+    align-items: center;
+    background: #2fbfce;
+    border-radius: 4px;
+    color: #fff;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    width: 32px;
+
+    .fas,
+    .far {
+      font-size: 22px;
+    }
+  }
+
+  // Secondary to the title, not competing with it -- `.c-card-header` has no
+  // second line at all, so this stays as small and quiet as the identity
+  // information it carries lets it be.
+  &__eyebrow {
+    color: $pr-label;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    color: $pr-value;
+    font-size: 16px;
+    font-weight: 600;
+    // Some screens set this on an <h2>, which carries its own top/bottom
+    // margin from the browser -- enough to push the text out of line with a
+    // 32px icon sitting next to it at `align-items: center`.
+    margin: 0;
+  }
+
+  &__toggle {
+    align-items: center;
+    background: none;
+    border: 0;
+    color: $pr-label;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    // 8px of padding around a small chevron leaves a target well under 44px --
+    // the one control that collapses the densest panel on the screen deserves
+    // a target as forgiving as any other in the module.
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px;
+  }
+
+  &__section {
+    border-top: 1px solid $pr-border;
+    padding: 16px 24px;
+
+    &--operation {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 48px;
+    }
+  }
+
+  &__foot {
+    border-top: 1px solid $pr-border;
+    color: $pr-label;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: $pr-text-sm;
+    gap: 16px;
+    justify-content: space-between;
+    padding: 12px 24px;
+  }
+
+  // The one currency every total on the card is actually expressed in --
+  // a plain label next to it read as just more footer text, easy to miss
+  // right when it matters most: reading any of the amounts above it.
+  &__foot-strong {
+    align-items: center;
+    background: #eaf4fb;
+    border-radius: 999px;
+    color: $pr-brand;
+    display: inline-flex;
+    font-size: $pr-text-sm;
+    font-weight: 700;
+    gap: 4px;
+    padding: 3px 12px;
+  }
+}
+
+.pr-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+
+  &--wide {
+    max-width: 420px;
+  }
+
+  &__label {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+  }
+
+  &__value {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+  }
+}
+
+.pr-balances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+
+  &__column {
+    min-width: 160px;
+
+    // Marks where the first group of fields (who and when) ends and the
+    // second (planned/committed amounts, country) begins -- the flex `gap`
+    // alone reads as one long run of fields with no seam between them.
+    &--divided {
+      border-left: 1px solid $pr-border;
+      padding-left: 24px;
+    }
+  }
+}
+
+.pr-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 260px;
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__labels {
+    display: flex;
+    font-size: $pr-text-sm;
+    justify-content: space-between;
+  }
+
+  &__value {
+    color: $pr-value;
+    font-weight: 500;
+  }
+
+  &__caption {
+    color: $pr-label;
+  }
+
+  &__track {
+    background: #d9e5f7;
+    border-radius: 2px;
+    height: 4px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    background: $pr-brand;
+    height: 100%;
+  }
+}
+
+.pr-tabstrip {
+  border-bottom: 1px solid $pr-border;
+  display: flex;
+  gap: 24px;
+  padding: 0 24px;
+
+  // Written for a span originally. A tab that can be switched has to be a
+  // button, and a button brings its own grey fill and border, which turned the
+  // tabs into two boxes that looked nothing like the rest of the product.
+  &__tab {
+    background: none;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    color: $pr-label;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: $pr-text-md;
+    padding: 16px 4px;
+    text-align: center;
+    transition: color 0.12s ease, border-color 0.12s ease;
+
+    &:hover {
+      color: $pr-value;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $pr-brand;
+      outline-offset: -4px;
+    }
+
+    &--active {
+      border-bottom-color: $pr-brand;
+      color: $pr-value;
+      font-weight: 500;
+    }
+  }
+}
+
+.pr-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 16px 24px 0;
+
+  &__hint {
+    color: $pr-label;
+    font-size: $pr-text-md;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    // `justify-content: space-between` on the parent only spaces items that
+    // share a line. The mechanism button's full label ("Cambio de mecanismo
+    // de pago del contrato para reembolso") is long enough that the actions
+    // wrap onto a row of their own below the hint, and a lone item on its own
+    // line sits at the start of it, not the end -- the actions read as
+    // left-aligned. `margin-left: auto` keeps them pushed to the right
+    // whether they share the hint's line or not.
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+}
+
+.pr-grid {
+  padding: 16px 24px 24px;
+
+  &__number {
+    text-align: right;
+  }
+}
+
+.pr-link {
+  color: $pr-brand;
+  text-decoration: underline;
+}
+
+// The brand blue that makes `.pr-link` read as a link everywhere else is the
+// one color that disappears against `.c-alert--info`'s own dark background --
+// the hand-copied alert markup (see the comments next to it) carries a real
+// link the component itself can't take, so it needs its own contrast fix
+// here instead of in the component it's borrowing styles from.
+.c-alert .pr-link {
+  color: #fff;
+
+  &:hover,
+  &:focus {
+    color: #fff;
+  }
+}
+
+// "Seleccionar o añadir pagos" used to have the help paragraph under it for
+// a neighbor; gone now, the notice banner below sat right against it with
+// nothing of its own to keep them apart.
+.pr-statement__pick-button {
+  margin-bottom: 16px;
+}
+
+// A highlighted summary card, not a plain row of text under the table -- the
+// total is the number the reader actually came here to check, so it gets a
+// value large and bold enough to find without reading everything around it,
+// laid out as stat blocks instead of a cramped inline sentence. The
+// equivalent is the figure the others exist to answer, so it alone gets the
+// module's brand color; the rest stay in the ordinary value color.
+.pr-totals {
+  background: #f6f8fb;
+  border: 1px solid $pr-border;
+  border-radius: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 40px;
+  margin-top: 4px;
+  padding: 16px 24px;
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__label {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    font-weight: 500;
+  }
+
+  &__value {
+    color: $pr-value;
+    font-size: $pr-text-xl;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__row--highlight &__value {
+    color: $pr-brand;
+  }
+}
+
+.pr-dialog {
+  &__intro {
+    color: $pr-label;
+    font-size: $pr-text-md;
+    margin-bottom: 16px;
+  }
+
+  &__note {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    margin-top: 16px;
+  }
+
+  // Grid rather than flex: a row with one field used to stretch it across the
+  // whole dialog, and four fields squeezed their labels into two lines each.
+  // Even columns that wrap at a readable width fix both.
+  &__row {
+    align-items: start;
+    display: grid;
+    gap: 16px 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-bottom: 18px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+
+    // A date and a currency hold four to ten characters. Letting them fill a
+    // grid column put a tiny value in an enormous box, and the two fields of
+    // one row came out at wildly different widths.
+    > .c-datepicker,
+    > .c-dropdown-list,
+    > .c-textbox,
+    > kendo-numerictextbox,
+    > kendo-datepicker {
+      max-width: 340px;
+      width: 100%;
+    }
+
+    // The opposite case: a field alone in its own row (update-payment-dialog's
+    // "Concepto de gasto o pago"), meant to read as long as the text it holds
+    // can run, not capped to the same width as a currency code next to it.
+    &--full > .c-textbox {
+      max-width: none;
+    }
+  }
+
+  &__label {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+  }
+
+  &__required::after {
+    color: #d32f2f;
+    content: " *";
+  }
+
+  &__link {
+    background: none;
+    border: 0;
+    color: $pr-brand;
+    cursor: pointer;
+    padding: 0;
+  }
+
+
+  &__danger {
+    color: #d32f2f;
+  }
+
+  // Ghost: no fill, no border, just the red text -- `btn-online-link` (what
+  // "Eliminar pago" used before this) has no rule anywhere in the app, so it
+  // rendered on whatever Kendo's own unstyled button base happens to be
+  // instead of the module's own button system. That base turns out to carry
+  // a real fill: `.k-button { background-color: #f5f5f5; background-image:
+  // linear-gradient(...); border-color: rgba(0,0,0,.08); }`, which is where
+  // this button's fond/stroke were actually coming from, and why toning down
+  // just `border-color` left a visible box behind. `!important` because two
+  // rounds of the ordinary specificity fix already lost to it.
+  &__danger-ghost {
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus {
+      background-color: rgba(211, 47, 47, 0.08) !important;
+      background-image: none !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+
+    &:active {
+      background-color: rgba(211, 47, 47, 0.12) !important;
+      background-image: none !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
+  &__pager {
+    align-items: center;
+    color: $pr-label;
+    display: flex;
+    font-size: $pr-text-sm;
+    gap: 4px;
+    justify-content: flex-end;
+    padding: 12px 0 0;
+  }
+
+  &__pager-btn {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: $pr-label;
+    cursor: pointer;
+    line-height: 1;
+    min-width: 28px;
+    padding: 6px 8px;
+
+    &:hover:not(:disabled) {
+      background: #f2f5f9;
+    }
+
+    &:disabled {
+      color: #b3b3b3;
+      cursor: not-allowed;
+    }
+
+    &--active {
+      background: $pr-brand;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
+.pr-rates {
+  border-collapse: collapse;
+  width: 100%;
+
+  th,
+  td {
+    border-bottom: 1px solid $pr-border;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    font-weight: 500;
+  }
+
+  td {
+    font-size: $pr-text-md;
+  }
+
+  // The table's own alignment used to beat this utility class, so every amount
+  // sat on the left of its column and no two of them lined up.
+  th.pr-grid__number,
+  td.pr-grid__number {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  // ---- the wide grids
+  //
+  // Squeezed into the width of a dialog, a column title took three lines and a
+  // component name four, so no two rows were the same height and the eye had
+  // nothing to follow. Each cell keeps to one line and the table scrolls
+  // sideways instead, which it already did.
+  &--wide {
+    font-size: $pr-text-sm;
+
+    th,
+    td {
+      max-width: 26ch;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      line-height: 1.3;
+    }
+
+    // Cells that hold a name rather than a figure get more room before the
+    // ellipsis, because that is what people read to recognise a row.
+    td.pr-cell--name {
+      max-width: 30ch;
+    }
+  }
+
+  &__check {
+    width: 40px;
+  }
+}
+
+.pr-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.pr-radio {
+  align-items: center;
+  display: flex;
+  font-size: $pr-text-md;
+  gap: 8px;
+  margin: 0;
+}
+
+.pr-dialog__row--end {
+  justify-content: flex-end;
+}
+
+.pr-dialog__row--column {
+  grid-template-columns: 1fr;
+}
+
+// Fixed 3 columns, not `auto-fit`: auto-fit recalculates its column count
+// and width per row, which is exactly what breaks alignment between two
+// separate rows -- or two separate fieldsets -- that don't carry the same
+// number of fields. A fixed template lets fields in different rows or
+// fieldsets land in the same column on purpose (every row of
+// update-payment-dialog's flat layout, for one).
+// Shared by `--2col` and `--3col`: reserves two lines above every control in
+// the row, so a field whose own label fits on one line still lines up
+// against a neighbor whose label needs two ("N° del comprobante contable del
+// gasto o pago" against "Componente"/"Concepto"/"Producto"). `align-items:
+// flex-end` is what keeps that reservation from reading as distance instead
+// of alignment: it holds each label's text against the *bottom* of its own
+// box, so the unused space lands above a short label, not between the label
+// and its own control -- every field keeps the same close label-to-control
+// gap the rest of the design system uses, no matter how many lines its own
+// label happens to need.
+@mixin pr-dialog-row-aligned-labels {
+  .pr-dialog__label {
+    align-items: flex-end;
+    display: flex;
+    min-height: calc(#{$pr-text-sm} * 1.5 * 2);
+  }
+}
+
+.pr-dialog__row--3col {
+  // `minmax(0, 1fr)` stretched each column to a third of the dialog's full
+  // width, and every one of these controls caps out at 340px -- the leftover
+  // 1fr space read as distance between "Componente"/"Producto" and their
+  // neighbors, not as the tight grouping "Fecha e importe" has. Capped to
+  // the same 340px the controls already stop at, the columns sit only as far
+  // apart as their content actually needs, same as that row.
+  grid-template-columns: repeat(3, minmax(0, 340px));
+  @include pr-dialog-row-aligned-labels;
+}
+
+// Same idea as `--3col`, at two columns: "Componente"/"Concepto de gasto o
+// pago" in the first, "Producto"/"N° de comprobante" in the second, in two
+// otherwise-separate fieldsets that line up because they share this same
+// template.
+.pr-dialog__row--2col {
+  grid-template-columns: repeat(2, minmax(0, 340px));
+  @include pr-dialog-row-aligned-labels;
+}
+
+.pr-statement {
+  &__search {
+    align-self: end;
+    justify-content: flex-end;
+  }
+
+  &__group {
+    border: 1px solid $pr-border;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  &__head {
+    align-items: center;
+    background: #f6f8fb;
+    border-bottom: 1px solid $pr-border;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+  }
+
+  &__title {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+    font-weight: 500;
+  }
+
+  &__total {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+    font-weight: 500;
+  }
+}
+
+.pr-import {
+  &__intro {
+    align-items: center;
+    color: $pr-label;
+    display: flex;
+    font-size: $pr-text-md;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__documents {
+    border: 1px solid $pr-border;
+    border-radius: 4px;
+    margin: 12px 0;
+  }
+
+  &__documents-tab {
+    border-bottom: 2px solid $pr-brand;
+    color: $pr-value;
+    display: inline-block;
+    font-size: $pr-text-md;
+    font-weight: 500;
+    margin: 8px 16px 0;
+    padding-bottom: 6px;
+  }
+
+  &__documents-row {
+    background: #f6f8fb;
+    border-top: 1px solid $pr-border;
+    color: $pr-label;
+    font-size: $pr-text-md;
+    padding: 10px 16px;
+  }
+
+  &__ok {
+    color: #2e7d32;
+  }
+
+  &__dropzone {
+    align-items: center;
+    border: 1px dashed $pr-border;
+    border-radius: 4px;
+    color: $pr-label;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  // The banner above already names the problem and how many rows it touches
+  // -- this is just the detail underneath, so only the rows actually at
+  // fault get marked (`error.rows` is only ever the rows that failed this
+  // one check), not a card's worth of background behind data that reads fine.
+  &__error {
+    border: 1px solid $pr-danger;
+    border-radius: 4px;
+    margin-bottom: 12px;
+
+    tbody tr {
+      background: $pr-danger-tint;
+
+      td {
+        border-bottom-color: #eec3bf;
+      }
+    }
+  }
+
+  &__stats {
+    color: $pr-label;
+    display: flex;
+    font-size: $pr-text-sm;
+    gap: 24px;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+  }
+
+  &__table {
+    max-height: 320px;
+    overflow: auto;
+  }
+}
+
+.pr-import__bar {
+  background: #d9e5f7;
+  border-radius: 2px;
+  height: 4px;
+  overflow: hidden;
+  width: 240px;
+
+  span {
+    animation: pr-import-progress 1.2s ease-in-out infinite;
+    background: $pr-brand;
+    display: block;
+    height: 100%;
+    width: 40%;
+  }
+}
+
+@keyframes pr-import-progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+.pr-ceiling {
+  color: $pr-label;
+  font-size: $pr-text-xs;
+}
+
+.pr-execution {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+
+  &__figures {
+    align-items: center;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  &__title {
+    align-items: center;
+    color: $pr-label;
+    display: inline-flex;
+    font-size: $pr-text-sm;
+    gap: 6px;
+
+    .fas {
+      color: $pr-value;
+    }
+  }
+
+  // Value over label, the same shape the paid/pending progress figures below
+  // already use for a number meant to be scanned rather than read as a
+  // sentence. The quiet chip around it is the same neutral tint
+  // `.pr-summary`/`.pr-import__rules` already use for a block that needs to
+  // read as its own thing -- not the brand blue already doing duty for links
+  // and actions elsewhere on this card, which would have made the indicators
+  // compete with them instead of just standing apart.
+  &__indicator {
+    background: #f6f8fb;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 12px;
+  }
+
+  &__indicator-value {
+    color: $pr-value;
+    font-size: $pr-text-xl;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  &__indicator-label {
+    color: $pr-label;
+    font-size: $pr-text-xs;
+  }
+
+  &__alert {
+    align-items: center;
+    border-radius: 2px;
+    display: inline-flex;
+    font-size: $pr-text-sm;
+    gap: 8px;
+    padding: 6px 10px;
+
+    &--behind {
+      background: #fbeeda;
+      color: #8a5b00;
+    }
+
+    &--closing {
+      background: #fbeeda;
+      color: #8a5b00;
+    }
+
+    &--expired {
+      background: #fae4e2;
+      color: #a3241b;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Guidance inside the dialogs.
+//
+// The four ways of adding payments used to be four bare radio labels, so the
+// screen never said what any of them did, nor what the form expected, nor why
+// the confirm button was closed. These blocks carry that explanation.
+// ---------------------------------------------------------------------------
+
+.pr-source {
+  margin-bottom: 20px;
+
+  &__question {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  &__options {
+    display: grid;
+    gap: 12px;
+    // One wide row: the four routes are alternatives to each other, and a
+    // wrapped grid made the last one read as an afterthought.
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    @media (max-width: 960px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__option {
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid $pr-border;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    padding: 12px 14px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+      border-color: $pr-brand;
+    }
+
+    &--active {
+      background: #f2f7fd;
+      border-color: $pr-brand;
+      box-shadow: inset 0 0 0 1px $pr-brand;
+    }
+
+    input {
+      flex: 0 0 auto;
+      margin-top: 3px;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    // Centered against a one-line title the icon looked fine; against a
+    // title long enough to wrap ("Desde cronograma de pagos", "Importar
+    // desde un archivo") it centered against both lines instead of sitting
+    // with the first one, and read as floating between them.
+    align-items: flex-start;
+    color: $pr-value;
+    display: flex;
+    font-size: $pr-text-md;
+    font-weight: 500;
+    gap: 8px;
+
+    .fas {
+      color: $pr-brand;
+      font-size: $pr-text-sm;
+      // Optical nudge: the icon glyph and the text's cap-height don't start
+      // at the same offset inside their own line boxes.
+      margin-top: 3px;
+    }
+  }
+
+  &__description {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    line-height: 1.4;
+  }
+}
+
+.pr-panel {
+  border: 1px solid $pr-border;
+  border-radius: 4px;
+  padding: 16px 18px 18px;
+
+  &__head {
+    align-items: baseline;
+    border-bottom: 1px solid $pr-border;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+  }
+
+  &__title {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  &__required {
+    color: $pr-label;
+    font-size: $pr-text-xs;
+    // Only ever stood inside a `__head` row before, which set the spacing for
+    // it. Standing on its own now (update-payment-dialog), it needs its own.
+    margin: 0 0 14px;
+    text-align: right;
+
+    // The translated string is "* Campos obligatorios" as one piece of text;
+    // this is the asterisk on its own without splitting the string into two
+    // translation keys.
+    &::first-letter {
+      color: #d32f2f;
+    }
+  }
+
+  &__lead {
+    color: $pr-label;
+    font-size: $pr-text-md;
+    line-height: 1.45;
+    margin-bottom: 14px;
+  }
+
+  // Wide grids scroll inside the panel instead of stretching the dialog.
+  &__scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+.pr-steps {
+  counter-reset: pr-step;
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+
+  &__item {
+    align-items: center;
+    color: $pr-value;
+    counter-increment: pr-step;
+    display: flex;
+    font-size: $pr-text-md;
+    gap: 10px;
+    line-height: 1.4;
+    padding: 7px 0;
+
+    // Was `position: absolute` at a fixed `top: 6px` -- centered fine
+    // against one line of text, but a step long enough to wrap left the
+    // circle pinned near the top of the block instead of centered against
+    // all of it. A real flex item centers against however tall its sibling
+    // text actually turns out to be, wrapped or not.
+    &::before {
+      align-items: center;
+      background: #f2f7fd;
+      border: 1px solid $pr-brand;
+      border-radius: 50%;
+      color: $pr-brand;
+      content: counter(pr-step);
+      display: flex;
+      flex: 0 0 auto;
+      font-size: $pr-text-xs;
+      font-weight: 600;
+      height: 22px;
+      justify-content: center;
+      width: 22px;
+    }
+  }
+
+  &__text {
+    flex: 1 1 220px;
+  }
+
+  &__action {
+    align-items: center;
+    background: none;
+    border: 1px solid $pr-brand;
+    border-radius: 3px;
+    color: $pr-brand;
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: $pr-text-sm;
+    gap: 6px;
+    padding: 5px 12px;
+
+    &:hover {
+      background: #f2f7fd;
+    }
+  }
+}
+
+.pr-fieldset {
+  border: 0;
+  // Each group is a section of the form, so it needs to read as one. The 4px
+  // it had put the next legend right against the previous table.
+  margin: 0 0 28px;
+  padding: 0;
+
+  &:last-of-type {
+    margin-bottom: 8px;
+  }
+
+  &__legend {
+    border-bottom: 1px solid $pr-border;
+    color: $pr-value;
+    float: none;
+    font-size: $pr-text-sm;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    padding: 0;
+    // A native <legend> sizes to its own content by default; `width: auto`
+    // alone doesn't override that, which is why its underline only ever ran
+    // under the words of the title instead of the fieldset it belongs to.
+    display: block;
+    width: 100%;
+  }
+
+  &__help {
+    color: $pr-label;
+    // Was inline with the legend text via `margin-left`; reads as a caption
+    // of the title, not a continuation of it, so it drops to its own line
+    // underneath instead.
+    display: block;
+    font-size: $pr-text-xs;
+    font-weight: 400;
+    letter-spacing: 0;
+    margin-top: 4px;
+    text-transform: none;
+  }
+}
+
+.pr-dialog__help {
+  color: $pr-label;
+  font-size: $pr-text-xs;
+  line-height: 1.35;
+}
+
+// A dropdown with nothing picked yet still needs to read as empty -- gray,
+// upright text, not the darker weight a real selection gets. A
+// `kendo-dropdownlist` has no `::placeholder` pseudo-element to inherit that
+// from, since what it shows for "nothing selected" is a value template like
+// any other, not real placeholder text.
+.pr-dropdown-placeholder {
+  color: #cccccc; // gray-500
+  font-style: normal;
+}
+
+// A cell whose data was never entered, not just empty by accident -- named
+// as what it is instead of leaving the cell blank, which reads as a loading
+// gap or a mistake rather than "nothing to report here."
+.pr-cell--muted {
+  color: $pr-label;
+  font-style: italic;
+}
+
+.pr-dialog__field--wide {
+  grid-column: span 2;
+
+  @media (max-width: 720px) {
+    grid-column: span 1;
+  }
+}
+
+.pr-equivalent {
+  background: #f6f8fb;
+  border-radius: 3px;
+  color: $pr-label;
+  font-size: $pr-text-sm;
+  margin: 4px 0 0;
+  padding: 8px 12px;
+
+  strong {
+    color: $pr-value;
+  }
+}
+
+.pr-ceiling--over {
+  color: #a3241b;
+  font-weight: 500;
+}
+
+.pr-rates__input {
+  // `display: flex` here was standing in for the widget not filling the
+  // cell -- but a flex `<td>` stops behaving like a table cell in the row's
+  // own layout, which is what left the row itself short of the table's full
+  // width instead of just the input inside it. The real fix is forcing the
+  // widget's own width, which now happens for real in
+  // `_component__payment-record.scss` (`.k-numerictextbox` carries a fixed
+  // `width: 10em` from the shipped theme, more than an ordinary override
+  // could out-specificity); this cell can go back to being a plain,
+  // ordinarily-laid-out `<td>`.
+  width: 200px;
+}
+
+.pr-import__rules {
+  background: #f6f8fb;
+  border-radius: 3px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+
+  &-title {
+    color: $pr-value;
+    font-size: $pr-text-sm;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  ul {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    line-height: 1.5;
+    margin: 0;
+    padding-left: 18px;
+  }
+}
+
+.pr-import__file {
+  align-items: center;
+  background: #eef7ee;
+  border: 1px solid #c7e2c7;
+  border-radius: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: $pr-text-sm;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+
+  .fas {
+    color: #2e7d32;
+  }
+
+  &--error {
+    background: #fae4e2;
+    border-color: #eec3bf;
+
+    .fas {
+      color: #a3241b;
+    }
+  }
+
+  &-name {
+    color: $pr-value;
+    font-weight: 500;
+  }
+
+  &-meta {
+    color: $pr-label;
+    flex: 1 1 auto;
+  }
+}
+
+// A summary in front of the per-row detail below: what kind of problem this
+// is, how many rows it touches, and which ones -- as chips, so the eye can
+// scan them the way it scans a row of tags rather than reading a table.
+// `--warning` (duplicates, does not block) and `--danger` (blocks) are the
+// module's own amber/red pair, not new colors of their own.
+.pr-import__banner {
+  border-radius: 4px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+
+  &-title {
+    align-items: center;
+    display: flex;
+    font-size: $pr-text-sm;
+    font-weight: 600;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  &-desc {
+    font-size: $pr-text-sm;
+    margin: 0 0 10px;
+  }
+
+  &-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &-report {
+    color: $pr-brand;
+    float: right;
+    font-size: $pr-text-sm;
+    text-decoration: underline;
+  }
+
+  &--warning {
+    background: $pr-warning-tint;
+    color: $pr-warning;
+  }
+
+  &--danger {
+    background: $pr-danger-tint;
+    color: $pr-danger;
+  }
+}
+
+.pr-import__chip {
+  background: #fff;
+  border-radius: 999px;
+  display: inline-block;
+  font-size: $pr-text-xs;
+  font-weight: 600;
+  padding: 3px 10px;
+
+  &--warning {
+    border: 1px solid #e8c98a;
+    color: $pr-warning;
+  }
+
+  &--danger {
+    border: 1px solid #eec3bf;
+    color: $pr-danger;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Ergonomics.
+//
+// Applies to every screen and dialog of the module: readable line height,
+// checkboxes and radios big enough to hit, input rows tall enough to read, and
+// a focus ring that is actually visible. None of it leaks out of the module,
+// because Angular scopes this stylesheet per component.
+// ---------------------------------------------------------------------------
+
+.pr-page,
+.pr-dialog {
+  line-height: 1.5;
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    cursor: pointer;
+    height: $pr-control-size;
+    min-width: $pr-control-size;
+    width: $pr-control-size;
+  }
+
+  // Kendo sizes its inputs for a denser audience than this one.
+  .k-input,
+  .k-picker,
+  .c-textbox,
+  .c-dropdown-list,
+  .c-datepicker,
+  kendo-numerictextbox {
+    font-size: $pr-text-md;
+    min-height: $pr-control-height;
+  }
+
+  label,
+  .pr-radio {
+    cursor: pointer;
+  }
+
+  // A cell whose only control is an icon needs a target, not just a glyph.
+  .pr-dialog__link {
+    min-height: 32px;
+    min-width: 32px;
+  }
+
+  :focus-visible {
+    outline: 2px solid $pr-brand;
+    outline-offset: 2px;
+  }
+}
+
+.pr-panel__head--plain {
+  border-bottom: 0;
+  margin-bottom: 4px;
+  padding-bottom: 0;
+}
+
+.pr-dialog__help--block {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.pr-equivalent__note {
+  color: $pr-label;
+  display: block;
+  font-size: $pr-text-xs;
+  margin-top: 2px;
+}
+
+// ---------------------------------------------------------------------------
+// Statement of expenditures.
+//
+// The screen is a two-step form: pick the transaction, then work the amounts.
+// The numbered banners are the steps of that form, not decoration, so they
+// only appear where a step actually starts.
+// ---------------------------------------------------------------------------
+
+.pr-step {
+  align-items: center;
+  background: #f6f8fb;
+  border-bottom: 1px solid $pr-border;
+  border-top: 1px solid $pr-border;
+  display: flex;
+  gap: 12px;
+  padding: 12px 24px;
+
+  &__number {
+    align-items: center;
+    background: $pr-brand;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    flex: 0 0 auto;
+    font-size: $pr-text-sm;
+    font-weight: 600;
+    height: 26px;
+    justify-content: center;
+    width: 26px;
+  }
+
+  &__title {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__body {
+    padding: 20px 24px 24px;
+  }
+
+  // How many of the section's own rows are picked, read at a glance next to
+  // the section's own name instead of scrolled down with the table it counts.
+  &__counter {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+}
+
+.pr-tabstrip__count {
+  background: $pr-border;
+  border-radius: 999px;
+  color: $pr-value;
+  font-size: $pr-text-xs;
+  margin-left: 8px;
+  padding: 1px 8px;
+}
+
+.pr-notice {
+  align-items: flex-start;
+  background: #fdf6e6;
+  border-radius: 3px;
+  color: #7a5400;
+  display: flex;
+  font-size: $pr-text-sm;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  // A one-line message stretched the same block-level `<p>` does by default
+  // -- the full width of the card -- reading as an oddly empty bar. Hugging
+  // its own content instead, it reads as a chip the eye can find, and a
+  // longer message (or a narrow dialog) still wraps within the card's width.
+  max-width: 100%;
+  width: fit-content;
+
+  .fas {
+    flex: 0 0 auto;
+    margin-top: 3px;
+  }
+}
+
+.pr-statement {
+  &__table {
+    min-width: 62rem;
+
+    thead th {
+      border-bottom: 1px solid $pr-border;
+      vertical-align: bottom;
+    }
+  }
+
+  // Checking the numbers is something to do while reading the table, not
+  // only once every payment is decided -- so the download sits with the
+  // table it downloads, not in the action bar at the very end.
+  &__top-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+
+  // `.pr-toolbar` was written to sit right under a card head or tabstrip and
+  // carries its own 24px of side padding for that. Here it sits inside
+  // `.pr-step__body`, which already has that same 24px -- stacked, the two
+  // pushed the actions in 24px further than the table above them, so Cancel
+  // and Generate landed short of the table's own right edge instead of
+  // lining up with it.
+  &__actions-row {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  &__group-head {
+    border-left: 1px solid $pr-border;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  &__index {
+    color: $pr-label;
+    width: 44px;
+  }
+
+  // The advance and pending lines come from the balances, not from the payments
+  // on screen, so they read as part of the table but never open.
+  &__row--special {
+    background: #fafbfc;
+    color: $pr-label;
+    font-style: italic;
+  }
+
+  // A payment the user dropped is still listed, greyed, so it is clear it was
+  // seen and left out rather than missing.
+  &__row--dropped {
+    color: $pr-label;
+    opacity: .6;
+  }
+
+  &__counters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+
+  &__counter {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+
+    strong {
+      color: $pr-value;
+    }
+  }
+
+  // Search stays over on the right, where the eye lands last on the row --
+  // the total it is next to is what the agency actually came here to check.
+  //
+  // `.pr-toolbar` carries its own 24px of side padding, meant for sitting
+  // right under a card head or tabstrip. Nested inside `.pr-step__body`,
+  // which already has that same 24px, the two stacked left this row short
+  // of the table's own edge below it instead of lined up with it -- the
+  // same fix `.pr-statement__actions-row` already needed on the statement
+  // screen's own bottom action bar.
+  &__toolbar {
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  &__total {
+    align-items: baseline;
+    background: #f6f8fb;
+    border-radius: 4px;
+    display: inline-flex;
+    gap: 8px;
+    padding: 8px 14px;
+  }
+
+  &__total-label {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+  }
+
+  &__total-value {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
+  &__filter {
+    flex: 0 1 320px;
+  }
+
+  // Visual placeholder only -- this list is a plain table, not a groupable
+  // grid, so nothing actually drops onto it. It sits here because the
+  // reference layout has one in this exact spot next to the search field.
+  &__group-hint {
+    background: #fff;
+    border: 1px solid $pr-border;
+    border-radius: 4px;
+    color: $pr-label;
+    flex: 1 1 320px;
+    font-size: $pr-text-sm;
+    padding: 8px 14px;
+  }
+
+  // A row on its own, not the flex item's own bottom margin bleeding into
+  // whatever comes after it.
+  &__notice {
+    flex: 1 1 320px;
+    margin-bottom: 0;
+  }
+
+  // How many rows are picked, on its own line above the search/group row --
+  // the one figure in the dialog the agency actually keeps an eye on while
+  // working through the table below it.
+  &__selected-row {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__audit {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    font-style: italic;
+    margin: 12px 0;
+  }
+}
+
+// Breathing room before the table, not the search row's own bottom edge
+// running straight into its top border.
+.pr-statement__toolbar--group {
+  margin-bottom: 16px;
+}
+
+.pr-component {
+  border: 1px solid $pr-border;
+  border-radius: 4px;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(14rem, 1fr) 3fr;
+  margin-bottom: 16px;
+  padding: 18px 20px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__identity {
+    border-right: 1px solid $pr-border;
+    padding-right: 20px;
+
+    @media (max-width: 900px) {
+      border-bottom: 1px solid $pr-border;
+      border-right: 0;
+      padding-bottom: 16px;
+      padding-right: 0;
+    }
+  }
+
+  &__code {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+    font-weight: 600;
+    margin: 2px 0 14px;
+  }
+
+  &__name {
+    color: $pr-value;
+    font-size: $pr-text-md;
+    margin: 2px 0 0;
+  }
+
+  &__amounts {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  }
+
+  &__block-title {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    font-weight: 600;
+    letter-spacing: .02em;
+    margin: 0 0 8px;
+    text-transform: uppercase;
+  }
+
+  &__list {
+    display: grid;
+    gap: 2px 10px;
+    grid-template-columns: 1fr auto;
+    margin: 0;
+
+    dt {
+      color: $pr-label;
+      font-size: $pr-text-sm;
+      font-weight: 400;
+    }
+
+    dd {
+      color: $pr-value;
+      font-size: $pr-text-sm;
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+      text-align: right;
+    }
+  }
+}
+
+// Reference figures that are not fields. They were rendered as read-only
+// inputs, which made a total look like something you could type into.
+.pr-summary {
+  background: #f6f8fb;
+  border: 1px solid $pr-border;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  padding: 14px 18px;
+
+  &__title {
+    color: $pr-label;
+    display: block;
+    font-size: $pr-text-sm;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  &__list {
+    display: grid;
+    gap: 12px 28px;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    margin: 0;
+  }
+
+  &__item dt {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    font-weight: 400;
+  }
+
+  &__item dd {
+    color: $pr-value;
+    font-size: $pr-text-md;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    margin: 2px 0 0;
+  }
+}
+
+.pr-source__options--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// The rate table has room to breathe now: the picker keeps a sane width and
+// the numeric columns stop stretching to fill the dialog.
+.pr-rates--rates {
+  th,
+  td {
+    vertical-align: top;
+  }
+
+  .c-dropdown-list {
+    max-width: 220px;
+  }
+
+  kendo-numerictextbox {
+    max-width: 200px;
+  }
+}
+
+// A standalone "add a row" button. Inside the numbered steps the gap of the
+// list separates it; on its own under a table it was sitting on the last row.
+.pr-add-row {
+  align-items: center;
+  background: none;
+  border: 1px solid $pr-brand;
+  border-radius: 3px;
+  color: $pr-brand;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: $pr-text-sm;
+  gap: 8px;
+  margin: 16px 0 20px;
+  min-height: 38px;
+  padding: 8px 16px;
+
+  &:hover:not(:disabled) {
+    background: #f2f7fd;
+  }
+
+  &:disabled {
+    border-color: $pr-border;
+    color: $pr-label;
+    cursor: not-allowed;
+  }
+}
+
+// Alerts inside a dialog were butting against the block above and the first
+// legend below.
+.pr-dialog fi-alert {
+  display: block;
+  margin: 4px 0 20px;
+}
+
+// Present to a screen reader, absent from the layout.
+.pr-visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+// ---------------------------------------------------------------------------
+// Reading a wide row.
+//
+// These grids run past twelve columns. Without a banding and a hover the eye
+// loses the line between the concept on the left and the amount on the right,
+// which is the single most common thing anyone does here.
+// ---------------------------------------------------------------------------
+
+.pr-rates {
+  tbody tr:nth-child(even) {
+    background: #fafbfc;
+  }
+
+  tbody tr {
+    transition: background-color 0.12s ease;
+  }
+
+  tbody tr:hover {
+    background: #eef4fb;
+  }
+
+  // Keeps the headers in view while a long list scrolls under them.
+  thead th {
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  &__check input:focus-visible {
+    outline: 2px solid $pr-brand;
+    outline-offset: 2px;
+  }
+
+  // Same "a total reads as a total" treatment `.pr-statement__table` already
+  // uses for its own tfoot -- the module's one answer to "make this row
+  // stand out", not a one-off. The figure itself gets a size bump on top,
+  // in the module's own dark text color rather than the brand blue, since
+  // it's the actual number this row exists to show.
+  tfoot td {
+    background: #f6f8fb;
+    border-top: 2px solid $pr-border;
+    font-weight: 600;
+  }
+
+  tfoot td.pr-grid__number {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+  }
+}
+
+// A ticked row is the one that will travel; say so with more than a tick.
+.pr-rates tbody tr.pr-row--picked {
+  background: #eaf3fc;
+  box-shadow: inset 3px 0 0 $pr-brand;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pr-rates tbody tr,
+  .pr-source__option {
+    transition: none;
+  }
+}
+
+// One cell of the rate table: the picker with its note underneath. The note
+// keeps its line even when empty, so switching currency does not resize the
+// row under the pointer.
+.pr-rate-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__note {
+    color: $pr-label;
+    font-size: $pr-text-xs;
+    line-height: 1.3;
+    min-height: 18px;
+  }
+}
+
+// The shared input marks an invalid touched field by going from a 1px border
+// to 2px, which nudges everything around it the moment the field is touched.
+// Same signal, no reflow.
+.pr-dialog,
+.pr-page {
+  .c-dropdown-list.ng-invalid.ng-touched,
+  .c-textbox.ng-invalid.ng-touched {
+    border-width: 1px;
+    box-shadow: inset 0 0 0 1px #d72e2d;
+  }
+}
+
+// The capsule is a second way into the payment, alongside its id: the whole
+// cell answers the click, not just the small link on the left. No frame around
+// it -- a ring wider than the capsule looked like a mistake. It lifts instead.
+.pr-status-button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  width: 100%;
+
+  .c-status-label p {
+    transition: box-shadow 0.12s ease, filter 0.12s ease;
+  }
+
+  &:hover .c-status-label p {
+    box-shadow: 0 2px 5px rgba(22, 33, 46, 0.28);
+    filter: brightness(0.94);
+  }
+
+  // Keyboard focus still needs a visible mark; it is not a hover state.
+  &:focus-visible {
+    outline: 2px solid $pr-brand;
+    outline-offset: 3px;
+  }
+}
+
+
+// The confirmation before an action that is hard to undo.
+.pr-confirm {
+  &__message {
+    color: $pr-value;
+    font-size: $pr-text-lg;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+}
+
+// The tick column stays put while a wide table scrolls sideways. Without it
+// you lose which row you are ticking the moment you scroll to the amounts.
+.pr-rates--wide {
+  th.pr-rates__check,
+  td.pr-rates__check {
+    background: #fff;
+    left: 0;
+    position: sticky;
+    z-index: 2;
+  }
+
+  thead th.pr-rates__check {
+    z-index: 3;
+  }
+
+  tbody tr:nth-child(even) td.pr-rates__check {
+    background: #fafbfc;
+  }
+
+  tbody tr:hover td.pr-rates__check {
+    background: #eef4fb;
+  }
+
+  tbody tr.pr-row--picked td.pr-rates__check {
+    background: #eaf3fc;
+  }
+}
+
+// The pick-payments schedule table: wide enough that the row's own identity
+// -- select, ID, status -- would otherwise scroll out of view before the
+// amounts on the right ever come on screen. Pinned next to the checkbox, the
+// same way, with fixed widths so the third column's `left` offset is a fixed
+// sum rather than whatever the browser happens to lay out.
+.pr-rates--frozen-3 {
+  th:nth-child(2),
+  td:nth-child(2) {
+    background: #fff;
+    left: 40px;
+    position: sticky;
+    width: 190px;
+    z-index: 2;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    background: #fff;
+    left: 230px;
+    position: sticky;
+    width: 150px;
+    z-index: 2;
+  }
+
+  thead th:nth-child(2),
+  thead th:nth-child(3) {
+    z-index: 3;
+  }
+
+  tbody tr:nth-child(even) {
+    td:nth-child(2),
+    td:nth-child(3) {
+      background: #fafbfc;
+    }
+  }
+
+  tbody tr:hover {
+    td:nth-child(2),
+    td:nth-child(3) {
+      background: #eef4fb;
+    }
+  }
+
+  tbody tr.pr-row--picked {
+    td:nth-child(2),
+    td:nth-child(3) {
+      background: #eaf3fc;
+    }
+  }
+}
+
+// The way out to the contract sits on the same line as the approval currency,
+// at the right of the card's foot row -- not a row of its own underneath it.
+.pr-card__foot-right {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+// An explanation on the left, the action it belongs to on the right.
+.pr-panel__lead-row {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  justify-content: space-between;
+
+  .pr-panel__lead {
+    flex: 1 1 320px;
+  }
+}
+
+// The bulk actions read as a pair, set apart from the action of the screen.
+.pr-toolbar__group {
+  align-items: center;
+  border-left: 1px solid $pr-border;
+  display: inline-flex;
+  gap: 8px;
+  margin-left: 8px;
+  padding-left: 16px;
+
+  @media (max-width: 720px) {
+    border-left: 0;
+    margin-left: 0;
+    padding-left: 0;
+  }
+}
+
+.pr-card__title-link {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: $pr-brand;
+    text-decoration: underline;
+  }
+}
+
+// A date holds ten characters. Given a full grid column it came out three
+// hundred pixels wide, which reads as a field waiting for a paragraph.
+.pr-dialog__row--dates {
+  grid-template-columns: repeat(auto-fit, minmax(0, 200px));
+  justify-content: start;
+
+  .pr-statement__search {
+    min-width: 190px;
+  }
+}
+
+// A balance below zero means the statement charges more than the component was
+// approved for. It is the case the team asked to be able to see.
+.pr-amount--over {
+  color: #a3241b;
+  font-weight: 600;
+}
+
+// Color and bold already mark the number; the icon is what carries the
+// warning to anyone who can't tell -- it doesn't wait for a hover to appear.
+.pr-amount__over-icon {
+  margin-right: 4px;
+}
+
+// The two column groups of the statement read as blocks, not as headings
+// floating above a run of numbers.
+.pr-statement__table {
+  // Angular appends its scoping attribute to every compound, so the sticky
+  // `.pr-rates thead th` rule (white background) ends up carrying more of
+  // them than a two-class selector and wins. Naming both classes here puts
+  // this one back on top -- needed on every rule below that touches the
+  // header's own background or color, not just this one.
+  &.pr-rates thead th {
+    background: #f2f5f9;
+    color: $pr-value;
+    font-weight: 600;
+  }
+
+  &.pr-rates th.pr-statement__group-head {
+    border-bottom: 1px solid $pr-border;
+  }
+
+  // A rule down the left of each group brackets the three columns it covers.
+  // The header's own second row only has six cells -- "#", "Componente" and
+  // "Pagos" are `rowspan="2"` and do not repeat in it -- so the boundary
+  // between its two groups of three sits at the 4th cell there, not the 3rd
+  // and 6th the body and footer rows use for the same boundary.
+  thead tr:last-child th:nth-child(4),
+  tbody td:nth-child(3),
+  tbody td:nth-child(6),
+  tfoot td:nth-child(3),
+  tfoot td:nth-child(6) {
+    border-left: 1px solid $pr-border;
+  }
+
+  tfoot td {
+    background: #f6f8fb;
+    border-top: 2px solid $pr-border;
+    font-weight: 600;
+  }
+}
+
+// The "Anteriores" list otherwise inherits the sticky white header the base
+// `.pr-rates` uses, which reads as no header at all against the page behind
+// it -- the same gray band the amounts table above already uses.
+.pr-statement__previous.pr-rates thead th {
+  background: #f2f5f9;
+  color: $pr-value;
+  font-weight: 600;
+}
+
+// Same header treatment for the component's own list of payments, so a
+// table looks like a table the same way everywhere in this module. Unlike
+// the amounts table, none of these columns are grouped under a shared
+// heading, so the divider here is a plain line between every column instead
+// of the group-boundary trick that table's header needs.
+.pr-statement__payments-table.pr-rates thead th {
+  background: #f2f5f9;
+  border-right: 1px solid $pr-border;
+  color: $pr-value;
+  font-weight: 600;
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Situation of the executing agency.
+//
+// Three figures answer the question the agency actually has: where do I stand.
+// The one it can act on carries the action; the other two are context.
+// ---------------------------------------------------------------------------
+
+// One line, before the three cards, saying what they are and that they add
+// up to everything reported -- landing straight on three numbers with no
+// frame around them is what made the screen read as disconnected data
+// instead of a position.
+.pr-situation__intro {
+  padding: 0 24px 16px;
+}
+
+.pr-position {
+  border-bottom: 1px solid $pr-border;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__cell {
+    border-right: 1px solid $pr-border;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 22px 24px 24px;
+
+    &:last-child {
+      border-right: 0;
+    }
+
+    @media (max-width: 860px) {
+      border-bottom: 1px solid $pr-border;
+      border-right: 0;
+    }
+
+    // The only one you can do something about right now.
+    &--ready {
+      background: $pr-success-tint;
+    }
+
+    &--blocked {
+      background: $pr-warning-tint;
+    }
+  }
+
+  &__label {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  &__amount {
+    color: $pr-value;
+    font-size: 30px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  &__currency {
+    color: $pr-label;
+    font-size: $pr-text-lg;
+    font-weight: 400;
+  }
+
+  &__meta {
+    color: $pr-value;
+    font-size: $pr-text-md;
+  }
+
+  &__age {
+    color: $pr-warning;
+    font-size: $pr-text-sm;
+    font-weight: 600;
+  }
+
+  &__note {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    line-height: 1.4;
+  }
+
+  &__action {
+    align-self: flex-start;
+    margin-top: 10px;
+  }
+}
+
+// An icon per figure, so the three read apart before the numbers are read.
+.pr-position__label .fas {
+  margin-right: 8px;
+}
+
+.pr-position__cell--ready .pr-position__label .fas { color: $pr-success; }
+.pr-position__cell--blocked .pr-position__label .fas { color: $pr-warning; }
+
+// What stands between the agency and its next statement, each with its fix.
+.pr-blockers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  // Two rows, not three columns. The list of places a blocker touches is as
+  // wide as the number of commitments, and squeezed into a third column it
+  // crushed the description down to one word per line.
+  &__item {
+    border: 1px solid $pr-border;
+    border-left: 4px solid $pr-warning;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 10px;
+    padding: 14px 18px;
+  }
+
+  &__head {
+    align-items: center;
+    display: grid;
+    gap: 12px 20px;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+
+    @media (max-width: 820px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  &__what {
+    color: $pr-value;
+    font-size: $pr-text-md;
+    font-weight: 600;
+  }
+
+  &__fix {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+  }
+
+  &__weight {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: right;
+
+    @media (max-width: 820px) {
+      text-align: left;
+    }
+  }
+
+  &__count {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+  }
+
+  &__amount {
+    color: $pr-value;
+    font-size: $pr-text-md;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+}
+
+// Where a blocker lives, when it is spread over more than one commitment.
+// Its own row under the description, with room to breathe.
+.pr-blockers__where {
+  align-items: center;
+  border-top: 1px solid $pr-border;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+
+  &-label {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    width: 100%;
+  }
+}
+
+.pr-blockers__place {
+  align-items: center;
+  background: none;
+  border: 1px solid $pr-brand;
+  border-radius: 3px;
+  color: $pr-brand;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: $pr-text-sm;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 12px;
+
+  &:hover {
+    background: #f2f7fd;
+  }
+
+  &-count {
+    background: $pr-border;
+    border-radius: 999px;
+    color: $pr-value;
+    font-size: $pr-text-xs;
+    padding: 1px 8px;
+  }
+}
+
+// Time against money, on the same scale, so the gap is the message.
+.pr-deadlines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__item {
+    align-items: center;
+    border: 1px solid $pr-border;
+    border-left: 4px solid $pr-border;
+    border-radius: 0 4px 4px 0;
+    display: grid;
+    gap: 12px 24px;
+    grid-template-columns: minmax(16rem, 1.4fr) 2fr minmax(10rem, auto);
+    margin-bottom: 10px;
+    padding: 14px 18px;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+
+    &--expired { border-left-color: $pr-danger; }
+    &--closing { border-left-color: $pr-warning; }
+    &--behind { border-left-color: $pr-warning; }
+    &--ok { border-left-color: $pr-success; }
+  }
+
+  &__identity {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__who {
+    color: $pr-value;
+    font-size: $pr-text-md;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__what {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__date {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+  }
+
+  &__gauge {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__bar {
+    background: #d9e5f7;
+    border-radius: 2px;
+    height: 8px;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  &__bar-fill {
+    display: block;
+    height: 100%;
+
+    &--time { background: $pr-label; }
+    &--money { background: $pr-brand; }
+  }
+
+  &__legend {
+    color: $pr-label;
+    font-size: $pr-text-xs;
+  }
+
+  &__verdict {
+    color: $pr-value;
+    font-size: $pr-text-md;
+    font-weight: 600;
+  }
+
+  // What gray and blue mean, stated once above the whole list instead of only
+  // in the help paragraph -- by the third or fourth item, the color meaning
+  // from a sentence read once at the top is not still at hand.
+  &__key {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+
+  &__key-item {
+    align-items: center;
+    color: $pr-label;
+    display: inline-flex;
+    font-size: $pr-text-xs;
+    gap: 6px;
+  }
+
+  &__key-dot {
+    border-radius: 50%;
+    display: inline-block;
+    height: 8px;
+    width: 8px;
+
+    &--time { background: $pr-label; }
+    &--money { background: $pr-brand; }
+  }
+}
+
+// Cycle measures: how long money waits, not how much was typed in.
+.pr-cycle {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  margin: 0 0 16px;
+
+  &__item {
+    background: #f6f8fb;
+    border-radius: 4px;
+    padding: 14px 18px;
+
+    dt {
+      color: $pr-label;
+      font-size: $pr-text-sm;
+      margin-bottom: 4px;
+    }
+
+    dd {
+      color: $pr-value;
+      font-size: 26px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      margin: 0;
+
+      span {
+        color: $pr-label;
+        font-size: $pr-text-md;
+        font-weight: 400;
+        margin-left: 4px;
+      }
+    }
+  }
+}
+
+// Why the commitment's table is showing fewer rows than usual, and how to
+// see the rest again -- only present when this screen was opened from a
+// blocker on "Tu situación", not on an ordinary visit.
+.pr-blocked-banner {
+  align-items: flex-start;
+  background: $pr-warning-tint;
+  border: 1px solid rgba($pr-warning, 0.35);
+  border-radius: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  justify-content: space-between;
+  margin: 0 24px 16px;
+  padding: 14px 18px;
+
+  &__body {
+    display: flex;
+    flex: 1 1 320px;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    align-items: center;
+    color: $pr-warning;
+    display: flex;
+    font-size: $pr-text-md;
+    font-weight: 600;
+    gap: 8px;
+  }
+
+  &__fix,
+  &__how {
+    color: $pr-value;
+    font-size: $pr-text-sm;
+    line-height: 1.45;
+  }
+
+  &__how {
+    color: $pr-label;
+  }
+
+  &__clear {
+    align-items: center;
+    background: #fff;
+    border: 1px solid rgba($pr-warning, 0.45);
+    border-radius: 3px;
+    color: $pr-warning;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: $pr-text-sm;
+    gap: 8px;
+    min-height: 38px;
+    padding: 8px 14px;
+
+    &:hover {
+      background: $pr-warning-tint;
+    }
+  }
+}

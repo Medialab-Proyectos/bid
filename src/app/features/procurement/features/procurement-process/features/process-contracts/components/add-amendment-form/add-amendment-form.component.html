@@ -1,0 +1,202 @@
+<ng-container
+  *ngIf="
+    !isSubmitting && !planLoading && !isLoadingInternalReview;
+    else showSpinner
+  "
+>
+  <form class="c-add-amendment-form" [formGroup]="form">
+    <ng-container *ngIf="formErrorCollection.length > 0">
+      <fi-error-list
+        [errorList]="formErrorCollection"
+        [errorListTitle]="errorListTitle"
+      ></fi-error-list>
+    </ng-container>
+    <fi-amendment-date-update
+      number="1"
+      [form]="form.controls.dateUpdateForm"
+      [startDateContract]="amendment?.startDate"
+      [endDateContract]="amendment?.endDate"
+      [signatureDateContract]="amendment?.signatureDate"
+      [displaySignatureWarning]="startDateLowerThanSignatureDate()"
+      [amendmentStatus]="amendment.status"
+    ></fi-amendment-date-update>
+
+    <fi-cost-distribution
+      number="2"
+      [form]="form.controls.costDistributionForm"
+      [mode]="mode"
+      (costCalculated)="getCosts($event)"
+      [originalContract]="originalContract"
+      [config]="{
+        settings: {
+          disabled: readOnly
+        }
+      }"
+      [amendmentInfo]="amendmentCostDistribution"
+    ></fi-cost-distribution>
+
+    <fi-contract-amount
+      number="3"
+      [form]="form.controls.contractAmountForm"
+      [mode]="mode"
+      [amendmentInfo]="amendment?.currencies"
+      [selectedTotalAmountCurrency]="selectedTotalAmountCurrency"
+      [readOnly]="readOnly"
+    ></fi-contract-amount>
+
+    <fi-contract-lots
+      number="4"
+      class="c-lots"
+      [form]="form.controls.lotsForm"
+      [mode]="mode"
+      [isAmendment]="true"
+      [amendmentInfo]="amendment?.biddingContractLots"
+      [config]="{
+        data: { showUnits: showLotsUnits },
+        settings: { disabled: readOnly }
+      }"
+      [totalLotsAmount]="getLotsTotal"
+    ></fi-contract-lots>
+
+    <fi-contract-objetive
+      number="5"
+      [form]="form.controls.contractObjetiveForm"
+      [object]="amendment?.object"
+    ></fi-contract-objetive>
+
+    <fi-accordion-panel>
+      <ng-container number>6</ng-container>
+      <ng-container title>{{
+        "CONTRACT.ADDITIONAL_INFO.WARRANTY_TITLE" | translate
+      }}</ng-container>
+      <ng-container body>
+        <div class="aditional-information">
+          <fi-securities
+            [amendmentInfo]="amendment?.securities"
+            [form]="form.controls.warrantyExtensionForm"
+            [isAmendment]="true"
+            [readOnly]="readOnly"
+            [mode]="mode"
+          ></fi-securities>
+        </div>
+      </ng-container>
+    </fi-accordion-panel>
+
+    <div *ngIf="secondStep">
+      <fi-document-group-section-contract
+        number="7"
+        [title]="'CONTRACT.ATTACHMENTS.TITLE_SECTION' | translate"
+        [mode]="modeDocSection"
+        [noDocumentsMessage]="'CONTRACT.ATTACHMENTS.NO_DATA'"
+        [groups]="groups"
+        [groupEnum]="groupEnum"
+        [groupParentId]="contractId"
+        [showReadOnly]="readOnly"
+        [isUploading]="isUploading"
+        [domain]="documentDomain"
+        [control]="attachmentForm"
+        [viewPermissions]="viewDocumentPermission"
+        [editPermissions]="editDocumentPermission"
+        [deletePermissions]="deleteDocumentPermission"
+        [contractId]="contractId"
+      ></fi-document-group-section-contract>
+    </div>
+
+    <div class="row actions">
+      <div class="col-12">
+        <div class="o-form-actions">
+          <button
+            *ngIf="readOnly"
+            kendoButton
+            class="btn btn-brand"
+            id="Btn_return"
+            type="button"
+            (click)="navigateToContractTable()"
+          >
+            {{ "BIDDER.RETURN" | translate }}
+          </button>
+          <ng-container *ngIf="!readOnly">
+            <button
+              kendoButton
+              class="btn btn-base"
+              id="Btn_Cancel"
+              type="button"
+              *fiDisplayByPermissions="cancelButtonPermission"
+              (click)="showCancelMsg()"
+            >
+              {{ "CONTRACT.CANCEL" | translate }}
+            </button>
+
+            <ng-container *ngIf="canEdit && !secondStep">
+              <button
+                kendoButton
+                [disabled]="isButtonDisabled"
+                *fiDisplayByPermissions="nextButtonPermission"
+                (click)="submit(true)"
+                class="btn btn-online-brand"
+                id="Btn_Next"
+                data-testid="nextSubmitButton"
+                type="submit"
+              >
+                {{ "CONTRACT.NEXT" | translate }}
+              </button>
+            </ng-container>
+            <ng-container *ngIf="canEdit && secondStep">
+              <button
+                kendoButton
+                [disabled]="isButtonDisabled"
+                *fiDisplayByPermissions="saveButtonPermission"
+                (click)="submit(true)"
+                class="btn btn-online-brand"
+                id="Btn_Save"
+                data-testid="contractSubmitButton"
+                type="submit"
+              >
+                {{ "CONTRACT.SAVE" | translate }}
+              </button>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="canConfirm && secondStep">
+            <button
+              kendoButton
+              [disabled]="isButtonDisabled"
+              *fiDisplayByPermissions="confirmButtonPermission"
+              (click)="submit(false)"
+              class="btn btn-brand"
+              id="Btn_Confirm"
+              type="submit"
+            >
+              {{
+                (fifteenPercent
+                  ? "CONTRACT.SUBMIT_AMENDMENT"
+                  : "CONTRACT.CONFIRM_AMENDMENT"
+                ) | translate
+              }}
+            </button>
+          </ng-container>
+          <ng-container *ngIf="canConfirm && secondStep">
+            <button
+              kendoButton
+              [disabled]="isButtonDisabled"
+              *fiDisplayByPermissions="
+                amendmentSendNotificationButtonPermission
+              "
+              (click)="sendNotification()"
+              class="btn btn-brand"
+              id="Btn_sendNotification"
+              type="submit"
+            >
+              {{ "CONTRACT.AMENDMENT_UPLOADED" | translate }}
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-container>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

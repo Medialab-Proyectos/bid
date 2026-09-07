@@ -1,0 +1,10 @@
+export enum ProjectTaskTypesEnum {
+  ACTIVITIES = 0,
+  COMPONENT = 1,
+  DELIVERABLES = 2,
+  COMONENT_OTHER_COST = 3,
+  OUTPUT = 4,
+  SUB_COMPONENT = 5,
+  SUMARY = 6,
+  WORK_OF_PACKAGES = 7,
+}

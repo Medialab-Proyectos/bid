@@ -1,0 +1,148 @@
+////
+/// Here we set a variable assuming that responsive settings are not set globally.
+///
+/// If they have been previously been defined, the following variable
+/// will be override and will be set to `true`.
+/// @access public
+/// @author Dfront Specialist Team
+/// @group Tools
+/// @name $ns-responsive-settings
+/// @since version 1.0.0
+/// @type Boolean
+$ns-responsive-settings: false !default;
+@if ($ns-responsive-settings==false) {
+    @warn "Oops! Have you included a _settings__responsive file?";
+}
+
+///
+/// Breakpoint function
+///
+/// This functions returns the value for breakpoint in media queries.
+///
+/// @access public
+/// @group Tools
+/// @name breakpoint
+/// @param {[xs|sm|md|lg|xl]} $bp [xl] Keys of possible breakpoints.
+/// @param {[min|max]} $to [max] Parameter 'to' for value of media query min-width or max-width.
+/// @author ishmilan
+///
+/// @example scss breakpoint(xs);
+///     479px
+/// @example scss breakpoint(xs, min);
+///     480px
+/// @example scss breakpoint(foo);
+///     1199px
+/// @example scss breakpoint(foo, min);
+///     1200px
+///
+@function breakpoint($bp, $to: max) {
+    $found: false;
+    $found-value: map-get($breakpoints, xl) !default;
+
+    @each $breakpoint in $breakpoints {
+        $key: nth($breakpoint, 1);
+        $value: nth($breakpoint, 2);
+
+        @if $bp==$key and $value {
+            $found: true;
+            $found-value: $value;
+        }
+    }
+
+    @if not $found {
+        @warn "Oops! Breakpoint ‘#{$bp}’ does not exist.";
+    }
+
+    @if $to==max {
+        $found-value: #{$found-value - 1}px;
+    }
+
+    @else {
+        $found-value: #{$found-value}px;
+    }
+
+    @return $found-value;
+}
+
+
+///
+/// Media-query mixin
+///
+/// This mixin provides us all of media queries we may need it. 
+///
+/// @access public
+/// @group Tools
+/// @name media-query
+/// @param {[xs|sm|md|lg|xl|print|speech]} $from The value of the border-radius property.
+/// @param {[xs|sm|md|lg|xl|min|max|undefined]} $to [undefined] The path where you must find the font.
+/// @author ishmilan
+///
+/// @example scss @include media-query(print){...}
+///     @media print{...}
+/// @example scss @include media-query(speech){...}
+///     @media speech{...}
+///
+/// @example scss @include media-query(sm){...}
+///     @media screen and (max-width: 767px){...} // OR @media screen and (min-width: 768px) IF $ns-mobile-first: true;
+/// @example scss @include media-query(sm, min){...}
+///     @media screen and (min-width: 768px){...}
+///
+/// @example scss @include media-query(xs, lg){...}
+///     @media screen and (min-width: 480px and max-width: 1023px){...}
+/// @example scss  @include media-query(xl, lg){...}
+///     @media screen and (min-width: 1024px and max-width: 1199px){...}
+///
+/// @example scss  @include media-query(xl, xl){...}
+///     @media screen and (max-width: 1199px){...} // OR @media screen and (min-width: 1200px) IF $ns-mobile-first: true;
+///
+@mixin media-query($from, $to: undefined) {
+    $condition: screen;
+
+    @if $from==print or $from==speech {
+        @media #{$from} {
+            @content;
+        }
+    }
+
+    @else {
+        @if $to==max or ($to==undefined and not $ns-mobile-first) {
+            $condition: 'screen and (max-width: #{breakpoint($from, max)})';
+        }
+
+        @else if $to==min or ($to==undefined and $ns-mobile-first) {
+            $condition: 'screen and (min-width: #{breakpoint($from, min)})';
+        }
+
+        @else {
+            $values: (xs: 1,
+                    sm: 2,
+                    md: 3,
+                    lg: 4,
+                    xl: 5,
+                );
+
+            @if map-has-key($breakpoints, $from) and map-has-key($breakpoints, $to) {
+                @if(map-get($values, $from) < map-get($values, $to)) {
+                    $condition: 'screen and (min-width: #{breakpoint($from, min)}) and (max-width: #{breakpoint($to, max)})';
+                }
+
+                @else if(map-get($values, $from) > map-get($values, $to)) {
+                    $condition: 'screen and (min-width: #{breakpoint($to, min)}) and (max-width: #{breakpoint($from, max)})';
+                }
+
+                @else {
+                    @if $ns-mobile-first {
+                        $condition: 'screen and (min-width: #{breakpoint($from, min)})';
+                    }
+
+                    @else {
+                        $condition: 'screen and (max-width: #{breakpoint($from, max)})';
+                    }
+                }
+            }
+        }
+        @media #{$condition} {
+            @content;
+        }
+    }
+}

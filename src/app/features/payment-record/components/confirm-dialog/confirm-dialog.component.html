@@ -1,0 +1,29 @@
+<div class="pr-dialog pr-confirm">
+  <p class="pr-confirm__message">{{ messageKey | translate : params }}</p>
+  <fi-alert
+    *ngIf="consequenceKey"
+    [type]="danger ? 'error' : 'warning'"
+    [title]="consequenceKey | translate : params"
+    [closable]="false"
+  ></fi-alert>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <button
+    kendoButton
+    class="btn btn-neutral"
+    id="Btn_Confirm_Cancel"
+    (click)="cancel()"
+  >
+    {{ "PAYMENT_RECORD.CONFIRM.CANCEL" | translate }}
+  </button>
+  <button
+    kendoButton
+    class="btn"
+    [ngClass]="danger ? 'btn-danger pr-confirm__danger' : 'btn-brand'"
+    id="Btn_Confirm_Accept"
+    (click)="confirm()"
+  >
+    {{ confirmKey | translate }}
+  </button>
+</kendo-dialog-actions>

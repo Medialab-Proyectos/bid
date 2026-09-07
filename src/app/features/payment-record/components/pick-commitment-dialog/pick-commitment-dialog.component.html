@@ -1,0 +1,100 @@
+<div class="pr-dialog">
+  <p class="pr-panel__lead">
+    {{ "PAYMENT_RECORD.PICK_COMMITMENT.INTRO" | translate }}
+  </p>
+
+  <fi-filter
+    class="d-block"
+    [minLength]="3"
+    [placeholder]="'PAYMENT_RECORD.ADVANCED_SEARCH' | translate"
+    (filterValue)="onSearch($event)"
+  ></fi-filter>
+
+  <fi-no-content
+    *ngIf="filtered.length === 0"
+    [content]="'PAYMENT_RECORD.PICK_COMMITMENT.EMPTY' | translate"
+  ></fi-no-content>
+
+  <!--
+    Same columns as the report list this dialog is opened from -- number,
+    type, component, beneficiary, currency, original amount, current IDB
+    amount -- so a commitment reads as the same row here as it does there,
+    just with a "select" action instead of a link to its detail page.
+  -->
+  <div class="pr-panel__scroll" *ngIf="filtered.length > 0">
+    <table class="pr-rates pr-rates--wide">
+      <thead>
+        <tr>
+          <th scope="col">{{ "PAYMENT_RECORD.LIST.COLUMNS.NUMBER" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.LIST.COLUMNS.TYPE" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.LIST.COLUMNS.COMPONENT" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.LIST.COLUMNS.BENEFICIARY" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.LIST.COLUMNS.CURRENCY" | translate }}</th>
+          <th scope="col" class="pr-grid__number">
+            {{ "PAYMENT_RECORD.LIST.COLUMNS.ORIGINAL_AMOUNT" | translate }}
+          </th>
+          <th scope="col" class="pr-grid__number">
+            {{ "PAYMENT_RECORD.LIST.COLUMNS.CURRENT_IDB_AMOUNT" | translate }}
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let commitment of filtered">
+          <td>
+            <a
+              href="javascript:void(0)"
+              class="pr-link"
+              [attr.id]="'Lnk_PickCommitment_' + commitment.id"
+              (click)="select(commitment)"
+            >
+              {{ commitment.commitmentNumber }}
+            </a>
+          </td>
+          <td>
+            {{ "PAYMENT_RECORD.COMMITMENT_TYPE." + commitment.type | translate }}
+          </td>
+          <td class="pr-cell--name" [title]="commitment.componentName">
+            {{ commitment.componentName }}
+          </td>
+          <td class="pr-cell--name" [title]="commitment.beneficiaryName">
+            {{ commitment.beneficiaryName }}
+          </td>
+          <td>
+            <div *ngFor="let amount of commitment.originalAmounts">
+              {{ amount.currency }}
+            </div>
+          </td>
+          <td class="pr-grid__number">
+            <div *ngFor="let amount of commitment.originalAmounts">
+              {{ amount.amount | ifNumber }}
+            </div>
+          </td>
+          <td class="pr-grid__number">{{ commitment.currentIdbAmount | ifNumber }}</td>
+          <td class="pr-rates__check">
+            <button
+              type="button"
+              class="pr-dialog__link"
+              [attr.id]="'Btn_PickCommitment_' + commitment.id"
+              [title]="'PAYMENT_RECORD.PICK_COMMITMENT.SELECT' | translate"
+              (click)="select(commitment)"
+            >
+              <em class="fas fa-chevron-right"></em>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <button
+    kendoButton
+    class="btn btn-neutral"
+    id="Btn_PickCommitment_Cancel"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+</kendo-dialog-actions>

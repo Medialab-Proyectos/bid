@@ -1,0 +1,292 @@
+<form [formGroup]="participantForm">
+  <div style="border-bottom: 1px solid #e0e0e0">
+    <div class="row participant-tab__item">
+      <div class="col-12 col-md-2">
+        <kendo-combobox
+          [fiDisableControl]="disableBidderSearch"
+          [fiDropdownFormControl]
+          placeholder="{{ 'PARTICIPANT.SEARCH_PARTICIPANT' | translate }}"
+          formControlName="bidder"
+          class="c-bidder-search"
+          [ngClass]="{ 'c-bidder-search--readonly': isFilled }"
+          [id]="'Cmb_participant_search_' + (participantIndex + 1)"
+          [data]="participantsSuggestionList"
+          [textField]="'name'"
+          [valueField]="'id'"
+          [filterable]="true"
+          [suggest]="true"
+          [clearButton]="true"
+          [kendoDropDownFilter]="filterSettings"
+          (filterChange)="filterChangeSearchBidder($event)"
+          (valueChange)="selectionChange($event)"
+          (blur)="blur()"
+          (open)="searchText <= 1 && $event.preventDefault()"
+        >
+          <ng-template kendoComboBoxItemTemplate let-dataItem>
+            <span>{{ dataItem.searchName }}</span>
+          </ng-template>
+          <ng-template kendoAutoCompleteNoDataTemplate>
+            <fi-loader
+              *ngIf="isloading; else defaultLoadingTemplate"
+            ></fi-loader>
+            <ng-template #defaultLoadingTemplate>
+              <div>
+                <p class="no-results">
+                  {{ "PARTICIPANT.NO_RESULTS" | translate }}
+                </p>
+                <button
+                  id="Btn_RegisterBidder"
+                  kendoButton
+                  icon="plus"
+                  *fiDisplayByPermissions="addBidderButtonPermission"
+                  (click)="onNewParticipant()"
+                >
+                  {{ "PARTICIPANT.REGISTER_BIDDER" | translate }}
+                </button>
+              </div>
+            </ng-template>
+          </ng-template>
+        </kendo-combobox>
+        <fi-form-error-msg
+          [control]="participantForm.controls.bidder"
+          [key]="'BIDDER.REQUIRED'"
+        ></fi-form-error-msg>
+      </div>
+      <div class="col-12 col-md-2">
+        <kendo-textbox
+          #nationality
+          class="c-textbox"
+          formControlName="nationality"
+          [id]="'Txb_Nationality_' + (participantIndex + 1)"
+          name="nationality"
+          role="nationality"
+        >
+        </kendo-textbox>
+      </div>
+      <div class="col-4 col-md-1">
+        <kendo-numerictextbox
+          class="c-numerictextbox"
+          format="n2"
+          formControlName="weighedTechScore"
+          [id]="'Txb_WeighedTechScore_' + (participantIndex + 1)"
+          name="weighedTechScore"
+          role="weighedTechScore"
+          [fiDisableControl]="disabledFields"
+          [spinners]="false"
+          [max]="100"
+          [min]="0"
+          [autoCorrect]="true"
+          [decimals]="2"
+          [maxlength]="18"
+          *ngIf="showTechScore"
+          data-testid="techScore"
+          [changeValueOnScroll]="false"
+        >
+        </kendo-numerictextbox>
+        <fi-form-error-msg
+          [control]="participantForm.controls.weighedTechScore"
+          [key]="'BIDDER.REQUIRED'"
+        ></fi-form-error-msg>
+      </div>
+      <div class="col-4 col-md-1">
+        <kendo-numerictextbox
+          class="c-numerictextbox"
+          format="n2"
+          formControlName="weighedFinancialScore"
+          [id]="'Txb_WeighedFinancialScore_' + (participantIndex + 1)"
+          name="weighedFinancialScore"
+          role="weighedFinancialScore"
+          [fiDisableControl]="disabledFields"
+          [spinners]="false"
+          [max]="100"
+          [min]="0"
+          [autoCorrect]="true"
+          [decimals]="2"
+          [maxlength]="18"
+          *ngIf="showFinancialScore"
+          data-testid="financialScore"
+          [changeValueOnScroll]="false"
+        >
+        </kendo-numerictextbox>
+        <fi-form-error-msg
+          [control]="participantForm.controls.weighedFinancialScore"
+          [key]="'BIDDER.REQUIRED'"
+        ></fi-form-error-msg>
+      </div>
+      <div class="col-4 col-md-1">
+        <kendo-numerictextbox
+          class="c-numerictextbox blank-input"
+          format="n2"
+          formControlName="totalScore"
+          [id]="'Txb_TotalScore_' + (participantIndex + 1)"
+          name="totalScore"
+          role="totalScore"
+          [spinners]="false"
+          [max]="100"
+          [min]="0"
+          [decimals]="2"
+          [maxlength]="18"
+          *ngIf="showOverallScore"
+          data-testid="overallScore"
+          [readonly]="true"
+        >
+        </kendo-numerictextbox>
+      </div>
+      <div class="col-12 col-md-2">
+        <fi-input-currency
+          *ngIf="showAwardedAmount"
+          class="w-100"
+          formControlName="participantAmount"
+          [currencies]="currencyList"
+          [id]="participantIndex + 1"
+          [isAmountRequired]="isAmountRequired"
+          [numberOfDecimals]="numberOfDecimals"
+          [currencyDisabled]="handleCurrencyStatus()"
+          data-testid="awardedAmount"
+          (selectedValue)="onCurrencyChange($event)"
+          [currencyDisabled]="disabledFields"
+        ></fi-input-currency>
+      </div>
+      <div class="d-none col-4 col-md-1">
+        <kendo-numerictextbox
+          #amountUsd
+          name="amountUsd"
+          class="c-numerictextbox k-numerictextbox"
+          formControlName="amountUsd"
+          [id]="'Txb_amountUsd_' + (participantIndex + 1)"
+          [format]="'n2'"
+          [spinners]="false"
+          [min]="0"
+          [decimals]="2"
+          [maxlength]="18"
+          [changeValueOnScroll]="false"
+        >
+        </kendo-numerictextbox>
+      </div>
+      <div class="col-12 col-md-2">
+        <div>
+          <div>
+            <kendo-dropdownlist
+              class="c-dropdown-list k-dropdown"
+              formControlName="result"
+              [id]="'Down_Result_' + (participantIndex + 1)"
+              name="result"
+              role="result"
+              [fiDropdownFormControl]
+              ngDefaultControl
+              [data]="resultOptionsListAvailable"
+              [textField]="'name'"
+              [valueField]="'id'"
+              [valuePrimitive]="true"
+              [fiDisableControl]="disabledFields"
+              (valueChange)="resultChange($event)"
+            >
+              <ng-template kendoDropDownListValueTemplate let-item>
+                {{ item?.name | translate }}
+              </ng-template>
+              <ng-template kendoDropDownListItemTemplate let-item>
+                {{ item?.name | translate }}
+              </ng-template>
+            </kendo-dropdownlist>
+            <fi-form-error-msg
+              [control]="participantForm.controls.result"
+              [key]="'BIDDER.REQUIRED'"
+            ></fi-form-error-msg>
+          </div>
+        </div>
+      </div>
+      <div
+        *ngIf="participant?.allowToEdit || !participant?.bidder"
+        class="col-1 column justify-content-between"
+        [ngStyle]="!participant?.options && { 'justify-content': 'start' }"
+      >
+        <button
+          kendoButton
+          iconClass="far fa-save"
+          [id]="'Btn_Save_participant_' + (participantIndex + 1)"
+          look="flat"
+          *fiDisplayByPermissions="saveButtonPermission"
+          (click)="saveParticipant()"
+          [disabled]="!(participantForm.valid && !participantForm.pristine)"
+        ></button>
+        <fi-dropdownbutton
+          *ngIf="participant?.options && participant?.options.length !== 0"
+          [id]="participantIndex + 1"
+          [itemOptions]="getOptionsByPermission(participant?.options)"
+          (selectedOption)="itemOption($event)"
+        ></fi-dropdownbutton>
+
+        <fi-dropdownbutton
+          *ngIf="!participant?.options && participant?.options?.length > 0"
+          [id]="participantIndex + 1"
+          [itemOptions]="getOptionsByPermission(removeOption)"
+          (selectedOption)="removeRow()"
+        ></fi-dropdownbutton>
+      </div>
+      <div
+        *ngIf="participantForm.controls.totalScore.errors"
+        class="o-input-error"
+      >
+        {{ "BIDDER.TOTAL_SCORE_SUM_ERROR" | translate }}
+      </div>
+    </div>
+    <div
+      *ngIf="rejectedReasonsVisibility || justificationEligibilityVisibility"
+      class="row pb-3"
+    >
+      <div class="col-2"></div>
+      <div
+        class="col-4"
+        *ngIf="justificationEligibilityVisibility; else emptyTemplate"
+      >
+        <div class="pl-3 pt-1">
+          <kendo-label
+            class="fi-kendo-label fi-kendo-label--required"
+            [for]="name"
+            text="{{
+              'PARTICIPANT.JUSTIFICATION_ELIGIBILITY_LABEL' | translate
+            }}"
+          >
+          </kendo-label>
+          <kendo-textbox
+            #name
+            class="c-textbox"
+            formControlName="justificationEligibility"
+            ngDefaultControl
+            [placeholder]="
+              'PARTICIPANT.JUSTIFICATION_ELIGIBILITY_PLACEHOLDER' | translate
+            "
+            id="Txb_Name"
+          ></kendo-textbox>
+        </div>
+      </div>
+      <div class="col-1"></div>
+      <div class="col-4" *ngIf="rejectedReasonsVisibility; else emptyTemplate">
+        <div class="pr-3">
+          <fi-multiselect-form
+            class="w-100 justification_participant"
+            [ngClass]="{ invalid: rejectedReasonValid() }"
+            [id]="'MultiSelectJustificationParticipant-' + participantIndex"
+            [label]="'PROCESS_DOC.FILES_LIST.AWARDED_LABEL' | translate"
+            [data]="justificationOptions"
+            [text]="'PARTICIPANT.REJECTED_REASON_LABEL'"
+            [prop]="'id'"
+            formControlName="rejectedReasons"
+            [fiMultiselectformcontrol]
+            [fiDisableControl]="disabledFields"
+          >
+          </fi-multiselect-form>
+        </div>
+        <fi-form-error-msg
+          [control]="participantForm.controls.rejectedReasons"
+          [key]="'BIDDER.REQUIRED'"
+        ></fi-form-error-msg>
+      </div>
+      <div class="col-1"></div>
+    </div>
+  </div>
+</form>
+
+<ng-template #emptyTemplate>
+  <div class="col-4"></div>
+</ng-template>

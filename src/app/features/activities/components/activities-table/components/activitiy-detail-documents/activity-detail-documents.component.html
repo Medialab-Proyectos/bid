@@ -1,0 +1,54 @@
+<div>
+  <kendo-grid
+    *ngIf="documents.length > 0; else noContent"
+    [data]="documents"
+    [scrollable]="'none'"
+    [resizable]="true"
+  >
+    <kendo-grid-column
+      field="fileName"
+      title="{{ 'ACTIVITIES.TABLE.DOCUMENTS.FILE_NAME' | translate }}"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a
+          href="javascript:void(0);"
+          (click)="download(dataItem)"
+          class="text-link"
+        >
+          <em class="fas fa-file"></em>
+          {{ dataItem.fileName }}</a
+        >
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="created"
+      title="{{ 'ACTIVITIES.TABLE.DOCUMENTS.CREATION_DATE' | translate }}"
+      ><ng-template kendoGridCellTemplate let-dataItem>
+        <p [innerHTML]="dataItem.created | date : 'dd MMM yyyy'"></p>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="description"
+      title="{{ 'ACTIVITIES.TABLE.DOCUMENTS.DESCRIPTION' | translate }}"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="visibility"
+      title="{{ 'ACTIVITIES.TABLE.DOCUMENTS.VISIBILITY' | translate }}"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <p>
+          {{
+            dataItem.visibility | translateEnum : workflowDocumentsVisbilityEnum
+          }}
+        </p>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>
+
+<ng-template #noContent>
+  <fi-no-content
+    [content]="'ACTIVITIES.TABLE.DOCUMENTS_EMPTY_MSG' | translate"
+  ></fi-no-content>
+</ng-template>

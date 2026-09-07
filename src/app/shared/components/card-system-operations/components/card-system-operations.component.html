@@ -1,0 +1,48 @@
+<kendo-card
+  width="'100%'"
+  class="c-cardComponent-card sf400 mt-3"
+  [ngClass]="mobileView ? 'c-cardComponent-card-mobile' : null"
+  (click)="toogleExpanded()"
+>
+  <div>
+    <kendo-card-header class="k-hbox card-system-operations">
+      {{ data?.title }}
+      <div class="card-system-operations__icon-container">
+        <em
+          *ngIf="data?.status === available"
+          class="fas fa-check-circle card-fiduciary__icon--ckeck"
+          [ngClass]="!mobileView ? 'fa-lg' : 'fa-sm'"
+        ></em>
+        <em
+          *ngIf="data?.status === partialOutage"
+          class="fas fa-exclamation-circle card-fiduciary__icon--exclamation"
+          [ngClass]="!mobileView ? 'fa-lg' : 'fa-sm'"
+        ></em>
+        <em
+          *ngIf="data?.status === unavailable"
+          class="fas fa-minus-circle card-fiduciary__icon--minus"
+          [ngClass]="!mobileView ? 'fa-lg' : 'fa-sm'"
+        ></em>
+        <div (click)="selectedCardMobile()">
+          <em
+            *ngIf="mobileView"
+            class="fas fa-chevron-right card-fiduciary__icon--back fa-sm pl-4"
+          ></em>
+        </div>
+      </div>
+    </kendo-card-header>
+    <kendo-card-body *ngIf="expanded" class="card-system-operations__body kendo-card-body">
+      <div class="">
+        <p>
+          {{ data?.message }}
+        </p>
+        <p>
+          {{ data?.text }}
+        </p>
+        <p>
+          {{ data?.textSecondary }}
+        </p>
+      </div>
+    </kendo-card-body>
+  </div>
+</kendo-card>

@@ -1,0 +1,86 @@
+.c-docs-list {
+  .doc-package-menu {
+    border: solid 1px #c9c7c5;
+    margin-bottom: 15px;
+    padding: 0;
+    .k-tabstrip-items {
+      font-size: 12px;
+      padding: rem(7) 0 rem(12) rem(16);
+      margin: 0;
+      border-bottom: 1px solid #c9c7c5;
+      .k-item {
+        background-color: transparent;
+        font-size: rem(13);
+        color: #514f4d;
+      }
+      .k-state-active {
+        font-weight: 700;
+      }
+    }
+    .doc-package-menu__doc-item {
+      border-bottom: 1px solid #c9c7c5;
+      display: flex;
+      height: rem(50);
+      .icon-col {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        width: rem(20);
+        em {
+          font-size: 16px;
+          color: #04844b;
+        }
+      }
+      &:last-of-type {
+        border-bottom: 0;
+        margin-left: 1.6rem;
+      }
+      .doc-package-menu__doc-item-title {
+        align-items: center;
+        display: flex;
+        //flex-grow: 1;
+        padding-left: rem(4);
+      }
+      .doc-package-menu__doc-item-actions {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+
+        button {
+          background-color: white;
+          border: rem(1) solid #d8dde6;
+          border-radius: rem(4);
+          box-sizing: border-box;
+          color: color('primary');
+          font-size: rem(12);
+          height: rem(30);
+          min-width: rem(150);
+          padding: rem(4) rem(10);
+          text-align: center;
+        }
+      }
+      .doc-package-menu__doc-item-tooltip {
+        margin-left: 1%;
+        display: flex;
+        align-items: center;
+      }
+
+      .undb-btn {
+        padding-left: 3rem;
+        button {
+          padding-top: 1rem;
+        }
+      }
+    }
+
+    .k-tabstrip-content {
+      display: block;
+      padding: 0 rem(16);
+      border: 0;
+      color: color('main-text');
+      background-color: #fafaf9;
+      font-family: 'salesforce-sans-400', arial, sans-serif;
+      font-size: rem(12);
+    }
+  }
+}

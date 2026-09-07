@@ -1,0 +1,15 @@
+<div class="c-attachments">
+  <fi-accordion-panel>
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "CONTRACT.ATTACHMENT_DATA.TITLE" | translate
+    }}</ng-container>
+    <ng-container body>
+      <div class="attachments">
+        <fi-docs-list></fi-docs-list>
+
+        <fi-documents class="fi-documents"></fi-documents>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

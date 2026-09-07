@@ -1,0 +1,63 @@
+<kendo-grid
+  class="c-table-aggregates"
+  [groupable]="false"
+  [pageable]="false"
+  [sortable]="true"
+  [reorderable]="false"
+  [resizable]="true"
+  [kendoGridBinding]="gridView"
+  kendoGridSelectBy="code"
+  [height]="150"
+>
+  <kendo-grid-column 
+    field="step" 
+    [title]="'ACTIVITIES.STEP' | translate" 
+    [columnMenu]="false">
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <p class="txt-max-lines-3">
+        {{ dataItem.step | translateEnum: enumType | highlightSearch: highlightValue }}
+      </p>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="role" [title]="'ACTIVITIES.ROLE' | translate" [columnMenu]="false">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <p  class="txt-max-lines-3" [innerHTML]="dataItem.roles | highlightSearch: highlightValue"> 
+        {{ dataItem.roles | highlightSearch: highlightValue }}
+      </p>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="user" [title]="'ACTIVITIES.USER' | translate" [columnMenu]="false">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <p [innerHTML]="dataItem.users"></p>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column
+    field="update"
+    [title]="'ACTIVITIES.UPDATE' | translate"
+    [columnMenu]="false"
+  >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <p [innerHTML]="dataItem.update | date: 'dd MMM yyyy'"></p>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column
+    field="statusTranslation"
+    [title]="'ACTIVITIES.ACTION' | translate"
+    [columnMenu]="false"
+  >
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <div>
+        <p *ngIf="!dataItem.linkTaskAction" [innerHTML]="getGeneralAction(dataItem)"></p>
+        <p *ngIf="dataItem.linkTaskAction"
+        (click)="redirectInProgress(dataItem)"
+        class="text-link"
+        [innerHTML]="getGeneralAction(dataItem) | translate"
+        ></p>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>

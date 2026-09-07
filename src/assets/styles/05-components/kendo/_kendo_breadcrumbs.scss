@@ -1,0 +1,60 @@
+////
+/// Override kendo-breadcrumbs component
+///
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group components of kendo ui
+/// @name .k-breadcrumb
+/// @since version 1.0.0
+////
+$link-item-color: #0070d2;
+
+.xng-breadcrumb-list {
+  padding-bottom: rem(11) !important;
+}
+
+.xng-breadcrumb-separator {
+  font-size: rem(13);
+  color: #080707;
+}
+
+.xng-breadcrumb-link {
+  color: $link-item-color !important;
+}
+
+.xng-breadcrumb-trail {
+  color: $link-item-color !important;
+  margin-bottom: 0;
+}
+
+.k-breadcrumb {
+  font-size: rem(13);
+  background-color: transparent;
+  &-root-link {
+    margin-right: 0px;
+    &:focus {
+      box-shadow: none;
+    }
+  }
+  &-link {
+    &.k-state-disabled {
+      opacity: 1;
+    }
+    color: $link-item-color;
+    &:hover {
+      color: $link-item-color;
+      background-color: none;
+    }
+    &:focus {
+      color: $link-item-color;
+    }
+  }
+  &-item {
+    &:first-child {
+      span[role="link"] {
+        color: $link-item-color;
+      }
+    }
+  }
+}

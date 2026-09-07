@@ -1,0 +1,4 @@
+export enum WorkflowRowAction {
+  EDIT = 'SHARED.TABLES.CRUD_ITEM.EDIT',
+  DELETE = 'SHARED.TABLES.CRUD_ITEM.DELETE',
+}

@@ -1,0 +1,252 @@
+<ng-container>
+  <div
+    [hidden]="loading"
+    id="draftCommentsSection"
+    [formGroup]="generalForm"
+    class="procurement-draft-comments-container"
+  >
+    <div formArrayName="comments">
+      <div
+        *ngFor="let item of comments?.controls; let i = index"
+        [formGroupName]="i"
+        class="procurement-draft-comments-container__form-array"
+      >
+        <div class="row">
+          <div class="col-12 col-md-1 c-process-comments__avatar">
+            <fi-avatar
+              [userNameInitials]="comments.controls[i].controls.createdBy.value"
+            ></fi-avatar>
+          </div>
+          <input type="hidden" formControlName="id" />
+
+          <div class="col-12 col-md-11">
+            <kendo-editor
+              class="c-process-coments__editor"
+              formControlName="text"
+              ngDefaultControl
+              [placeholder]="'PROCUREMENT.ADD_COMMENT' | translate"
+            >
+              <kendo-toolbar>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorBoldButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorItalicButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorUnderlineButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorIndentButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorOutdentButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorInsertUnorderedListButton>
+                  </kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorInsertOrderedListButton
+                  ></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+              </kendo-toolbar>
+
+              <kendo-editor-messages
+                [bold]="'COMMON.EDITOR_BOLD' | translate"
+                [italic]="'COMMON.EDITOR_ITALIC' | translate"
+                [underline]="'COMMON.EDITOR_UNDERLINE' | translate"
+                [indent]="'COMMON.EDITOR_INDENT' | translate"
+                [outdent]="'COMMON.EDITOR_OUTDENT' | translate"
+                [insertUnorderedList]="'COMMON.EDITOR_INSERT_UL' | translate"
+                [insertOrderedList]="'COMMON.EDITOR_INSERT_OL' | translate"
+              >
+              </kendo-editor-messages>
+            </kendo-editor>
+
+            <div
+              class="d-flex"
+              *ngIf="
+                comments.controls[i].invalid &&
+                (comments.controls[i].dirty || comments.controls[i].touched)
+              "
+            >
+              <div class="o-input-error">
+                {{ "PROCUREMENT_COMMENT.REQUIRED" | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="col-11">
+            <div class="pt-3 pb-2 exec-agency-text">
+              {{
+                "PROCUREMENT.COMMENTS_TAB.DRAFT_COMMENTS.COMMENT.COMMENT_FOR_EXECUTING_AGENCY"
+                  | translate
+              }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-1 .comment-checkbox-container">
+            <ng-container
+              *ngIf="
+                !isIDisabledByPermissiopn || hasPermissionsChangeVisibility
+              "
+            >
+              <input
+                class="comment-checkbox-container__input"
+                *ngIf="
+                  item.controls.id.value !== null &&
+                  selectCommentsMode &&
+                  showCheckbox[i]
+                "
+                type="checkbox"
+                kendoCheckBox
+                (change)="onCheckboxChange($event, item)"
+                formControlName="selected"
+              />
+            </ng-container>
+          </div>
+          <div class="col-11 d-flex comment-visivility-container">
+            <div>
+              <ul class="k-radio-list">
+                <li
+                  class="k-radio-item"
+                  *ngFor="let item of visibility; let j = index"
+                >
+                  <label class="k-radio-label">
+                    <input
+                      type="radio"
+                      value="{{ item.id }}"
+                      formControlName="visibility"
+                      kendoRadioButton
+                      [id]="'Rbn_Visibility_' + (j + 1)"
+                      #visibility
+                    />
+                    <span>
+                      {{ item.name | translate }}
+                    </span>
+                  </label>
+                </li>
+              </ul>
+            </div>
+            <div class="creator-editor-container">
+              <div class="creator-editor-container__creator-text">
+                <span
+                  >{{
+                    "PROCUREMENT.COMMENTS_TAB.DRAFT_COMMENTS.COMMENT.UPDATED_BY"
+                      | translate
+                  }}
+                </span>
+                <span
+                  class="creator-editor-container__creator-text__color-text"
+                >
+                  {{ comments.controls[i].controls.userNameEdited.value }}
+                </span>
+                <span
+                  class="creator-editor-container__creator-text__color-text"
+                >
+                  {{ comments.controls[i].controls.editedBy.value }}
+                </span>
+                <span class="ml-3">
+                  {{
+                    comments.controls[i].controls.edited.value
+                      | dateIfComments : "short"
+                  }}
+                  {{
+                    comments.controls[i].controls.edited.value
+                      | dateIfComments : "shortTime"
+                  }}
+                </span>
+              </div>
+              <div class="creator-editor-container__creator-text">
+                <span
+                  >{{
+                    "PROCUREMENT.COMMENTS_TAB.DRAFT_COMMENTS.COMMENT.CREATED_BY"
+                      | translate
+                  }}
+                </span>
+                <span
+                  class="creator-editor-container__creator-text__color-text"
+                >
+                  {{ comments.controls[i].controls.userNameCreated.value }}
+                </span>
+                <span
+                  class="creator-editor-container__creator-text__color-text"
+                >
+                  {{ comments.controls[i].controls.createdBy.value }}
+                </span>
+                <span class="ml-3">
+                  {{
+                    comments.controls[i].controls.created.value
+                      | dateIfComments : "short"
+                  }}
+                  {{
+                    comments.controls[i].controls.created.value
+                      | dateIfComments : "shortTime"
+                  }}
+                </span>
+              </div>
+            </div>
+
+            <div class="save-delete-container">
+              <button
+                kendoButton
+                *ngIf="
+                  (!isIDisabledByPermissiopn &&
+                    (addNewCommentOption || editOption)) ||
+                  hasPermissionsChangeVisibility
+                "
+                iconClass="far fa-save"
+                type="button"
+                look="clear"
+                id="Btn_Save_comment"
+                (click)="saveComment(i)"
+                [disabled]="!modifiedComments[i]"
+              ></button>
+              <button
+                *ngIf="
+                  !isIDisabledByPermissiopn &&
+                  (addNewCommentOption || editOption)
+                "
+                kendoButton
+                iconClass="far fa-trash-alt"
+                type="button"
+                look="clear"
+                id="Btn_Delete_comment"
+                [disabled]="disabledByProperty[i] || selectCommentsMode"
+                (click)="deleteComment(i)"
+              ></button>
+            </div>
+          </div>
+        </div>
+        <div class="separator1em fi-procurement--border"></div>
+      </div>
+    </div>
+
+    <div class="add-new-comment-container">
+      <ng-container *ngIf="!isIDisabledByPermissiopn">
+        <ng-container *ngIf="addNewCommentOption || editOption">
+          <button
+            *ngIf="!selectCommentsMode"
+            kendoButton
+            #commentInput
+            class="btn btn-online-brand mb-3 mx-md-2"
+            iconClass="fas fa-plus"
+            id="Btn_Add_Procurement_comment"
+            (click)="addNewCommentFormGroup()"
+          >
+            {{
+              "PROCUREMENT.COMMENTS_TAB.DRAFT_COMMENTS.COMMENT.ADD_NEW_COMMENT"
+                | translate
+            }}
+          </button>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+  <div *ngIf="loading" class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-container>

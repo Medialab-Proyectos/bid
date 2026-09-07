@@ -1,0 +1,92 @@
+<div>
+  <div class="disbursement-header">
+    <div class="disbursement-title">
+      {{ "DISBURSEMENT.HEADER.TITTLE" | translate }}
+    </div>
+    <div class="px-2">
+      <button
+        kendoButton
+        class="btn btn-online-brand btn-block"
+        id="Btn_Disbursement_DownloadReport"
+        *fiDisplayByPermissions="downloadReportPermission"
+        (click)="downloadReport()"
+        href="javascript:void(0);"
+        [disabled]="downloadingReport"
+        [iconClass]="downloadingReport ? 'k-i-loading' : 'fas fa-file-download'"
+      >
+        {{ "DISBURSEMENT.DOWNLOAD_REPORT_BTN" | translate }}
+      </button>
+    </div>
+  </div>
+  <div class="disbursement-container">
+    <div class="header-row">
+      <div class="dibursement-card">
+        <div>
+          {{ "DISBURSEMENT.HEADER.CURRENT_EXPIRATION_DATE" | translate }}
+        </div>
+        <div>{{ header.currentDisbInformation | dateIF }}</div>
+      </div>
+      <div class="dibursement-card">
+        <div>
+          {{ "DISBURSEMENT.HEADER.CUMULATIVE_EXTENSION" | translate }}
+        </div>
+        <div>{{ header.cumulativeExtension | ifNumber }}</div>
+      </div>
+      <div class="dibursement-card">
+        <div>
+          {{ "DISBURSEMENT.HEADER.TOTAL_PENDING_JUSTIFICATION" | translate }}
+        </div>
+        <div>{{ header.totalAmountPendingJustification | ifNumber }}</div>
+      </div>
+      <div class="dibursement-card">
+        <div>
+          {{ "DISBURSEMENT.HEADER.MINIMUM_PENDING_JUSTIFICATION" | translate }}
+        </div>
+        <div>{{ header.minimumAmountPendingJustification | ifNumber }}</div>
+      </div>
+      <div class="dibursement-card">
+        <div>
+          {{
+            "DISBURSEMENT.HEADER.ADVANCE_JUSTIFICATION_PERCENTAGE" | translate
+          }}
+        </div>
+        <div>{{ header.advanceJustificationPercentage | ifNumber }}</div>
+      </div>
+      <div class="dibursement-card">
+        <div>
+          {{ "DISBURSEMENT.HEADER.FINAL_PERIOD_DEADLINE" | translate }}
+        </div>
+        <div>{{ header.financialPeriodDeadline | dateIF }}</div>
+      </div>
+    </div>
+    <div class="header-row">
+      <div class="dibursement-card">
+        <div>
+          {{ "DISBURSEMENT.HEADER.LAST_REQUEST_NUMBER" | translate }}
+        </div>
+        <div>{{ header.lastRequestNumber }}</div>
+      </div>
+      <div class="dibursement-card">
+        <div>
+          {{ "DISBURSEMENT.HEADER.LAST_ANT_AMOUNT" | translate }}
+        </div>
+        <div>{{ header.lastAdvanceFoundsAmount | ifNumber }}</div>
+      </div>
+      <div class="dibursement-card">
+        <div>
+          {{ "DISBURSEMENT.HEADER.LAST_ANT_DATE" | translate }}
+        </div>
+        <div>{{ header.lastAdvanceFoundDate | dateIF }}</div>
+      </div>
+      <div class="dibursement-card">
+        <div></div>
+      </div>
+      <div class="dibursement-card">
+        <div></div>
+      </div>
+      <div class="dibursement-card">
+        <div></div>
+      </div>
+    </div>
+  </div>
+</div>

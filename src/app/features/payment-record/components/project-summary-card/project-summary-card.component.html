@@ -1,0 +1,149 @@
+<div class="pr-card">
+  <div class="pr-card__head">
+    <div class="pr-card__identity">
+      <div class="pr-card__icon"><em class="fas fa-briefcase"></em></div>
+      <div>
+        <div class="pr-card__eyebrow">
+          {{ "PAYMENT_RECORD.PROJECT.EYEBROW" | translate }}
+        </div>
+        <div class="pr-card__title">{{ contract }}</div>
+      </div>
+    </div>
+    <button
+      type="button"
+      class="pr-card__toggle"
+      id="Btn_PaymentRecord_ExpandProject"
+      [attr.aria-expanded]="expanded"
+      [attr.aria-label]="'PAYMENT_RECORD.PROJECT.TOGGLE' | translate"
+      (click)="toggle()"
+    >
+      <em class="fas" [ngClass]="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></em>
+    </button>
+  </div>
+
+  <ng-container *ngIf="expanded">
+    <div class="pr-card__section pr-card__section--operation">
+      <div class="pr-field">
+        <span class="pr-field__label">
+          {{ "PAYMENT_RECORD.PROJECT.OPERATION" | translate }}
+        </span>
+        <span class="pr-field__value">{{ summary?.operationNumber }}</span>
+      </div>
+      <div class="pr-field pr-field--wide">
+        <span class="pr-field__label">
+          {{ "PAYMENT_RECORD.PROJECT.OPERATION_NAME" | translate }}
+        </span>
+        <span class="pr-field__value">{{ summary?.operationName }}</span>
+      </div>
+      <div class="pr-field">
+        <span class="pr-field__label">
+          {{ "PAYMENT_RECORD.PROJECT.OPERATION_STATUS" | translate }}
+        </span>
+        <span class="pr-field__value">{{ summary?.operationStatus }}</span>
+      </div>
+    </div>
+
+    <div class="pr-card__section pr-balances">
+      <div class="pr-balances__column">
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.ORIGINAL_IDB" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.originalIdb | ifNumber }}</span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.CURRENT_IDB" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.currentIdb | ifNumber }}</span>
+        </div>
+      </div>
+
+      <div class="pr-balances__column">
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.LOCAL_COUNTERPART" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.localCounterpart | ifNumber }}</span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.COFINANCED" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.cofinanced | ifNumber }}</span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.LAST_DISBURSEMET_DATE" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.currentDisbExpiration | dateIF }}</span>
+        </div>
+      </div>
+
+      <div class="pr-balances__column">
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.AVAILABLE_BALANCE" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.availableBalance | ifNumber }}</span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.PROJECTED_AVAILABLE_BALANCE" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ balances?.projectedAvailableBalance | ifNumber }}
+          </span>
+        </div>
+      </div>
+
+      <div class="pr-balances__column">
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.DISBURSED_AMOUNT" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.disbursedAmount | ifNumber }}</span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.PERCENTAJE_DISBURSED" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.disbursedPercent }}%</span>
+        </div>
+      </div>
+
+      <div class="pr-balances__column">
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.PERCENTAGE_TO_JUSTIFY" | translate }}
+          </span>
+          <span class="pr-field__value">{{ balances?.toJustifyPercent }}%</span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.TOTAL_AMOUNT" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ balances?.totalAmountPendingJustification | ifNumber }}
+          </span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "TRANSACTION.BALANCES.MINIMUM_AMOUNT" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ balances?.minimumAmountPendingJustification | ifNumber }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pr-card__foot">
+      <span>{{ "TRANSACTION.BALANCES.BALANCES_INFO" | translate }}</span>
+      <span class="pr-card__foot-strong">
+        {{ "PAYMENT_RECORD.APPROVAL_CURRENCY" | translate }}:
+        {{ summary?.approvalCurrency }}
+      </span>
+    </div>
+  </ng-container>
+</div>

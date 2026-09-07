@@ -1,0 +1,28 @@
+<div class="c-accordion-panel" [ngClass]="{ 'mode-slim': mode === 'slim' }">
+  <div class="panel-header">
+    <span class="number"><ng-content select="[number]"></ng-content></span>
+
+    <p>
+      <ng-content select="[title]"></ng-content>
+    </p>
+    <button
+      type="button"
+      *ngIf="collapsible"
+      class="o-icon-button"
+      (click)="open = !open"
+      [id]="'Btn_Collapse_accordion_' + id"
+    >
+      <em *ngIf="open" class="fas fa-chevron-up"></em>
+      <em *ngIf="!open" class="fas fa-chevron-down"></em>
+    </button>
+  </div>
+
+  <div
+    class="panel-body"
+    [class.open]="open"
+    role="panel-body"
+    [attr.aria-hidden]="!open"
+  >
+    <ng-content select="[body]"></ng-content>
+  </div>
+</div>

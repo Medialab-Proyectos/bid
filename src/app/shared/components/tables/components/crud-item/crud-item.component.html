@@ -1,0 +1,43 @@
+<div >
+  <em #anchor (click)="toggle()" class="cursor fas fa-ellipsis-v"></em>
+</div>
+<kendo-popup
+  #popup
+  [offset]="offset"
+  [anchor]="anchor"
+  popupClass="content"
+  [anchorAlign]="anchorAlign"
+  [popupAlign]="popupAlign"
+  *ngIf="expandedOptions"
+  [margin]="margin"
+  class="os400"
+>
+  <div
+    class=""
+    style="
+      margin-top: 14px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0px 2px 6px #00000029;
+      border-radius: 5px;
+    "
+  >
+    <div class="popUpUser"></div>
+    <div class="container-pop-up" style="border-bottom: 1px solid #e4e4e4">
+      <div class="popup-btn-item cursor" (click)="emitActionItem('edit')">
+        <span>
+          {{ 'SHARED.TABLES.CRUD_ITEM.EDIT' | translate }}
+        </span>
+      </div>
+      <div class="popup-btn-item cursor" (click)="emitActionItem('view')">
+        <span>
+          {{ 'SHARED.TABLES.CRUD_ITEM.VIEW' | translate }}
+        </span>
+      </div>
+      <div class="popup-btn-item cursor" (click)="emitActionItem('delete')">
+        <span>
+          {{ 'SHARED.TABLES.CRUD_ITEM.DELETE' | translate }}
+        </span>
+      </div>
+    </div>
+  </div>
+</kendo-popup>

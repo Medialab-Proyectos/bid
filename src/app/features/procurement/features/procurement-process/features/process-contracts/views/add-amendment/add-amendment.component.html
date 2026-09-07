@@ -1,0 +1,57 @@
+<div class="c-upload-contract-information" id="top">
+  <fi-card-header
+    [title]="
+      (mode === 'addAmendment'
+        ? 'CONTRACT.CREATE_AMENDMENT'
+        : 'CONTRACT.AMENDMENT_DETAIL_INFORMATION'
+      ) | translate
+    "
+  >
+    <ng-container *ngIf="!isContractLoading && !isLoading">
+      <ng-container *ngIf="showDeleteButton">
+        <button
+          *fiDisplayByPermissions="deleteButtonPermission"
+          (click)="deleteAmendment()"
+          kendoButton
+          class="btn btn-brand"
+          id="Btn_Delete_amendment"
+        >
+          {{ "CONTRACT.DELETE_AMENDMENT" | translate }}
+        </button>
+      </ng-container>
+    </ng-container>
+  </fi-card-header>
+
+  <ng-container *ngIf="!isContractLoading && !isLoading; else loader">
+    <div class="c-card-subtitle">
+      <p>{{ "CONTRACT.ID" | translate }}</p>
+      <p>{{ visualCode }}</p>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading; else loader">
+    <div
+      class="add-amendment__form p-3"
+      *fiDisplayByPermissions="viewAmendmentPermission"
+    >
+      <fi-add-amendment-form
+        [form]="form"
+        [amendment]="amendment"
+        [originalContract]="originalContract"
+        [mode]="mode"
+        [isAdd]="mode === 'addAmendment'"
+        [projectBucketId]="projectBucketId"
+        [instAcronym]="instAcronym"
+        [projectContractId]="projectContractId"
+        [selectedContract]="selectedContract"
+        [procurementProcess]="procurementProcess"
+      ></fi-add-amendment-form>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #loader>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

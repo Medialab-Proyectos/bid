@@ -1,0 +1,136 @@
+////
+/// Override kendo-popup component
+///
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group components of kendo ui
+/// @name .k-popup
+/// @since version 1.0.0
+////
+// kendo-popup {
+//     &.k-animation-container-shown {
+//         box-shadow: none;
+//     }
+//     &.k-animation-container-fixed>.k-popup {
+//         box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.08);
+//     }
+// }
+
+.k-popup {
+  &--users {
+    background-color: color("white");
+    padding: rem(10) rem(0);
+    border-radius: rem(5);
+
+    .k-popup__search {
+      font-size: rem(16);
+      color: color("black");
+      background-color: color("gray-200");
+      padding: rem(18) rem(18);
+    }
+    .k-popup__search-icon {
+      font-size: rem(16);
+      margin-right: rem(18);
+    }
+
+    .k-list {
+      .k-item {
+        font-size: rem(16);
+        padding: rem(9) rem(56);
+        position: relative;
+
+        .popup-icon {
+          margin-right: rem(11);
+        }
+
+        &.k-state-selected {
+          background-color: color("primary");
+
+          &:hover {
+            color: color("white");
+            background-color: color("primary-dark");
+          }
+        }
+
+        &::before {
+          content: "\f007";
+          font-family: "Font Awesome 5 Pro", sans-serif;
+          font-size: rem(16);
+          position: absolute;
+          top: rem(8);
+          left: rem(22);
+        }
+
+        &:focus,
+        &.k-state-focused {
+          box-shadow: none;
+        }
+        &:hover,
+        &.k-state-hover {
+          color: color("black");
+          background-color: color("secondary");
+
+          &::before {
+            color: color("primary");
+          }
+        }
+      }
+    }
+  }
+
+  &--datepicker {
+    .k-calendar {
+      .k-calendar-header {
+        .k-today {
+          color: color("primary-light");
+        }
+      }
+
+      .k-content {
+        .k-today {
+          color: color("primary-light");
+        }
+      }
+
+      .k-state-selected {
+        .k-link {
+          background-color: color("primary-light");
+          border-radius: 50%;
+          border: none;
+        }
+      }
+    }
+  }
+  &--timepicker {
+    background-color: color("white");
+
+    .k-time-list {
+      &:before,
+      &:after {
+        box-shadow: none;
+      }
+
+      .k-item {
+        &:hover {
+          color: color("primary");
+        }
+      }
+    }
+    .k-action-buttons {
+      .k-primary {
+        color: color("primary");
+
+        &:hover {
+          color: color("white");
+          background-color: color("primary");
+          border-color: color("primary");
+        }
+      }
+    }
+  }
+}
+
+.k-animation-container {
+  z-index: 11000 !important;
+}

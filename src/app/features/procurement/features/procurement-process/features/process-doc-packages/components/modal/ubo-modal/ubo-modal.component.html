@@ -1,0 +1,19 @@
+<div class="text-left ubo-modal-container">
+  <div class="my-2">
+    <fi-alert
+      [type]="'info'"
+      title="{{ 'UBO.MODAL.INFORMATION.TEXT' | translate }} "
+    >
+    </fi-alert>
+  </div>
+  <p *ngIf="!isJointVenture; else joinVentureText">
+    {{ "UBO.MODAL.MAIN_TEXT.ONE_PARTICIPANT" | translate }}
+  </p>
+  <ng-template #joinVentureText>
+    {{ "UBO.MODAL.MAIN_TEXT.JOIN_VENTURE" | translate }}
+  </ng-template>
+
+  <div *ngFor="let data of uboBidders.bidders; let i = index">
+    <fi-ubo-register-email [form]="bidders.controls[i]"></fi-ubo-register-email>
+  </div>
+</div>

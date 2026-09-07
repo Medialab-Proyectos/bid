@@ -1,0 +1,327 @@
+<div class="pr-dialog" *ngIf="form">
+  <p class="pr-panel__lead" *ngIf="!readOnly">
+    {{ "PAYMENT_RECORD.UPDATE_PAYMENT.INTRO" | translate }}
+  </p>
+  <fi-alert
+    *ngIf="readOnly"
+    type="info"
+    [title]="'PAYMENT_RECORD.UPDATE_PAYMENT.JUSTIFIED_LOCK' | translate"
+    [closable]="false"
+  ></fi-alert>
+
+  <fieldset class="pr-fieldset">
+    <legend class="pr-fieldset__legend">
+      {{ "PAYMENT_RECORD.MANUAL.GROUP_IDENTITY" | translate }}
+    </legend>
+
+    <!--
+      Receptor and ID de gasto o pago never change here -- they are set
+      elsewhere in the flow. Rendered as real, permanently-`readonly` Kendo
+      controls rather than plain text, the same way a disabled field reads
+      everywhere else in the module (Producto in "Añadir pagos", every field
+      here once the payment is justified), instead of a bespoke look of our own.
+    -->
+    <div class="pr-dialog__row pr-dialog__row--3col">
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.RECEIVER" | translate }}
+        </span>
+        <kendo-textbox
+          class="c-textbox"
+          [readonly]="true"
+          [(ngModel)]="form.beneficiaryName"
+          id="Txt_UpdatePayment_Receiver"
+        ></kendo-textbox>
+        <span class="pr-dialog__help">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.RECEIVER_HELP" | translate }}
+        </span>
+      </div>
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.COUNTRY" | translate }}
+        </span>
+        <kendo-dropdownlist
+          class="c-dropdown-list"
+          textField="name"
+          valueField="code"
+          [valuePrimitive]="true"
+          [data]="countries"
+          [disabled]="readOnly"
+          [(ngModel)]="form.country"
+          id="Ddl_UpdatePayment_Country"
+        ></kendo-dropdownlist>
+      </div>
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.PAYMENT_ID" | translate }}
+        </span>
+        <kendo-textbox
+          class="c-textbox"
+          [readonly]="true"
+          [(ngModel)]="form.id"
+          id="Txt_UpdatePayment_Id"
+        ></kendo-textbox>
+        <span class="pr-dialog__help">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.PAYMENT_ID_HELP" | translate }}
+        </span>
+      </div>
+    </div>
+
+    <div class="pr-dialog__row">
+      <div class="pr-dialog__field pr-dialog__field--full">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.CONCEPT" | translate }}
+        </span>
+        <kendo-textbox
+          class="c-textbox"
+          [readonly]="readOnly"
+          [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.CONCEPT_PLACEHOLDER' | translate"
+          [(ngModel)]="form.concept"
+          id="Txt_UpdatePayment_Concept"
+        ></kendo-textbox>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="pr-fieldset">
+    <legend class="pr-fieldset__legend">
+      {{ "PAYMENT_RECORD.MANUAL.GROUP_AMOUNT" | translate }}
+    </legend>
+
+    <div class="pr-dialog__row pr-dialog__row--3col">
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.VOUCHER" | translate }}
+        </span>
+        <kendo-textbox
+          class="c-textbox"
+          [readonly]="readOnly"
+          [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.VOUCHER_PLACEHOLDER' | translate"
+          [(ngModel)]="form.accountingVoucher"
+          id="Txt_UpdatePayment_Voucher"
+        ></kendo-textbox>
+      </div>
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.PAYMENT_DATE" | translate }}
+        </span>
+        <kendo-datepicker
+          class="c-datepicker"
+          format="dd/MM/yyyy"
+          [readonly]="readOnly"
+          [(ngModel)]="paymentDate"
+          id="Dtp_UpdatePayment_Date"
+        ></kendo-datepicker>
+      </div>
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.CURRENCY" | translate }}
+        </span>
+        <kendo-dropdownlist
+          class="c-dropdown-list"
+          [data]="currencies"
+          [disabled]="readOnly"
+          [(ngModel)]="form.currency"
+          id="Ddl_UpdatePayment_Currency"
+        ></kendo-dropdownlist>
+      </div>
+    </div>
+
+    <div class="pr-dialog__row pr-dialog__row--3col">
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.AMOUNT" | translate }}
+        </span>
+        <kendo-numerictextbox
+          [format]="'n2'"
+          [min]="0"
+          [readonly]="readOnly"
+          [spinners]="false"
+          [(ngModel)]="form.amount"
+          (valueChange)="recalculateEquivalent()"
+          id="Num_UpdatePayment_Amount"
+        ></kendo-numerictextbox>
+      </div>
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.EXCHANGE_RATE" | translate }}
+        </span>
+        <kendo-numerictextbox
+          [format]="'n4'"
+          [min]="0"
+          [readonly]="readOnly"
+          [spinners]="false"
+          [(ngModel)]="form.exchangeRate"
+          (valueChange)="recalculateEquivalent()"
+          id="Num_UpdatePayment_Rate"
+        ></kendo-numerictextbox>
+      </div>
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.EQUIVALENT" | translate }}
+        </span>
+        <!-- Never typed into: it's amount x rate, always recalculated. -->
+        <kendo-numerictextbox
+          [format]="'n2'"
+          [readonly]="true"
+          [spinners]="false"
+          [(ngModel)]="form.equivalentAmount"
+          id="Num_UpdatePayment_Equivalent"
+        ></kendo-numerictextbox>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="pr-fieldset">
+    <legend class="pr-fieldset__legend">
+      {{ "PAYMENT_RECORD.UPDATE_PAYMENT.GROUP_FUNDING" | translate }}
+      <span class="pr-fieldset__help">
+        {{ "PAYMENT_RECORD.UPDATE_PAYMENT.GROUP_FUNDING_HELP" | translate }}
+      </span>
+    </legend>
+
+    <div class="pr-dialog__row pr-dialog__row--3col">
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.IDB_FINANCING" | translate }}
+        </span>
+        <kendo-numerictextbox
+          [format]="'n2'"
+          [min]="0"
+          [readonly]="readOnly"
+          [spinners]="false"
+          [(ngModel)]="form.idbFinancingAmount"
+          id="Num_UpdatePayment_Idb"
+        ></kendo-numerictextbox>
+      </div>
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.LOCAL_FINANCING" | translate }}
+        </span>
+        <kendo-numerictextbox
+          [format]="'n2'"
+          [readonly]="true"
+          [spinners]="false"
+          [(ngModel)]="form.localFinancingAmount"
+          id="Num_UpdatePayment_Local"
+        ></kendo-numerictextbox>
+      </div>
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.COFINANCING" | translate }}
+        </span>
+        <kendo-numerictextbox
+          [format]="'n2'"
+          [readonly]="true"
+          [spinners]="false"
+          [(ngModel)]="form.cofinancingAmount"
+          id="Num_UpdatePayment_Cofinancing"
+        ></kendo-numerictextbox>
+      </div>
+    </div>
+  </fieldset>
+
+  <!--
+    Only when this dialog is managing the commitment's own ledger directly
+    (Pagos del compromiso) -- a direct-payment request or a statement only
+    reports on a payment, it does not decide how it is reimbursed.
+  -->
+  <fieldset class="pr-fieldset" *ngIf="showReimbursable">
+    <legend class="pr-fieldset__legend">
+      {{ "PAYMENT_RECORD.UPDATE_PAYMENT.GROUP_MECHANISM" | translate }}
+    </legend>
+
+    <p class="pr-dialog__help pr-dialog__help--block">
+      {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSABLE_HELP" | translate }}
+    </p>
+
+    <div class="pr-dialog__row pr-dialog__row--column">
+      <span class="pr-dialog__label">
+        {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSABLE_QUESTION" | translate }}
+      </span>
+      <div class="pr-radio-group">
+        <label class="pr-radio">
+          <input
+            type="radio"
+            name="reimbursable"
+            id="Rad_UpdatePayment_ReimbursableNo"
+            [value]="false"
+            [disabled]="readOnly"
+            [(ngModel)]="form.reimbursable"
+            (change)="onReimbursableChange()"
+          />
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSABLE_NO" | translate }}
+        </label>
+        <label class="pr-radio">
+          <input
+            type="radio"
+            name="reimbursable"
+            id="Rad_UpdatePayment_ReimbursableYes"
+            [value]="true"
+            [disabled]="readOnly"
+            [(ngModel)]="form.reimbursable"
+            (change)="onReimbursableChange()"
+          />
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSABLE_YES" | translate }}
+        </label>
+      </div>
+    </div>
+
+    <div class="pr-dialog__row" *ngIf="form.reimbursable">
+      <div class="pr-dialog__field">
+        <span class="pr-dialog__label">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSEMENT_AMOUNT" | translate }}
+        </span>
+        <kendo-numerictextbox
+          [format]="'n2'"
+          [min]="0"
+          [readonly]="readOnly"
+          [spinners]="false"
+          [(ngModel)]="form.reimbursementAmount"
+          id="Num_UpdatePayment_Reimbursement"
+        ></kendo-numerictextbox>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <!--
+    Sits between the true left edge and Cancelar -- the same `pr-modal__hint`
+    spot every other dialog in the module uses for footer context, so it
+    grows to fill whatever room is left and lands right against Cancelar
+    regardless of dialog width.
+  -->
+  <p class="pr-modal__hint pr-modal__hint--ready" id="Lbl_UpdatePayment_Position">
+    <span>{{ position }}/{{ total }}</span>
+  </p>
+
+  <button
+    *ngIf="allowDelete && !readOnly"
+    kendoButton
+    class="btn pr-dialog__danger pr-dialog__danger-ghost pr-modal__destructive"
+    id="Btn_UpdatePayment_Delete"
+    [disabled]="saving"
+    (click)="remove()"
+  >
+    {{ "PAYMENT_RECORD.UPDATE_PAYMENT.DELETE" | translate }}
+  </button>
+  <button
+    kendoButton
+    class="btn btn-neutral btn-no-stroke"
+    id="Btn_UpdatePayment_Cancel"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+  <button
+    *ngIf="!readOnly"
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_UpdatePayment_Confirm"
+    [disabled]="saving"
+    (click)="confirm()"
+  >
+    {{ "PAYMENT_RECORD.UPDATE_PAYMENT.CONFIRM" | translate }}
+  </button>
+</kendo-dialog-actions>

@@ -1,0 +1,171 @@
+<ng-container *ngIf="_files?.length > 0">
+  <div class="col files-list" *ngIf="!isDowloading; else showSpinner">
+    <div class="row sf700 files-list--header">
+      <div [ngClass]="columClasses[0]">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.FILES" | translate }}
+      </div>
+      <div [ngClass]="columClasses[1]">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.TYPE" | translate }}
+      </div>
+      <div
+        style="overflow-wrap: break-word"
+        [ngClass]="columClasses[2]"
+        *ngIf="showMandatoryColumn"
+      >
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.MANDATORY_TITLE" | translate }}
+      </div>
+      <div [ngClass]="columClasses[3]">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.ID" | translate }}
+      </div>
+      <div
+        [ngClass]="columClasses[4]"
+        *ngIf="
+          showResultColumn &&
+          (hasPermissionDownload || hasPermissionDownloadGuest)
+        "
+      >
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.RESULT" | translate }}
+      </div>
+      <div
+        [ngClass]="columClasses[5]"
+        *ngIf="
+          showAwardedsColum &&
+          (hasPermissionDownload || hasPermissionDownloadGuest)
+        "
+      >
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.AWARDEEDS" | translate }}
+      </div>
+      <div [ngClass]="columClasses[6]" style="word-wrap: break-word">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.CREATION_DATE" | translate }}
+      </div>
+      <div [ngClass]="columClasses[7]">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.DESCRIPTION" | translate }}
+      </div>
+      <div [ngClass]="columClasses[8]" *ngIf="showStatusColumn">
+        {{ "ACTIVITIES.STATUS" | translate }}
+      </div>
+      <div [ngClass]="columClasses[9]" *ngIf="showActionsColumn">
+        {{ "UNDB.DOCUMENT_GROUPS.TABLE.HEADER.ACTIONS" | translate }}
+      </div>
+      <div *ngIf="containsDocumentByBiddingDocument" class="col-md-1"></div>
+    </div>
+
+    <div
+      class="row finished-doc--item"
+      *ngFor="let item of _files; let i = index"
+    >
+      <div [ngClass]="columClasses[0]">
+        <div class="finished-doc__name">
+          <em class="fas fa-file"></em>
+          <a
+            *ngIf="item.noticeId && !item.ezshareNumber; else showFileDownload"
+            (click)="viewAmendment(item)"
+          >
+            {{ item.name }}
+          </a>
+          <ng-template #showFileDownload>
+            <a
+              *ngIf="!isDocumentTap; else documentTap"
+              id="{{ 'Lnk_FiduciaryProcessFile_' + (i + 1) }}"
+              href="javascript:void(0);"
+              (click)="donwloadDocument(item)"
+            >
+              {{ item.name }}</a
+            >
+            <ng-template #documentTap>
+              <a
+                *ngIf="
+                  hasPermissionDownload || hasPermissionDownloadGuest;
+                  else noPermission
+                "
+                id="{{ 'Lnk_FiduciaryProcessFile_' + (i + 1) }}"
+                href="javascript:void(0);"
+                (click)="donwloadDocument(item)"
+              >
+                {{ item.name }}</a
+              >
+              <ng-template #noPermission>
+                <span class="not_link">{{ item.name }} </span>
+              </ng-template>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+      <div [ngClass]="columClasses[1]">
+        <div>
+          {{ item?.groupCode | translateEnum : enumType }}
+        </div>
+      </div>
+      <div [ngClass]="columClasses[2]" *ngIf="showMandatoryColumn">
+        <div *ngIf="item.mandatory; else optional">
+          {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.ITEM.MANDATORY" | translate }}
+        </div>
+        <ng-template #optional>
+          {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.ITEM.OPTIONAL" | translate }}
+        </ng-template>
+      </div>
+      <div [ngClass]="columClasses[3]">
+        <div>
+          {{ item.ezshareNumber || "&mdash;" }}
+        </div>
+      </div>
+      <div
+        [ngClass]="columClasses[4]"
+        *ngIf="hasPermissionDownload || hasPermissionDownloadGuest"
+      >
+        {{
+          item.result | translateEnum : enum.biddingProcessDocumentgroupResults
+        }}
+      </div>
+      <div
+        [ngClass]="columClasses[5]"
+        *ngIf="hasPermissionDownload || hasPermissionDownloadGuest"
+      >
+        <div *ngFor="let awarded of awardeedsNames[i]">- {{ awarded }}</div>
+      </div>
+      <div [ngClass]="columClasses[6]">
+        {{ item.created | dateIF }}
+      </div>
+      <div [ngClass]="columClasses[7]">
+        {{ item.description }}
+      </div>
+      <div [ngClass]="columClasses[8]" *ngIf="showStatusColumn">
+        {{ getNoticeStatus(item) }}
+      </div>
+      <div [ngClass]="columClasses[9]" *ngIf="showActionsColumn">
+        <kendo-dropdownbutton
+          [data]="dropdownButtonData"
+          *ngIf="showAmendmentActions(i)"
+        >
+          <span class="fas fa-ellipsis-v"></span>
+          <ng-template kendoDropDownButtonItemTemplate let-actionItem>
+            <span
+              (click)="actionItem.action(item)"
+              *fiDisplayByPermissions="actionItem?.permissions"
+            >
+              <em [attr.class]="actionItem.iconClass" class="mr-2"></em>
+              {{ actionItem.text | translate }}
+            </span>
+          </ng-template>
+        </kendo-dropdownbutton>
+      </div>
+      <div *ngIf="containsDocumentByBiddingDocument">
+        <button
+          [id]="'Btn_view_doc_' + (i + 1)"
+          kendoButton
+          iconClass="far fa-file-alt"
+          type="button"
+          look="clear"
+          *ngIf="item.biddingDocumentId"
+          (click)="previewDocument(item)"
+        ></button>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

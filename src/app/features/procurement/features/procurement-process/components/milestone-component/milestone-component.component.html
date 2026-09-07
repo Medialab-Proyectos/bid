@@ -1,0 +1,107 @@
+<div class="col-12 detail-milestone pt-4">
+  <div class="row">
+    <fi-info-process-title
+      class="col-12"
+      [title]="'PROCUREMENT.PROCESS.ACQUISITION_MILESTONES' | translate"
+      [subtitle]="'PROCUREMENT.PROCESS.ACQUISITION_MILESTONES' | translate"
+      icon="far fa-hand-point-up"
+    >
+    </fi-info-process-title>
+  </div>
+  <div class="pt-2 pb-2 row ml-md-2 mr-md-2 sf700 header" *ngIf="!mobileView">
+    <div class="col-12 col-md-3">
+      <span class="pl-2">{{
+        "PROCUREMENT.PROCESS.MILESTONE" | translate
+      }}</span>
+    </div>
+    <div class="col-12 col-md-3">
+      <span>{{ "PROCUREMENT.PROCESS.INITIAL_DATE" | translate }}</span>
+    </div>
+    <div class="col-12 col-md-3">
+      <span>{{ "PROCUREMENT.PROCESS.ESTIMATED_DATE" | translate }}</span>
+    </div>
+    <div class="col-12 col-md-3">
+      <span>{{ "PROCUREMENT.PROCESS.ACTUAL_DATE" | translate }}</span>
+    </div>
+  </div>
+  <div
+    class="row ml-md-2 mr-md-2 item"
+    data-testid="milestoneRole-row"
+    *ngFor="let item of milestones; let i = index"
+    attr.id="milestoneIndex{{ i }}"
+  >
+    <div
+      class="pb-2 pb-md-0 col-12 col-md-3"
+      data-testid="btn-seeDetails"
+      (click)="expandMobile(i)"
+    >
+      <div class="d-flex justify-content-between">
+        <div>
+          <span *ngIf="mobileView"
+            >{{ "PROCUREMENT.PROCESS.MILESTONE" | translate }}:</span
+          >
+          <div class="d-flex">
+            <span class="pl-2 sf700 mr-3">{{ item.code }}</span>
+            <div
+              kendoTooltip
+              [title]="
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit.'
+              "
+            >
+              <em class="fas fa-question-circle"></em>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="mobileView">
+          <em class="fas fa-chevron-down"></em>
+        </div>
+      </div>
+    </div>
+    <div
+      [ngClass]="mobileView ? 'd-none' : null"
+      class="pb-2 pb-md-0 col-12 col-md-3"
+      data-testid="qa-initialDate"
+    >
+      <div class="">
+        <div class="row">
+          <span class="col-5" *ngIf="mobileView"
+            >{{ "PROCUREMENT.PROCESS.INITIAL_DATE" | translate }}:</span
+          >
+          <span class="col-7 col-md-12">{{
+            item.initialEstimationDate | date: "dd MMM yyyy"
+          }}</span>
+        </div>
+      </div>
+    </div>
+    <div
+      [ngClass]="mobileView ? 'd-none' : null"
+      class="pb-2 pb-md-0 col-12 col-md-3"
+    >
+      <div class="">
+        <div class="row">
+          <span class="col-5" *ngIf="mobileView"
+            >{{ "PROCUREMENT.PROCESS.RE_ESTIMATED_DATE" | translate }}:</span
+          >
+          <span class="col-7 col-md-12">{{
+            item.reEstimationDate | date: "dd MMM yyyy"
+          }}</span>
+        </div>
+      </div>
+    </div>
+    <div
+      [ngClass]="mobileView ? 'd-none' : null"
+      class="pb-2 pb-md-0 col-12 col-md-3"
+    >
+      <div class="">
+        <div class="row">
+          <span class="col-5" *ngIf="mobileView"
+            >{{ "PROCUREMENT.PROCESS.ACTUAL_DATE" | translate }}:</span
+          >
+          <span class="col-7 col-md-12">{{
+            item.actualDate | date: "dd MMM yyyy"
+          }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

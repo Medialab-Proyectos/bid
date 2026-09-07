@@ -1,0 +1,42 @@
+<div class="workflow-container">
+  <div class="comment-section">
+    <ng-container *ngFor="let text of content">
+      {{ text.key | translate }}
+    </ng-container>
+  </div>
+  <form [formGroup]="myForm">
+    <kendo-editor
+      class="c-process-coments__editor"
+      formControlName="editor"
+      [placeholder]="'PROCUREMENT.ADD_COMMENT' | translate"
+    >
+      <kendo-toolbar>
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button kendoEditorBoldButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorItalicButton></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorUnderlineButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorIndentButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorOutdentButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorInsertUnorderedListButton>
+          </kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorInsertOrderedListButton
+          ></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+      </kendo-toolbar>
+
+      <kendo-editor-messages
+        [bold]="'COMMON.EDITOR_BOLD' | translate"
+        [italic]="'COMMON.EDITOR_ITALIC' | translate"
+        [underline]="'COMMON.EDITOR_UNDERLINE' | translate"
+        [indent]="'COMMON.EDITOR_INDENT' | translate"
+        [outdent]="'COMMON.EDITOR_OUTDENT' | translate"
+        [insertUnorderedList]="'COMMON.EDITOR_INSERT_UL' | translate"
+        [insertOrderedList]="'COMMON.EDITOR_INSERT_OL' | translate"
+      >
+      </kendo-editor-messages>
+    </kendo-editor>
+  </form>
+</div>

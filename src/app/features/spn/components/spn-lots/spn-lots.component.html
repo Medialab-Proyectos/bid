@@ -1,0 +1,115 @@
+<form class="lots" [formGroup]="lots.parent">
+  <div class="lots_container lots_header">
+    <div class="lotNumber">
+      {{ "SPN.REGISTER_SPN.LOTS_SECTION.HEADER.LOT_NUMBER" | translate }}
+    </div>
+    <div class="lotName">
+      {{ "SPN.REGISTER_SPN.LOTS_SECTION.HEADER.LOT_NAME" | translate }}
+    </div>
+    <div class="estimatedTime">
+      {{ "SPN.REGISTER_SPN.LOTS_SECTION.HEADER.ESTIMATED_TIME" | translate }}
+    </div>
+    <div class="timeUnit">
+      {{ "SPN.REGISTER_SPN.LOTS_SECTION.HEADER.TIME_UNIT" | translate }}
+    </div>
+    <div class="technicalSpecifications">
+      {{
+        "SPN.REGISTER_SPN.LOTS_SECTION.HEADER.TECHNICAL_SPECIFICATIONS"
+          | translate
+      }}
+    </div>
+    <div class="actions">
+      {{ "SPN.REGISTER_SPN.LOTS_SECTION.HEADER.ACTION" | translate }}
+    </div>
+  </div>
+  <div formArrayName="lots">
+    <div
+      class="lots_container"
+      style="display: flex; gap: 1rem"
+      *ngFor="let lot of lots.controls; let i = index"
+      [formGroupName]="i"
+    >
+      <mat-form-field class="lotNumber">
+        <mat-label>{{
+          "SPN.REGISTER_SPN.LOTS_SECTION.INPUT.LOT_NUMBER" | translate
+        }}</mat-label>
+        <input min="1" matInput type="number" formControlName="number" />
+        <mat-error *ngIf="lot.controls.number.errors?.required">{{
+          "BIDDER.REQUIRED" | translate
+        }}</mat-error>
+        <mat-error *ngIf="lot.controls.number.errors?.min">{{
+          "SPN.LOTS.MINIMUM_VALUE" | translate
+        }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="lotName">
+        <mat-label>{{
+          "SPN.REGISTER_SPN.LOTS_SECTION.INPUT.LOT_NAME" | translate
+        }}</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="lot.controls.name.errors?.required">{{
+          "BIDDER.REQUIRED" | translate
+        }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="estimatedTime">
+        <mat-label>{{
+          "SPN.REGISTER_SPN.LOTS_SECTION.INPUT.ESTIMATED_TIME" | translate
+        }}</mat-label>
+        <input matInput min="1" type="number" formControlName="expectedTime" />
+        <mat-error *ngIf="lot.controls.expectedTime.errors?.required">{{
+          "BIDDER.REQUIRED" | translate
+        }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="timeUnit">
+        <mat-label>{{
+          "SPN.REGISTER_SPN.LOTS_SECTION.INPUT.TIME_UNIT" | translate
+        }}</mat-label>
+        <mat-select formControlName="timeUnit">
+          <mat-option *ngFor="let option of optionsUnits" [value]="option.id">
+            {{ option.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="lot.controls.timeUnit.errors?.required">{{
+          "BIDDER.REQUIRED" | translate
+        }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="technicalSpecifications">
+        <mat-label>{{
+          "SPN.REGISTER_SPN.LOTS_SECTION.INPUT.TECHNICAL_SPECIFICATIONS"
+            | translate
+        }}</mat-label>
+        <input
+          matInput
+          formControlName="technicalSpecifications"
+          maxlength="1000"
+        />
+        <mat-hint align="end">
+          {{ lot.controls.technicalSpecifications?.value?.length || 0 }} / 1000
+        </mat-hint>
+        <mat-error
+          *ngIf="lot.controls.technicalSpecifications.errors?.required"
+          >{{ "BIDDER.REQUIRED" | translate }}</mat-error
+        >
+      </mat-form-field>
+
+      <div class="actions">
+        <button
+          *ngIf="i !== 0"
+          mat-icon-button
+          type="button"
+          (click)="removeLot(i)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="align-right">
+    <button mat-button type="button" color="primary" (click)="addLot()">
+      {{ "SPN.REGISTER_SPN.LOTS_SECTION.BTN.ADD_LOT" | translate }}
+    </button>
+  </div>
+</form>

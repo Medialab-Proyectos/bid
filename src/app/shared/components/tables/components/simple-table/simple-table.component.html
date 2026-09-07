@@ -1,0 +1,12 @@
+<table [attr.aria-describedby]="description">
+  <thead>
+    <ng-content select="[headers]"></ng-content>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of data" role="row">
+      <ng-container
+        *ngTemplateOutlet="rowsTemplate; context: { $implicit: row }"
+      ></ng-container>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,22 @@
+<ng-container *ngIf="!loading; else spinner">
+  <div
+    class="c-disbursement-info"
+    *fiDisplayByPermissions="viewDisburtsementTabPermission"
+  >
+    <fi-disbursement-header
+      [header]="header"
+      [projectBucketId]="projectBucketId"
+    ></fi-disbursement-header>
+    <fi-components-table
+      [disbursementBalances]="balances"
+      [downloadReportPermission]="downloadReportPermission"
+    >
+    </fi-components-table>
+  </div>
+</ng-container>
+
+<ng-template #spinner>
+  <div class="spinner-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

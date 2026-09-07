@@ -1,0 +1,105 @@
+<div>
+  <table
+    class="o-fi-table-modal"
+    [attr.aria-describedby]="
+      'TRANSACTION.COMPONENTS.TABLE_DESCRIPTION' | translate
+    "
+  >
+    <thead>
+      <tr>
+        <th scope="col" colspan="3"></th>
+
+        <th scope="col" colspan="6">
+          {{ "TRANSACTION.BALANCES.AVAILABLE_BALANCE" | translate }}
+        </th>
+      </tr>
+      <tr>
+        <th scope="col" colspan="1" class="has-ellipsis">
+          {{ "TRANSACTION.COMPONENTS.CODE" | translate }}
+        </th>
+        <th scope="col" colspan="2" class="has-ellipsis">
+          {{ "TRANSACTION.COMPONENTS.COMPONENT" | translate }}
+        </th>
+
+        <th scope="col" colspan="2" class="has-ellipsis">
+          {{ "TRANSACTION.COMPONENTS.BID" | translate }}
+        </th>
+        <th scope="col" colspan="2" class="has-ellipsis">
+          {{ "TRANSACTION.COMPONENTS.LOCAL_COUNTERPART" | translate }}
+        </th>
+        <th scope="col" colspan="2" class="has-ellipsis">
+          {{ "TRANSACTION.COMPONENTS.CO_FINANCING" | translate }}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <ng-container *ngFor="let component of components; let i = index">
+        <tr>
+          <td colspan="1">{{ component.code }}</td>
+          <td colspan="2" class="text-left has-ellipsis">
+            {{ component.name }}
+          </td>
+          <td colspan="2" class="text-right has-ellipsis">
+            <ng-container
+              *ngIf="
+                component.amountsProjectedAvailable.distributeIbd > 0;
+                else noPrefix4
+              "
+            >
+              {{
+                component.amountsProjectedAvailable.distributeIbd
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefix4>
+              {{
+                component.amountsProjectedAvailable.distributeIbd
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="text-right has-ellipsis">
+            <ng-container
+              *ngIf="
+                component.amountsProjectedAvailable.distributeLocalCounterpart >
+                  0;
+                else noPrefix5
+              "
+            >
+              {{
+                component.amountsProjectedAvailable.distributeLocalCounterpart
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefix5>
+              {{
+                component.amountsProjectedAvailable.distributeLocalCounterpart
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="text-right has-ellipsis">
+            <ng-container
+              *ngIf="
+                component.amountsProjectedAvailable.distributeCofinancing > 0;
+                else noPrefix6
+              "
+            >
+              {{
+                component.amountsProjectedAvailable.distributeCofinancing
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefix6>
+              {{
+                component.amountsProjectedAvailable.distributeCofinancing
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

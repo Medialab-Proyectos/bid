@@ -1,0 +1,333 @@
+// Variables
+$primary-border: #333;
+$secondary-border: #eaeaea;
+$light-border: #f2f2f2;
+$tree-line: #ddd;
+
+$text-primary: #333;
+$text-secondary: #666;
+$text-tertiary: #555;
+$error-color: #e53e3e;
+$link-color: #2098be;
+
+$bg-white: #fff;
+$bg-gray: #eaeaea;
+$bg-light: #f4fdff;
+$bg-footer: #fbfbfb;
+
+$border-radius: 11px;
+$help-icon-bg: #0089b5;
+
+// Base component
+.cost-distribution {
+  padding-top: 1.5rem;
+
+  &__header {
+    margin-bottom: 1rem;
+  }
+
+  &__instructions {
+    position: relative;
+    display: flex;
+    padding-left: 0.75rem;
+
+    &::before {
+      content: '*';
+      color: $error-color;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+
+  &__subtitle {
+    display: block;
+    color: $text-secondary;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+
+  &__add-currency {
+    margin-top: 1.5rem;
+  }
+
+  &__total-summary {
+    background-color: $bg-light;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    margin-top: 1rem;
+  }
+}
+
+// Currencies container
+.currencies-container {
+  position: relative;
+}
+
+// Currency card
+.currency-card {
+  position: relative;
+  border: 1px solid $primary-border;
+  border-radius: $border-radius;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+
+  &__loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: $bg-white;
+  }
+
+  &__body {
+    border-top: 1px solid $light-border;
+    padding-bottom: 1rem;
+  }
+
+  &__currency-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  &__add-component {
+    font-size: 0.875rem;
+    color: $text-primary;
+  }
+
+  &__action-button {
+    display: flex;
+    align-items: center;
+  }
+
+  &__button {
+    min-width: auto !important;
+    padding: 0 !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    line-height: 1 !important;
+
+    .mat-icon {
+      margin: 0 !important;
+      font-size: 18px !important;
+      width: 18px !important;
+      height: 18px !important;
+    }
+  }
+
+  &__footer {
+    background-color: $bg-gray;
+    padding: 1rem 2rem;
+  }
+}
+
+// Component section
+.component {
+  &__header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.2rem;
+    align-items: center;
+    background-color: $bg-light;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  &__header-item {
+    padding-right: 1rem;
+  }
+
+  &__footer {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.2rem;
+    align-items: center;
+    background-color: $bg-footer;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  &__add-product {
+    padding: 1rem 2rem;
+  }
+}
+
+// Product rows
+.product-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.2rem;
+  align-items: center;
+  padding: 1.5rem 2rem 1rem 2rem;
+  position: relative;
+
+  &__item {
+    overflow-x: hidden;
+    padding-right: 1rem;
+    padding-top: 1rem;
+
+    &--product {
+      margin-left: 3rem;
+    }
+  }
+
+  // Tree lines
+  &::before {
+    content: '';
+    position: absolute;
+    left: 2.6rem;
+    top: 61%;
+    width: 32px;
+    height: 1px;
+    background-color: $tree-line;
+    transform: translateY(-50%);
+  }
+
+  &:first-child::after {
+    content: '';
+    position: absolute;
+    left: 33px;
+    top: -2px;
+    width: 1px;
+    height: calc(50% + 12px);
+    background-color: $tree-line;
+  }
+
+  &:not(:first-child)::after {
+    content: '';
+    position: absolute;
+    left: 33px;
+    top: -35px;
+    width: 1px;
+    height: calc(50% + 46px);
+    background-color: $tree-line;
+  }
+}
+
+// Currency total section
+.currency-total {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.2rem;
+  align-items: center;
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    padding-right: 1rem;
+  }
+
+  &__title {
+    display: block;
+    line-height: 1.4;
+  }
+
+  &__subtitle {
+    display: block;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__help {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $help-icon-bg;
+    border-radius: 16px;
+    color: white;
+  }
+
+  &__help-icon {
+    font-size: 13px !important;
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  &__amounts {
+    display: contents;
+  }
+}
+
+// Amount items
+.amount-item {
+  &__value {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+
+    b {
+      font-weight: 600;
+    }
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    color: $text-tertiary;
+    line-height: 1.3;
+  }
+}
+
+// Button styles
+.fi-flat-btn {
+  border: 1px solid $link-color !important;
+  color: $link-color !important;
+  box-shadow: none !important;
+}
+
+.fi-basic-btn {
+  max-width: 10rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  color: $link-color !important;
+}
+
+// Angular Material overrides
+:host ::ng-deep {
+  .currency-card__button.mat-mdc-button {
+    .mat-mdc-button-touch-target {
+      height: 20px !important;
+      min-height: 20px !important;
+      width: 20px !important;
+    }
+
+    .mat-mdc-button-persistent-ripple::before {
+      background-color: transparent !important;
+    }
+
+    .mdc-button__label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .mat-mdc-form-field {
+    .mat-mdc-form-field-bottom-align {
+      display: none;
+    }
+  }
+}

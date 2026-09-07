@@ -1,0 +1,915 @@
+<title>Cadena Fiduciaria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+  :root {
+    --paper: #eef1f4;
+    --surface: #ffffff;
+    --surface-2: #f6f8fa;
+    --ink: #16212e;
+    --ink-2: #46586b;
+    --ink-3: #6d7f91;
+    --line: #d5dce3;
+    --line-2: #e6ebf0;
+    --brand: #1c5d99;
+    --brand-soft: #e3edf7;
+    --flow: #a4661c;
+    --flow-soft: #f8eeda;
+    --settled: #2c6a4f;
+    --settled-soft: #e2efe8;
+    --stop: #9c3128;
+    --stop-soft: #fae8e5;
+    --shadow: 0 1px 2px rgba(22, 33, 46, .06), 0 6px 20px rgba(22, 33, 46, .06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10171f;
+      --surface: #18212b;
+      --surface-2: #1e2833;
+      --ink: #e8edf2;
+      --ink-2: #adbdcc;
+      --ink-3: #8496a8;
+      --line: #2c3844;
+      --line-2: #232e39;
+      --brand: #74aede;
+      --brand-soft: #1b2c3c;
+      --flow: #d9a458;
+      --flow-soft: #302616;
+      --settled: #74bf9a;
+      --settled-soft: #16281f;
+      --stop: #e08d83;
+      --stop-soft: #2c1b19;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .3);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #10171f;
+    --surface: #18212b;
+    --surface-2: #1e2833;
+    --ink: #e8edf2;
+    --ink-2: #adbdcc;
+    --ink-3: #8496a8;
+    --line: #2c3844;
+    --line-2: #232e39;
+    --brand: #74aede;
+    --brand-soft: #1b2c3c;
+    --flow: #d9a458;
+    --flow-soft: #302616;
+    --settled: #74bf9a;
+    --settled-soft: #16281f;
+    --stop: #e08d83;
+    --stop-soft: #2c1b19;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0 20px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { margin: 0 auto; max-width: 60rem; }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    border-bottom: 3px solid var(--ink);
+    margin-bottom: 44px;
+    padding: 56px 0 24px;
+  }
+
+  .eyebrow {
+    color: var(--ink-3);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .78rem;
+    letter-spacing: .14em;
+    margin: 0 0 14px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: clamp(2.3rem, 6vw, 3.4rem);
+    font-weight: 700;
+    letter-spacing: -.015em;
+    line-height: 1.05;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    color: var(--ink-2);
+    font-size: 1.22rem;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 46ch;
+  }
+
+  h2 {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: clamp(1.5rem, 3.4vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -.01em;
+    line-height: 1.15;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: 1.24rem;
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  section { margin-bottom: 72px; }
+
+  .section-lead {
+    color: var(--ink-2);
+    margin: 0 0 28px;
+    max-width: 62ch;
+  }
+
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  code {
+    background: var(--surface-2);
+    border: 1px solid var(--line-2);
+    border-radius: 3px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .86em;
+    padding: 1px 5px;
+  }
+
+  /* ---------- diagram frame ---------- */
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow-x: auto;
+    padding: 26px 22px;
+  }
+
+  .diagram pre.mermaid {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    min-width: 480px;
+  }
+
+  .caption {
+    color: var(--ink-3);
+    font-size: .92rem;
+    margin: -14px 0 28px;
+  }
+
+  /* ---------- the numbered spine ---------- */
+  .spine { list-style: none; margin: 0; padding: 0; }
+
+  .stage {
+    display: grid;
+    gap: 0 22px;
+    grid-template-columns: 52px 1fr;
+    padding-bottom: 26px;
+    position: relative;
+  }
+
+  .stage:not(:last-child)::before {
+    background: var(--line);
+    bottom: 0;
+    content: "";
+    left: 25px;
+    position: absolute;
+    top: 52px;
+    width: 2px;
+  }
+
+  .stage__num {
+    align-items: center;
+    background: var(--surface);
+    border: 2px solid var(--brand);
+    border-radius: 50%;
+    color: var(--brand);
+    display: flex;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    height: 52px;
+    justify-content: center;
+    position: relative;
+    width: 52px;
+    z-index: 1;
+  }
+
+  .stage--outside .stage__num {
+    border-color: var(--ink-3);
+    border-style: dashed;
+    color: var(--ink-3);
+  }
+
+  .stage__body {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+  }
+
+  .stage__head {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-bottom: 12px;
+  }
+
+  .tag {
+    border-radius: 999px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    padding: 3px 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .tag--built { background: var(--settled-soft); color: var(--settled); }
+  .tag--exists { background: var(--brand-soft); color: var(--brand); }
+  .tag--missing { background: var(--flow-soft); color: var(--flow); }
+  .tag--out { background: var(--stop-soft); color: var(--stop); }
+
+  .stage__grid {
+    border-top: 1px solid var(--line-2);
+    display: grid;
+    gap: 4px 20px;
+    grid-template-columns: minmax(9rem, auto) 1fr;
+    margin-top: 14px;
+    padding-top: 14px;
+  }
+
+  .stage__grid dt {
+    color: var(--ink-3);
+    font-size: .84rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .stage__grid dd { margin: 0 0 8px; }
+  .stage__grid dd:last-of-type { margin-bottom: 0; }
+
+  /* ---------- tables ---------- */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    margin-bottom: 22px;
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    min-width: 46rem;
+    width: 100%;
+  }
+
+  th, td {
+    border-bottom: 1px solid var(--line-2);
+    padding: 12px 16px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    background: var(--surface-2);
+    color: var(--ink-3);
+    font-size: .8rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+
+  td.code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+
+  /* ---------- worked example ---------- */
+  .ledger {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    padding: 4px 0;
+  }
+
+  .ledger__row {
+    align-items: baseline;
+    border-bottom: 1px solid var(--line-2);
+    display: grid;
+    gap: 6px 18px;
+    grid-template-columns: 1fr auto;
+    padding: 16px 22px;
+  }
+
+  .ledger__row:last-child { border-bottom: 0; }
+
+  .ledger__row--total {
+    background: var(--surface-2);
+    font-weight: 600;
+  }
+
+  .ledger__label { color: var(--ink); }
+  .ledger__note { color: var(--ink-3); font-size: .93rem; grid-column: 1 / -1; margin-top: 2px; }
+
+  .ledger__amount {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 1.05rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  .amount--in { color: var(--settled); }
+  .amount--out { color: var(--flow); }
+
+  /* ---------- callout ---------- */
+  .callout {
+    background: var(--surface);
+    border-left: 4px solid var(--brand);
+    border-radius: 0 6px 6px 0;
+    box-shadow: var(--shadow);
+    margin: 24px 0;
+    padding: 18px 22px;
+  }
+
+  .callout--warn { border-left-color: var(--flow); }
+
+  .callout__title {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: 1.06rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .quote {
+    border-left: 3px solid var(--line);
+    color: var(--ink-2);
+    font-style: italic;
+    margin: 18px 0;
+    padding-left: 18px;
+  }
+
+  .quote cite {
+    color: var(--ink-3);
+    display: block;
+    font-size: .9rem;
+    font-style: normal;
+    margin-top: 6px;
+  }
+
+  ul.plain { margin: 0 0 14px; padding-left: 22px; }
+  ul.plain li { margin-bottom: 6px; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    color: var(--ink-3);
+    font-size: .94rem;
+    margin-top: 24px;
+    padding-top: 22px;
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .stage { grid-template-columns: 40px 1fr; gap: 0 14px; }
+    .stage__num { font-size: .86rem; height: 40px; width: 40px; }
+    .stage:not(:last-child)::before { left: 19px; top: 40px; }
+    .stage__grid { grid-template-columns: 1fr; }
+    .stage__grid dt { margin-top: 8px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Interfaz Fiduciaria · Módulos financieros</p>
+    <h1>Del contrato al Banco</h1>
+    <p class="standfirst">
+      Cómo se encadenan los módulos para que un pago hecho por el ejecutor
+      termine convertido en una transacción que el BID aprueba.
+    </p>
+  </header>
+
+  <section>
+    <h2>La cadena completa</h2>
+    <p class="section-lead">
+      Hoy cada módulo se alimenta a mano y por separado. La idea de esta cadena
+      es que el dato se capture una sola vez y se propague: lo que se registra
+      en adquisiciones llega hasta la transacción que viaja al Banco.
+    </p>
+
+    <div class="diagram">
+<pre class="mermaid">
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Source Sans 3, sans-serif","fontSize":"15px","primaryColor":"#ffffff","primaryTextColor":"#16212e","primaryBorderColor":"#1c5d99","lineColor":"#6d7f91","tertiaryColor":"#f6f8fa"}}}%%
+flowchart TD
+  A["Aviso y Gestión<br/>de Adquisiciones"] --> B["Contrato<br/><i>compromiso</i>"]
+  B --> C["Cronograma<br/>de Pagos"]
+  C --> D["Plan Financiero<br/><i>previsión 6 meses</i>"]
+  D --> E(["Transacción ANT<br/>anticipo de fondos"])
+  E --> F["El Banco adelanta<br/>el dinero"]
+  C --> G["Reporte de Pagos<br/>Efectuados"]
+  F --> G
+  G --> H["Estado de Gastos<br/>o Pagos"]
+  H --> I(["Transacción<br/>ANJ · DPB · DPS"])
+  I --> J["Transacciones<br/>Financieras"]
+  J --> K["Convergencia<br/><i>aprobación del BID</i>"]
+  K --> L["Estado de Ejecución<br/><i>balances</i>"]
+
+  classDef built fill:#e2efe8,stroke:#2c6a4f,stroke-width:2px,color:#16212e;
+  classDef txn fill:#e3edf7,stroke:#1c5d99,stroke-width:2px,color:#16212e;
+  classDef bank fill:#f8eeda,stroke:#a4661c,stroke-width:2px,color:#16212e;
+  class G,H built;
+  class E,I,J txn;
+  class F,K bank;
+</pre>
+    </div>
+    <p class="caption">
+      En verde, los dos módulos construidos en esta fase. En azul, las
+      transacciones. En ocre, los momentos en que el dinero cambia de manos.
+    </p>
+  </section>
+
+  <section>
+    <h2>Etapa por etapa</h2>
+    <p class="section-lead">
+      El orden importa: cada etapa solo puede ocurrir cuando la anterior dejó
+      su dato. La numeración es la secuencia real del proceso, no un índice.
+    </p>
+
+    <ol class="spine">
+
+      <li class="stage">
+        <div class="stage__num">1</div>
+        <div class="stage__body">
+          <div class="stage__head">
+            <h3>Adquisiciones y contrato</h3>
+            <span class="tag tag--exists">Ya existe</span>
+          </div>
+          <p>
+            El proceso de adquisición termina en un contrato firmado con un
+            proveedor. Ese contrato es el <strong>compromiso</strong>: la unidad
+            sobre la que se cuelga todo lo demás.
+          </p>
+          <dl class="stage__grid">
+            <dt>Produce</dt>
+            <dd>Número de compromiso, receptor, monto firmado por moneda, plazo.</dd>
+            <dt>Excepción</dt>
+            <dd>
+              Hay compromisos sin proceso de adquisición detrás (becas, gastos
+              directos). El tipo existe en el modelo; el Banco todavía no tiene
+              la fuente de datos.
+            </dd>
+          </dl>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage__num">2</div>
+        <div class="stage__body">
+          <div class="stage__head">
+            <h3>Cronograma de pagos</h3>
+            <span class="tag tag--exists">Ya existe</span>
+          </div>
+          <p>
+            El ejecutor planifica cuándo pagará cada hito del contrato. Son
+            pagos <em>futuros</em>: todavía no salió dinero de ninguna cuenta.
+          </p>
+          <dl class="stage__grid">
+            <dt>Produce</dt>
+            <dd>Fechas estimadas y montos previstos por componente.</dd>
+            <dt>Alimenta</dt>
+            <dd>El plan financiero y, más tarde, el reporte de pagos.</dd>
+          </dl>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage__num">3</div>
+        <div class="stage__body">
+          <div class="stage__head">
+            <h3>Plan financiero → anticipo</h3>
+            <span class="tag tag--missing">Otro equipo</span>
+          </div>
+          <p>
+            El ejecutor le dice al Banco cuánto dinero va a necesitar en los
+            próximos seis meses, con un margen. Con eso genera una transacción
+            <code>ANT</code> y el Banco le adelanta los fondos.
+          </p>
+          <p class="quote">
+            El plan financiero debería ir antes. En el orden cronológico va
+            antes.
+            <cite>Rafael Pérez, sobre el orden de construcción</cite>
+          </p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage__num">4</div>
+        <div class="stage__body">
+          <div class="stage__head">
+            <h3>Reporte de Pagos Efectuados</h3>
+            <span class="tag tag--built">Construido</span>
+          </div>
+          <p>
+            Aquí el ejecutor declara lo que <strong>ya pagó</strong>. Es el
+            único módulo donde entra el hecho real: salió dinero, a quién, en
+            qué fecha, con cargo a qué componente.
+          </p>
+          <dl class="stage__grid">
+            <dt>Cuatro entradas</dt>
+            <dd>
+              Desde el cronograma · registro manual · importación de archivo ·
+              monto acumulado. La importación es la que más se va a usar: las
+              agencias ya llevan los pagos en su propio sistema.
+            </dd>
+            <dt>Dato clave</dt>
+            <dd>
+              La pregunta <em>¿es sujeto a reembolso?</em> decide por dónde
+              viajará el pago después. Es lo que separa una justificación de un
+              reembolso.
+            </dd>
+            <dt>También hace</dt>
+            <dd>
+              Ajuste masivo de tasa de cambio y cambio del mecanismo de pago de
+              un grupo de pagos.
+            </dd>
+          </dl>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage__num">5</div>
+        <div class="stage__body">
+          <div class="stage__head">
+            <h3>Estado de Gastos o Pagos</h3>
+            <span class="tag tag--built">Construido</span>
+          </div>
+          <p>
+            El ejecutor elige un tipo de transacción y un rango de fechas. El
+            sistema barre <strong>todos los contratos del préstamo</strong>,
+            junta los pagos en estado Pagado que caen en ese rango y los agrupa
+            por componente.
+          </p>
+          <dl class="stage__grid">
+            <dt>Puede excluir</dt>
+            <dd>
+              Entrando al detalle de un componente se desmarcan los pagos que no
+              quiere enviar todavía, y los montos se recalculan.
+            </dd>
+            <dt>Produce</dt>
+            <dd>
+              Una transacción con los montos ya desglosados por componente, que
+              el usuario no puede modificar a mano: quedan atados a los pagos que
+              los sustentan.
+            </dd>
+          </dl>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage__num">6</div>
+        <div class="stage__body">
+          <div class="stage__head">
+            <h3>Transacciones Financieras</h3>
+            <span class="tag tag--exists">Ya existe</span>
+          </div>
+          <p>
+            La transacción generada entra en el flujo de aprobación interno del
+            ejecutor. Hoy este formulario se llena a mano; el estado de gastos
+            es lo que lo va a llenar solo.
+          </p>
+          <dl class="stage__grid">
+            <dt>Aporta el módulo</dt>
+            <dd>
+              La cuenta bancaria que recibe el dinero, cuando el tipo de
+              transacción implica un pago del Banco.
+            </dd>
+          </dl>
+        </div>
+      </li>
+
+      <li class="stage stage--outside">
+        <div class="stage__num">7</div>
+        <div class="stage__body">
+          <div class="stage__head">
+            <h3>Convergencia</h3>
+            <span class="tag tag--out">Fuera de la Interfaz</span>
+          </div>
+          <p>
+            Autorizada del lado del ejecutor, la solicitud viaja al sistema del
+            Banco y continúa el flujo de aprobación con el equipo del BID.
+            Cuando se aprueba, los pagos que la sustentan quedan
+            <strong>justificados</strong> y ya no pueden volver a enviarse.
+          </p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage__num">8</div>
+        <div class="stage__body">
+          <div class="stage__head">
+            <h3>Estado de Ejecución</h3>
+            <span class="tag tag--missing">Depende de balances</span>
+          </div>
+          <p>
+            Cómo quedan los saldos por componente después de cada solicitud.
+            Necesita un motor de cálculo de balances a nivel de contrato, que es
+            la pieza pesada de todo esto.
+          </p>
+          <div class="callout callout--warn">
+            <div class="callout__title">Sin balances no hay reglas</div>
+            <p>
+              Si el sistema no sabe cuánto queda disponible, no puede impedir que
+              se reporte un pago mayor a lo aprobado. El control por moneda del
+              contrato ya está; el control contra el saldo del préstamo espera a
+              ese motor.
+            </p>
+          </div>
+        </div>
+      </li>
+
+    </ol>
+  </section>
+
+  <section>
+    <h2>Ciclo de vida de un pago</h2>
+    <p class="section-lead">
+      Un pago no se justifica dos veces. El estado es lo que lo garantiza, y por
+      eso el estado intermedio importa: entre «lo pagué» y «el Banco lo aceptó»
+      hay un tramo en que el pago está comprometido pero todavía no es firme.
+    </p>
+
+    <div class="diagram">
+<pre class="mermaid">
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Source Sans 3, sans-serif","fontSize":"15px","primaryColor":"#ffffff","primaryTextColor":"#16212e","primaryBorderColor":"#1c5d99","lineColor":"#6d7f91"}}}%%
+stateDiagram-v2
+  direction LR
+  [*] --> Programado: se trae del cronograma
+  Programado --> Pagado: el ejecutor confirma el pago
+  [*] --> Pagado: registro manual o importación
+  Pagado --> PendienteDeJustificacion: entra en un estado de gastos
+  PendienteDeJustificacion --> Justificado: el Banco aprueba
+  PendienteDeJustificacion --> Pagado: el Banco rechaza
+  Justificado --> [*]
+  [*] --> Acumulado: monto acumulado
+  Acumulado --> [*]
+
+  note right of Justificado
+    Estado final.
+    No se puede editar
+    ni volver a enviar.
+  end note
+
+  note right of Acumulado
+    Cuenta para el avance
+    financiero, pero nunca
+    entra en un estado de gastos.
+  end note
+</pre>
+    </div>
+    <p class="caption">
+      La rama de la derecha es la vía de escape para agencias que no quieren
+      cargar pago por pago: reportan un total y siguen armando sus
+      justificaciones por fuera del portal.
+    </p>
+  </section>
+
+  <section>
+    <h2>Los cuatro tipos de transacción</h2>
+    <p class="section-lead">
+      El tipo elegido decide qué pagos se ofrecen, quién recibe el dinero y si
+      hace falta una cuenta bancaria. Los códigos son los mismos que usa el
+      Banco en el catálogo de transacciones.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Qué es</th>
+            <th>Qué pagos toma</th>
+            <th>Quién recibe</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="code">ANJ</td>
+            <td>Justificación de gastos con fondos ya anticipados por el Banco.</td>
+            <td>Los marcados <em>no reembolsables</em>, por rango de fechas.</td>
+            <td>Nadie. El dinero ya se entregó.</td>
+            <td><span class="tag tag--built">Construido</span></td>
+          </tr>
+          <tr>
+            <td class="code">DPB</td>
+            <td>Reembolso de gastos durante la ejecución: el ejecutor pagó con recursos propios.</td>
+            <td>Los marcados <em>reembolsables</em>, por rango de fechas.</td>
+            <td>Cuenta del ejecutor.</td>
+            <td><span class="tag tag--built">Construido</span></td>
+          </tr>
+          <tr>
+            <td class="code">DPS</td>
+            <td>Pago directo a un tercero: el Banco le paga al proveedor.</td>
+            <td>Se eligen a mano. Pueden estar todavía programados.</td>
+            <td>Cuenta del tercero.</td>
+            <td><span class="tag tag--built">Construido</span></td>
+          </tr>
+          <tr>
+            <td class="code">ATJ</td>
+            <td>Híbrida: justificación y anticipo de fondos en una sola solicitud.</td>
+            <td>Como ANJ, más una línea de anticipo.</td>
+            <td>Cuenta del ejecutor.</td>
+            <td><span class="tag tag--missing">Fuera de MVP</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout__title">DPB no es DRP</div>
+      <p>
+        El catálogo tiene los dos y se parecen. <code>DPB</code> es el reembolso
+        <strong>durante la ejecución</strong>, que es el que corresponde a este
+        flujo. <code>DRP</code> es el reembolso <strong>retroactivo</strong> de
+        gastos hechos antes de firmar el préstamo, y se tramita por otra vía.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Qué tipo corresponde</h2>
+    <p class="section-lead">
+      La decisión se toma en el pago, no en el estado de gastos. Al registrar
+      cada pago se responde de dónde salió el dinero, y esa respuesta ya
+      determina el camino.
+    </p>
+
+    <div class="diagram">
+<pre class="mermaid">
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Source Sans 3, sans-serif","fontSize":"15px","primaryColor":"#ffffff","primaryTextColor":"#16212e","primaryBorderColor":"#1c5d99","lineColor":"#6d7f91"}}}%%
+flowchart TD
+  P{"¿Quién puso<br/>el dinero?"}
+  P -->|"El Banco, por adelantado"| ANJ["ANJ<br/>Justificación"]
+  P -->|"El ejecutor, con recursos propios"| DPB["DPB<br/>Reembolso"]
+  P -->|"Todavía nadie:<br/>que pague el Banco al proveedor"| DPS["DPS<br/>Pago directo"]
+
+  ANJ --> R1["No hay desembolso.<br/>Se rinde cuenta de lo ya recibido."]
+  DPB --> R2["El Banco deposita<br/>en la cuenta del ejecutor."]
+  DPS --> R3["El Banco deposita<br/>en la cuenta del tercero."]
+
+  classDef txn fill:#e3edf7,stroke:#1c5d99,stroke-width:2px,color:#16212e;
+  classDef res fill:#f6f8fa,stroke:#d5dce3,color:#46586b;
+  class ANJ,DPB,DPS txn;
+  class R1,R2,R3 res;
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Un semestre con números</h2>
+    <p class="section-lead">
+      El caso que explica por qué una misma tanda de pagos puede partirse en dos
+      transacciones. Las cifras son ilustrativas y siguen el ejemplo que usó el
+      responsable de negocio.
+    </p>
+
+    <div class="ledger">
+      <div class="ledger__row">
+        <span class="ledger__label">Plan financiero: lo que el ejecutor prevé gastar en seis meses</span>
+        <span class="ledger__amount">300.000</span>
+        <span class="ledger__note">Sale del cronograma de pagos de todos sus contratos.</span>
+      </div>
+      <div class="ledger__row">
+        <span class="ledger__label">Anticipo solicitado al Banco <code>ANT</code></span>
+        <span class="ledger__amount amount--in">+353.000</span>
+        <span class="ledger__note">Pide un margen por encima del plan, por si aparece un pago imprevisto.</span>
+      </div>
+      <div class="ledger__row">
+        <span class="ledger__label">Pagos efectivamente realizados y registrados</span>
+        <span class="ledger__amount amount--out">−385.000</span>
+        <span class="ledger__note">Seis pagos que no coinciden uno a uno con los programados. El margen no alcanzó.</span>
+      </div>
+      <div class="ledger__row ledger__row--total">
+        <span class="ledger__label">Justificación <code>ANJ</code>: hasta donde llegó el anticipo</span>
+        <span class="ledger__amount">353.000</span>
+        <span class="ledger__note">No es un pago. Es rendir cuenta del dinero que el Banco ya había entregado.</span>
+      </div>
+      <div class="ledger__row ledger__row--total">
+        <span class="ledger__label">Reembolso <code>DPB</code>: lo que puso de su bolsillo</span>
+        <span class="ledger__amount amount--in">32.000</span>
+        <span class="ledger__note">Sí es un pago. Por eso esta transacción pide una cuenta bancaria y la otra no.</span>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout__title">Por qué esto importa para el diseño</div>
+      <p>
+        Los mismos 385.000 en pagos se reparten entre dos transacciones según
+        quién financió cada uno. Si el ejecutor no marca bien la pregunta del
+        reembolso al registrar el pago, el dinero se pide por la vía equivocada
+        y el Banco lo devuelve.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Estado de la construcción</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pieza</th>
+            <th>Situación</th>
+            <th>Qué falta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reporte de Pagos Efectuados</td>
+            <td><span class="tag tag--built">Construido</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Estado de Gastos o Pagos</td>
+            <td><span class="tag tag--built">Construido</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Tasa de cambio</td>
+            <td><span class="tag tag--missing">Decisión abierta</span></td>
+            <td>
+              Elegir entre tasa manual, tasa de la fecha del pago o tasa acordada
+              por préstamo. Recalcular hacia atrás reescribiría importes ya
+              justificados.
+            </td>
+          </tr>
+          <tr>
+            <td>Otras actividades como compromiso</td>
+            <td><span class="tag tag--missing">Sin fuente</span></td>
+            <td>El Banco todavía no tiene de dónde leer becas y similares.</td>
+          </tr>
+          <tr>
+            <td>Transacción ATJ</td>
+            <td><span class="tag tag--missing">Fuera de MVP</span></td>
+            <td>Depende del plan financiero del anticipo.</td>
+          </tr>
+          <tr>
+            <td>Motor de balances</td>
+            <td><span class="tag tag--out">No empezado</span></td>
+            <td>
+              Balance por contrato: aprobado, pagado, pendiente de justificar,
+              justificado y por pagar. Habilita el Estado de Ejecución y las
+              reglas de tope.
+            </td>
+          </tr>
+          <tr>
+            <td>Conciliación de Recursos BID</td>
+            <td><span class="tag tag--out">Descartado</span></td>
+            <td>Fuera de esta primera fase por decisión de negocio.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      Documento de trabajo. La secuencia y las reglas provienen de la sesión con
+      el responsable de negocio y de la sesión de feedback del equipo; el estado
+      de construcción refleja el código de la Interfaz Fiduciaria.
+    </p>
+  </footer>
+
+</div>

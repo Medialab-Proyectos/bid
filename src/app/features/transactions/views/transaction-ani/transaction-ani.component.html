@@ -1,0 +1,156 @@
+<div class="c-transactions">
+  <fi-transactions-header [transaction]="transactionTitle">
+  </fi-transactions-header>
+
+  <ng-container *ngIf="!isLoading && !isLoadingApiData; else showSpinner">
+    <ng-container *fiDisplayByPermissions="displayTransactionListPermission">
+      <ng-container *fiDisabledByActions="displayTransactionListActions">
+        <fi-ani-header-detail
+          [aniHeaderDetail]="aniHeaderDetail"
+        ></fi-ani-header-detail>
+
+        <fi-transaction-detail
+          data-testid="detail"
+          [isEditMode]="isEditMode"
+          [detailForm]="detailForm"
+          [transactionNumber]="transactionNumberWithPrefix"
+          [transactionStatusId]="
+            transactionStatusService.transactionStatusId | async
+          "
+          [transactionId]="transactionId"
+          [availableNumbers]="availableNumbers"
+          [isANI]="true"
+          [transactionType]="transactionType"
+        ></fi-transaction-detail>
+
+        <fi-amounts-disbursement
+          data-testid="amounts"
+          [amountsForm]="amountsForm"
+          [isEditMode]="isEditMode"
+          [approvedCurrency]="approvedCurrency$ | async"
+        ></fi-amounts-disbursement>
+
+        <fi-transaction-beneficiary
+          data-testid="beneficiary"
+          [order]="3"
+          [isEditMode]="isEditMode"
+          [beneficiaryForm]="beneficiaryForm"
+          [beneficiaries]="beneficiaries"
+          [projectBucketId]="projectBucketId"
+          (beneficiaryEmmiter)="onBeneficiaryChange($event)"
+          [isInvalidBeneficiary]="beneficiaryForm?.errors?.invalidCurrency"
+          [showAlert]="!bankFlowIdControl.value && isEditMode && secondStep"
+          (reloadBeneficiaryEmmiter)="reloadBeneficiary()"
+        ></fi-transaction-beneficiary>
+
+        <fi-transaction-documents
+          *ngIf="secondStep"
+          [number]="4"
+          [showReadOnly]="!isEditMode"
+          [transactionData]="{ id: transactionId, type: transactionType }"
+          (oneDocumentValidation)="onOneDocumentValidation($event)"
+          [showAlert]="!hasMinimumDocs && isEditMode && secondStep"
+        ></fi-transaction-documents>
+
+        <div
+          class="px-5 py-3"
+          *ngIf="detailForm.controls.requestNumber.errors?.invalidPartNumber"
+        >
+          <fi-alert
+            type="warning"
+            [title]="'TRANSACTION.INVALID.PART_REQUEST_NUMBERS' | translate"
+            [closable]="false"
+            [transactionNumbers]="[
+              detailForm.controls.requestNumber.value,
+              detailForm.controls.partNumber.value
+            ]"
+          ></fi-alert>
+        </div>
+
+        <div
+          *ngIf="isEditMode; else disabledFooter"
+          class="row c-transactions-beneficiary__footer"
+        >
+          <div>
+            <button
+              kendoButton
+              (click)="cancelOrBackTransaction()"
+              id="Btn_Cancel"
+              class="btn btn-base qa-btn-cancelTransaction"
+            >
+              {{ "ANT_TRANSACTION.CANCEL" | translate }}
+            </button>
+          </div>
+          <div>
+            <button
+              *ngIf="!secondStep"
+              kendoButton
+              (click)="submitSave()"
+              id="Btn_Next"
+              class="btn btn-brand"
+              [disabled]="transactionForm.invalid || partNumberLoading"
+              [icon]="partNumberLoading && 'loading'"
+            >
+              {{ "TRANSACTION.NEXT" | translate }}
+            </button>
+          </div>
+
+          <ng-container *ngIf="secondStep">
+            <div>
+              <button
+                kendoButton
+                (click)="submitSave(true)"
+                class="btn btn-online-brand"
+                [disabled]="transactionForm.invalid || partNumberLoading"
+                id="Btn_Save_transaction"
+                [icon]="partNumberLoading && 'loading'"
+              >
+                {{ "ANT_TRANSACTION.SAVE" | translate }}
+              </button>
+            </div>
+
+            <div>
+              <button
+                kendoButton
+                [disabled]="
+                  transactionForm.invalid ||
+                  !hasMinimumDocs ||
+                  workFlowLoading ||
+                  partNumberLoading ||
+                  !bankFlowIdControl.value
+                "
+                (click)="submitSave(false, true)"
+                class="btn btn-brand"
+                id="Btn_Request_transaction"
+                [icon]="workFlowLoading && 'loading'"
+              >
+                {{ "ANT_TRANSACTION.SEND_REQUEST" | translate }}
+              </button>
+            </div>
+          </ng-container>
+        </div>
+
+        <ng-template #disabledFooter>
+          <div class="row c-transactions-beneficiary__footer">
+            <div>
+              <button
+                kendoButton
+                (click)="cancelOrBackTransaction()"
+                class="btn btn-online-brand"
+                id="Btn_Return"
+              >
+                {{ "TRANSACTION.RETURN" | translate }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

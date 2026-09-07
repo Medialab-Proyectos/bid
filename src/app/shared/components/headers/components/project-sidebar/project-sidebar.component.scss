@@ -1,0 +1,126 @@
+.c-category-menu {
+  background-color: #fff;
+  height: 100%;
+  padding-top: 15px;
+  position: relative;
+
+  .c-category-menu__filter {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    label {
+      display: none;
+    }
+    .k-textbox {
+      width: 90%;
+      height: 31px;
+    }
+  }
+
+  .k-item {
+    &[aria-level="1"] {
+      .c-category-menu__item {
+        padding-left: 16px;
+      }
+    }
+    &[aria-level="2"] {
+      .c-category-menu__item {
+        padding-left: 32px;
+      }
+    }
+  }
+
+  .treeview-label {
+    margin-top: 14px;
+    label {
+      color: #b1b1b1;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 1px;
+      padding-left: 24px;
+    }
+  }
+
+  .k-treeview {
+    margin-top: 14px;
+    & > ::ng-deep ul.k-treeview-lines.k-treeview-group {
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+
+      .k-treeview-mid {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        align-content: center;
+      }
+    }
+    .k-treeview-item {
+      .k-treeview-leaf {
+        width: 100%;
+      }
+
+      .k-state-selected {
+        .c-category-menu__item-title {
+          font-weight: 500;
+        }
+        .c-category-menu__item-count {
+          background-color: #3c6bba;
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  .c-category-menu__item {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: flex;
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    .c-category-menu__item-title {
+      font-size: 13px;
+      color: #353536;
+      display: inline-block;
+      flex: 1;
+      &::selection {
+        background-color: #3c6bba;
+      }
+    }
+    .c-category-menu__item-count {
+      align-items: center;
+      background-color: #e1e7f3;
+      border-radius: 6px;
+      color: #000000;
+      display: inline-flex;
+      font-weight: 600;
+      height: 22px;
+      justify-content: center;
+      margin: 0 8px;
+      padding: 0px;
+      width: 22px;
+      font-size: 14px;
+    }
+
+    &.c-category-menu__item--border-bottom {
+      border-bottom: 2px solid #e8e8e9;
+      margin: 14px auto 0;
+      padding-bottom: 5px;
+      width: 94%;
+    }
+  }
+
+  .c-category-menu__setting-row {
+    bottom: 0;
+    margin: 10px 0;
+    position: absolute;
+
+    .c-category-menu__setting {
+      .c-category-menu__setting-title {
+        margin-left: 4px;
+      }
+    }
+  }
+}

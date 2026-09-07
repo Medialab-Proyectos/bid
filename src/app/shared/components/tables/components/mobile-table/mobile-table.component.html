@@ -1,0 +1,47 @@
+<fi-simple-table
+  class="c-mobile-table"
+  [dataSource]="dataSource"
+  [rowsTemplate]="baseRowsTemplate"
+  [sortByKey]="sortByKey"
+  [sortDirection]="sortDirection"
+>
+  <ng-template #baseRowsTemplate let-item>
+    <td class="first-column">
+      <ng-container
+        *ngTemplateOutlet="firstColumnTemplate; context: { $implicit: item }"
+      ></ng-container>
+    </td>
+
+    <ng-container
+      *ngTemplateOutlet="rowsTemplate; context: { $implicit: item }"
+    ></ng-container>
+
+    <td class="options-column">
+      <div class="options-wrapper">
+        <ng-container
+          *ngTemplateOutlet="
+            optionsColumnTemplate
+              ? optionsColumnTemplate
+              : defaultOptionsColumnTemplate;
+            context: { $implicit: item }
+          "
+        ></ng-container>
+
+        <ng-template #defaultOptionsColumnTemplate>
+          <fi-options-menu
+            [options]="options"
+            [anchor]="popupButton"
+            #popup
+            (optionClick)="showMoreOptions($event, item)"
+          ></fi-options-menu>
+          <button #popupButton class="o-icon-button" (click)="popup.toggle()">
+            <em class="fas fa-ellipsis-v"></em>
+          </button>
+          <button class="o-icon-button" (click)="primaryAction(item)">
+            <em class="fas fa-chevron-right"></em>
+          </button>
+        </ng-template>
+      </div>
+    </td>
+  </ng-template>
+</fi-simple-table>

@@ -1,0 +1,60 @@
+<div class="c-aditional-information">
+  <fi-accordion-panel>
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "CONTRACT.ADDITIONAL_INFO.TITLE" | translate
+    }}</ng-container>
+    <ng-container body>
+      <div class="aditional-information" [formGroup]="form">
+        <fi-securities
+          [form]="securityList"
+          [config]="{
+            data: {
+              currencies: baseConfig.data.currencies,
+              securityTypes: baseConfig.data.securityTypes
+            },
+            settings: {
+              mode: baseConfig.settings.mode
+            }
+          }"
+          [addSecurityPermission]="addSecurityPermission"
+          [removeSecurityPermission]="removeSecurityPermission"
+          (currencyChange)="onSecurityCurrencyChange($event)"
+        ></fi-securities>
+        <mat-divider class="my-2"></mat-divider>
+        <fi-damages
+          class="d-block mt-4"
+          [form]="damagesList"
+          [config]="{
+            data: {
+              damagesTypes: baseConfig.data.damagesTypes,
+              frequencies: baseConfig.data.frequencies
+            },
+            settings: {
+              mode: baseConfig.settings.mode
+            }
+          }"
+          [addLiqDamagesPermission]="addLiqDamagesPermission"
+          [removeLiqDamagesPermission]="removeLiqDamagesPermission"
+        ></fi-damages>
+        <mat-divider class="my-2"></mat-divider>
+        <fi-bonus
+          class="d-block mt-4"
+          [form]="bonusList"
+          [config]="{
+            data: {
+              bonusTypes: baseConfig.data.bonusTypes,
+              frequencies: baseConfig.data.frequencies
+            },
+            settings: {
+              mode: baseConfig.settings.mode
+            }
+          }"
+          [addBonusPermission]="addBonusPermission"
+          [removeBonusPermission]="removeBonusPermission"
+        >
+        </fi-bonus>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

@@ -1,0 +1,120 @@
+<div class="c-edit-procurement-process" id="top">
+  <ng-container *ngIf="focusComments; else editProcess">
+    <fi-header-feature
+      [title]="'PROCUREMENT.HEADER.PROJECT' | translate"
+      [subtitle]="'PROCUREMENT.HEADER.ADQUISITION_PROCESS' | translate"
+      [feature]="'PROCUREMENT.HEADER.ADD_COMMENTS_PROCESS' | translate"
+    ></fi-header-feature>
+  </ng-container>
+
+  <ng-template #editProcess>
+    <fi-header-feature
+      [title]="'PROCUREMENT.HEADER.PROJECT' | translate"
+      [subtitle]="'PROCUREMENT.HEADER.ADQUISITION_PROCESS' | translate"
+      [feature]="'PROCUREMENT.HEADER.EDIT_PROCESS' | translate"
+    ></fi-header-feature>
+  </ng-template>
+
+  <ng-container
+    *ngIf="!isLoading && isEnumLoaded && !isProjectLoading; else showLoading"
+  >
+    <div class="row">
+      <div class="col-12">
+        <ng-container *ngIf="formErrorCollection.length > 0">
+          <fi-error-list
+            role="ErrorMessage"
+            [errorList]="formErrorCollection"
+            [errorListTitle]="errorListTitle"
+          ></fi-error-list>
+        </ng-container>
+      </div>
+    </div>
+
+    <fi-procurement-form
+      [form]="form"
+      [procurementMethods$]="procurementMethods$"
+      [supervisionMethods$]="supervisionMethods$"
+      [selectedOutputs$]="selectedOutputs$"
+      [thresholds]="thresholds"
+      [nationalBiddingThreshold]="nationalBiddingThreshold"
+      [attributeCategory]="attributeCategory"
+      [attributeProcurementMethod]="attributeProcurementMethod"
+      [attributeSupervisionMethod]="attributeSupervisionMethod"
+      [attributeGroupMethod]="attributeGroupMethod"
+      [justificationVisibility]="justificationVisibility"
+      [goodsReferenceVisibility]="goodsReferenceVisibility"
+      [readOnly]="!hasEditProcurementProcessPermission || isBiddingPlanInSync"
+      [disabledComments]="isDisabledCommentPermission"
+      [warningMessage]="warningMessage"
+      [formConfig]="formConfig"
+      [allProcessData]="allProcessData"
+      [processStatus]="processStatus"
+    ></fi-procurement-form>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div
+            class="float-right"
+            [ngClass]="mobileView ? 'footer-mobile-procurement' : null"
+          >
+            <ng-container
+              *ngIf="
+                (displayUpdteProcessAndCancelBtn ||
+                  displaySaveCommentAndCancelBtn) &&
+                !isBiddingPlanInSync
+              "
+            >
+              <button
+                kendoButton
+                class="btn btn-online-brand mb-3 mx-md-2"
+                id="Btn_Navigate_procurement"
+                *fiDisplayByPermissions="cancelButtonPermission"
+                (click)="navigateToProcurement()"
+              >
+                {{ "PROCUREMENT.CANCEL" | translate }}
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="showEditBtn()">
+              <ng-container
+                *ngIf="displayUpdteProcessAndCancelBtn && !isBiddingPlanInSync"
+              >
+                <button
+                  kendoButton
+                  [disabled]="isButtonDisabled || !form.touched || !form.dirty"
+                  class="btn btn-brand mb-3 mx-md-2"
+                  id="Btn_Submit_procurement_process"
+                  *fiDisplayByPermissions="updateProcessButtonPermission"
+                  (click)="submit()"
+                >
+                  {{ "PROCUREMENT.UPDATE_PROCESS" | translate }}
+                </button>
+              </ng-container>
+            </ng-container>
+
+            <ng-container
+              *ngIf="displaySaveCommentAndCancelBtn && !isBiddingPlanInSync"
+            >
+              <button
+                kendoButton
+                class="btn btn-brand mb-3 mx-md-2"
+                id="Btn_Submit_procurement_process"
+                *fiDisplayByPermissions="saveCommentButtonPermission"
+                (click)="saveComments()"
+              >
+                {{ "PROCUREMENT.SAVE_COMMENT" | translate }}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #showLoading>
+    <div class="text-center py-5">
+      <fi-loader></fi-loader>
+    </div>
+  </ng-template>
+</div>

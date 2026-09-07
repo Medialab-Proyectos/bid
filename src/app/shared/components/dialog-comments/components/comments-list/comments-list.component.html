@@ -1,0 +1,18 @@
+<div class="c-comments-list">
+  <fi-avatar [userNameInitials]="comment.createdBy"></fi-avatar>
+  <div class="c-comments-list__container">
+    <div class="c-comments-list__info">
+      <span>{{ "COMMENTS.AUTHOR" | translate }}:&nbsp;</span>
+      <span> {{ comment.createdBy }}</span>
+    </div>
+    <div class="c-comments-list__date">
+      <time [dateTime]="localDate"> {{ localDate | date : format }}</time>
+      <time [dateTime]="localDate"> {{ localDate | date : "shortTime" }}</time
+      >,
+      <time [dateTime]="localDate">
+        {{ localDate | date : "EEEE" : null : language }}</time
+      >
+    </div>
+    <div class="c-comments-list__comment" [innerHtml]="comment.text"></div>
+  </div>
+</div>

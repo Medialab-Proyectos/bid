@@ -1,0 +1,18 @@
+<kendo-dropdownbutton
+  [id]="'Btn_option_' + id"
+  [data]="itemOptions"
+  (itemClick)="onItemClick($event)"
+  [popupSettings]="{ popupClass: 'popupClass', animate: true }"
+  [disabled]="disabled"
+>
+  <span class="fas fa-ellipsis-v"></span>
+  <ng-template
+    kendoDropDownButtonItemTemplate
+    let-dataItem
+    let-rowIndex="rowIndex"
+  >
+    <span [id]="'Btn_Option_' + dataItem">{{
+      dataItem.value || dataItem | translate
+    }}</span>
+  </ng-template>
+</kendo-dropdownbutton>

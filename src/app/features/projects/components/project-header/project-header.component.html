@@ -1,0 +1,100 @@
+<div
+  class="card-project"
+  *ngIf="showProjectHeader"
+  data-testid="project-Header"
+>
+  <div class="card-project__header d-flex justify-content-between">
+    <div class="d-flex">
+      <div class="project-header__icon">
+        <div class="icon-header icon-header_project">
+          <em class="fas fa-briefcase"></em>
+        </div>
+      </div>
+      <div class="project-header__data">
+        <div class="project-contract label">
+          {{ "PROJECTS.HEADER.TITLE" | translate }}
+        </div>
+        <div class="project-contract" *ngIf="!isLoading; else skeleton">
+          {{ project?.contract }}
+        </div>
+      </div>
+    </div>
+    <div *ngIf="mobileView" class="pr-3 d-flex align-items-center">
+      <em
+        *ngIf="mobileExpanded"
+        class="fas fa-chevron-down"
+        (click)="toogleExpandedData()"
+      ></em>
+      <em
+        *ngIf="!mobileExpanded"
+        class="fas fa-chevron-up"
+        (click)="toogleExpandedData()"
+      ></em>
+    </div>
+  </div>
+  <div
+    *ngIf="mobileExpanded"
+    [ngClass]="mobileView ? 'p-2' : null"
+    class="row card-project__data"
+  >
+    <div class="col-sm-12 col-md-1 project-data__operation">
+      <div class="project-tag__header">
+        {{ "PROJECTS.HEADER.OPERATION" | translate }}
+      </div>
+      <div
+        class="project-tag__content no-wrap"
+        *ngIf="!isLoading; else skeleton"
+      >
+        {{ project?.operationNumber }}
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-4 project-data__name">
+      <div class="project-tag__header">
+        {{ "PROJECTS.HEADER.NAME_OPERATION" | translate }}
+      </div>
+      <div class="project-tag__content" *ngIf="!isLoading; else skeleton">
+        {{ projectName }}
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-2 project-data__amount">
+      <div class="project-tag__header">
+        {{ "PROJECTS.HEADER.APPROVED_AMOUNT" | translate }}
+      </div>
+      <div
+        class="project-tag__content no-wrap"
+        *ngIf="!isLoading; else skeleton"
+      >
+        $ {{ project?.approvedAmount | ifNumber }}
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-2 project-data__current_amount">
+      <div class="project-tag__header">
+        {{ "PROJECTS.HEADER.CURRENT_APPROVED_AMOUNT" | translate }}
+      </div>
+      <div
+        class="project-tag__content no-wrap"
+        *ngIf="!isLoading; else skeleton"
+      >
+        $ {{ project?.currentApprovedAmount | ifNumber }}
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-2 project-data__institution">
+      <div class="project-tag__header">
+        {{ "PROJECTS.HEADER.INSTITUTION" | translate }}
+      </div>
+      <div class="project-tag__content" *ngIf="!isLoading; else skeleton">
+        {{ project?.executor }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #skeleton>
+  <kendo-skeleton
+    shape="text"
+    animation="pulse"
+    width="100%"
+    class="k-skeleton-pulse k-skeleton-text k-skeleton"
+    data-testid="skeleton"
+  ></kendo-skeleton>
+</ng-template>

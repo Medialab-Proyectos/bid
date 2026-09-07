@@ -1,0 +1,29 @@
+<div class="container-fluid c-procurement--tabstrip mt-3">
+  <div class="row" *ngIf="!loading && !selectedProjectLoading; else loader">
+    <div class="col col-12">
+      <!-- TODO APPLY IMPROVEMENTS -->
+      <!-- <fi-documents
+        class="fiduciary-interface-documents"
+        [documents]="documentsList"
+        [permissions]="documentPermission"
+        [loading]="loading"
+        [projectBucketId]="projectBucketId"
+        [multipleDocs]="false"
+        (downloadDocEmitter)="downloadDoc($event)"
+        (deleteDocEmitter)="deleteAction($event)"
+        (previewDocEmitter)="previewDoc($event)"
+        (requestPublication)="requestPublication()"
+        (refreshDocs)="loadDataFromStore()"
+        (routinGpnForm)="redirectGPN($event)"
+        [btnBusiness]="btnBusiness"
+        [testGPNTooltip]="testGPNTooltip"
+      ></fi-documents> -->
+    </div>
+  </div>
+</div>
+
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

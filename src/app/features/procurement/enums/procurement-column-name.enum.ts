@@ -1,0 +1,17 @@
+export enum ProcurementColumnName {
+  code = 'code',
+  name = 'name',
+  componentName = 'componentName',
+  projectAmountEstimatedAmount = 'projectAmount.estimatedAmount',
+  totalAcumulatedAmount = 'totalAcumulatedAmount',
+  statusTranslation = 'statusTranslation',
+  advanceMilestoneTotalCompleted = 'advanceMilestone.totalCompleted',
+  categoryTranslation = 'categoryTranslation',
+  procurementMethodTranslation = 'procurementMethodTranslation',
+  supervisionMethodTranslation = 'supervisionMethodTranslation',
+  totalComments = 'totalComments',
+  isMigrated = 'isMigrated',
+  packagesUnderReview = 'packagesUnderReview',
+  milestonesDelayed = 'milestonesDelayed',
+  currentMilestone = 'currentMilestone',
+}

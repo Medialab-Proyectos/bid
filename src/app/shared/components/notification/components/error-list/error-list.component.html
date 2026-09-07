@@ -1,0 +1,18 @@
+<kendo-card
+  width="'100%'"
+  class="marginBottom1em c-error-list"
+  data-testid="errorList"
+>
+  <kendo-card-header class="k-hbox">{{
+    errorListTitle | translate
+  }}</kendo-card-header>
+  <kendo-card-body class="kendo-card-body">
+    <ul>
+      <li
+        *ngFor="let error of errorList"
+        [translate]="error.key"
+        [translateParams]="{ index: error.index }"
+      ></li>
+    </ul>
+  </kendo-card-body>
+</kendo-card>

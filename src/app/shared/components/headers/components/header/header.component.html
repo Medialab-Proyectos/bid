@@ -1,0 +1,33 @@
+<div
+  class="container-fluid main-header"
+  [ngClass]="!mobileView ? 'desktop-header' : null"
+>
+  <div class="row h-full align-items-end desktop-header__container">
+    <div class="col-8">
+      <fi-main-menu></fi-main-menu>
+    </div>
+    <div class="col-4 h-full desktop-header__options">
+      <div
+        [ngClass]="mobileView ? 'align-items-end' : 'align-items-center'"
+        class="row h-full float-right margin-r"
+      >
+        <fi-header-options
+          *ngIf="!mobileView"
+          style="width: 100%"
+          [userInfo]="userInfo"
+        ></fi-header-options>
+        <div *ngIf="mobileView">
+          <div class="burger-div float-right" (click)="drawer()">
+            <em #target class="burger fas fa-bars"></em>
+          </div>
+        </div>
+        <fi-burger-menu
+          *ngIf="mobileView"
+          [userInfo]="userInfo"
+          [toggle]="toggle"
+          (pathEmitter)="navigateTo($event)"
+        ></fi-burger-menu>
+      </div>
+    </div>
+  </div>
+</div>

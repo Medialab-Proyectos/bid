@@ -1,0 +1,187 @@
+<div *ngIf="!loadingPermission && loadedCountries; else loader">
+  <ng-container *ngIf="hasPermissionSeeParticipant">
+    <div
+      class="col-12 process-tab-card"
+      *fiDisplayByPermissions="viewParticipantPermission"
+    >
+      <div class="col-12" *ngIf="!mobileView">
+        <div *ngIf="!participantsLoading; else loader">
+          <div class="row">
+            <div
+              class="col-12 p-0 pt-3"
+              *fiDisplayByPermissions="viewInstructionMessagePermission"
+            >
+              <fi-alert
+                *ngIf="!userInternal && this.configValues?.texto"
+                type="info"
+                title="{{ 'TOAST.' + this.configValues?.texto | translate }}"
+                [closable]="true"
+              ></fi-alert>
+            </div>
+            <div class="col-12 p-0">
+              <div
+                class="row participant-tab__header"
+                data-testid="tab__header"
+              >
+                <div class="col-2 column fi-kendo-label--required">
+                  {{ "PARTICIPANT.TABLE.PARTICIPANT" | translate }}
+                </div>
+                <div class="col-2 column">
+                  {{ "PARTICIPANT.TABLE.NATIONALITY" | translate }}
+                </div>
+                <div
+                  class="col-1 column"
+                  [ngClass]="
+                    participantConfig?.technicalScore ===
+                      EvaluationParticipantsConfig.Required &&
+                    'fi-kendo-label--required'
+                  "
+                >
+                  {{ "PARTICIPANT.TABLE.TECHNICAL_SCORE" | translate }}
+                </div>
+                <div
+                  class="col-1 column"
+                  [ngClass]="
+                    participantConfig?.financialScore ===
+                      EvaluationParticipantsConfig.Required &&
+                    'fi-kendo-label--required'
+                  "
+                >
+                  {{ "PARTICIPANT.TABLE.FINANCIAL_SCORE" | translate }}
+                </div>
+                <div
+                  class="col-1 column"
+                  [ngClass]="
+                    participantConfig?.overallScore ===
+                      EvaluationParticipantsConfig.Required &&
+                    'fi-kendo-label--required'
+                  "
+                >
+                  {{ "PARTICIPANT.TABLE.TOTAL_SCORE" | translate }}
+                </div>
+                <div
+                  class="col-2 column"
+                  [ngClass]="
+                    participantConfig?.awardedAmount ===
+                      EvaluationParticipantsConfig.Required &&
+                    'fi-kendo-label--required'
+                  "
+                >
+                  {{ "PARTICIPANT.TABLE.AMOUNT" | translate }}
+                </div>
+                <div class="d-none col-1 column">
+                  {{ "PARTICIPANT.TABLE.EVALUATED_PRICE" | translate }}
+                </div>
+                <div class="col-2 column fi-kendo-label--required">
+                  {{ "PARTICIPANT.TABLE.RESULT" | translate }}
+                </div>
+              </div>
+              <div *ngFor="let participant of participants; index as i">
+                <fi-participant
+                  [participant]="participant"
+                  [participanstsList]="participants"
+                  [participantIndex]="i"
+                  [configValues]="configValues"
+                  [currencyList]="currencyList"
+                  (addedParticipant)="addedParticipant($event)"
+                  (participantOption)="handleParticipantOption($event)"
+                  [readonly]="
+                    !validateStatus() ||
+                    !checkPermission() ||
+                    (!participant.allowToEdit && !!participant.bidder)
+                  "
+                  (isRowDisabled)="removeEmptyRow()"
+                  (participantConfig)="handleParticipantConfig($event)"
+                  (formEmmiter)="participantValueChanges($event)"
+                  (selectedValue)="onCurrencyChange($event)"
+                  [allCountries]="allCountries"
+                ></fi-participant>
+              </div>
+              <div *ngIf="showInstruction">
+                <fi-no-content
+                  [content]="'PARTICIPANT.TABLE.EMPTY_STATE' | translate"
+                ></fi-no-content>
+              </div>
+              <div class="row participant-tab__footer" *ngIf="validateStatus()">
+                <div class="col-12">
+                  <div>
+                    <button
+                      kendoButton
+                      class="btn btn-neutral"
+                      icon="plus"
+                      id="Btn_AddParticipant"
+                      *fiDisplayByPermissions="addAnotherLinePermission"
+                      (click)="addRow()"
+                      [disabled]="
+                        savedParticipants.length !== participants.length
+                      "
+                    >
+                      {{ "PARTICIPANT.TABLE.ADD_LINE" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="mobileView">
+          <div *ngIf="!addingParticipantMobile">
+            <!-- here goes custom table mobile -->
+            <fi-mobile-table
+              [dataSource]="participants"
+              [firstColumnTemplate]="firstColumnTemplate"
+              [rowsTemplate]="rowsTemplate"
+            >
+              <ng-template #firstColumnTemplate>
+                <td>{{ "PARTICIPANT.TABLE.ID" | translate }}</td>
+              </ng-template>
+              <ng-template #rowsTemplate let-item>
+                <td>{{ item.bidder.name }}/{{ item.bidder.nationality }}</td>
+              </ng-template>
+            </fi-mobile-table>
+            <div class="mobile-footer">
+              <button
+                kendoButton
+                class="btn btn-brand btn-mobile-table"
+                (click)="addMobileParticipant()"
+              >
+                {{ "PARTICIPANT.ADD_PARTICIPANT" | translate }}
+              </button>
+            </div>
+          </div>
+          <div *ngIf="addingParticipantMobile">
+            <div class="py-3" (click)="stopAdding(false)">
+              <em
+                style="font-size: 15px; color: #707070"
+                class="fal fa-arrow-left"
+              ></em>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-baseline">
+                <div class="project-header__icon">
+                  <div class="icon-header icon-header_procurement">
+                    <em class="fas fa-list-alt"></em>
+                  </div>
+                </div>
+                <span class="pl-2 sf700" style="font-size: 16px">{{
+                  "PARTICIPANT.ADD_PARTICIPANT" | translate
+                }}</span>
+              </div>
+            </div>
+            <fi-participant
+              [participant]="newMobParticipant"
+              [participantIndex]="i"
+              (stopEditing)="stopAdding(event)"
+            ></fi-participant>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

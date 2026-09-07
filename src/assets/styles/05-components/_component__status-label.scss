@@ -1,0 +1,45 @@
+.c-status-label {
+  & p {
+    text-align: center;
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: #ffffff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  & &__blue {
+    background-color: #5495db;
+  }
+
+  & &__light-blue {
+    background-color: #17b8ee;
+  }
+
+  &__yellow {
+    background-color: #ebb254;
+  }
+
+  &__grey {
+    background-color: #a9b1bb;
+  }
+
+  & &__orange {
+    background-color: #eb6b3e;
+  }
+
+  & &__green {
+    background-color: #56be9f;
+  }
+
+  & &__white {
+    background-color: #fff;
+    color: #080707;
+    border: solid 2px #080707;
+  }
+
+  & &__orange-yellow {
+    background-color: #ffa800;
+  }
+}

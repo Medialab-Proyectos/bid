@@ -1,0 +1,32 @@
+<div class="container-fluid c-secondary-nav c-secondary-nav--margin-top">
+  <div class="row">
+    <div class="col-6">
+      <ul>
+        <li *ngIf="isProjectsRoutes" class="pl-0 mt-1">
+          <em class="fas fa-bars" (click)="projectSideMenu.toggle()"></em>
+        </li>
+      </ul>
+    </div>
+    <div class="col-6">
+      <ul class="float-right">
+        <li>
+          <kendo-badge-container class="float-right">
+            <em class="fas fa-bell"></em>
+            <!-- <kendo-badge>5</kendo-badge> -->
+          </kendo-badge-container>
+        </li>
+        <li>
+          <kendo-avatar
+            role="initials"
+            class="curPoint float-right"
+            [shape]="'circle'"
+            [initials]="userInfo?.initials"
+            (click)="userSideMenu.toggle()"
+          ></kendo-avatar>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<fi-user-side-menu #userSideMenu [userInfo]="userInfo"></fi-user-side-menu>
+<fi-projects-side-menu #projectSideMenu></fi-projects-side-menu>

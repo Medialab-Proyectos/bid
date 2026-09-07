@@ -1,0 +1,127 @@
+////
+/// IDB Design System 2.0 -- raw tokens
+///
+/// Source of truth: Figma "IDB-DS-2.0-Visual-Styles"
+/// (fileKey STlukXBawhs5Md7x03BhST, nodes 4105:12413 and 1736:101).
+///
+/// This is a second, parallel token set. It does not replace the legacy
+/// tokens in `_settings__colors.scss` / `$sizes-separations` -- none of the
+/// legacy colors or spacing steps matched the Figma values closely enough to
+/// rename in place (see the mapping done in chat before this file existed).
+/// Existing components keep using the legacy tokens until someone migrates
+/// them on purpose; new work can opt into `ds2-color()` / `ds2-spacing()`
+/// (see `01-tools/_tools__ds2-colors.scss`) or the `--ds2-*` custom
+/// properties (see `02-generic/_generic__ds2-properties.scss`).
+///
+/// Typography tokens from the same Figma frames are NOT included here: the
+/// fetched styles mix three unrelated font families (Inter, Roboto, Open
+/// Sans) in what looks like leftover instances from other libraries on the
+/// same page rather than one coherent type scale. Point this file at the
+/// frame that holds the actual DS 2.0 type scale and it can be added the
+/// same way.
+///
+/// @access public
+/// @group Settings
+/// @name ds2-tokens
+/// @since version 1.0.0
+////
+
+// ---------------------------------------------------------------------------
+// Color
+//
+// Figma exposes several names that resolve to the same hex (e.g. Material's
+// "MD3 Tokens/primary" and the DS-native "surface/primary" are both
+// #007eb6). Each variable below keeps the DS-native name and lists its
+// Figma aliases in a comment, so a future re-sync can still find it by any
+// of its names.
+// ---------------------------------------------------------------------------
+
+// Text
+$ds2-color-text-default: #232222; // Text/color-text-default, MD3 Tokens/on-surface
+$ds2-color-text-primary: #272626; // text/primary -- distinct from text-default in Figma, kept separate rather than merged
+$ds2-color-text-brand: #004e70; // Text/color-text-brand, surface/brand
+$ds2-color-text-link-default: #007eb6; // Text/color-text-link-default, surface/primary, MD3 Tokens/primary, icon/primary
+
+// Surface
+$ds2-color-surface-default: #ffffff; // surface/default, MD3 Tokens/surface, white
+$ds2-color-surface-selected: #edf5fa; // surface/selected
+$ds2-color-surface-brand: #004e70; // surface/brand
+$ds2-color-surface-primary: #007eb6; // surface/primary
+$ds2-color-on-primary: #ffffff; // MD3 Tokens/on-primary
+$ds2-color-primary-container: #d9f4ff; // MD3 Tokens/primary-container
+$ds2-color-secondary-container: #e3eaef; // MD3 Tokens/secondary-container
+
+// Background
+$ds2-color-background-app: #fcfcfc; // background/app
+$ds2-color-background-default: #f9f9fa; // Backgrounds/color-background, MD3 Tokens/background
+$ds2-color-background-subtle: #f3f3f3; // background/subtle
+$ds2-color-background-inverse: #100f0f; // background/inverse
+
+// Icon / semantic state
+$ds2-color-icon-primary: #007eb6; // icon/primary
+$ds2-color-icon-success: #006e3c; // icon/success
+$ds2-color-icon-warning: #8a4700; // icon/warning
+$ds2-color-icon-danger: #a31f37; // icon/danger
+$ds2-color-icon-aqua: #005050; // icon/aqua
+$ds2-color-icon-violet: #49375d; // icon/violet
+
+// Border
+$ds2-color-border-default: #c7c7c9; // Border/color-border-n-variant80, MD3 Tokens/outline-variant
+$ds2-color-border-subtle: #eaeaea; // Border/color-border-n-variant95, roui/light/outline
+
+// Brand / neutral
+$ds2-color-brand-gray: #3c3b3b; // Brand Colors/color-brand-gray
+$ds2-color-white: #ffffff;
+
+$ds2-colors: (
+  "text-default": $ds2-color-text-default,
+  "text-primary": $ds2-color-text-primary,
+  "text-brand": $ds2-color-text-brand,
+  "text-link-default": $ds2-color-text-link-default,
+  "surface-default": $ds2-color-surface-default,
+  "surface-selected": $ds2-color-surface-selected,
+  "surface-brand": $ds2-color-surface-brand,
+  "surface-primary": $ds2-color-surface-primary,
+  "on-primary": $ds2-color-on-primary,
+  "primary-container": $ds2-color-primary-container,
+  "secondary-container": $ds2-color-secondary-container,
+  "background-app": $ds2-color-background-app,
+  "background-default": $ds2-color-background-default,
+  "background-subtle": $ds2-color-background-subtle,
+  "background-inverse": $ds2-color-background-inverse,
+  "icon-primary": $ds2-color-icon-primary,
+  "icon-success": $ds2-color-icon-success,
+  "icon-warning": $ds2-color-icon-warning,
+  "icon-danger": $ds2-color-icon-danger,
+  "icon-aqua": $ds2-color-icon-aqua,
+  "icon-violet": $ds2-color-icon-violet,
+  "border-default": $ds2-color-border-default,
+  "border-subtle": $ds2-color-border-subtle,
+  "brand-gray": $ds2-color-brand-gray,
+  "white": $ds2-color-white,
+);
+
+// ---------------------------------------------------------------------------
+// Spacing
+//
+// Figma's "large" spacing token is 80px. The legacy `$sizes-separations`
+// map (`00-settings/_settings__basics.scss`) already uses the key `large`
+// for 20px -- same name, unrelated value. Naming these steps by their pixel
+// size instead of a t-shirt size sidesteps that collision on purpose.
+// ---------------------------------------------------------------------------
+
+$ds2-spacing-4: 4;
+$ds2-spacing-8: 8;
+$ds2-spacing-12: 12;
+$ds2-spacing-24: 24;
+$ds2-spacing-48: 48;
+$ds2-spacing-80: 80; // Figma alias: "large"
+
+$ds2-spacing: (
+  "4": $ds2-spacing-4,
+  "8": $ds2-spacing-8,
+  "12": $ds2-spacing-12,
+  "24": $ds2-spacing-24,
+  "48": $ds2-spacing-48,
+  "80": $ds2-spacing-80,
+);

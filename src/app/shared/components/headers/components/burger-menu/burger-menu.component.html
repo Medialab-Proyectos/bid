@@ -1,0 +1,21 @@
+<kendo-drawer-container class="burger-side-menu">
+  <kendo-drawer
+    #drawer
+    [items]="items"
+    [mode]="'overlay'"
+    [position]="'end'"
+    [expanded]="false"
+  >
+    <ng-template kendoDrawerHeaderTemplate>
+      <div class="menu-header">
+        <h4> {{ 'SHARED.HEADERS.BURGER_MENU.FIDUCIARY_INTERFACE' | translate}} </h4>
+      </div>
+    </ng-template>
+    <ng-template kendoDrawerItemTemplate let-item class="test">
+      <span class="k-icon {{ item.icon }}"></span>
+      <span (click)="selectedMenuItem(item)">{{ item.text | translate }}</span>
+    </ng-template>
+  </kendo-drawer>
+
+  <kendo-drawer-content class="kendo-drawer-content"> </kendo-drawer-content>
+</kendo-drawer-container>

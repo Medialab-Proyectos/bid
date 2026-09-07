@@ -1,0 +1,38 @@
+.o-header-group {
+  width: 100%;
+  display: flex;
+
+  &__item {
+    width: 33.33%;
+  }
+}
+
+.bidder_items__row {
+  width: 100%;
+  display: flex;
+  gap: 2rem;
+  // justify-content: space-between;
+
+  .bidderRow__items {
+    flex: 0 0 31%;
+  }
+
+  .bidderRow__btn {
+    width: 5.33%;
+  }
+  .bidderRow__items:first-child {
+    display: flex;
+
+    mat-radio-button {
+      width: 10%;
+    }
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-radio-button {
+  width: 100%;
+}

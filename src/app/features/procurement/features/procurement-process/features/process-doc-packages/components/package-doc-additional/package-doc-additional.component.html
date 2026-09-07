@@ -1,0 +1,109 @@
+<div
+  class="c-package-doc row"
+  *ngIf="!item.actualDateState.loading; else showSpinner"
+>
+  <div
+    class="d-none d-md-flex col-md-1 align-items-center"
+    style="max-width: 3rem"
+  >
+    <button
+      class="k-icon c-contracts__expand-btn"
+      [ngClass]="
+        !expandedRows ? 'k-i-arrow-chevron-down' : 'k-i-arrow-chevron-up'
+      "
+      (click)="collapseBtn(item)"
+      [id]="'Btn_Expan_Package_doc_' + (id + 1)"
+    ></button>
+  </div>
+  <div class="col-4 col-md-4 d-flex align-items-center justify-content-between">
+    {{ item.code | translateEnum : Enums.biddingProcessDocumentPackageCodes }}
+  </div>
+  <div class="col-2 col-md-2 d-flex-col">
+    <kendo-datepicker
+      [id]="'Cal_Package_doc_' + (id + 1)"
+      calendarType="classic"
+      format="dd MMM yyyy"
+      class="c-datepicker"
+      [placeholder]="'COMMON.ENTER_DATE' | translate"
+      [disabled]="!planInSync || !disableByPermission"
+      [(value)]="date"
+      (valueChange)="updateActualDate($event)"
+      [ngClass]="isBtnClicked && date === null ? 'require-border' : ''"
+    >
+      <kendo-datepicker-messages
+        [today]="'COMMON.CALENDAR.TODAY' | translate"
+        [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+      ></kendo-datepicker-messages>
+    </kendo-datepicker>
+    <p
+      class="o-input-error"
+      *ngIf="isBtnClicked && date === null"
+      [ngClass]="isBtnClicked && date === null ? 'require-message' : ''"
+    >
+      {{
+        "PROCESS_DOC.ADDITIONAL_DOCUMENT_TAB.ACTUAL_DATE_REQUIRE" | translate
+      }}
+    </p>
+  </div>
+  <div class="col-2 col-md-2 d-flex-col">
+    <kendo-datepicker
+      [id]="'Cal_Package_doc_' + (id + 1)"
+      calendarType="classic"
+      format="dd MMM yyyy"
+      class="c-datepicker"
+      [placeholder]="'COMMON.ENTER_DATE' | translate"
+      [disabled]="
+        disableNewBidValidityDate || !disableByPermission || !planInSync
+      "
+      [(value)]="newBidValidityDate"
+      (valueChange)="updateNewBidValidityDate($event)"
+      [ngClass]="
+        isBtnClicked && newBidValidityDate === null ? 'require-border' : ''
+      "
+      [min]="minNewBidValidityDate"
+    >
+      <kendo-datepicker-messages
+        [today]="'COMMON.CALENDAR.TODAY' | translate"
+        [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+      ></kendo-datepicker-messages>
+    </kendo-datepicker>
+    <p
+      class="o-input-error"
+      *ngIf="isBtnClicked && newBidValidityDate === null"
+      [ngClass]="
+        isBtnClicked && newBidValidityDate === null ? 'require-message' : ''
+      "
+    >
+      {{
+        "PROCESS_DOC.ADDITIONAL_DOCUMENT_TAB.ACTUAL_DATE_REQUIRE" | translate
+      }}
+    </p>
+  </div>
+
+  <div class="col-1 col-md-1 d-flex align-items-center">
+    <fi-advance-milestone [totalCompleted]="item.totalUploadedDocuments">
+    </fi-advance-milestone>
+  </div>
+
+  <div class="col-2 col-md-2 d-flex align-items-center">
+    {{
+      item.status | translateEnum : Enums.biddingProcessDocumentPackageStatuses
+    }}
+    <button
+      *ngIf="showDeleteBtn && planInSync"
+      kendoButton
+      [disabled]="disableDeleteBtn"
+      iconClass="far fa-trash-alt"
+      type="button"
+      look="clear"
+      id="Btn_Delete_comment"
+      (click)="deletePackage()"
+    ></button>
+  </div>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

@@ -1,0 +1,56 @@
+<div class="card-dashboard">
+  <div class="row">
+    <div class="col-12">
+      <div class="wrapper">
+        <kendo-tabstrip>
+          <kendo-tabstrip-tab
+            title="{{
+              'PROCUREMENT.PROCESS.COMMENTS.ACTIVE_COMMENTS' | translate
+            }}"
+            [selected]="true"
+          >
+            <ng-template kendoTabContent>
+              <div class="content">
+                <fi-process-draft-comments
+                  [expandedProcessCodes]="selectedProcess"
+                  [processCode]="processCode"
+                  [processIndex]="processIndex"
+                  [form]="form"
+                  [commentVisibilitiesEnum]="commentVisibilitiesEnum"
+                  [userEmail]="userEmail"
+                  [commentType]="commentType"
+                  [parentId]="parentId"
+                  [processStatus]="data.processStatus"
+                  (checkMarked)="checkMark($event)"
+                ></fi-process-draft-comments>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+
+          <kendo-tabstrip-tab
+            title="{{
+              'PROCUREMENT.PROCESS.COMMENTS.COMPLETE_COMMENTS' | translate
+            }}"
+          >
+            <ng-template kendoTabContent>
+              <div
+                class="content"
+                *ngIf="data.commentsComplete.length > 0; else noContent"
+              >
+                <fi-procurement-process-completed-comments
+                  [comments]="data.commentsComplete"
+                  [commentVisibilitiesEnum]="commentVisibilitiesEnum"
+                ></fi-procurement-process-completed-comments>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+        </kendo-tabstrip>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #noContent>
+  <fi-no-content
+    [content]="'PROCUREMENT.COMMENTS.TABLE.EMPTY_MSG' | translate"
+  ></fi-no-content>
+</ng-template>

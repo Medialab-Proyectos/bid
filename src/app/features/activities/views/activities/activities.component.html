@@ -1,0 +1,57 @@
+<div class="card-dashboard">
+  <div class="">
+    <div class="row">
+      <div
+        class="col-sm-12 col-md-8 col-lg-9 dashboard-header align-self-center"
+      >
+        <div class="d-flex">
+          <div class="">
+            <div class="icon-project">
+              <em class="fas fa-briefcase"></em>
+            </div>
+          </div>
+          <span class="dashboard-header__title"> {{ "ACTIVITIES.ACTIVITIES" | translate }} </span>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-4 col-lg-3 align-self-center">
+        <kendo-label
+          class="fi-kendo-label"
+          text="{{ 'ACTIVITIES.CATEGORY' | translate }}"
+        >
+          <kendo-dropdownlist
+            [data]="listItems"
+            [textField]="'text'"
+            [valueField]="'value'"
+            [valuePrimitive]="true"
+            style="--placeholder: '{{ 'COMMON.SELECT_AN_OPTION' | translate }}'"
+            class="c-dropdown-list k-dropdown"
+            (valueChange)="valueChange($event)"
+            [value]="listItems[0]"
+          >
+          </kendo-dropdownlist>
+        </kendo-label>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div class="container-fluid d-none d-md-block">
+    <div class="row">
+      <div class="col-12 p-0 card-projects">
+        <div class="container-fluid d-none d-md-block">
+          <div class="row">
+            <div class="col-12 p-0">
+              <fi-activities-table
+                [category]="currentCategory"
+              ></fi-activities-table>
+              <ng-template #nodata>
+                <fi-no-content
+                  [content]="'PROCUREMENT.NO_DATA' | translate"
+                ></fi-no-content>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

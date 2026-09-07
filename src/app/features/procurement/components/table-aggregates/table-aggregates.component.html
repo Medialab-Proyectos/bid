@@ -1,0 +1,449 @@
+<ng-template #template let-anchor>
+  <span
+    [innerHTML]="
+      anchor.nativeElement.innerText | highlightSearch : highlightValue
+    "
+  ></span>
+</ng-template>
+
+<div
+  kendoTooltip
+  showOn="none"
+  [tooltipTemplate]="template"
+  (mouseover)="showTooltip($event)"
+>
+  <div class="transactions-list">
+    <div class="transactions-list__table">
+      <div class="table-transactions">
+        <kendo-grid
+          [kendoGridBinding]="gridView"
+          [sort]="gridSettings.state.sort"
+          [filter]="gridSettings.state.filter"
+          [sortable]="true"
+          [filterable]="false"
+          [resizable]="true"
+          [reorderable]="true"
+          (columnReorder)="onReorder($event)"
+          (columnResize)="onResize($event)"
+          (columnVisibilityChange)="onVisibilityChange($event)"
+          (dataStateChange)="dataStateChange($event)"
+          [groupable]="true"
+          [columnMenu]="{
+            filter: true,
+            columnChooser: { expanded: true }
+          }"
+          [loading]="isLoading"
+        >
+          <ng-template kendoGridToolbarTemplate position="top">
+            <fi-filter
+              class="d-block"
+              [minLength]="3"
+              (filterValue)="onFilter($event)"
+              [placeholder]="'DASHBOARD.ADVANCED_SEARCH' | translate"
+            ></fi-filter>
+          </ng-template>
+
+          <kendo-grid-column
+            *ngFor="let col of gridSettings.columnsConfig; let i = index"
+            [field]="col.field"
+            [title]="col.title"
+            [width]="col.width"
+            [hidden]="col.hidden"
+            [format]="col.format"
+            [filter]="col.filter"
+            [filterable]="col.filterable"
+            [columnMenu]="false"
+          >
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+              *ngIf="col.field === ProcurementColumnName.code"
+            >
+              <p
+                [id]="'Lnk_Process_' + rowIndex"
+                (click)="routeToProcessDocs(dataItem, false)"
+                [innerHTML]="dataItem.code | highlightSearch : highlightValue"
+                class="table-transactions__kendo-p link has-ellipsis"
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.name"
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="dataItem.name | highlightSearch : highlightValue"
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.componentName"
+            >
+              <p
+                class="txt-max-lines-3 table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.componentName | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.currentMilestone"
+            >
+              <p
+                class="txt-max-lines-3 table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.currentMilestone | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="
+                col.field === ProcurementColumnName.projectAmountEstimatedAmount
+              "
+            >
+              <div class="d-flex justify-content-end">
+                <span class="mr-1">$</span>
+                <p
+                  class="table-transactions__kendo-p has-ellipsis"
+                  [innerHTML]="
+                    dataItem.estimatedAmountString
+                      | highlightSearch : highlightValue : 'number'
+                  "
+                ></p>
+              </div>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.totalAcumulatedAmount"
+            >
+              <div class="d-flex justify-content-end">
+                <span
+                  class="mr-1"
+                  *ngIf="dataItem.totalAcumulatedAmount !== null"
+                  >$</span
+                >
+                <p
+                  class="table-transactions__kendo-p has-ellipsis"
+                  [innerHTML]="
+                    dataItem.totalAcumulatedAmount === null
+                      ? '-'
+                      : (dataItem.totalAcumulatedAmount | number : '1.2-2')
+                  "
+                ></p>
+              </div>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+              *ngIf="col.field === ProcurementColumnName.statusTranslation"
+            >
+              <div
+                *ngIf="
+                  dataItem.status === procurementProcessStatuses.CANCELLED ||
+                    dataItem.status ===
+                      procurementProcessStatuses.PROCUREMENT_INELIGIBLE;
+                  else anotherRules
+                "
+              >
+                <fi-status-label
+                  [cssClass]="procurementStyles(dataItem.status)"
+                  [text]="dataItem.statusEnum?.name | translate"
+                ></fi-status-label>
+              </div>
+              <ng-template #anotherRules>
+                <div
+                  *ngIf="
+                    dataItem.isNotExante &&
+                    dataItem.status !== procurementProcessStatuses.DRAFT &&
+                    dataItem.status !== procurementProcessStatuses.MODIFIED &&
+                    dataItem.status !==
+                      procurementProcessStatuses.UNDER_REVIEW &&
+                    dataItem.status !==
+                      procurementProcessStatuses.UNDER_REVIEW_MODIFIED &&
+                    !biddingProcessPlanInSync
+                  "
+                >
+                  <fi-status-dropdown
+                    class="d-flex"
+                    [item]="dataItem"
+                    [countryCode]="countryCode"
+                    [permission]="procurementProcessStatusPermission"
+                    [id]="rowIndex"
+                  ></fi-status-dropdown>
+                </div>
+                <fi-status-label
+                  *ngIf="
+                    !(
+                      dataItem.isNotExante &&
+                      dataItem.status !== procurementProcessStatuses.DRAFT &&
+                      dataItem.status !== procurementProcessStatuses.MODIFIED &&
+                      dataItem.status !==
+                        procurementProcessStatuses.UNDER_REVIEW &&
+                      dataItem.status !==
+                        procurementProcessStatuses.UNDER_REVIEW_MODIFIED &&
+                      !biddingProcessPlanInSync
+                    )
+                  "
+                  [cssClass]="procurementStyles(dataItem.status)"
+                  [text]="dataItem.statusEnum?.name | translate"
+                ></fi-status-label>
+              </ng-template>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="
+                col.field ===
+                ProcurementColumnName.advanceMilestoneTotalCompleted
+              "
+            >
+              <fi-advance-milestone
+                [total]="dataItem.advanceMilestone.total"
+                [totalCompleted]="dataItem.advanceMilestone.totalCompleted"
+              ></fi-advance-milestone>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.totalComments"
+            >
+              <fi-comments-counter
+                *ngIf="dataItem.totalComments > 0"
+                [commentsNumber]="dataItem.totalComments"
+                [id]="dataItem.id"
+                [marked]="dataItem.marked"
+                (click)="routeToProcessDocs(dataItem, true)"
+              ></fi-comments-counter>
+            </ng-template>
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.categoryTranslation"
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.categoryEnum?.name
+                    | translate
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="
+                col.field === ProcurementColumnName.procurementMethodTranslation
+              "
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.procurementMethodEnum?.name
+                    | translate
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="
+                col.field === ProcurementColumnName.supervisionMethodTranslation
+              "
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.supervisionMethodEnum?.name
+                    | translate
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.isMigrated"
+            >
+              <ng-template kendoGridHeaderTemplate let-column>
+                <div
+                  kendoTooltip
+                  [title]="'PROCUREMENT.MIGRATED' | translate"
+                  style="text-overflow: ellipsis; overflow: hidden"
+                >
+                  {{ "PROCUREMENT.MIGRATED" | translate }}
+                </div>
+              </ng-template>
+              <div style="display: flex; justify-content: center">
+                <em
+                  kendoTooltip
+                  [title]="
+                    'PROCUREMENT.TOOLTIP.IS_MIGRATED_INDICATOR_POSITIVE'
+                      | translate
+                  "
+                  *ngIf="dataItem.isMigrated; else notMigrated"
+                  class="fas fa-circle-check check"
+                ></em>
+              </div>
+              <ng-template #notMigrated>
+                <div style="display: flex; justify-content: center">
+                  <em
+                    kendoTooltip
+                    [title]="
+                      'PROCUREMENT.TOOLTIP.IS_MIGRATED_INDICATOR_NEGATIVE'
+                        | translate
+                    "
+                    class="fas fa-circle-check uncheck"
+                  ></em>
+                </div>
+              </ng-template>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.packagesUnderReview"
+            >
+              <ng-template kendoGridHeaderTemplate let-column>
+                <div
+                  kendoTooltip
+                  [title]="'PROCUREMENT.UNDER_REVIEW' | translate"
+                  style="text-overflow: ellipsis; overflow: hidden"
+                >
+                  {{ "PROCUREMENT.UNDER_REVIEW" | translate }}
+                </div>
+              </ng-template>
+              <div style="display: flex; justify-content: center">
+                <em
+                  kendoTooltip
+                  [title]="
+                    'PROCUREMENT.TOOLTIP.PACKAGES_UNDER_REVIEW_POSITIVE'
+                      | translate
+                  "
+                  *ngIf="
+                    dataItem.packagesUnderReview;
+                    else packagesNotUnderReview
+                  "
+                  class="fas fa-circle-exclamation check"
+                ></em>
+              </div>
+
+              <ng-template #packagesNotUnderReview>
+                <div style="display: flex; justify-content: center">
+                  <em
+                    kendoTooltip
+                    [title]="
+                      'PROCUREMENT.TOOLTIP.PACKAGES_UNDER_REVIEW_NEGATIVE'
+                        | translate
+                    "
+                    class="fas fa-circle-exclamation uncheck"
+                  ></em>
+                </div> </ng-template
+            ></ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ProcurementColumnName.milestonesDelayed"
+            >
+              <ng-template kendoGridHeaderTemplate let-column>
+                <div
+                  kendoTooltip
+                  [title]="'PROCUREMENT.PAST_DUE' | translate"
+                  style="text-overflow: ellipsis; overflow: hidden"
+                >
+                  {{ "PROCUREMENT.PAST_DUE" | translate }}
+                </div>
+              </ng-template>
+              <div style="display: flex; justify-content: center">
+                <em
+                  kendoTooltip
+                  [title]="
+                    'PROCUREMENT.TOOLTIP.DELAYED_MILESTONES_POSITIVE'
+                      | translate
+                  "
+                  *ngIf="
+                    dataItem.advanceMilestone.delayed;
+                    else milestonesNotDelayed
+                  "
+                  class="fas fa-circle-minus check"
+                ></em>
+              </div>
+
+              <ng-template #milestonesNotDelayed>
+                <div style="display: flex; justify-content: center">
+                  <em
+                    kendoTooltip
+                    [title]="
+                      'PROCUREMENT.TOOLTIP.DELAYED_MILESTONES_NEGATIVE'
+                        | translate
+                    "
+                    class="fas fa-circle-minus uncheck"
+                  ></em>
+                </div> </ng-template
+            ></ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column [width]="50" [columnMenu]="false">
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              <em
+                class="fas fa-eye"
+                *ngIf="dataItem.isUpdated"
+                (click)="viewHistoricChanges(dataItem)"
+              ></em>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column [width]="50">
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              <fi-dropdownbutton
+                *ngIf="dataItem.crudActions.length > 0"
+                [id]="rowIndex"
+                [itemOptions]="dataItem.crudActions"
+                (selectedOption)="actionItem($event, dataItem.id)"
+              ></fi-dropdownbutton>
+            </ng-template>
+          </kendo-grid-column>
+
+          <ng-template kendoGridDetailTemplate let-dataItem>
+            <fi-row-detail [item]="dataItem"></fi-row-detail>
+          </ng-template>
+
+          <kendo-grid-messages
+            [groupPanelEmpty]="'PROCUREMENT.TABLE.DRAG_COLUMN_MSG' | translate"
+          >
+          </kendo-grid-messages>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</div>

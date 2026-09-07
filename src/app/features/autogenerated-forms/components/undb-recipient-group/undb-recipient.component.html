@@ -1,0 +1,79 @@
+<form class="recipient-fields" [formGroup]="recipientFormGroup">
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.ADDRESS" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.ADDRESS_LABEL" | translate
+      }}</mat-label>
+      <input type="text" matInput formControlName="address" />
+      <mat-error *ngIf="recipientFormGroup.controls.address.errors?.required">
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.EXECUTING_AGENCY" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.EXECUTING_AGENCY_LABEL" | translate
+      }}</mat-label>
+      <input type="text" matInput formControlName="executingAgency" />
+      <mat-error
+        *ngIf="recipientFormGroup.controls.executingAgency.errors?.required"
+      >
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span> {{ "UNDB.FORM.RECIPIENT.ATTENTION" | translate }} </span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.ATTENTION_LABEL" | translate
+      }}</mat-label>
+      <input type="text" matInput formControlName="responsible" />
+      <mat-error
+        *ngIf="recipientFormGroup.controls.responsible.errors?.required"
+      >
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.PHONE_NUMBER" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.PHONE_NUMBER_LABEL" | translate
+      }}</mat-label>
+      <input type="text" matInput formControlName="phone" />
+      <mat-error *ngIf="recipientFormGroup.controls.phone.errors?.required">
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.EMAIL" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{ "UNDB.FORM.RECIPIENT.EMAIL_LABEL" | translate }}</mat-label>
+      <input type="text" matInput formControlName="email" />
+      <mat-error *ngIf="recipientFormGroup.controls.email.errors?.required">
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+      <mat-error *ngIf="recipientFormGroup.controls.email.errors?.email">
+        {{ "COMMON.FORMS.MUST_BE_EMAIL" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="field-group">
+    <span>{{ "UNDB.FORM.RECIPIENT.WEBSITE" | translate }}</span>
+    <mat-form-field>
+      <mat-label>{{
+        "UNDB.FORM.RECIPIENT.WEBSITE_LABEL" | translate
+      }}</mat-label>
+      <input type="text" matInput formControlName="website" />
+      <mat-error *ngIf="recipientFormGroup.controls.website.errors?.required">
+        {{ "BIDDER.REQUIRED" | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+</form>

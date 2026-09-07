@@ -1,0 +1,17 @@
+<div class="tag-doc" [ngSwitch]="tag">
+  <span *ngSwitchDefault class="tag-doc--draft">
+    {{ tag | translateEnum: DocumentStatuses }}
+  </span>
+  <span *ngSwitchCase="enumDraft" class="tag-doc--draft">
+    {{ tag | translateEnum: DocumentStatuses }}
+  </span>
+  <span *ngSwitchCase="enumRevision" class="tag-doc--revision">
+    {{ tag | translateEnum: DocumentStatuses }}
+  </span>
+  <span *ngSwitchCase="enumRejected" class="tag-doc--rejected">
+    {{ tag | translateEnum: DocumentStatuses }}
+  </span>
+  <span *ngSwitchCase="enumPublished" class="tag-doc--published">
+    {{ tag | translateEnum: DocumentStatuses }}
+  </span>
+</div>

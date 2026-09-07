@@ -1,0 +1,19 @@
+<div *ngFor="let item of data" class="item-card">
+  <div class="row" (click)="toogleExpanded()">
+    <div class="col-10" style="overflow: hidden">
+      {{ item.id }}
+    </div>
+    <div class="col-1">
+      <em *ngIf="expanded" class="fas fa-chevron-down"></em>
+      <em *ngIf="!expanded" class="fas fa-chevron-up"></em>
+    </div>
+  </div>
+  <div class="row" *ngIf="expanded">
+    <div class="col-12">Name</div>
+    <div class="col-12">{{ item.name }}</div>
+    <div class="col-12">Monto Estimado</div>
+    <div class="col-12">{{ item.tenderAmount }}</div>
+    <div class="col-12">Estado</div>
+    <div class="col-12">{{ item.status }}</div>
+  </div>
+</div>

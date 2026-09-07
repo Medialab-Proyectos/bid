@@ -1,0 +1,22 @@
+<mat-form-field appearance="outline" style="min-width: 300px">
+  <mat-label>{{ label | translate }}</mat-label>
+  <input
+    matInput
+    [min]="minDate"
+    [matDatepicker]="picker"
+    [formControl]="ngControl.control"
+  />
+  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+  <mat-error *ngIf="ngControl && ngControl.control.errors?.required">{{
+    "FORMS.DYNAMIC_FORM.REQUIRED" | translate
+  }}</mat-error>
+  <mat-error *ngIf="ngControl && ngControl.control.errors?.invalidDeadline">{{
+    "EOI.FORM.LIMIT_DATE.ERROR" | translate
+  }}</mat-error>
+  <mat-error
+    *ngIf="ngControl && ngControl.control.errors?.invalidDeadlinePublication"
+  >
+    {{ "EOI.FORM.LIMIT_DATE.DISCLOSE.ERROR" | translate }}
+  </mat-error>
+</mat-form-field>

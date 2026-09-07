@@ -1,0 +1,20 @@
+<mat-form-field appearance="outline">
+  <mat-label>{{ label | translate }}</mat-label>
+  <input
+    matInput
+    [formControl]="timeControl"
+    placeholder="HH:MM"
+    fiTimeMask
+    autocomplete="off"
+    [disabled]="disabled"
+    [required]="isRequired"
+    (blur)="onTouched()"
+  />
+  <mat-hint>{{ "UNDB.TIME_PICKER.24_HOUR_FORMAT_HINT" | translate }}</mat-hint>
+  <mat-error *ngIf="timeControl.hasError('pattern')">
+    {{ "FORMS.VALIDATIONS.TIME_WRONG_FORMAT" | translate }}
+  </mat-error>
+  <mat-error *ngIf="timeControl.hasError('required')">
+    {{ "FORMS.VALIDATIONS.IS_REQUIRED" | translate }}
+  </mat-error>
+</mat-form-field>

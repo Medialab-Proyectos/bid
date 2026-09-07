@@ -1,0 +1,58 @@
+<div class="card-dashboard">
+  <div class="row">
+    <div class="col-12">
+      <div class="wrapper">
+        <kendo-tabstrip (tabSelect)="onTabSelect($event)">
+          <kendo-tabstrip-tab
+            title="{{ 'ACTIVITIES.TASKS' | translate }}"
+            [selected]="true"
+          >
+            <ng-template kendoTabContent>
+              <div
+                class="content"
+                *ngIf="activityTableRow.task.length > 0; else noContent"
+              >
+                <fi-activity-detail-task-table
+                  [activityTaskRows]="activityTableRow.task"
+                  [codeWorkflow]="activityTableRow.entityType"
+                >
+                </fi-activity-detail-task-table>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+
+          <kendo-tabstrip-tab title="{{ 'ACTIVITIES.COMMENTS' | translate }}">
+            <ng-template kendoTabContent>
+              <div class="content">
+                <div class="c-comments">
+                  <div
+                    class="c-comments__list"
+                    *ngIf="activityTableRow.comment.length > 0; else noContent"
+                  >
+                    <ng-container *ngFor="let comm of activityTableRow.comment">
+                      <fi-comments-list [comment]="comm"></fi-comments-list>
+                    </ng-container>
+                  </div>
+                </div>
+                <ng-template #noContent>
+                  <fi-no-content
+                    [content]="
+                      'ACTIVITIES.TABLE.COMMENTS_EMPTY_MSG' | translate
+                    "
+                  ></fi-no-content>
+                </ng-template>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab title="{{ 'ACTIVITIES.DOCUMENTS' | translate }}">
+            <ng-template kendoTabContent>
+              <fi-activity-detail-documents
+                [documents]="activityTableRow.workflowDocuments"
+              ></fi-activity-detail-documents>
+            </ng-template>
+          </kendo-tabstrip-tab>
+        </kendo-tabstrip>
+      </div>
+    </div>
+  </div>
+</div>

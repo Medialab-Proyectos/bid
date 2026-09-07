@@ -1,0 +1,243 @@
+<div class="pr-card">
+  <div class="pr-card__head">
+    <div class="pr-card__identity">
+      <div class="pr-card__icon"><em class="fas fa-file-invoice-dollar"></em></div>
+      <div>
+        <div class="pr-card__eyebrow">
+          {{ "PAYMENT_RECORD.TITLE" | translate }}
+        </div>
+        <div class="pr-card__title">
+          <a
+            *ngIf="commitment?.procurement; else plainNumber"
+            href="javascript:void(0)"
+            class="pr-link pr-card__title-link"
+            id="Lnk_PaymentRecord_OpenCommitment"
+            [title]="'PAYMENT_RECORD.COMMITMENT.OPEN_DETAIL' | translate"
+            (click)="openCommitment()"
+          >
+            {{ commitment?.commitmentNumber }}
+          </a>
+          <ng-template #plainNumber>{{ commitment?.commitmentNumber }}</ng-template>
+        </div>
+      </div>
+    </div>
+    <button
+      type="button"
+      class="pr-card__toggle"
+      id="Btn_PaymentRecord_ExpandCommitment"
+      [attr.aria-expanded]="expanded"
+      [attr.aria-label]="'PAYMENT_RECORD.PROJECT.TOGGLE' | translate"
+      (click)="toggle()"
+    >
+      <em class="fas" [ngClass]="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></em>
+    </button>
+  </div>
+
+  <ng-container *ngIf="expanded">
+    <div class="pr-card__section pr-balances">
+      <div class="pr-balances__column">
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.RECEIVER" | translate }}
+          </span>
+          <span class="pr-field__value">{{ commitment?.beneficiaryName }}</span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.START_DATE" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ commitment?.effectiveStartDate | dateIF }}
+          </span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.END_DATE" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ commitment?.effectiveEndDate | dateIF }}
+          </span>
+        </div>
+      </div>
+
+      <div class="pr-balances__column pr-balances__column--divided">
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.TOTAL_PLANNED" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ commitment?.totalPlannedAmount | ifNumber }}
+          </span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.TOTAL_COMMITTED" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ commitment?.totalCommittedAmount | ifNumber }}
+          </span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.COUNTRY" | translate }}
+          </span>
+          <span class="pr-field__value">{{ commitment?.country }}</span>
+        </div>
+      </div>
+
+      <div class="pr-balances__column">
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.IDB_AMOUNT" | translate }}
+          </span>
+          <span class="pr-field__value">{{ commitment?.idbAmount | ifNumber }}</span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.LOCAL_AMOUNT" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ commitment?.localContributionAmount | ifNumber }}
+          </span>
+        </div>
+        <div class="pr-field">
+          <span class="pr-field__label">
+            {{ "PAYMENT_RECORD.COMMITMENT.COFINANCING_AMOUNT" | translate }}
+          </span>
+          <span class="pr-field__value">
+            {{ commitment?.cofinancingAmount | ifNumber }}
+          </span>
+        </div>
+      </div>
+
+      <div class="pr-progress">
+        <div class="pr-progress__row">
+          <div class="pr-progress__labels">
+            <span class="pr-progress__value">
+              {{ commitment?.paidAmount | ifNumber }}
+            </span>
+            <span class="pr-progress__value">
+              {{ commitment?.pendingAmount | ifNumber }}
+            </span>
+          </div>
+          <div class="pr-progress__labels">
+            <span class="pr-progress__caption">
+              {{ "PAYMENT_RECORD.COMMITMENT.PAID" | translate }}
+            </span>
+            <span class="pr-progress__caption">
+              {{ "PAYMENT_RECORD.COMMITMENT.PENDING" | translate }}
+            </span>
+          </div>
+          <!-- Both numbers are already printed as text above the bar; the bar
+               itself only repeats them visually, so it carries no meaning of
+               its own for assistive tech. -->
+          <div class="pr-progress__track" role="presentation">
+            <div
+              class="pr-progress__fill"
+              [style.width.%]="share(commitment?.paidAmount, commitment?.pendingAmount)"
+            ></div>
+          </div>
+        </div>
+
+        <div class="pr-progress__row">
+          <div class="pr-progress__labels">
+            <span class="pr-progress__value">
+              {{ commitment?.justifiedAmount | ifNumber }}
+            </span>
+            <span class="pr-progress__value">
+              {{ commitment?.toJustifyAmount | ifNumber }}
+            </span>
+          </div>
+          <div class="pr-progress__labels">
+            <span class="pr-progress__caption">
+              {{ "PAYMENT_RECORD.COMMITMENT.JUSTIFIED" | translate }}
+            </span>
+            <span class="pr-progress__caption">
+              {{ "PAYMENT_RECORD.COMMITMENT.TO_JUSTIFY" | translate }}
+            </span>
+          </div>
+          <div class="pr-progress__track" role="presentation">
+            <div
+              class="pr-progress__fill"
+              [style.width.%]="
+                share(commitment?.justifiedAmount, commitment?.toJustifyAmount)
+              "
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pr-card__section pr-execution" *ngIf="elapsedPercent !== null">
+      <!--
+        Each figure is its own indicator -- the value the eye actually needs
+        (82%, 10%, 130) set apart and large, with what it counts as a small
+        caption underneath, the same value-over-label shape the paid/pending
+        progress bars below already use. A quiet chip around each one (the
+        same neutral tint `.pr-summary`/`.pr-import__rules` already use for a
+        block that needs to read as its own thing, not the brand blue used
+        for links and actions) makes them recognizable as indicators without
+        competing with the rest of the card for attention.
+      -->
+      <div class="pr-execution__figures">
+        <span class="pr-execution__title">
+          <em class="fas fa-chart-line" aria-hidden="true"></em>
+          {{ "PAYMENT_RECORD.EXECUTION.TITLE" | translate }}
+        </span>
+        <div class="pr-execution__indicator">
+          <span class="pr-execution__indicator-value">{{ elapsedPercent }}%</span>
+          <span class="pr-execution__indicator-label">
+            {{ "PAYMENT_RECORD.EXECUTION.ELAPSED" | translate }}
+          </span>
+        </div>
+        <div class="pr-execution__indicator">
+          <span class="pr-execution__indicator-value">{{ paidPercent }}%</span>
+          <span class="pr-execution__indicator-label">
+            {{ "PAYMENT_RECORD.EXECUTION.PAID" | translate }}
+          </span>
+        </div>
+        <div
+          class="pr-execution__indicator"
+          *ngIf="daysRemaining !== null && daysRemaining >= 0"
+        >
+          <span class="pr-execution__indicator-value">{{ daysRemaining }}</span>
+          <span class="pr-execution__indicator-label">
+            {{ "PAYMENT_RECORD.EXECUTION.DAYS_LEFT" | translate }}
+          </span>
+        </div>
+      </div>
+
+      <fi-alert
+        *ngIf="executionAlert"
+        [type]="executionAlertType"
+        [title]="'PAYMENT_RECORD.EXECUTION.ALERT.' + executionAlert | translate"
+        [closable]="false"
+      ></fi-alert>
+    </div>
+
+    <div class="pr-card__foot">
+      <span>{{ "TRANSACTION.BALANCES.BALANCES_INFO" | translate }}</span>
+      <span class="pr-card__foot-right">
+        <span class="pr-card__foot-strong">
+          {{ "PAYMENT_RECORD.APPROVAL_CURRENCY" | translate }}:
+          {{ commitment?.approvalCurrency }}
+        </span>
+        <!--
+          The way back to the contract this commitment came from. Absent when
+          no procurement process is behind it, because then there is no page
+          to open.
+        -->
+        <button
+          *ngIf="commitment?.procurement"
+          kendoButton
+          class="btn btn-neutral"
+          id="Btn_PaymentRecord_OpenCommitment"
+          iconClass="fas fa-external-link-alt"
+          (click)="openCommitment()"
+        >
+          {{ "PAYMENT_RECORD.COMMITMENT.OPEN_DETAIL" | translate }}
+        </button>
+      </span>
+    </div>
+  </ng-container>
+</div>

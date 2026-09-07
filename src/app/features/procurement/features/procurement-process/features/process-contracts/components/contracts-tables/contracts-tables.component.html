@@ -1,0 +1,122 @@
+<div style="text-align: center; font-size: 1.2rem; padding-top: 2rem">
+  {{ title | translate }}
+</div>
+<div
+  class="c-contracts__table-container"
+  *fiDisplayByPermissions="contractTablePermission"
+>
+  <div class="row contracts-tab__header">
+    <div class="col-2 column">
+      {{ "CONTRACT.CONTRACTS_ID" | translate }}
+    </div>
+    <div class="col-2 column">
+      {{ "CONTRACT.WINNER_NAME" | translate }}
+    </div>
+    <div class="col-1 column">
+      {{ "CONTRACT.NATIONALITY" | translate }}
+    </div>
+    <div class="col-2 column">
+      {{ "CONTRACT.STATUS" | translate }}
+    </div>
+    <div class="col-1 column">
+      {{ "CONTRACT.START_DATE" | translate }}
+    </div>
+    <div class="col-1 column">
+      {{ "CONTRACT.END_DATE" | translate }}
+    </div>
+    <div class="col-1 column">
+      {{ "CONTRACT.TOTAL_AMOUNT" | translate }} (USD)
+    </div>
+    <div class="col-1 column">
+      {{ "CONTRACT.TOTAL_ACCUMULATED_AMOUNT" | translate }} (USD)
+    </div>
+  </div>
+  <ng-container *ngIf="contracts && contracts.length > 0; else emptyState">
+    <div
+      *ngFor="let item of contracts; let i = index"
+      class="row contracts-tab__item py-3"
+    >
+      <div class="col-2 column pl-5 d-flex">
+        <button
+          *ngIf="item.amendments.length > 0"
+          (click)="collapseBtnFn(i)"
+          class="k-icon c-contracts__expand-btn"
+          [ngClass]="
+            accordionSettings[i]?.collapse
+              ? 'k-i-arrow-chevron-down'
+              : 'k-i-arrow-chevron-up'
+          "
+          [id]="'Btn_Expand_contract_' + (i + 1)"
+        ></button>
+        <a
+          href="#"
+          class="c-contracts__contract-link"
+          (click)="detailContract(item, $event)"
+          [id]="'Lnk_Detail_contract_' + (i + 1)"
+          >{{ item.visualCode }}</a
+        >
+      </div>
+      <div class="col-2 column">
+        <ul class="c-contracts__list-item">
+          <li *ngFor="let item of item.biddingContractsAwarded; let i = index">
+            {{ item.name }}
+          </li>
+        </ul>
+      </div>
+      <div class="col-1 column">
+        <ul class="c-contracts__list-item">
+          <li *ngFor="let item of item.biddingContractsAwarded; let i = index">
+            {{
+              item.nationality
+                | translateEnum : locationEnums.memberCountries
+                | titlecase
+            }}
+          </li>
+        </ul>
+      </div>
+      <div class="col-2 column">
+        {{ item.contractStatus | translateEnum : enum.biddingContractStatuses }}
+      </div>
+      <div class="col-1 column">
+        {{ item.startDate | dateIF }}
+      </div>
+      <div class="col-1 column">
+        {{ item.endDate | dateIF }}
+      </div>
+      <div class="col-1 column has-ellipsis">
+        {{ item.totalAccumulatedAmount | ifNumber }}
+      </div>
+      <div class="column has-ellipsis col-1">
+        {{
+          (item.totalAmountWithAmendments
+            ? item.totalAmountWithAmendments
+            : item.totalAccumulatedAmount
+          ) | ifNumber
+        }}
+      </div>
+      <div
+        class="col-1 column options text-center"
+        *ngIf="item.options !== null && item.options.length !== 0"
+      >
+        <fi-dropdownbutton
+          [id]="i + 1"
+          [itemOptions]="item.options"
+          (selectedOption)="itemOption($event, item)"
+        ></fi-dropdownbutton>
+      </div>
+      <div *ngIf="!accordionSettings[i]?.collapse" class="col-12">
+        <fi-contract-amendments
+          [data]="item.amendments"
+          [contractId]="item.biddingContractId"
+          [contract]="item"
+          [locationEnums]="locationEnums"
+        ></fi-contract-amendments>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<ng-template #emptyState>
+  <fi-no-content
+    [content]="'CONTRACT.NO_CONTRACTS' | translate"
+  ></fi-no-content>
+</ng-template>

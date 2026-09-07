@@ -1,0 +1,64 @@
+<ng-container *ngIf="isPreview; else readonly">
+  <form [formGroup]="eoiFormGroup" class="w-100 mb-5">
+    <div
+      *ngIf="projectInfo as pi"
+      style="width: 100%; display: flex; flex-direction: column; gap: 16px"
+    >
+      <span *ngFor="let field of projectInfoFields">
+        {{ field.label | translate }}:
+        <ng-container
+          *ngIf="
+            field.key === 'projectName' &&
+              (lang === 'fr' ||
+                lang === 'pt' ||
+                lang === 'es' ||
+                lang === 'en');
+            else isEmpty
+          "
+        >
+          <mat-form-field class="w-100 mt-3">
+            <textarea
+              matInput
+              [formControlName]="field.key"
+              maxlength="2000"
+            ></textarea>
+            <mat-error
+              *ngIf="eoiFormGroup.controls[field.key].errors?.required"
+              >{{ "BIDDER.REQUIRED" | translate }}</mat-error
+            >
+            <mat-hint align="end"
+              >{{
+                eoiFormGroup.controls[field.key].value?.length || 0
+              }}/2000</mat-hint
+            >
+          </mat-form-field>
+        </ng-container>
+        <ng-template #isEmpty>
+          <span class="sf700">
+            {{
+              field.key === "country"
+                ? (pi[field.key] | titlecase)
+                : pi[field.key]
+            }}
+          </span>
+        </ng-template>
+      </span>
+    </div>
+  </form>
+</ng-container>
+
+<ng-template #readonly>
+  <div
+    *ngIf="projectInfo as pi"
+    style="width: 100%; display: flex; flex-direction: column; gap: 16px"
+  >
+    <span *ngFor="let field of projectInfoFields">
+      {{ field.label | translate }}:
+      <span class="sf700">
+        {{
+          field.key === "country" ? (pi[field.key] | titlecase) : pi[field.key]
+        }}
+      </span>
+    </span>
+  </div>
+</ng-template>

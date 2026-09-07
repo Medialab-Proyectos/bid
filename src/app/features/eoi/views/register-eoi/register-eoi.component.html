@@ -1,0 +1,337 @@
+<form
+  class="eoi-form"
+  [formGroup]="eoiFormGroup"
+  (ngSubmit)="onFormSubmit()"
+  #ngForm="ngForm"
+  *ngIf="vm$ | async as vm; else loader"
+>
+  <p class="form-title sf700">{{ "UNDB.FORM.TITLE" | translate }}</p>
+  <p class="form-subtitle">
+    {{ "UNDB.FORM.SUBTITLE" | translate }}
+  </p>
+  <fi-form-divider />
+  <ng-container
+    *ngIf="
+      isEditAmendment &&
+      (publicationNumber !== '' || publicationNumber !== undefined)
+    "
+  >
+    <p>
+      {{ "UNDB.NOTICE.PUBLICATION_REFERENCE_NUMBER" | translate }}
+      <span class="sf700">{{ publicationNumber }}</span>
+    </p>
+    <fi-form-divider />
+  </ng-container>
+  <!-- HEADING SECTION -->
+  <fi-project-info
+    [projectInfo]="vm.projectInfo"
+    [eoiFormGroup]="eoiFormGroup"
+    [lang]="selectedLanguage"
+  ></fi-project-info>
+  <span class="mt-3">{{ "EOI.HEADING.SUMMARY.TITLE" | translate }}</span>
+  <mat-form-field class="w-100 mt-3">
+    <mat-label>{{ "EOI.HEADING.SUMMARY.LABEL" | translate }}</mat-label>
+    <textarea
+      matInput
+      formControlName="processSummary"
+      maxlength="4000"
+    ></textarea>
+    <mat-hint align="end"
+      >{{
+        eoiFormGroup.controls.processSummary.value?.length || 0
+      }}/4000</mat-hint
+    >
+    <mat-error *ngIf="eoiFormGroup.controls.processSummary.errors?.required"
+      >{{ "FORMS.DYNAMIC_FORM.REQUIRED" | translate }}
+    </mat-error>
+  </mat-form-field>
+
+  <p>
+    {{ "EOI.HEADING.LIMIT_DATE.DESCRIPTION" | translate }}
+    <mat-icon
+      [matTooltip]="'EOI.HEADING.LIMIT_DATE.TOOLTIP' | translate"
+      style="transform: scale(0.6)"
+      >help</mat-icon
+    >
+  </p>
+
+  <div
+    *ngIf="isAmendment && actualReceptionDeadLine() !== originalDeadLineDate"
+    class="pb-4"
+  >
+    <fi-alert
+      [type]="'warning'"
+      [title]="'EOI.HEADING.LIMIT_DATE.LABEL.MODIFIED' | translate"
+    >
+    </fi-alert>
+  </div>
+  <div class="w-100">
+    <div class="d-flex">
+        <fi-undb-date-picker
+          label="EOI.HEADING.LIMIT_DATE.LABEL"
+          formControlName="receptionDeadLine"
+          [isSubmitting]="ngForm.submitted"
+          [minDate]="deadlineMinDate"
+        ></fi-undb-date-picker>
+        <fi-time-picker style="margin-left: 30px;"
+          [label]="'EOI.HEADING.LIMIT_HOUR.LABEL'"
+          formControlName="receptionDeadLineHour"
+          [isSubmitted]="ngForm.submitted"
+        ></fi-time-picker>
+    </div>
+  </div>
+
+  <!-- ENDOF HEADING SECTION -->
+
+  <fi-form-divider></fi-form-divider>
+
+  <!--SECTION 1-->
+
+  <p>
+    <span *ngIf="vm.selectedLanguage === 'pt'"
+      >{{ "GPN.FORM.SECTION_1.PARAGRAPH_1" | translate }}
+    </span>
+    <span class="sf700">{{ vm.projectInfo.country | titlecase }}</span>
+    {{ "EOI.SECTION_1.PARAGRAPH_1.PART_3" | translate }}
+    <span class="sf700">{{
+      vm.projectInfo.projectName || eoiFormGroup.controls.projectName.value
+    }}</span>
+    {{ "EOI.SECTION_1.PARAGRAPH_1.PART_5" | translate }}
+  </p>
+
+  <p>{{ "EOI.SECTION_1.REQUIRED_FIELD.DESCRIPTION" | translate }}</p>
+
+  <kendo-editor
+    formControlName="consultingServices"
+    name="content"
+    style="height: 300px"
+    [pasteCleanupSettings]="pasteCleanupSettings"
+    [placeholder]="'EOI.SECTION_1.REQUIRED_FIELD.LABEL' | translate"
+  >
+    <kendo-toolbar>
+      <kendo-toolbar-buttongroup>
+        <kendo-toolbar-button kendoEditorBoldButton></kendo-toolbar-button>
+        <kendo-toolbar-button kendoEditorItalicButton></kendo-toolbar-button>
+        <kendo-toolbar-button kendoEditorUnderlineButton></kendo-toolbar-button>
+      </kendo-toolbar-buttongroup>
+      <kendo-toolbar-buttongroup>
+        <kendo-toolbar-button kendoEditorAlignLeftButton></kendo-toolbar-button>
+        <kendo-toolbar-button
+          kendoEditorAlignCenterButton
+        ></kendo-toolbar-button>
+        <kendo-toolbar-button
+          kendoEditorAlignRightButton
+        ></kendo-toolbar-button>
+        <kendo-toolbar-button
+          kendoEditorAlignJustifyButton
+        ></kendo-toolbar-button>
+      </kendo-toolbar-buttongroup>
+      <kendo-toolbar-buttongroup>
+        <kendo-toolbar-button
+          kendoEditorInsertUnorderedListButton
+        ></kendo-toolbar-button>
+        <kendo-toolbar-button
+          kendoEditorInsertOrderedListButton
+        ></kendo-toolbar-button>
+      </kendo-toolbar-buttongroup>
+    </kendo-toolbar>
+  </kendo-editor>
+  <p style="text-align: right">
+    {{ getControlLength("consultingServices") }} / 4000
+  </p>
+  <!-- <fi-rich-text-editor
+    formControlName="consultingServices"
+    [maxLength]="4000"
+    [placeholder]="'EOI.SECTION_1.REQUIRED_FIELD.LABEL'"
+    [isSubmitted]="ngForm.submitted"
+  ></fi-rich-text-editor> -->
+
+  <!-- <mat-form-field class="w-100">
+    <mat-label>{{
+      "EOI.SECTION_1.REQUIRED_FIELD.LABEL" | translate
+    }}</mat-label>
+    <textarea
+      maxlength="4000"
+      matInput
+      formControlName="consultingServices"
+    ></textarea>
+    <mat-hint align="end">
+      {{ eoiFormGroup.controls.consultingServices.value?.length || 0 }}/4000
+    </mat-hint>
+    <mat-error *ngIf="eoiFormGroup.controls.consultingServices.errors?.required"
+      >{{ "FORMS.DYNAMIC_FORM.REQUIRED" | translate }}
+    </mat-error>
+  </mat-form-field> -->
+
+  <p>
+    {{ "GPN.FORM.SECTION_1.ARTICLE" | translate }}
+    <span class="sf700">{{ vm.projectInfo.executor }}</span>
+    {{ "EOI.SECTION_1.PARAGRAPH_2.PART_3" | translate }}
+  </p>
+
+  <!-- ENDOF SECTION 1-->
+
+  <fi-form-divider></fi-form-divider>
+
+  <!-- SECTION 2-->
+
+  <p>
+    {{ "EOI.SECTION_2.PARAGRAPH_1.PART_1" | translate }}
+    <a href="https://projectprocurement.iadb.org/en/policies">{{
+      "EOI.SECTION_2.PARAGRAPH_1.PART_2" | translate
+    }}</a>
+    {{ "EOI.SECTION_2.PARAGRAPH_1.PART_3" | translate }}
+  </p>
+
+  <fi-optional-field
+    subtitle="EOI.FORM.SECTION_2.OPTIONAL_FIELD_1.DESCRIPTION"
+    label="EOI.FORM.SECTION_2.OPTIONAL_FIELD_1.LABEL"
+    [tooltip]="'EOI.FORM.SECTION_2.OPTIONAL_FIELD_1.TOOLTIP'"
+    formControlName="exceptionalEligibilityRules"
+    [maxlength]="4000"
+  ></fi-optional-field>
+
+  <p>{{ "EOI.SECTION_2.PARAGRAPH_2" | translate }}</p>
+
+  <p>{{ "EOI.SECTION_2.PARAGRAPH_3" | translate }}</p>
+
+  <p>{{ "EOI.SECTION_2.PARAGRAPH_4" | translate }}:</p>
+
+  <div class="operation-hour-group">
+    <div>
+      <fi-time-picker
+        [label]="'EOI.SECTION_2.START_BUSINESS_HOURS'"
+        formControlName="startOperationHour"
+        [isSubmitted]="ngForm.submitted"
+      ></fi-time-picker>
+    </div>
+    <div>
+      <fi-time-picker
+        [label]="'EOI.SECTION_2.END_BUSINESS_HOURS'"
+        formControlName="endOperationHour"
+        [isSubmitted]="ngForm.submitted"
+      ></fi-time-picker>
+      <mat-error
+        *ngIf="eoiFormGroup.controls.endOperationHour?.errors?.endHourInvalid"
+      >
+        {{ "EOI.SECTION_2.END_BUSINESS_HOURS_INVALID" | translate }}
+      </mat-error>
+    </div>
+  </div>
+
+  <fi-form-divider></fi-form-divider>
+
+  <!-- SECTION 3 -->
+
+  <p>
+    {{ "EOI.SECTION_3.PARAGRAPH_1" | translate }}
+    <span class="sf700">{{
+      eoiFormGroup.controls.receptionDeadLine.value.toISOString()
+        | dateIF : "dd MMMM yyyy"
+    }}</span
+    >.
+  </p>
+
+  <div class="my-4 d-flex flex-column">
+    <span>{{ "EOI.SECTION_3.ELECTRONIC_OFFERS_LABEL" | translate }}:</span>
+    <mat-radio-group color="primary" formControlName="electronicOffers">
+      <mat-radio-button [value]="true" class="mr-2">{{
+        "EOI.SECTION_3.ELECTRONIC_OFFERS_YES_ANSWER" | translate
+      }}</mat-radio-button>
+      <mat-radio-button [value]="false">{{
+        "EOI.SECTION_3.ELECTRONIC_OFFERS_NO_ANSWER" | translate
+      }}</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <p>
+    {{ "EOI.SECTION_3.PARAGRAPH_2" | translate }}
+    <mat-icon
+      [matTooltip]="'EOI.SECTION_3.PARAGRAPH_2.TOOLTIP' | translate"
+      style="transform: scale(0.6)"
+      >help</mat-icon
+    >
+  </p>
+
+  <kendo-editor
+    formControlName="qualificationDemonstration"
+    name="content"
+    style="height: 300px"
+    [pasteCleanupSettings]="pasteCleanupSettings"
+    [placeholder]="'EOI.SECTION_3.REQUIRED_TEXTAREA' | translate"
+  >
+    <kendo-toolbar>
+      <kendo-toolbar-buttongroup>
+        <kendo-toolbar-button kendoEditorBoldButton></kendo-toolbar-button>
+        <kendo-toolbar-button kendoEditorItalicButton></kendo-toolbar-button>
+        <kendo-toolbar-button kendoEditorUnderlineButton></kendo-toolbar-button>
+      </kendo-toolbar-buttongroup>
+      <kendo-toolbar-buttongroup>
+        <kendo-toolbar-button kendoEditorAlignLeftButton></kendo-toolbar-button>
+        <kendo-toolbar-button
+          kendoEditorAlignCenterButton
+        ></kendo-toolbar-button>
+        <kendo-toolbar-button
+          kendoEditorAlignRightButton
+        ></kendo-toolbar-button>
+        <kendo-toolbar-button
+          kendoEditorAlignJustifyButton
+        ></kendo-toolbar-button>
+      </kendo-toolbar-buttongroup>
+      <kendo-toolbar-buttongroup>
+        <kendo-toolbar-button
+          kendoEditorInsertUnorderedListButton
+        ></kendo-toolbar-button>
+        <kendo-toolbar-button
+          kendoEditorInsertOrderedListButton
+        ></kendo-toolbar-button>
+      </kendo-toolbar-buttongroup>
+    </kendo-toolbar>
+  </kendo-editor>
+  <p style="text-align: right">
+    {{ getControlLength("qualificationDemonstration") }}/ 4000
+  </p>
+  <!-- <fi-rich-text-editor
+    formControlName="qualificationDemonstration"
+    [maxLength]="4000"
+    [placeholder]="'EOI.SECTION_3.REQUIRED_TEXTAREA'"
+    [isSubmitted]="ngForm.submitted"
+  ></fi-rich-text-editor> -->
+
+  <fi-undb-linked-documents
+    formControlName="linksRelatedWithTheDocument"
+  ></fi-undb-linked-documents>
+
+  <fi-undb-recipient
+    formControlName="recipient"
+    [isSubmitted]="ngForm.submitted"
+    [executorAgency]="vm.projectInfo.executor"
+  ></fi-undb-recipient>
+
+  <!-- ENDOF SECTION 3 -->
+
+  <div class="form-buttons">
+    <button mat-button color="primary" type="button" (click)="onExit()">
+      {{ "UNDB.FORM.ACTIONS.COMMON.EXIT" | translate | titlecase }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      *fiDisplayByPermissions="registerButtonPermissions"
+      type="submit"
+      [disabled]="(isSubmitting$ | async) || eoiFormGroup.pristine"
+    >
+      {{ "UNDB.FORM.ACTIONS.COMMON.REGISTER" | translate }}
+    </button>
+  </div>
+</form>
+
+<ng-template #loader>
+  <div class="mt-5 d-flex justify-content-center">
+    <mat-progress-spinner
+      diameter="44"
+      color="primary"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+  </div>
+</ng-template>

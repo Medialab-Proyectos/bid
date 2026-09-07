@@ -1,0 +1,138 @@
+////
+/// Override kendo-dropdown-button component
+///
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group components of kendo ui
+/// @name .k-dropdown
+/// @since version 1.0.0
+////
+.k-dropdown {
+  border-radius: rem(5);
+  color: color("black");
+  background-color: color("white");
+
+  &.ng-invalid {
+    border-color: #b9c2ca;
+  }
+  &.ng-invalid.ng-touched {
+    border: 2px solid #d72e2d;
+  }
+
+  &:focus-within {
+    border: 1px solid #4496f7 !important;
+    box-shadow: 0px 0px 3px #0070d2 !important;
+  }
+
+  .k-dropdown-wrap {
+    background-image: none;
+    background-color: color("white");
+    border-radius: rem(5);
+
+    .k-input {
+      height: rem(40);
+      color: color("black");
+      font-size: rem(16);
+    }
+
+    .k-i-arrow-s {
+      &:before {
+        content: "";
+        font-family: "Font Awesome 5 Pro", sans-serif;
+        color: color("black");
+      }
+    }
+
+    &.hover,
+    &:hover {
+      background-image: none;
+    }
+  }
+
+  .k-popup {
+    color: color("gray-600");
+    background-color: color("white");
+    padding: rem(9) rem(7);
+    border-radius: rem(5);
+
+    .k-list {
+      .k-item {
+        font-size: rem(16);
+        border-radius: rem(40);
+        padding: rem(9) rem(11);
+
+        &.k-state-selected {
+          color: color("black");
+          background-color: color("secondary");
+          font-weight: bold;
+          box-shadow: none;
+        }
+
+        &:focus,
+        &.k-state-focused {
+          box-shadow: none;
+        }
+
+        &:hover,
+        &.k-state-hover {
+          background-color: color("secondary");
+          color: color("black");
+        }
+      }
+    }
+
+    .k-list-optionlabel {
+      font-size: rem(16);
+      border-radius: rem(40);
+      padding: rem(9) rem(11);
+
+      &.k-state-selected {
+        color: color("black");
+        background-color: color("secondary");
+        font-weight: bold;
+        box-shadow: none;
+      }
+
+      &:hover,
+      &.k-state-hover {
+        background-color: color("secondary");
+        color: color("black");
+      }
+    }
+  }
+
+  .k-select {
+    position: relative;
+
+    .k-icon {
+      position: absolute;
+    }
+  }
+}
+
+.force-disabled {
+  span {
+    background-color: #ecebea;
+    opacity: 0.6;
+    box-shadow: none;
+    border-color: #b9c2ca;
+    pointer-events: none;
+    &:hover {
+      background-color: #ecebea;
+      opacity: 0.6;
+    }
+  }
+
+  &:focus-within {
+    border: 1px solid #b9c2ca !important;
+    box-shadow: none;
+  }
+}
+
+.bid-dropdown--warning {
+  .k-input {
+    opacity: 0.4;
+    font-style: italic;
+  }
+}

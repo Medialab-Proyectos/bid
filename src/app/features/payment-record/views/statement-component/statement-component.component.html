@@ -1,0 +1,276 @@
+<div class="container-fluid pr-page">
+  <!--
+    Same affordance, same position as the commitment detail screen: right
+    under the breadcrumb, reachable without depending on the bottom "Cancelar"
+    button, which only appears once `detail` has loaded.
+  -->
+  <button
+    kendoButton
+    class="btn btn-neutral pr-back-button"
+    id="Btn_StatementComponent_BackToList"
+    iconClass="fas fa-arrow-left"
+    (click)="back()"
+  >
+    {{ "PAYMENT_RECORD.COMMITMENT.BACK_TO_LIST" | translate }}
+  </button>
+
+  <div class="pr-card" *ngIf="detail">
+    <div class="pr-card__head">
+      <div class="pr-card__identity">
+        <span class="pr-card__icon"><em class="fas fa-layer-group"></em></span>
+        <h2 class="pr-card__title">
+          {{ "PAYMENT_RECORD.STATEMENT.COMPONENT_TITLE" | translate }}
+        </h2>
+      </div>
+    </div>
+
+    <!-- ---------- what the component holds ---------- -->
+    <div class="pr-step__body">
+      <div class="pr-component">
+        <div class="pr-component__identity">
+          <span class="pr-dialog__label">
+            {{ "PAYMENT_RECORD.STATEMENT.COMPONENT_CODE" | translate }}
+          </span>
+          <p class="pr-component__code">{{ detail.componentCode }}</p>
+          <span class="pr-dialog__label">
+            {{ "PAYMENT_RECORD.COLUMNS.COMPONENT" | translate }}
+          </span>
+          <p class="pr-component__name">{{ detail.componentName }}</p>
+        </div>
+
+        <div class="pr-component__amounts">
+          <div class="pr-component__block">
+            <h4 class="pr-component__block-title">
+              {{ "PAYMENT_RECORD.STATEMENT.CURRENT_AMOUNT" | translate }}
+            </h4>
+            <dl class="pr-component__list">
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_IDB" | translate }}</dt>
+              <dd>{{ detail.currentAmount.idb | ifNumber }}</dd>
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_LOCAL" | translate }}</dt>
+              <dd>{{ detail.currentAmount.localContribution | ifNumber }}</dd>
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_COFIN" | translate }}</dt>
+              <dd>{{ detail.currentAmount.cofinancing | ifNumber }}</dd>
+            </dl>
+          </div>
+
+          <div class="pr-component__block">
+            <h4 class="pr-component__block-title">
+              {{ "PAYMENT_RECORD.STATEMENT.COMPONENT_JUSTIFIED" | translate }}
+            </h4>
+            <dl class="pr-component__list">
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_IDB" | translate }}</dt>
+              <dd>{{ detail.toJustify.idb | ifNumber }}</dd>
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_LOCAL" | translate }}</dt>
+              <dd>{{ detail.toJustify.localContribution | ifNumber }}</dd>
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_COFIN" | translate }}</dt>
+              <dd>{{ detail.toJustify.cofinancing | ifNumber }}</dd>
+            </dl>
+          </div>
+
+          <div class="pr-component__block">
+            <h4 class="pr-component__block-title">
+              {{ "PAYMENT_RECORD.STATEMENT.COMPONENT_PENDING_JUSTIFY" | translate }}
+            </h4>
+            <dl class="pr-component__list">
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_IDB" | translate }}</dt>
+              <dd>{{ detail.availableBalance.idb | ifNumber }}</dd>
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_LOCAL" | translate }}</dt>
+              <dd>{{ detail.availableBalance.localContribution | ifNumber }}</dd>
+              <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_COFIN" | translate }}</dt>
+              <dd>{{ detail.availableBalance.cofinancing | ifNumber }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <fi-alert
+        type="info"
+        [title]="
+          'PAYMENT_RECORD.STATEMENT.COMPONENT_CURRENCY_NOTE'
+            | translate
+              : {
+                  contract: detail.contractCurrency,
+                  approval: detail.approvalCurrency
+                }
+        "
+        [closable]="false"
+      ></fi-alert>
+    </div>
+
+    <!-- ---------- the payments charged to it ---------- -->
+    <div class="pr-step">
+      <span class="pr-step__number"><em class="fas fa-list"></em></span>
+      <h3 class="pr-step__title">
+        {{ "PAYMENT_RECORD.STATEMENT.COMPONENT_PAYMENTS" | translate }}
+      </h3>
+      <span
+        class="pr-step__counter"
+        [innerHTML]="
+          'PAYMENT_RECORD.STATEMENT.SELECTED_COUNT'
+            | translate
+              : {
+                  selected: selectedIds.length,
+                  total: detail.payments.length
+                }
+        "
+      ></span>
+    </div>
+
+    <div class="pr-step__body">
+      <p class="pr-panel__lead">
+        {{ "PAYMENT_RECORD.STATEMENT.COMPONENT_PAYMENTS_HELP" | translate }}
+      </p>
+
+      <div class="pr-toolbar pr-statement__toolbar">
+        <!--
+          `fi-alert`'s own markup and classes, not the component itself --
+          its title/subtitle only take plain text, with nowhere to put a
+          real, clickable link. This renders identically to a real
+          `type="info"` alert while keeping the link a real link.
+        -->
+        <div class="c-alert c-alert--info">
+          <div class="c-alert__body">
+            <div class="c-alert__icon">
+              <em class="fas fa-info-circle"></em>
+            </div>
+            <div class="c-alert__title">
+              {{ "PAYMENT_RECORD.STATEMENT.HINT_PREFIX" | translate }}
+              <a
+                href="javascript:void(0)"
+                class="pr-link"
+                id="Lnk_StatementComponent_ToRecord"
+                (click)="goToRecord()"
+              >
+                {{ "PAYMENT_RECORD.STATEMENT.HINT_LINK" | translate }}
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="pr-statement__total">
+          <span class="pr-statement__total-label">
+            {{ "PAYMENT_RECORD.STATEMENT.SELECTED_AMOUNT" | translate }}
+          </span>
+          <span class="pr-statement__total-value">
+            {{ selectedTotal | ifNumber }} {{ detail.approvalCurrency }}
+          </span>
+        </div>
+      </div>
+
+      <div class="pr-toolbar pr-statement__toolbar pr-statement__toolbar--group">
+        <span class="pr-statement__group-hint">
+          {{ "PAYMENT_RECORD.STATEMENT.GROUP_HINT" | translate }}
+        </span>
+        <fi-filter
+          class="pr-statement__filter"
+          [minLength]="3"
+          [placeholder]="'PAYMENT_RECORD.ADVANCED_SEARCH' | translate"
+          (filterValue)="onSearch($event)"
+        ></fi-filter>
+      </div>
+
+      <div class="pr-panel__scroll">
+        <table class="pr-rates pr-rates--wide pr-statement__payments-table">
+          <thead>
+            <tr>
+              <th scope="col" class="pr-rates__check">
+                <input
+                  type="checkbox"
+                  id="Chk_StatementComponent_All"
+                  [checked]="allSelected"
+                  (change)="toggleAll()"
+                  [attr.aria-label]="
+                    'PAYMENT_RECORD.ADD_PAYMENTS.SELECT_ALL' | translate
+                  "
+                />
+              </th>
+              <th scope="col">{{ "PAYMENT_RECORD.STATEMENT.COLUMNS.ORIGIN" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.STATEMENT.COLUMNS.COMMITMENT" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.RECEIVER" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.DATE" | translate }}</th>
+              <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY" | translate }}</th>
+              <th scope="col" class="pr-grid__number">
+                {{ "PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT" | translate }}
+              </th>
+              <th scope="col" class="pr-grid__number">
+                {{ "PAYMENT_RECORD.DETAIL.COLUMNS.RATE" | translate }}
+              </th>
+              <th scope="col" class="pr-grid__number">
+                {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.EQUIVALENT" | translate }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let payment of filteredPayments; trackBy: trackPayment"
+              [class.pr-statement__row--dropped]="!selection[payment.id]"
+              [class.pr-row--picked]="selection[payment.id]"
+            >
+              <td class="pr-rates__check">
+                <input
+                  type="checkbox"
+                  [attr.id]="'Chk_StatementComponent_' + payment.id"
+                  [(ngModel)]="selection[payment.id]"
+                  (ngModelChange)="onToggle()"
+                  [attr.aria-label]="payment.concept"
+                />
+              </td>
+              <td>{{ payment.country }}</td>
+              <td>{{ payment.commitmentId }}</td>
+              <td class="pr-cell--name" [title]="payment.beneficiaryName">
+                {{ payment.beneficiaryName }}
+              </td>
+              <td class="pr-cell--name" [title]="payment | paymentConcept">
+                {{ payment | paymentConcept }}
+              </td>
+              <td>{{ payment.accountingVoucher }}</td>
+              <td>{{ payment.paymentDate | dateIF }}</td>
+              <td>{{ payment.currency }}</td>
+              <td class="pr-grid__number">{{ payment.amount | ifNumber }}</td>
+              <td class="pr-grid__number">{{ payment.exchangeRate | ifNumber : 4 }}</td>
+              <td class="pr-grid__number">
+                {{ payment.equivalentAmount | ifNumber }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <fi-no-content
+        *ngIf="filteredPayments.length === 0"
+        [content]="'PAYMENT_RECORD.STATEMENT.COMPONENT_EMPTY' | translate"
+      ></fi-no-content>
+
+      <div class="pr-toolbar">
+        <p class="pr-toolbar__hint">
+          {{ "PAYMENT_RECORD.STATEMENT.RECALCULATE_HELP" | translate }}
+        </p>
+        <div class="pr-toolbar__actions">
+          <button
+            kendoButton
+            class="btn btn-neutral"
+            id="Btn_StatementComponent_Cancel"
+            (click)="back()"
+          >
+            {{ "PROCUREMENT.CANCEL" | translate }}
+          </button>
+          <button
+            kendoButton
+            class="btn btn-brand"
+            id="Btn_StatementComponent_Save"
+            [disabled]="saving"
+            (click)="save()"
+          >
+            {{ "PAYMENT_RECORD.STATEMENT.SAVE_AND_RECALCULATE" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <fi-no-content
+    *ngIf="!loading && !detail"
+    [content]="'PAYMENT_RECORD.STATEMENT.ERRORS.NOT_STARTED' | translate"
+  ></fi-no-content>
+</div>

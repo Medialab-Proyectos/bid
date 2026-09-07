@@ -1,0 +1,45 @@
+<div class="c-transactions">
+  <fi-transactions-header
+    [transactionDetailScreen]="false"
+    [expandedHeader]="true"
+  ></fi-transactions-header>
+</div>
+
+<div class="col-12 process-tab-card process-tab-card--transactions mt-3 pb-5">
+  <div class="new-transaction row">
+    <div
+      kendoTooltip
+      #tooltip="kendoTooltip"
+      position="top"
+      [tooltipTemplate]="isStartTransactionDisabled && template"
+      filter=".btn-container"
+      [callout]="false"
+    >
+      <div class="btn-container">
+        <ng-container *ngIf="hasPermissionDisplayTransaction">
+          <button
+            kendoButton
+            class="btn btn-brand"
+            id="Btn_Start_transaction"
+            *fiDisabledByActions="startActionPermission"
+            (click)="startTransaction()"
+            [disabled]="transactionButtonDisabled || isStartTransactionDisabled"
+          >
+            {{ "TRANSACTION.START_TRANSACTION" | translate }}
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <ng-container>
+    <fi-transactions-list
+      [transactions]="transactions"
+      (transactionAction)="handleTransactionActions($event)"
+      [isLoading]="isLoading"
+    ></fi-transactions-list>
+  </ng-container>
+</div>
+
+<ng-template #template let-anchor>
+  <span>{{ "TRANSACTION.VALIDATION.WF" | translate }}</span>
+</ng-template>

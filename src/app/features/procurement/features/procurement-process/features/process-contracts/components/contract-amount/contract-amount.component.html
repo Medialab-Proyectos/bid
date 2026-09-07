@@ -1,0 +1,72 @@
+<div class="c-contract-amount">
+  <fi-accordion-panel>
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "CONTRACT.GENERAL_INFO.TOTAL_AMOUNT_REQUIRED" | translate
+    }}</ng-container>
+    <ng-container body>
+      <div class="amount">
+        <div
+          class="row"
+          *ngFor="let group of form.controls; index as i"
+          [formGroup]="group"
+        >
+          <div class="col-12 col-md-4">
+            <span class="d-block mt-3">
+              {{ "CONTRACT.GENERAL_INFO.TYPE_OF_CURRENCY" | translate }}</span
+            >
+            <p class="mt-2">
+              {{ amendmentInfo[i]?.currency }}
+            </p>
+          </div>
+          <div class="col-12 col-md-4" style="margin-top: 1.5rem">
+            <fi-mat-numeric
+              class="mt-4"
+              [label]="'CONTRACT.GENERAL_INFO.TOTAL_AMOUNT' | translate"
+              [decimals]="
+                getNumberOfDecimals(amendmentInfo[i]?.currency) === 0 ? 0 : 2
+              "
+              [min]="0"
+              [maxlength]="18"
+              #totalAmount
+              formControlName="totalAmount"
+              data-testid="totalAmount"
+              [placeholder]="'CONTRACT.GENERAL_INFO.TOTAL_AMOUNT' | translate"
+              id="totalAmount"
+              (valueChange)="calculateUsdEquivalent($event, i)"
+            ></fi-mat-numeric>
+          </div>
+
+          <div class="col-12 col-md-4" style="margin-top: 1.5rem">
+            <!-- <div class="d-flex align-items-center">
+              <div class="pl-2 pt-3" kendoTooltip>
+                <em
+                  class="fas fa-info-circle"
+                  [title]="'CONTRACT.ORIGIN_EXCHANGE_RATE' | translate"
+                ></em>
+              </div>
+            </div> -->
+            <fi-mat-numeric
+              class="mt-4"
+              [label]="
+                'CONTRACT.GENERAL_INFO.EQUIVALENT_IN_DOLLARS' | translate
+              "
+              [decimals]="2"
+              [min]="0"
+              [icon]="true"
+              [fiDisableControl]="true"
+              [maxlength]="18"
+              #totalAmount
+              formControlName="usdEquivalentAmount"
+              data-testid="usdEquivalentAmount"
+              [placeholder]="
+                'CONTRACT.GENERAL_INFO.EQUIVALENT_IN_DOLLARS' | translate
+              "
+              id="usdEquivalentAmount"
+            ></fi-mat-numeric>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

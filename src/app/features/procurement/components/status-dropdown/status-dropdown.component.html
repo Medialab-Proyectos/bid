@@ -1,0 +1,23 @@
+<kendo-dropdownlist
+  [data]="data$ | async"
+  [textField]="'text'"
+  [valueField]="'value'"
+  [valuePrimitive]="true"
+  [disabled]="!disableByPermission"
+  [fiDropdownFormControl]
+  (valueChange)="valueChange($event)"
+  (open)="open()"
+  class="c-dropdown-list k-dropdown"
+  [(ngModel)]="selectedValue"
+  [id]="'Down_Category_' + id"
+>
+  <ng-template kendoDropDownListNoDataTemplate let-item>
+    <fi-loader *ngIf="isloading; else defaultLoadingTemplate"></fi-loader>
+  </ng-template>
+  <ng-template kendoDropDownListValueTemplate let-item>
+    {{ item?.text | translate }}
+  </ng-template>
+  <ng-template kendoDropDownListItemTemplate let-item>
+    {{ item?.text | translate }}
+  </ng-template>
+</kendo-dropdownlist>

@@ -1,0 +1,106 @@
+<div
+  id="top"
+  class="col-12"
+  style="
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0px 3px 6px #00000033;
+  "
+>
+  <div
+    class="row"
+    style="
+      border-bottom: 1px solid #dddbda;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    "
+  >
+    <div class="col-12 col-md-6">
+      <div class="d-flex align-items-baseline">
+        <div class="project-header__icon">
+          <div class="icon-header icon-header_procurement">
+            <em class="fas fa-list-alt"></em>
+          </div>
+        </div>
+        <span class="pl-2 sf700" style="font-size: 16px">
+          {{ "BIDDER.REGISTER_NEW_JOINT_VENTURE" | translate }}</span
+        >
+      </div>
+    </div>
+  </div>
+  <div *fiDisplayByPermissions="viewNewJointVenturePermission">
+    <div class="row">
+      <div class="col-12">
+        <ng-container *ngIf="formErrorCollection.length > 0">
+          <fi-error-list
+            data-testid="ErrorMessage"
+            [errorList]="formErrorCollection"
+            [errorListTitle]="'BIDDER.VALIDATION_ERRORS_TITLE'"
+          ></fi-error-list>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <fi-form-title
+          number="1"
+          [title]="'BIDDER.BIDDER_DETAILS' | translate"
+        ></fi-form-title>
+      </div>
+    </div>
+    <form [formGroup]="participantForm">
+      <div *ngIf="isEnumLoaded && !isSubmiting; else loader">
+        <fi-bidder-registration-form
+          [bidderForm]="bidder"
+          [isParticipant]="true"
+          [requiredErrorMessage]="requiredErrorMessage | translate"
+          [typeList]="bidderTypeList"
+          [economicSectorList]="economicSectorList"
+          [isReadOnly]="false"
+          [memberCountries]="memberCountries"
+          [countries]="countries"
+          [allUnfilterCountries]="allUnfilterCountries"
+          [hideAditionalFields]="hideAditionalFields"
+        ></fi-bidder-registration-form>
+      </div>
+      <div class="row mt-2 mb-4">
+        <div class="col-12">
+          <div class="d-flex justify-content-end" *ngIf="isEnumLoaded">
+            <div>
+              <button
+                kendoButton
+                class="btn mb-3 mx-md-2 btn-online-brand"
+                data-testid="qa-goBackBtn"
+                id="Btn_cancel"
+                type="button"
+                *fiDisplayByPermissions="cancelButtonPermission"
+                (click)="goBack()"
+              >
+                {{ "BIDDER.CANCEL" | translate }}
+              </button>
+              <button
+                kendoButton
+                class="btn btn-brand mb-3 mx-md-2"
+                data-testid="createProcessbtn"
+                id="Btn_save"
+                data-testid="createProcessbtn"
+                kendoButton
+                *fiDisplayByPermissions="saveButtonPermission"
+                [disabled]="saveDisabled"
+                (click)="submitBidder()"
+              >
+                {{ "BIDDER.SAVE" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

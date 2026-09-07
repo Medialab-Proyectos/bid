@@ -1,0 +1,46 @@
+<ng-container>
+  <ng-template #template let-anchor>
+    <span>{{ transactionCard.errorMessage | translate }}</span>
+  </ng-template>
+
+  <kendo-card width="100%" class="transaction-type-card">
+    <kendo-card-header class="k-vbox">
+      <div class="c-transactions__transaction-icon">
+        <em [class]="transactionCard.icon"></em>
+      </div>
+    </kendo-card-header>
+    <kendo-card-body>
+      <h4 kendoCardTitle>{{ transactionCard.title | translate }}</h4>
+      <p kendoCardSubtitle>
+        {{ transactionCard.description | translate }}
+      </p>
+    </kendo-card-body>
+    <kendo-card-footer>
+      <div
+        kendoTooltip
+        #tooltip="kendoTooltip"
+        position="top"
+        [tooltipTemplate]="transactionCard.errorMessage && template"
+        filter=".footer"
+        [callout]="false"
+      >
+        <kendo-card-actions
+          orientation="horizontal"
+          layout="stretched"
+          class="footer"
+        >
+          <button
+            kendoButton
+            class="btn btn-brand"
+            [disabled]="transactionCard.errorMessage"
+            [id]="'Btn_Request_' + (id + 1)"
+            (click)="initTransaction()"
+            data-testid="initTransaction-btn"
+          >
+            {{ "TRANSACTION.REQUEST" | translate }}
+          </button>
+        </kendo-card-actions>
+      </div>
+    </kendo-card-footer>
+  </kendo-card>
+</ng-container>

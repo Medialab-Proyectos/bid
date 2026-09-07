@@ -1,0 +1,95 @@
+<div class="col files-list" *ngIf="!isDowloading; else showSpinner">
+  <div class="row files-list--header">
+    <div class="col-4">{{ 'PROCESS_DOC.FILES_LIST.FILE' | translate }}</div>
+    <div class="col-7">
+      {{ 'PROCESS_DOC.FILES_LIST.DOCUMENT_TYPE' | translate }}
+    </div>
+    <div class="col-1"></div>
+  </div>
+  <div
+    class="row files-list--item"
+    *ngFor="let item of fileList; let i = index"
+  >
+    <div class="col-4">
+      <div
+        kendoTooltip
+        [title]="item.id ? item.name : ''"
+        [ngClass]="item.id ? 'files-list--item__name' : ''"
+        (click)="donwloadDocument(item)"
+      >
+        {{ item.name }}
+      </div>
+    </div>
+    <div class="col-4">
+      <mat-form-field class="w-100" subscriptSizing="dynamic">
+        <mat-select
+          [id]="'Down_Type_doc_' + (i + 1)"
+          [(ngModel)]="item.groupCode"
+          [disabled]="!disableByPermission"
+          (valueChange)="onChangeDocumentType($event, item)"
+        >
+          <mat-option
+            *ngFor="let groupType of groupTypes$ | async"
+            [value]="groupType.id"
+          >
+            {{ groupType.name | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-3">
+      <kendo-textarea
+        [id]="'TextArea_desc_doc_' + (i + 1)"
+        [ngModel]="item.id === '' ? item.description : item.newDescription"
+        (valueChange)="onDescriptionChange($event, item)"
+        class="c-text-area"
+        [maxlength]="500"
+        resizable="auto"
+        [disabled]="!disableByPermission"
+      >
+        <kendo-textarea-suffix
+          class="disabled-suffix"
+          style="width: inherit; display: flex; justify-content: space-evenly"
+          *ngIf="
+            item.id !== '' && item.id !== null && hasDescriptionChanged(item)
+          "
+        >
+          <button
+            kendoButton
+            iconClass="far fa-save"
+            type="button"
+            look="clear"
+            (click)="saveDescription(item)"
+          ></button>
+          <button
+            kendoButton
+            iconClass="fas fa-history"
+            type="button"
+            look="clear"
+            (click)="revertDescription(item)"
+          ></button>
+        </kendo-textarea-suffix>
+      </kendo-textarea>
+    </div>
+    <div class="col-1">
+      <div>
+        <button
+          [id]="'Btn_Delete_doc_' + (i + 1)"
+          mat-icon-button
+          color="primary"
+          type="button"
+          *fiDisplayByPermissions="deletePermission"
+          (click)="deleteFile.emit(item)"
+        >
+          <mat-icon slot="start">delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

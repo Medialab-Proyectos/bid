@@ -1,0 +1,162 @@
+<div class="container-fluid pr-page">
+  <fi-payment-record-project-card
+    [contract]="contract"
+    [summary]="summary"
+    [balances]="balances"
+    [loading]="loading"
+  ></fi-payment-record-project-card>
+
+  <div class="pr-card">
+    <div class="pr-tabstrip">
+      <span class="pr-tabstrip__tab pr-tabstrip__tab--active">
+        {{ "PAYMENT_RECORD.LIST.TAB" | translate }}
+      </span>
+    </div>
+
+    <div class="pr-toolbar">
+      <p class="pr-toolbar__hint">
+        {{ "PAYMENT_RECORD.LIST.HINT" | translate }}
+      </p>
+      <div class="pr-toolbar__actions">
+        <button
+          kendoButton
+          class="btn btn-brand"
+          id="Btn_PaymentRecord_Import"
+          iconClass="fas fa-file-import"
+          (click)="importCommitmentPayments()"
+        >
+          {{ "PAYMENT_RECORD.LIST.IMPORT_BTN" | translate }}
+        </button>
+        <button
+          kendoButton
+          class="btn btn-neutral"
+          id="Btn_PaymentRecord_Situation"
+          iconClass="fas fa-compass"
+          (click)="goToSituation()"
+        >
+          {{ "PAYMENT_RECORD.SITUATION.BTN" | translate }}
+        </button>
+        <button
+          kendoButton
+          class="btn btn-neutral"
+          id="Btn_PaymentRecord_Statement"
+          iconClass="fas fa-file-invoice"
+          (click)="openStatement()"
+        >
+          {{ "PAYMENT_RECORD.STATEMENT.BTN" | translate }}
+        </button>
+        <button
+          kendoButton
+          class="btn btn-neutral"
+          id="Btn_PaymentRecord_ExchangeRate"
+          iconClass="fas fa-exchange-alt"
+          (click)="openExchangeRates()"
+        >
+          {{ "PAYMENT_RECORD.EXCHANGE_RATE.BTN" | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="pr-grid">
+      <kendo-grid
+        [kendoGridBinding]="filteredCommitments"
+        [groupable]="true"
+        [sortable]="true"
+        [resizable]="true"
+        [loading]="loading"
+      >
+        <ng-template kendoGridToolbarTemplate position="top">
+          <fi-filter
+            class="d-block"
+            [minLength]="3"
+            [placeholder]="'PAYMENT_RECORD.ADVANCED_SEARCH' | translate"
+            (filterValue)="onSearch($event)"
+          ></fi-filter>
+        </ng-template>
+
+        <kendo-grid-column
+          field="commitmentNumber"
+          [title]="'PAYMENT_RECORD.LIST.COLUMNS.NUMBER' | translate"
+          [width]="200"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <a
+              href="javascript:void(0)"
+              class="pr-link"
+              (click)="openCommitment(dataItem)"
+            >
+              {{ dataItem.commitmentNumber }}
+            </a>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="type"
+          [title]="'PAYMENT_RECORD.LIST.COLUMNS.TYPE' | translate"
+          [width]="140"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ "PAYMENT_RECORD.COMMITMENT_TYPE." + dataItem.type | translate }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="componentName"
+          [title]="'PAYMENT_RECORD.LIST.COLUMNS.COMPONENT' | translate"
+          [width]="260"
+        ></kendo-grid-column>
+
+        <kendo-grid-column
+          field="beneficiaryName"
+          [title]="'PAYMENT_RECORD.LIST.COLUMNS.BENEFICIARY' | translate"
+          [width]="180"
+        ></kendo-grid-column>
+
+        <kendo-grid-column
+          [title]="'PAYMENT_RECORD.LIST.COLUMNS.CURRENCY' | translate"
+          [width]="100"
+          [groupable]="false"
+          [sortable]="false"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div *ngFor="let amount of dataItem.originalAmounts">
+              {{ amount.currency }}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          [title]="'PAYMENT_RECORD.LIST.COLUMNS.ORIGINAL_AMOUNT' | translate"
+          [width]="200"
+          [groupable]="false"
+          [sortable]="false"
+          class="pr-grid__number"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div *ngFor="let amount of dataItem.originalAmounts">
+              {{ amount.amount | ifNumber }}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="currentIdbAmount"
+          [title]="'PAYMENT_RECORD.LIST.COLUMNS.CURRENT_IDB_AMOUNT' | translate"
+          [width]="220"
+          [groupable]="false"
+          class="pr-grid__number"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.currentIdbAmount | ifNumber }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <ng-template kendoGridNoRecordsTemplate>
+          <fi-no-content
+            [content]="'PAYMENT_RECORD.LIST.EMPTY' | translate"
+          ></fi-no-content>
+        </ng-template>
+      </kendo-grid>
+    </div>
+  </div>
+</div>

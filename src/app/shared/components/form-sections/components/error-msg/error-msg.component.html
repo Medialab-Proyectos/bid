@@ -1,0 +1,8 @@
+<div
+  *ngIf="control.errors && (control.dirty || control.touched)"
+  class="k-tooltip-validation"
+>
+  <div class="o-input-error">
+    {{ key | translate }}
+  </div>
+</div>

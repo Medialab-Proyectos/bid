@@ -1,0 +1,50 @@
+<div class="c-equivalent-amount" [formGroup]="form">
+  <div class="row">
+    <div class="col-6">
+      <kendo-numerictextbox
+        *ngIf="rowIndex === 0; else hyphen"
+        #requestedAmount
+        [spinners]="false"
+        [min]="0"
+        [autoCorrect]="true"
+        [format]="format"
+        [decimals]="decimals"
+        [id]="'Txb_Requested_amount' + rowIndex"
+        placeholder="0.00"
+        formControlName="requestedAmount"
+        [changeValueOnScroll]="false"
+        [readonly]="isLoading"
+        class="c-numerictextbox k-numerictextbox"
+        [ngClass]="readonly ? 'force-disabled' : ''"
+        [maxlength]="18"
+        (blur)="onBlur(form.controls.requestedAmount.value, 'requestedAmount')"
+      >
+      </kendo-numerictextbox>
+    </div>
+    <div class="col-6">
+      <kendo-numerictextbox
+        class="c-numerictextbox k-numerictextbox"
+        #requestedEquivalent
+        [spinners]="false"
+        [min]="0"
+        [autoCorrect]="true"
+        [format]="'n2'"
+        [decimals]="2"
+        [id]="'Txb_Requested_equivalent' + rowIndex"
+        placeholder="0.00"
+        formControlName="equivalentCurrency"
+        [changeValueOnScroll]="false"
+        [readonly]="isLoading"
+        [maxlength]="18"
+        (blur)="
+          onBlur(form.controls.equivalentCurrency.value, 'equivalentCurrency')
+        "
+      >
+      </kendo-numerictextbox>
+    </div>
+  </div>
+</div>
+
+<ng-template #hyphen>
+  <div class="c-equivalent-amount__hyphen">&mdash;</div>
+</ng-template>

@@ -1,0 +1,21 @@
+<div class="container-fluid c-procurement--tabstrip mt-3 p-0 eoi">
+  <div class="heading">
+    <h1 class="sf700">
+      {{ documentTitle | translate }}
+    </h1>
+  </div>
+
+  <div class="p-5">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<ng-template #loader>
+  <div class="mt-5 d-flex justify-content-center">
+    <mat-progress-spinner
+      diameter="44"
+      color="primary"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+  </div>
+</ng-template>

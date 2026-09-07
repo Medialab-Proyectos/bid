@@ -1,0 +1,37 @@
+<div
+  [ngClass]="showComments ? 'c-comments__list' : ''"
+  *ngIf="comments.length >= 1; else noContent"
+>
+  <ng-container *ngFor="let comment of comments">
+    <div class="c-comments-list">
+      <fi-avatar [userNameInitials]="comment.createdBy"></fi-avatar>
+      <div class="c-comments-list__container">
+        <div class="c-comments-list__info">
+          <span>{{ "COMMENTS.AUTHOR" | translate }}:&nbsp;</span>
+          <span> {{ comment.createdBy }}</span>
+        </div>
+        <div class="c-comments-list__date">
+          <time [dateTime]="comment.created">
+            {{
+              comment.created | date : "d/M/yy" : timeDiffBetweenLocaleAndUTC
+            }}</time
+          >
+          <time [dateTime]="comment.created">
+            {{
+              comment.created | date : "shortTime" : timeDiffBetweenLocaleAndUTC
+            }}</time
+          >,
+          <time [dateTime]="comment.created">
+            {{
+              comment.created | date : "EEEE" : timeDiffBetweenLocaleAndUTC
+            }}</time
+          >
+        </div>
+        <div class="c-comments-list__comment" [innerHtml]="comment.text"></div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<ng-template #noContent>
+  <fi-no-content [content]="noCommentsKey | translate"></fi-no-content>
+</ng-template>

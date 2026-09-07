@@ -1,0 +1,250 @@
+<div class="pr-dialog">
+  <p class="pr-panel__lead">
+    {{ "PAYMENT_RECORD.MECHANISM.INTRO" | translate }}
+  </p>
+
+  <!--
+    Reference figures, not fields. They used to be three boxes that looked
+    editable and had no visible relation to anything else on the screen.
+  -->
+  <div class="pr-summary">
+    <span class="pr-summary__title">
+      {{ "PAYMENT_RECORD.MECHANISM.ACCUMULATED" | translate }}
+    </span>
+    <dl class="pr-summary__list">
+      <div class="pr-summary__item">
+        <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_IDB" | translate }}</dt>
+        <dd>
+          {{ totals?.idbFinancingAmount | ifNumber }} {{ totals?.currency }}
+        </dd>
+      </div>
+      <div class="pr-summary__item">
+        <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_LOCAL" | translate }}</dt>
+        <dd>
+          {{ totals?.localFinancingAmount | ifNumber }} {{ totals?.currency }}
+        </dd>
+      </div>
+      <div class="pr-summary__item">
+        <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_COFIN" | translate }}</dt>
+        <dd>
+          {{ totals?.cofinancingAmount | ifNumber }} {{ totals?.currency }}
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <fi-alert
+    *ngIf="failure"
+    type="error"
+    [title]="failure.message | translate : failure.params"
+    [closable]="false"
+  ></fi-alert>
+
+  <!-- ---------- 1. which payments ---------- -->
+  <fieldset class="pr-fieldset">
+    <legend class="pr-fieldset__legend">
+      {{ "PAYMENT_RECORD.MECHANISM.STEP_PAYMENTS" | translate }}
+      <span class="pr-fieldset__help">
+        {{ "PAYMENT_RECORD.MECHANISM.STEP_PAYMENTS_HELP" | translate }}
+      </span>
+    </legend>
+
+    <fi-no-content
+      *ngIf="!loading && payments.length === 0"
+      [content]="'PAYMENT_RECORD.MECHANISM.EMPTY' | translate"
+    ></fi-no-content>
+
+    <div class="pr-panel__scroll" *ngIf="!loading && payments.length > 0">
+      <table class="pr-rates pr-rates--wide">
+        <thead>
+          <tr>
+            <th scope="col" class="pr-rates__check">
+              <input
+                type="checkbox"
+                id="Chk_Mechanism_All"
+                [checked]="allSelected"
+                (change)="toggleAll()"
+                [attr.aria-label]="'PAYMENT_RECORD.MECHANISM.SELECT_ALL' | translate"
+              />
+            </th>
+            <th scope="col">{{ "PAYMENT_RECORD.MECHANISM.CURRENT" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.ID" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.DATE" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY" | translate }}</th>
+            <th scope="col" class="pr-grid__number">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT" | translate }}
+            </th>
+            <th scope="col" class="pr-grid__number">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.RATE" | translate }}
+            </th>
+            <th scope="col" class="pr-grid__number">
+              {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.EQUIVALENT" | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let payment of payments"
+            [class.pr-statement__row--dropped]="!selection[payment.id]"
+            [class.pr-row--picked]="selection[payment.id]"
+          >
+            <td class="pr-rates__check">
+              <input
+                type="checkbox"
+                [attr.id]="'Chk_Mechanism_' + payment.id"
+                [(ngModel)]="selection[payment.id]"
+                [attr.aria-label]="payment.concept"
+              />
+            </td>
+            <td>
+              <fi-status-label
+                [cssClass]="
+                  payment.reimbursable
+                    ? 'c-status-label__orange'
+                    : 'c-status-label__light-blue'
+                "
+                [text]="
+                  (payment.reimbursable
+                    ? 'PAYMENT_RECORD.MECHANISM.OWN_FUNDS_SHORT'
+                    : 'PAYMENT_RECORD.MECHANISM.BANK_FUNDS_SHORT'
+                  ) | translate
+                "
+              ></fi-status-label>
+            </td>
+            <td>{{ payment.id }}</td>
+            <td class="pr-cell--name" [title]="payment | paymentConcept">
+              {{ payment | paymentConcept }}
+            </td>
+            <td>{{ payment.accountingVoucher }}</td>
+            <td>{{ payment.paymentDate | dateIF }}</td>
+            <td>{{ payment.currency }}</td>
+            <td class="pr-grid__number">{{ payment.amount | ifNumber }}</td>
+            <td class="pr-grid__number">{{ payment.exchangeRate | ifNumber : 4 }}</td>
+            <td class="pr-grid__number">
+              {{ payment.equivalentAmount | ifNumber }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </fieldset>
+
+  <!-- ---------- 2. which mechanism ---------- -->
+  <fieldset class="pr-fieldset">
+    <legend class="pr-fieldset__legend">
+      {{ "PAYMENT_RECORD.MECHANISM.STEP_MECHANISM" | translate }}
+    </legend>
+
+    <p class="pr-dialog__help pr-dialog__help--block">
+      {{ "PAYMENT_RECORD.MECHANISM.QUESTION_HELP" | translate }}
+    </p>
+
+    <div class="pr-source__options pr-source__options--two">
+      <label
+        class="pr-source__option"
+        [class.pr-source__option--active]="mechanism === mechanisms.BANK_FUNDS"
+      >
+        <input
+          type="radio"
+          name="paymentMechanism"
+          id="Rad_Mechanism_Bank"
+          [value]="mechanisms.BANK_FUNDS"
+          [(ngModel)]="mechanism"
+        />
+        <span class="pr-source__body">
+          <span class="pr-source__title">
+            {{ "PAYMENT_RECORD.MECHANISM.BANK_FUNDS" | translate }}
+          </span>
+          <span class="pr-source__description">
+            {{ "PAYMENT_RECORD.MECHANISM.BANK_FUNDS_HELP" | translate }}
+          </span>
+        </span>
+      </label>
+
+      <label
+        class="pr-source__option"
+        [class.pr-source__option--active]="mechanism === mechanisms.OWN_FUNDS"
+      >
+        <input
+          type="radio"
+          name="paymentMechanism"
+          id="Rad_Mechanism_Own"
+          [value]="mechanisms.OWN_FUNDS"
+          [(ngModel)]="mechanism"
+        />
+        <span class="pr-source__body">
+          <span class="pr-source__title">
+            {{ "PAYMENT_RECORD.MECHANISM.OWN_FUNDS" | translate }}
+          </span>
+          <span class="pr-source__description">
+            {{ "PAYMENT_RECORD.MECHANISM.OWN_FUNDS_HELP" | translate }}
+          </span>
+        </span>
+      </label>
+    </div>
+  </fieldset>
+
+  <!-- ---------- what this will do ---------- -->
+  <p class="pr-equivalent" *ngIf="selectedCount > 0">
+    {{
+      "PAYMENT_RECORD.MECHANISM.OUTCOME"
+        | translate
+          : {
+              count: selectedCount,
+              amount: selectedTotal | ifNumber,
+              currency: totals?.currency
+            }
+    }}
+    <span class="pr-equivalent__note" *ngIf="ownFunds">
+      {{ "PAYMENT_RECORD.MECHANISM.OUTCOME_OWN" | translate }}
+    </span>
+    <span class="pr-equivalent__note" *ngIf="!ownFunds">
+      {{ "PAYMENT_RECORD.MECHANISM.OUTCOME_BANK" | translate }}
+    </span>
+  </p>
+
+  <p class="pr-dialog__note">
+    {{ "PAYMENT_RECORD.AUDIT_NOTE" | translate }}
+  </p>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <p
+    class="pr-modal__hint"
+    [class.pr-modal__hint--ready]="selectedCount > 0"
+    id="Lbl_Mechanism_Hint"
+  >
+    <em
+      class="fas"
+      [ngClass]="selectedCount > 0 ? 'fa-check-circle' : 'fa-info-circle'"
+    ></em>
+    <span>
+      {{
+        (selectedCount > 0
+          ? "PAYMENT_RECORD.MECHANISM.READY"
+          : "PAYMENT_RECORD.MECHANISM.BLOCKED"
+        ) | translate : { count: selectedCount }
+      }}
+    </span>
+  </p>
+
+  <button
+    kendoButton
+    class="btn btn-neutral"
+    id="Btn_Mechanism_Cancel"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+  <button
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_Mechanism_Save"
+    [disabled]="saving || selectedCount === 0"
+    (click)="save()"
+  >
+    {{ "PAYMENT_RECORD.MECHANISM.SAVE" | translate }}
+  </button>
+</kendo-dialog-actions>

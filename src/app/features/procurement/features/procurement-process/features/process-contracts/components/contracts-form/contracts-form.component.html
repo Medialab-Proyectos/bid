@@ -1,0 +1,214 @@
+<ng-container
+  *ngIf="
+    !isSubmitting && !loadingPlan && !isLoadingInternalReview;
+    else showSpinner
+  "
+>
+  <form
+    *ngIf="form"
+    [formGroup]="form"
+    class="c-upload-contract-information__form o-form"
+  >
+    <fi-winner-information
+      [form]="winnerInformationForm"
+      number="1"
+      [config]="{
+        data: { memberCountries: formConfig.data.memberCountries },
+        settings: {
+          mode: modeEnum
+        }
+      }"
+    ></fi-winner-information>
+
+    <fi-contract-general-information
+      [goodsVisibility]="goodsVisibility"
+      [contractTypeDesignation]="contractTypeDesignation"
+      [form]="generalInformationForm"
+      number="2"
+      [config]="{
+        data: {
+          currencies: formConfig.data.currencies,
+          conflictsResolutionsList: formConfig.data.conflictsResolutionsList,
+          contractTypesList: formConfig.data.contractTypesList,
+          procurementProcessDescription:
+            formConfig.data.procurementProcessDescription,
+          goodsSourceList: formConfig.data.goodsSourceList
+        },
+        settings: { disabled: mode, status: statusEnum }
+      }"
+      [addCurrencyPermission]="addCurrencyPermission"
+      [removeCurrencyPermission]="removeCurrencyPermission"
+      (currencyChange)="onCurrencyChange($event, 'generalInformation')"
+    >
+    </fi-contract-general-information>
+
+    <fi-cost-distribution
+      [form]="costDistributionForm"
+      number="3"
+      [config]="{
+        data: {
+          threshold: formConfig.data.threshold,
+          nationalBiddingThreshold: formConfig.data.nationalBiddingThreshold,
+          groupMethod: formConfig.data.groupMethod
+        },
+        settings: { disabled: mode, status: statusEnum }
+      }"
+    ></fi-cost-distribution>
+
+    <fi-contract-lots
+      [form]="lotsForm"
+      [totalLotsAmount]="totalLotsAmount"
+      [config]="{
+        data: { showUnits: formConfig.data.showUnits },
+        settings: { disabled: mode, status: statusEnum }
+      }"
+      number="4"
+      [addLotPermission]="addLotPermission"
+      [removeLotPermission]="removeLotPermission"
+      [showLotsSection]="showLotsSection"
+    ></fi-contract-lots>
+
+    <fi-destination-place
+      [form]="destinationPlaceForm"
+      number="5"
+      [config]="{
+        data: {
+          beneficiaryCountries: formConfig.data.beneficiaryCountries
+        },
+        settings: { disabled: mode, status: statusEnum }
+      }"
+    ></fi-destination-place>
+
+    <fi-aditional-information
+      [form]="aditionalInformationForm"
+      number="6"
+      [config]="{
+        data: {
+          currencies: formConfig.data.currencies,
+          securityTypes: formConfig.data.securityTypes,
+          frequencies: formConfig.data.frequencies,
+          bonusTypes: formConfig.data.bonusTypes,
+          damagesTypes: formConfig.data.damagesTypes
+        },
+        settings: {
+          mode: modeEnum,
+          status: statusEnum
+        }
+      }"
+      [addSecurityPermission]="addSecurityPermission"
+      [removeSecurityPermission]="removeSecurityPermission"
+      [addLiqDamagesPermission]="addLiqDamagesPermission"
+      [removeLiqDamagesPermission]="removeLiqDamagesPermission"
+      [addBonusPermission]="addBonusPermission"
+      [removeBonusPermission]="removeBonusPermission"
+      (securityCurrencyChange)="onCurrencyChange($event, 'securities')"
+    ></fi-aditional-information>
+
+    <div *ngIf="secondStep">
+      <fi-document-group-section-contract
+        number="7"
+        [title]="'CONTRACT.ATTACHMENTS.TITLE_SECTION' | translate"
+        [mode]="modeDocSection"
+        [noDocumentsMessage]="'CONTRACT.ATTACHMENTS.NO_DATA'"
+        [groups]="groups"
+        [groupEnum]="groupEnum"
+        [groupParentId]="biddingContractId"
+        [showReadOnly]="readonly"
+        [isUploading]="isUploading"
+        [domain]="documentDomain"
+        [control]="attachmentForm"
+        [viewPermissions]="viewDocumentGroupsPermission"
+        [editPermissions]="editDocumentPermission"
+        [deletePermissions]="deleteDocumentPermission"
+        [contractId]="biddingContractId"
+      ></fi-document-group-section-contract>
+    </div>
+
+    <div class="row actions">
+      <div class="col-12">
+        <div class="o-form-actions">
+          <button
+            *ngIf="mode"
+            kendoButton
+            class="btn btn-brand"
+            id="Btn_return"
+            type="button"
+            (click)="navigateToContracts()"
+          >
+            {{ "BIDDER.RETURN" | translate }}
+          </button>
+          <ng-container *ngIf="!mode">
+            <button
+              kendoButton
+              class="btn btn-base"
+              id="Btn_Cancel"
+              type="button"
+              *fiDisplayByPermissions="cancelContractButtonPermission"
+              (click)="navigateToContracts()"
+            >
+              {{ "CONTRACT.CANCEL" | translate }}
+            </button>
+          </ng-container>
+          <ng-container *ngIf="!mode && secondStep">
+            <button
+              kendoButton
+              [disabled]="isButtonDisabled"
+              *fiDisplayByPermissions="saveContractButtonPermission"
+              (click)="submit(true)"
+              class="btn btn-brand"
+              id="Btn_Save"
+              data-testid="contractSubmitButton"
+            >
+              {{ "CONTRACT.SAVE" | translate }}
+            </button>
+          </ng-container>
+          <ng-container *ngIf="!mode && secondStep === false">
+            <button
+              kendoButton
+              [disabled]="isButtonDisabled"
+              *fiDisplayByPermissions="nextButtonPermission"
+              (click)="submit(true)"
+              class="btn btn-brand"
+              id="Btn_Next"
+              data-testid="contractNextStepButton"
+            >
+              {{ "CONTRACT.NEXT" | translate }}
+            </button>
+          </ng-container>
+          <ng-container *ngIf="!mode && secondStep">
+            <button
+              kendoButton
+              [disabled]="isButtonDisabled"
+              *fiDisplayByPermissions="confirmContractButtonPermission"
+              (click)="submit(false)"
+              class="btn btn-brand"
+              id="Btn_Confirm"
+            >
+              {{ "CONTRACT.CONFIRM" | translate }}
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="!mode && secondStep">
+            <button
+              kendoButton
+              [disabled]="isButtonDisabled"
+              *fiDisplayByPermissions="sendNotificationButtonPermission"
+              (click)="sendNotification()"
+              class="btn btn-brand"
+              id="Btn_Sendnotification"
+              data-testid="sendNotificationButton"
+            >
+              {{ "CONTRACT.CONTRACT_UPLOADED" | translate }}
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-container>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

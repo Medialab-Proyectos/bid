@@ -1,0 +1,30 @@
+<div class="row pb-md-3 mt-3">
+  <div class="col-md-5">
+    <kendo-label
+      [text]="'FORMS.FORMS_TABS.OPENING_DATE_LABEL' | translate"
+      class="fi-kendo-label fi-kendo-label--required"
+    ></kendo-label>
+  </div>
+  <div class="col-md-7">
+    <kendo-datepicker
+      [min]="currendaDate"
+      [(ngModel)]="defaultDate"
+      class="c-datepicker w-100"
+      format="dd MMM yyyy"
+      required
+      id="data-picker-gpn"
+    ></kendo-datepicker>
+  </div>
+</div>
+<div class="row pb-md-3 actions">
+  <div class="col-12">
+    <button
+      kendobutton
+      class="btn btn-brand qa-btn-publication"
+      (click)="saveDate()"
+      id="btn-save"
+    >
+      {{ "FORMS.FORMS_TABS.SAVE" | translate }}
+    </button>
+  </div>
+</div>

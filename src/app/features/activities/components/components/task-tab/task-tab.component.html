@@ -1,0 +1,42 @@
+<div class="card-dashboard">
+  <div class="row">
+    <div class="col-12">
+      <div class="wrapper">
+        <kendo-tabstrip (tabSelect)="onTabSelect($event)">
+          <kendo-tabstrip-tab title="Tareas" [selected]="true">
+            <div class="content">
+              <fi-task-table>
+                [activityTaskRow]="activityTableRow.activityTaskRow"
+              </fi-task-table>
+            </div>
+          </kendo-tabstrip-tab>
+
+          <kendo-tabstrip-tab title="Comentarios">
+            <ng-template kendoTabContent>
+              <div class="content">
+                <div class="c-comments">
+                  <div
+                    class="c-comments__list"
+                    *ngIf="
+                      activityTableRow.commentList.length > 1;
+                      else noContent
+                    "
+                  >
+                    <ng-container
+                      *ngFor="let comment of activityTableRow.commentList"
+                    >
+                      <fi-comments-list [comment]="comment"></fi-comments-list>
+                    </ng-container>
+                  </div>
+                </div>
+                <ng-template #noContent>
+                  <fi-no-content [content]="'No hay contenido'"></fi-no-content>
+                </ng-template>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+        </kendo-tabstrip>
+      </div>
+    </div>
+  </div>
+</div>

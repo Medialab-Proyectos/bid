@@ -1,0 +1,61 @@
+.files-list__header {
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 5rem;
+  grid-template-rows: auto auto;
+  align-items: start;
+  border-bottom: 1px solid #c9c7c5;
+  background-color: #fafaf9;
+  font-weight: bold;
+  font-size: 1rem;
+  div {
+    border-right: 1px solid #c9c7c5;
+    padding: 0.5rem;
+    padding-left: 1rem;
+  }
+  div:last-child {
+    border-right: none;
+  }
+}
+.files-list__body {
+  .files-list__row {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 2fr 2fr 2fr 5rem;
+    border-bottom: 1px solid #c9c7c5;
+    padding-bottom: 1rem;
+    div {
+      padding: 0.5rem;
+      padding-top: 1rem;
+      padding-left: 1rem;
+      ::ng-deep {
+        .mat-mdc-form-field-subscript-wrapper {
+          display: none !important;
+        }
+        .mat-mdc-form-field-infix {
+          padding-bottom: 0px !important;
+        }
+      }
+      &.textarea-actions {
+        padding: 0px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        button {
+          width: 4rem;
+          margin-left: 3rem;
+          margin-right: 3rem;
+        }
+      }
+      &.file_name_uploaded {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #0070d2;
+        cursor: pointer;
+      }
+    }
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}

@@ -1,0 +1,348 @@
+$section-padding: 15px 20px;
+
+.confirm-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 1rem 0;
+
+  &__title {
+    font-weight: bolder;
+    color: #004e70;
+  }
+
+  &__btns {
+    align-self: flex-end;
+  }
+
+  &__btns button {
+    margin-right: 1rem;
+  }
+}
+
+.confirm-contract {
+  width: 100%;
+}
+
+.adjudicatario-section {
+  padding: $section-padding;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  div {
+    margin-right: 8rem;
+  }
+
+  div:last-child {
+    margin-right: 0;
+  }
+
+  &__btn button {
+    color: #0088cc;
+    outline: none;
+    border: none;
+    background: transparent;
+    text-decoration: underline;
+    font: inherit;
+    cursor: pointer;
+  }
+}
+
+.contrato-detalle {
+  max-width: 100%;
+  padding: $section-padding;
+}
+
+.contrato-detalle__title-field {
+  color: #444;
+  margin-bottom: 4px;
+}
+
+.contrato-detalle__value {
+  color: #000;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.contrato-detalle__full-row {
+  margin-bottom: 30px;
+}
+
+.contrato-detalle__grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.contrato-detalle__grid-2 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.contrato-detalle__item--double {
+  grid-column: span 2;
+}
+
+.section-guarantee {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  padding: $section-padding;
+}
+
+.section-guarantee__item {
+  margin-bottom: 0.5rem;
+}
+
+.section-bonus__items {
+  padding: $section-padding;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.section-liquidatedDamage {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: $section-padding;
+}
+
+.amount-item {
+  &__value {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+
+    b {
+      font-weight: 600;
+    }
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    // color: ;
+    line-height: 1.3;
+  }
+}
+
+//  table
+.tabla-contenedor {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabla-encabezado-simple {
+  padding: 15px 20px 0 20px;
+}
+.tabla-encabezado-simple__titulo {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+.tabla-encabezado-simple__valor {
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.tabla-jerarquica {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  flex: 1;
+}
+
+.tabla-jerarquica th {
+  background-color: #f7f7f7;
+  text-align: left;
+  padding: 12px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  border-bottom: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.tabla-jerarquica th:nth-child(1) {
+  width: 30%;
+  text-align: left;
+}
+
+.tabla-jerarquica th:nth-child(2),
+.tabla-jerarquica th:nth-child(3),
+.tabla-jerarquica th:nth-child(4),
+.tabla-jerarquica th:nth-child(5) {
+  width: 17.5%;
+  text-align: center;
+}
+
+.tabla-jerarquica td {
+  padding: 12px 10px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.tabla-jerarquica td:nth-child(1) {
+  width: 30%;
+  text-align: left;
+}
+
+.tabla-jerarquica td:nth-child(2),
+.tabla-jerarquica td:nth-child(3),
+.tabla-jerarquica td:nth-child(4),
+.tabla-jerarquica td:nth-child(5) {
+  width: 17.5%;
+  text-align: center;
+}
+
+.grupo-principal {
+  background-color: #f7f7f7;
+}
+.titulo-grupo {
+  font-weight: bold;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+}
+
+.sub-grupo {
+  background-color: #fcfcfc;
+}
+.titulo-sub-grupo {
+  font-weight: 500;
+  color: #444;
+}
+
+.celda-sangria {
+  padding-left: 30px;
+}
+
+.total-usd-equivalent {
+  background-color: #f4fdff;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tabla-pie-acumulado {
+  display: grid;
+  grid-template-columns: 30% 17.5% 17.5% 17.5% 17.5%;
+  gap: 0;
+  padding: 0;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  background-color: #f7f7f7;
+  width: 100%;
+  box-sizing: border-box;
+
+  &__info {
+    grid-column: 1;
+    font-family: inherit;
+    font-weight: 600;
+    text-align: left;
+    align-self: center;
+    padding: 12px 10px;
+    display: flex;
+    align-items: center;
+    // border-right: 1px solid #ddd;
+  }
+
+  &__info p {
+    margin: 0;
+  }
+
+  &__amount {
+    grid-column: 2 / 6;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    width: 100%;
+  }
+}
+
+.monto-acumulado {
+  font-weight: bold;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 12px 10px;
+  text-align: center;
+  // border-left: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 70px;
+}
+
+.monto-acumulado:first-child {
+  border-left: none;
+}
+
+.monto-acumulado p {
+  margin-bottom: 5px;
+  line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.monto-acumulado p:last-child {
+  margin-bottom: 0;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.contract-lots {
+  padding: $section-padding;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.execution-place {
+  padding: $section-padding;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.title {
+  padding: 0.5rem;
+  background-color: #f3f2f2;
+}
+
+.data {
+  font-weight: bold;
+}
+
+.product-row {
+  &--product {
+    margin-left: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contrato-detalle__grid-3,
+  .contrato-detalle__grid-2 {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .contrato-detalle__item--double {
+    grid-column: span 1;
+  }
+}

@@ -1,0 +1,29 @@
+<div class="c-document-group-section">
+  <fi-accordion-panel>
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{ title }}</ng-container>
+
+    <ng-container body>
+      <div class="attachments-container">
+        <fi-document-group-contract
+          [groups]="groups"
+          [groupEnum]="enumBiddingProcessDocumentGroupCodes"
+          [groupParentId]="groupParentId"
+          [viewPermissions]="viewPermissions"
+          [editPermissions]="editPermissions"
+          [deletePermissions]="deletePermissions"
+          [showReadOnly]="showReadOnly"
+          [documentsToUpload]="documentsToUpload"
+          [isUploading]="isUploading"
+          (fileChange)="onFileChange($event)"
+          (deleteFile)="onDeleteFile($event)"
+          (editFile)="onEditFile($event)"
+          [mode]="_mode"
+          [noDocumentsMessage]="noDocumentsMessage"
+          [groupsList]="groups"
+        >
+        </fi-document-group-contract>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

@@ -1,0 +1,47 @@
+<div class="table-transactions">
+  <kendo-grid
+    [kendoGridBinding]="gridData"
+    [sortable]="true"
+    [filterable]="false"
+    [resizable]="true"
+    [reorderable]="true"
+    [groupable]="true"
+  >
+    <ng-template kendoGridNoRecordsTemplate>
+      <div>
+        <p
+          [innerText]="
+            'PROCUREMENT.COMMENTS_BY_PLAN.TABLE.NORECORDS' | translate
+          "
+        ></p>
+      </div>
+    </ng-template>
+    <ng-template kendoGridToolbarTemplate position="top">
+      <fi-filter
+        class="d-block"
+        [minLength]="3"
+        (filterValue)="onFilter($event)"
+        [placeholder]="'DASHBOARD.ADVANCED_SEARCH' | translate"
+      ></fi-filter>
+    </ng-template>
+
+    <kendo-grid-column
+      field="processId"
+      title="{{
+        'PROCUREMENT.COMMENTS_BY_PLAN.TABLE.HEADER.PROCESS_ID' | translate
+      }}"
+    >
+    </kendo-grid-column>
+
+    <ng-template kendoGridDetailTemplate let-dataItem>
+      <fi-plan-comments-details
+        [comments]="dataItem.comments"
+      ></fi-plan-comments-details>
+    </ng-template>
+
+    <kendo-grid-messages
+      [groupPanelEmpty]="'PROCUREMENT.TABLE.DRAG_COLUMN_MSG' | translate"
+    >
+    </kendo-grid-messages>
+  </kendo-grid>
+</div>

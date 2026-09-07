@@ -1,0 +1,33 @@
+<div class="c-comments">
+  <div
+    class="c-comments__list workflow-comments_list"
+    *ngIf="commentList.length >= 1; else noContent"
+  >
+    <ng-container *ngFor="let comment of commentList">
+      <fi-comments-list [comment]="comment"></fi-comments-list>
+    </ng-container>
+  </div>
+  <div class="c-comments__add">
+    <fi-add-comment
+      [formGroup]="formGroup"
+      [displayVisibility]="displayVisibilityOptions"
+    ></fi-add-comment>
+    <div class="bottomAlert">
+      <fi-alert
+        [type]="'warning'"
+        [title]="'WARNING.WORKFLOW_MESSAGE' | translate"
+      >
+      </fi-alert>
+    </div>
+    <div class="bottomAlert">
+      <fi-alert
+        [type]="'info'"
+        [title]="'COMMENTS.INFORMATIONAL_MESSAGE' | translate"
+      >
+      </fi-alert>
+    </div>
+  </div>
+</div>
+<ng-template #noContent>
+  <fi-no-content [content]="'COMMENTS.NO_CONTENT' | translate"></fi-no-content>
+</ng-template>

@@ -1,0 +1,120 @@
+<ng-container *ngIf="!loading; else loader">
+  <div class="p-4">
+    <fi-info-form [title]="'SPN.REGISTER_SPN.INFORMATION_ALERT'"></fi-info-form>
+    <h1 class="sf700 title">
+      {{ "UNDB.PREVIEW.TITLE" | translate }}
+    </h1>
+    <p>
+      {{ "UNDB.PREVIEW.SUBTITLE_PART_1" | translate }}
+      <span class="sf700">{{
+        "UNDB.PREVIEW.SUBTITLE_PART_2" | translate
+      }}</span>
+      {{ "UNDB.PREVIEW.SUBTITLE_PART_3" | translate }}
+    </p>
+    <fi-form-divider></fi-form-divider>
+    <span>
+      {{ "UNDB.NOTICE.PUBLICATION_REFERENCE_NUMBER" | translate }}
+      <span class="sf700">{{ data.notice.code }}</span>
+    </span>
+    <fi-form-divider></fi-form-divider>
+
+    <div class="heading-info">
+      <fi-project-info
+        [projectInfo]="projectInfo"
+        [isPreview]="false"
+        [noticeType]="
+          this.data.notice.spnType === 'SDP' ? noticeType.SDP : noticeType.SDO
+        "
+      ></fi-project-info>
+
+      <ng-container *ngIf="data.projectData.selectedLanguage === 'es'"
+        ><fi-spn-preview-sdp-es
+          [data]="data"
+          [isSDOGoods]="isSDOGoods"
+          [isSDONCSVC]="isSDONCSVC"
+        ></fi-spn-preview-sdp-es
+      ></ng-container>
+      <ng-container *ngIf="data.projectData.selectedLanguage === 'en'">
+        <fi-spn-preview-sdp-en
+          [data]="data"
+          [isSDOGoods]="isSDOGoods"
+          [isSDONCSVC]="isSDONCSVC"
+        ></fi-spn-preview-sdp-en>
+      </ng-container>
+      <ng-container *ngIf="data.projectData.selectedLanguage === 'pt'"
+        ><fi-spn-preview-sdp-pt
+          [data]="data"
+          [isSDONCSVC]="isSDONCSVC"
+          [isSDOGoods]="isSDOGoods"
+        ></fi-spn-preview-sdp-pt
+      ></ng-container>
+      <ng-container *ngIf="data.projectData.selectedLanguage === 'fr'"
+        ><fi-spn-preview-sdp-fr
+          [data]="data"
+          [isSDOGoods]="isSDOGoods"
+          [isSDONCSVC]="isSDONCSVC"
+        ></fi-spn-preview-sdp-fr
+      ></ng-container>
+
+      <p>
+        {{ "UNDB.FORM.RECIPIENT.ADDRESS" | translate }}
+        <span class="sf700">{{ data.notice.address }}</span>
+      </p>
+
+      <p>
+        {{ "UNDB.FORM.RECIPIENT.EXECUTING_AGENCY" | translate }}
+        <span class="sf700">{{ data.notice.executingAgency }}</span>
+      </p>
+      <p>
+        {{ "UNDB.FORM.RECIPIENT.ATTENTION" | translate }}
+        <span class="sf700">{{ data.notice.attention }}</span>
+      </p>
+
+      <p *ngIf="data.notice.phone">
+        {{ "UNDB.FORM.RECIPIENT.PHONE_NUMBER" | translate }}
+        <span class="sf700">{{ data.notice.phone }}</span>
+      </p>
+      <p>
+        {{ "UNDB.FORM.RECIPIENT.EMAIL" | translate }}
+        <span class="sf700">{{ data.notice.email }}</span>
+      </p>
+
+      <p *ngIf="data.notice.website">
+        {{ "UNDB.FORM.RECIPIENT.WEBSITE" | translate }}
+        <a
+          [href]="data.notice.website"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="sf700"
+        >
+          {{ data.notice.website }}
+        </a>
+      </p>
+    </div>
+  </div>
+  <div>
+    <div style="display: flex; justify-content: space-between">
+      <button (click)="goBack()" mat-button color="primary" type="button">
+        {{ "UNDB.FORM.ACTIONS.COMMON.EXIT" | translate | titlecase }}
+      </button>
+      <button
+        *fiDisplayByPermissions="canEditNotice"
+        mat-flat-button
+        (click)="editNotice()"
+        color="primary"
+      >
+        {{ "PROCUREMENT.PROCESS.EDIT" | translate }}
+      </button>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #loader>
+  <div class="mt-5 d-flex justify-content-center">
+    <mat-progress-spinner
+      diameter="44"
+      color="primary"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+  </div>
+</ng-template>

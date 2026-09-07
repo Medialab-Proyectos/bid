@@ -1,0 +1,67 @@
+<div class="c-comments__list" *ngIf="comments.length >= 1; else noContent">
+  <ng-container *ngFor="let comment of comments">
+    <div
+      *ngIf="comment.planVersion && this.showVersions"
+      class="font-weight-bold"
+    >
+      {{ comment.planVersion }}
+    </div>
+    <div class="c-comments-list">
+      <fi-avatar [userNameInitials]="comment.createdBy"></fi-avatar>
+      <div class="c-comments-list__container">
+        <div class="c-comments-list__info">
+          <span>{{ "COMMENTS.AUTHOR" | translate }}:&nbsp;</span>
+          <span> {{ comment?.userNameCreated }} {{ comment.createdBy }} </span>
+        </div>
+        <div class="c-comments-list__info">
+          <span *ngIf="comment?.editedBy">{{
+            "PROCUREMENT.COMMENTS_TAB.DRAFT_COMMENTS.COMMENT.UPDATED_BY"
+              | translate
+          }}</span>
+          <span>{{ comment?.userNameEdited }} {{ comment.editedBy }} </span>
+        </div>
+        <div class="c-comments-list__date">
+          <time [dateTime]="comment.created">
+            {{ comment.created | dateIfComments : "short" }}</time
+          >
+          <time [dateTime]="comment.created">
+            {{ comment.created | dateIfComments : "shortTime" }}
+          </time>
+        </div>
+        <div class="c-comments-list__comment" [innerHtml]="comment.text"></div>
+        <div class="mt-5">
+          {{ "PROCUREMENT.PROCESS.COMMENT_FOR_EXECUTING_AGENCY" | translate }}
+        </div>
+        <div style="display: flex">
+          <div style="margin: 1rem 1rem 1rem 0">
+            <input
+              type="radio"
+              kendoRadioButton
+              name="visibility{{ comment.id }}"
+              [checked]="comment.visibility === commentVisibilitiesEnum[0].id"
+              [disabled]="true"
+            />
+            <label for="visibility{{ comment.id }}">{{
+              commentVisibilitiesEnum[0].name | translate
+            }}</label>
+          </div>
+          <div style="margin: 1rem 1rem 1rem 0">
+            <input
+              type="radio"
+              kendoRadioButton
+              name="visibility{{ comment.id }}"
+              [checked]="comment.visibility === commentVisibilitiesEnum[1].id"
+              [disabled]="true"
+            />
+            <label for="visibility{{ comment.id }}">{{
+              commentVisibilitiesEnum[1].name | translate
+            }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<ng-template #noContent>
+  <fi-no-content [content]="noCommentsKey | translate"></fi-no-content>
+</ng-template>

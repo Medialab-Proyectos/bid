@@ -1,0 +1,247 @@
+<div class="col-12 pb-3">
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="order">{{ order }}</ng-container>
+    <ng-container title>
+      {{ "ANT_TRANSACTION.BENEFICIARY.TITLE" | translate }}
+    </ng-container>
+    <ng-container body>
+      <div *ngIf="showAlert" class="px-4 pt-3">
+        <fi-alert
+          [title]="'TRANSACTION.INVALID.MIN_BENEFICIARY' | translate"
+          [closable]="false"
+        ></fi-alert>
+      </div>
+      <div class="c-transactions-beneficiary__container">
+        <div class="pt-4" *ngIf="isEditMode">
+          <div class="c-transactions-beneficiary__beneficiary_search">
+            <div
+              class="c-transactions-beneficiary__beneficiary_search--filter"
+              [ngClass]="transactionType === TransactionsTypes.DPS && 'w-100'"
+            >
+              <fi-filter
+                [minLength]="3"
+                (filterValue)="filterValue($event)"
+                placeholder="{{
+                  'ANT_TRANSACTION.BENEFICIARY.SEARCH_TEXT' | translate
+                }}"
+                data-testid="search-filter"
+                [loading]="isLoading"
+              ></fi-filter>
+            </div>
+            <div kendoTooltip>
+              <button
+                id="Btn_reload"
+                type="button"
+                kendoButton
+                icon="reload"
+                (click)="reloadBeneficiary()"
+                [title]="'ANT_TRANSACTION.BENEFICIARY.RELOAD' | translate"
+              ></button>
+            </div>
+          </div>
+          <ng-container *ngIf="transactionType !== TransactionsTypes.DPS">
+            <p class="search-note">
+              {{ "ANT_TRANSACTION.BENEFICIARY.SEARCH_FOOTNOTE" | translate }}
+              <span class="data">
+                {{ executorAcronym }}
+                {{ executor }}</span
+              >
+            </p>
+          </ng-container>
+          <ng-container *ngIf="transactionType === TransactionsTypes.DPS">
+            <p class="search-note">
+              {{ "TRANSACTION.BENEFICIARY.SEARCH_FOOTNOTE" | translate }}
+              <span class="data">
+                {{
+                  "ANT_TRANSACTION.BENEFICIARY.BENEFICIARY_NAME_TH" | translate
+                }}</span
+              >
+            </p>
+          </ng-container>
+        </div>
+        <div
+          [ngClass]="{ 'c-transactions-beneficiary__marginTop': !isEditMode }"
+          class="c-transactions-beneficiary__table-header"
+        >
+          <div class="column institution-name" data-testid="radiobuttons"></div>
+          <div class="column institution-name" data-testid="institution-name">
+            {{ "ANT_TRANSACTION.BENEFICIARY.INSTITUTION_NAME_TH" | translate }}
+          </div>
+          <div class="column acronym" data-testid="acronym">
+            {{ "ANT_TRANSACTION.BENEFICIARY.ACRONYM_TH" | translate }}
+          </div>
+          <div class="column beneficiary-name" data-testid="beneficiary-name">
+            {{ "ANT_TRANSACTION.BENEFICIARY.BENEFICIARY_NAME_TH" | translate }}
+          </div>
+          <div class="column account-number" data-testid="account-number">
+            {{ "ANT_TRANSACTION.BENEFICIARY.ACCOUNT_#" | translate }}
+          </div>
+          <div class="column" data-testid="account-special-instructions">
+            {{ "ANT_TRANSACTION.BENEFICIARY.SPECIAL_INSTRUCTIONS" | translate }}
+          </div>
+        </div>
+        <ng-container *ngIf="!isLoading; else skeleton">
+          <ng-container
+            *ngIf="filteredBeneficiaries?.length > 0; else emptyState"
+          >
+            <div [formGroup]="beneficiaryForm">
+              <ng-container
+                *ngIf="
+                  filteredBeneficiaries?.length === beneficiaries?.length;
+                  else filtered
+                "
+              >
+                <ng-container
+                  *ngFor="let ref of filteredBeneficiaries; let i = index"
+                >
+                  <div class="c-transactions-beneficiary__table-container">
+                    <div class="column">
+                      <input
+                        type="radio"
+                        name="bankFlowId"
+                        [value]="ref.bankFlowId"
+                        #bankFlowId
+                        formControlName="bankFlowId"
+                        kendoRadioButton
+                        [id]="'Rbn_beneficiary' + (i + 1)"
+                        (change)="onBeneficiaryChange(ref)"
+                      />
+                    </div>
+                    <div class="column">
+                      <fi-beneficiary
+                        [beneficiaryIndex]="i"
+                        [beneficiary]="ref"
+                        [projectBucketId]="projectBucketId"
+                        [beneficiaryDetails]="beneficiaryDetails"
+                      ></fi-beneficiary>
+                    </div>
+                  </div>
+                  <ng-container
+                    *ngIf="
+                      isInvalidBeneficiary &&
+                      beneficiaryForm.controls.bankFlowId.value ===
+                        ref.bankFlowId
+                    "
+                  >
+                    <div class="mt-4">
+                      <fi-alert
+                        [type]="'warning'"
+                        [closable]="false"
+                        [title]="
+                          'TRANSACTION.BENEFICIARY.CURRENCY_VALIDATION'
+                            | translate
+                        "
+                      >
+                      </fi-alert>
+                    </div>
+                  </ng-container>
+
+                  <ng-container
+                    *ngIf="
+                      institutionNotFound &&
+                      beneficiaryForm.controls.bankFlowId.value ===
+                        ref.bankFlowId
+                    "
+                  >
+                    <div class="mt-4">
+                      <fi-alert
+                        [type]="'warning'"
+                        [closable]="false"
+                        [title]="
+                          'TRANSACTION.BENEFICIARY.INSTITUTION_VALIDATION'
+                            | translate
+                        "
+                      >
+                      </fi-alert>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+              <ng-template #filtered>
+                <ng-container *ngFor="let ref of beneficiaries; let i = index">
+                  <ng-container *ngIf="filteredBeneficiaries.indexOf(ref) >= 0">
+                    <div class="c-transactions-beneficiary__table-container">
+                      <div class="column">
+                        <input
+                          type="radio"
+                          name="bankFlowId"
+                          [value]="ref.bankFlowId"
+                          #bankFlowId
+                          formControlName="bankFlowId"
+                          kendoRadioButton
+                          [id]="'Rbn_beneficiary' + (i + 1)"
+                          (change)="onBeneficiaryChange(ref)"
+                        />
+                      </div>
+                      <div class="column">
+                        <fi-beneficiary
+                          [beneficiaryIndex]="i"
+                          [beneficiary]="ref"
+                        ></fi-beneficiary>
+                      </div>
+                    </div>
+                    <ng-container
+                      *ngIf="
+                        isInvalidBeneficiary &&
+                        beneficiaryForm.controls.bankFlowId.value ===
+                          ref.bankFlowId
+                      "
+                    >
+                      <div class="my-4">
+                        <fi-alert
+                          [type]="'warning'"
+                          [closable]="false"
+                          [title]="
+                            'TRANSACTION.BENEFICIARY.CURRENCY_VALIDATION'
+                              | translate
+                          "
+                        >
+                        </fi-alert>
+                      </div>
+                    </ng-container>
+                    <ng-container
+                      *ngIf="
+                        institutionNotFound &&
+                        beneficiaryForm.controls.bankFlowId.value ===
+                          ref.bankFlowId
+                      "
+                    >
+                      <div class="mt-4">
+                        <fi-alert
+                          [type]="'warning'"
+                          [closable]="false"
+                          [title]="
+                            'TRANSACTION.BENEFICIARY.INSTITUTION_VALIDATION'
+                              | translate
+                          "
+                        >
+                        </fi-alert>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </ng-template>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>
+
+<ng-template #skeleton>
+  <kendo-skeleton
+    shape="rectangle"
+    animation="pulse"
+    width="100%"
+    height="200px"
+    class="k-skeleton-pulse k-skeleton-rectangle k-skeleton"
+    data-testid="skeleton"
+  ></kendo-skeleton>
+</ng-template>
+
+<ng-template #emptyState>
+  <fi-no-content
+    [content]="'TRANSACTION.NO_BENEFICIARIES' | translate"
+  ></fi-no-content>
+</ng-template>

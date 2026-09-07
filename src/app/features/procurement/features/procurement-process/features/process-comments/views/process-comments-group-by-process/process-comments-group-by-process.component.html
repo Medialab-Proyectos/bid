@@ -1,0 +1,85 @@
+<div class="row">
+  <div class="col-12" [ngClass]="false ? 'p-0' : null">
+    <div
+      class="qa-dashboardComponent-onGoingProjects"
+      [ngClass]="false ? null : 'card-projects'"
+    >
+      <div class="qa-dashboardComponent-onGoingProjects">
+        <div class="card-projects__title pb-3">
+          <div style="width: 200px"></div>
+        </div>
+        <ng-container *ngIf="!refreshingTable">
+          <kendo-grid
+            [data]="gridView"
+            [selectable]="true"
+            class="c-table-notifications"
+            [groupable]="false"
+            [group]="state.group"
+            [sortable]="true"
+            [sort]="state.sort"
+            [reorderable]="true"
+            [pageSize]="pageSize"
+            [skip]="skip"
+            [pageable]="true"
+            (dataStateChange)="dataStateChange($event)"
+            [loading]="loading"
+            [kendoGridExpandDetailsBy]="expandDetailsBy"
+            [(expandedDetailKeys)]="expandedDetailKeys"
+          >
+            <ng-template kendoGridNoRecordsTemplate>
+              <div>
+                {{ "PROCUREMENT.COMMENTS_TAB.ZERO_COMMENTS" | translate }}
+              </div>
+            </ng-template>
+
+            <kendo-grid-messages
+              [pagerItems]="'COMMENTS.TABLE.ITEMS' | translate"
+              [pagerOf]="'COMMENTS.TABLE.OF' | translate"
+            >
+            </kendo-grid-messages>
+            <kendo-grid-column
+              field="processName"
+              [title]="null"
+              [sortable]="true"
+              width="200"
+              ><ng-template
+                kendoGridCellTemplate
+                let-dataItem
+                let-rowIndex="rowIndex"
+              >
+                <span
+                  [ngClass]="marked[rowIndex - skip] ? 'font-weight-bold' : ''"
+                >
+                  {{ dataItem.processCode }} {{ dataItem.processName }}
+                </span>
+              </ng-template>
+            </kendo-grid-column>
+
+            <ng-template
+              kendoGridDetailTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              <div class="detail-template">
+                <div id="{{ 'output_' + dataItem.id }}">
+                  <fi-procurement-comments-group-by-process-detail
+                    *ngIf="!load"
+                    [selectedProcess]="selectedProcess"
+                    [processCode]="data[rowIndex - skip].processCode"
+                    [data]="dataItem"
+                    [processIndex]="rowIndex"
+                    [commentVisibilitiesEnum]="commentVisibilitiesEnum"
+                    [userEmail]="userEmail"
+                    [parentId]="dataItem.parentId"
+                    [form]="form[rowIndex - skip]"
+                    (checkMarked)="checkAnyMarked()"
+                  ></fi-procurement-comments-group-by-process-detail>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-grid>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

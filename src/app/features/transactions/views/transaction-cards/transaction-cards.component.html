@@ -1,0 +1,35 @@
+<div class="c-transactions__options">
+  <div class="c-transactions__header">
+    <div class="c-transactions__header-container">
+      <div class="c-transactions__transaction-options-icon">
+        <em class="fas fa-list-alt"></em>
+      </div>
+      <div class="ml-3">
+        <div class="c-transactions__cards_title">
+          {{ "TRANSACTION.WICH_TRANSACTION" | translate }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!isLoading; else loader">
+    <div class="c-transactions__options-container">
+      <ng-container *ngFor="let transaction of transactionCard; let i = index">
+        <div class="c-transactions__transaction-option-card">
+          <fi-transaction-type-card
+            style="height: 100%"
+            [id]="i"
+            [transactionCard]="transaction"
+            (transactionCardType)="initTransactionType($event)"
+          ></fi-transaction-type-card>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #loader>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

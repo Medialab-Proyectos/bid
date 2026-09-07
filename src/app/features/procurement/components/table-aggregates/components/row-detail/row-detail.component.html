@@ -1,0 +1,72 @@
+<div class="row-detail">
+  <div class="row-detail__row row-detail__row--line">
+    <div class="row-detail__box row-detail__box--first-col">
+      <kendo-label
+        class="row-detail__label"
+        [text]="'PROCUREMENT.TABLE.DETAIL.MANUAL_ID' | translate"
+      >
+        <p>{{ item?.manualId ? item?.manualId : "&mdash;" }}</p>
+      </kendo-label>
+    </div>
+    <div class="row-detail__box">
+      <kendo-label
+        class="row-detail__label"
+        [text]="'PROCUREMENT.TABLE.DETAIL.SUBEXECUTOR' | translate"
+      >
+        <p>{{ item?.subExecutor ? item?.subExecutor : "&mdash;" }}</p>
+      </kendo-label>
+    </div>
+    <div class="row-detail__box">
+      <kendo-label
+        class="row-detail__label"
+        [text]="'PROCUREMENT.TABLE.DETAIL.JUSTIFICATION' | translate"
+      >
+        <p>{{ item?.justification ? item?.justification : "&mdash;" }}</p>
+      </kendo-label>
+    </div>
+  </div>
+  <div class="row-detail__row">
+    <div class="row-detail__box row-detail__box--first-col">
+      <kendo-label
+        class="row-detail__label"
+        [text]="'PROCUREMENT.TABLE.DETAIL.IDB_AMOUNT' | translate"
+      >
+        <p class="c-table-aggregates--usd">
+          {{
+            item?.projectAmount.idbAmount
+              ? (item?.projectAmount.idbAmount | ifNumber)
+              : "&mdash;"
+          }}
+        </p>
+      </kendo-label>
+    </div>
+    <div class="row-detail__box">
+      <kendo-label
+        class="row-detail__label"
+        [text]="'PROCUREMENT.TABLE.DETAIL.COUNTERPART' | translate"
+      >
+        <p class="c-table-aggregates--usd">
+          {{
+            item?.projectAmount.localCounterpartAmount
+              ? (item?.projectAmount.localCounterpartAmount | ifNumber)
+              : "&mdash;"
+          }}
+        </p>
+      </kendo-label>
+    </div>
+    <div class="row-detail__box">
+      <kendo-label
+        class="row-detail__label"
+        [text]="'PROCUREMENT.TABLE.DETAIL.CO_FINANCING' | translate"
+      >
+        <p class="c-table-aggregates--usd">
+          {{
+            item?.projectAmount.cofinancedAmount
+              ? (item?.projectAmount.cofinancedAmount | ifNumber)
+              : "&mdash;"
+          }}
+        </p>
+      </kendo-label>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="c-category-menu">
+  <div class="row">
+    <div class="col-12">
+      <div class="c-category-menu__filter">
+        <kendo-textbox
+          #filterInput
+          [formControl]="filterControl"
+          [clearButton]="true"
+          [placeholder]="'SHARED.HEADERS.PROJECT_SIDEBAR.SEARCH' | translate"
+          id="Txt_Sidebar_search"
+          class="c-textbox"
+        >
+          <ng-template kendoTextBoxPrefixTemplate>
+            <span class="k-icon k-i-search"></span>
+          </ng-template>
+        </kendo-textbox>
+      </div>
+    </div>
+  </div>
+  <div class="panelbar-wrapper">
+    <kendo-panelbar
+      [items]="items"
+      (select)="onPanelSelect($event)"
+    ></kendo-panelbar>
+  </div>
+</div>

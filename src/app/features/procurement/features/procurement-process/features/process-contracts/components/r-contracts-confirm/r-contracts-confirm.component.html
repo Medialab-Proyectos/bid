@@ -1,0 +1,584 @@
+<ng-container body>
+  <div class="confirm-message" *ngIf="!loadDetailScreen()">
+    <h3 class="confirm-message__title">
+      {{ 'R_CONTRACTS_CONFIRM_INFO_TITLE' | translate }}
+    </h3>
+    <p>
+      {{ 'R_CONTRACTS_CONFIRM_INFO_MESSAGE' | translate }}
+    </p>
+
+    <div class="confirm-message__btns">
+      <button mat-stroked-button (click)="returnToEdit()">
+        {{ 'R_CONTRACTS_CONFIRM_EDIT_BTN' | translate }}
+      </button>
+
+      <div *ngIf="CanSendInternalReview()">
+        <button
+          *fiDisplayByPermissions="SendInternalNotificationsPermission"
+          mat-stroked-button
+          color="primary"
+          (click)="sendNotificationToInternalReview()"
+        >
+          {{ 'R.CONTRACTS._CONFIRM_SEND_INTERNAL_REVIEW_BTN' | translate }}
+        </button>
+      </div>
+
+      <button
+        *fiDisplayByPermissions="sendOficialCommunicationsPermission"
+        mat-raised-button
+        color="primary"
+        (click)="handleConfirm()"
+      >
+        {{ 'R_CONTRACTS_CONFIRM_CONTRACT_BTN' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="confirm-contract">
+    <h4 class="title">
+      {{ 'EX.R_CONTRACTS_BIDDER_INFORMATION_LABEL' | translate }}
+    </h4>
+    <div class="adjudicatario-section">
+      <div>
+        <p>
+          {{ 'EX.R_CONTRACTS_NAME_SUCCESSFUL_BIDDER__LABEL' | translate }}
+        </p>
+        <p class="data">{{ participantsAwarded?.name }}</p>
+      </div>
+
+      <div>
+        <p>{{ 'EX.R_CONTRACTS_BIDDER_NATIONALITY_LABEL' | translate }}</p>
+        <p class="data">{{ participantsAwarded?.nationality }}</p>
+      </div>
+
+      <div>
+        <p>{{ 'EX.R_CONTRACTS_BIDDER_TYPE_LABEL' | translate }}</p>
+        <p class="data">{{ participantsAwarded?.type }}</p>
+      </div>
+
+      <div class="adjudicatario-section__btn">
+        <button (click)="openDetails()">
+          {{ 'R.CONTRACTS._CONFIRM_INFO_TITLE' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+    <h4 class="title">
+      {{ 'EX.R_CONTRACTS.GENERAL_INFO.TITLE' | translate }}
+    </h4>
+    <div class="contrato-detalle">
+      <div class="contrato-detalle__header">
+        <p class="contrato-detalle__title-field">
+          {{ 'CONTRACT.GENERAL_INFO.CONTRACT_NAME' | translate }}
+        </p>
+        <p class="contrato-detalle__value data">
+          {{ contractData?.generalInformation.name }}
+        </p>
+      </div>
+
+      <div class="contrato-detalle__full-row">
+        <p class="contrato-detalle__title-field">
+          {{ 'CONTRACT.GENERAL_INFO.CONTRACT_OBJECTIVE' | translate }}
+        </p>
+        <p class="data">
+          {{ contractData?.generalInformation.objective }}
+        </p>
+      </div>
+
+      <div class="contrato-detalle__grid-3">
+        <div class="contrato-detalle__item">
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.CONTRACT_SIGN_DATE' | translate }}
+          </p>
+          <p class="contrato-detalle__value data">
+            {{ contractData?.generalInformation.signatureDate | date }}
+          </p>
+        </div>
+        <div class="contrato-detalle__item">
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.START_DATE' | translate }}
+          </p>
+          <p class="contrato-detalle__value data">
+            {{ contractData?.generalInformation.startDate | date }}
+          </p>
+        </div>
+        <div class="contrato-detalle__item">
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.END_DATE' | translate }}
+          </p>
+          <p class="contrato-detalle__value data">
+            {{ contractData?.generalInformation.endDate | date }}
+          </p>
+        </div>
+
+        <div class="contrato-detalle__item">
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.CONTROL_NUMBER' | translate }}
+          </p>
+          <p class="contrato-detalle__value data">
+            {{ contractData?.generalInformation.internalControlNumber }}
+          </p>
+        </div>
+        <div class="contrato-detalle__item">
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.TYPE_OF_CONTRACT' | translate }}
+          </p>
+          <p class="contrato-detalle__value data">
+            {{
+              biddingContractTypes[
+                contractData?.generalInformation.contractType - 1
+              ]?.name
+            }}
+          </p>
+        </div>
+
+        <div class="contrato-detalle__item">
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.CONFLICT_RESOLUTION_METHOD' | translate }}
+          </p>
+          <p class="contrato-detalle__value data">
+            {{
+              biddingContractConflictResolutionMethods[
+                contractData?.generalInformation.conflictResolutionMethod - 1
+              ]?.name
+            }}
+          </p>
+        </div>
+        <div class="contrato-detalle__item">
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.APPLICABLE_LAW' | translate }}
+          </p>
+          <p class="contrato-detalle__value data">
+            {{ contractData?.generalInformation.applicableLaw }}
+          </p>
+        </div>
+        <div class="contrato-detalle__item">
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.ADVANCE_PAYMENT' | translate }}
+          </p>
+          <p class="contrato-detalle__value data">
+            {{
+              (contractData?.generalInformation.hasAdvancedPayment
+                ? 'CONTRACT.GENERAL_INFO.YES'
+                : 'CONTRACT.GENERAL_INFO.NO'
+              ) | translate
+            }}
+          </p>
+        </div>
+        <div
+          class="contrato-detalle__item"
+          *ngIf="contractData?.generalInformation.goodsOrigin.length > 0"
+        >
+          <p class="contrato-detalle__title-field">
+            {{ 'CONTRACT.GENERAL_INFO.GOODS_SOURCE' | translate }}
+          </p>
+          <p
+            class="contrato-detalle__value data d-inline"
+            *ngFor="let goods of contractData?.generalInformation.goodsOrigin"
+          >
+            {{ 'ENUM.COUNTRY.' + goods | translate }},
+          </p>
+        </div>
+      </div>
+      <!-- General info justification -->
+      <div
+        class="contrato-detalle__justification"
+        *ngIf="contractData?.generalInformation.justification"
+      >
+        <p class="contrato-detalle__title-field">
+          {{ 'CONTRACT.GENERAL_INFO.JUSTIFICATION' | translate }}
+        </p>
+        <p class="contrato-detalle__value data">
+          {{ contractData?.generalInformation.justification }}
+        </p>
+      </div>
+
+      <div
+        class="contrato-detalle__conflict-justification"
+        *ngIf="contractData?.generalInformation.conflictResolutionJustification"
+      >
+        <p class="contrato-detalle__title-field">
+          {{
+            'CONTRACT.GENERAL_INFO.CONFLICT_RESOLUTION_DESCRIPTION' | translate
+          }}
+        </p>
+        <p class="contrato-detalle__value data">
+          {{ contractData?.generalInformation.conflictResolutionJustification }}
+        </p>
+      </div>
+    </div>
+    <!-- EXCECUTION PLACE -->
+    <div>
+      <h4 class="title">
+        {{ 'EX.R_CONTRACTS_EXECUTION_PLACE_LABEL' | translate }}
+      </h4>
+      <div
+        class="execution-place mb-4"
+        *ngFor="let exWork of contractData?.executionsOfWork"
+      >
+        <div class="contract-lots__items">
+          <p>{{ 'EX.R_CONTRACTS_ADDRESS_LABEL' | translate }}</p>
+          <p class="data">{{ exWork.address }}</p>
+        </div>
+        <div class="contract-lots__items">
+          <p>{{ 'EX.R_CONTRACTS_POSTAL_CODE_LABEL' | translate }}</p>
+          <p class="data">{{ exWork.postalCode }}</p>
+        </div>
+        <div class="contract-lots__items">
+          <p>{{ 'EX.R_CONTRACTS_COUNTRY_LABEL' | translate }}</p>
+          <p class="data">
+            {{ 'ENUM.COUNTRY.' + exWork.countryCode | translate }}
+          </p>
+        </div>
+        <div class="contract-lots__items">
+          <p>
+            {{ 'R_CONTRACTS_EXECUTION_PLACE_LOCALITY_LABEL' | translate }}
+          </p>
+          <p class="data">
+            {{ exWork.locality }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost Distribution -->
+    <div class="cost-distribution-component">
+      <h4 class="title">
+        {{ 'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TITLE' | translate }}
+      </h4>
+      <div class="contenedor-general">
+        <ng-container
+          *ngFor="let group of costDistributionComponent; let i = index"
+        >
+          <div class="tabla-contenedor">
+            <div class="tabla-encabezado-simple">
+              <p class="tabla-encabezado-simple__titulo">
+                {{
+                  'EX.R_CONTRACTS.DISTRIBUTION_COSTS_CURRENCY_TYPE' | translate
+                }}
+              </p>
+              <p class="tabla-encabezado-simple__valor">
+                {{ group.currency }}
+              </p>
+            </div>
+
+            <table class="tabla-jerarquica">
+              <thead>
+                <tr>
+                  <th>{{ 'COST_DISTRIBUTION_COMPONENT' | translate }}</th>
+                  <th>
+                    {{ 'CONTRACT.COST_DISTRIBUTION.IADB_AMOUNT' | translate }}
+                  </th>
+                  <th>{{ 'COST_DISTRIBUTION_LOCAL_AMOUNT' | translate }}</th>
+                  <th>
+                    {{ 'COST_DISTRIBUTION_CONFINANCING_AMOUNT' | translate }}
+                  </th>
+                  <th>
+                    {{ 'COST_DISTRIBUTION_TOTAL_CURRENCY' | translate }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="let component of group.items; let j = index"
+                >
+                  <tr class="grupo-principal">
+                    <td class="titulo-grupo">
+                      <strong>{{ component.componentName }}</strong>
+                    </td>
+                    <td colspan="4"></td>
+                  </tr>
+
+                  <ng-container *ngFor="let product of component.detail">
+                    <tr class="fila-subtotal-componente">
+                      <td
+                        class="fila-subtotal-componente--product celda-sangria"
+                      >
+                        {{ product.productName }}
+                      </td>
+
+                      <td class="celda-subtotal">
+                        {{ product.idbTotal | number: '1.2-2' }}
+                      </td>
+
+                      <td class="celda-subtotal">
+                        {{ product.lcTotal | number: '1.2-2' }}
+                      </td>
+
+                      <td class="celda-subtotal">
+                        {{ product.cfTotal | number: '1.2-2' }}
+                      </td>
+
+                      <td class="celda-subtotal">
+                        {{
+                          product.idbTotal + product.lcTotal + product.cfTotal
+                            | number: '1.2-2'
+                        }}
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+              </tbody>
+            </table>
+            <div class="tabla-pie-acumulado">
+              <div class="tabla-pie-acumulado__info">
+                <p>
+                  {{
+                    'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL_AMOUNT_OF_CURRENCY'
+                      | translate
+                  }}
+                  {{ group?.currency }}
+                </p>
+              </div>
+
+              <div class="tabla-pie-acumulado__amount">
+                <div class="monto-acumulado">
+                  <p>
+                    {{ group?.totalIdb | number: '1.2-2' }}
+                  </p>
+                  <p>
+                    {{
+                      'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL_AMOUNT_OF_BID'
+                        | translate
+                    }}
+                  </p>
+                </div>
+                <div class="monto-acumulado">
+                  <p>
+                    {{ group?.totalLc | number: '1.2-2' }}
+                  </p>
+                  <p>
+                    {{
+                      'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL-LOCAL_CONSTRIBUTION_AMOUNT'
+                        | translate
+                    }}
+                  </p>
+                </div>
+                <div class="monto-acumulado">
+                  <p>
+                    {{ group?.totalCf | number: '1.2-2' }}
+                  </p>
+                  <p>
+                    {{
+                      'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL_AMOUNT_CO_FINANCING'
+                        | translate
+                    }}
+                  </p>
+                </div>
+                <div class="monto-acumulado">
+                  <p>
+                    {{ group?.totalComponent | number: '1.2-2' }}
+                  </p>
+                  <p>
+                    {{
+                      'EX.R_CONTRACTS.DISTRIBUTION_COSTS_TOTAL_AMOUNT_OF_CURRENCY'
+                        | translate
+                    }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr
+            class="separador-moneda"
+            *ngIf="i < costDistributionComponent.length - 1"
+          />
+        </ng-container>
+      </div>
+      <div class="total-usd-equivalent">
+        <p>
+          {{ 'COST_DISTRIBUTION_TOTAL_EQUIVALENT' | translate }}
+          {{ totalEquivalentUsd | number: '1.2-2' }}
+        </p>
+      </div>
+    </div>
+
+    <!--LOTS DATA  -->
+    <ng-container *ngIf="contractData?.lots.length > 0">
+      <div>
+        <h4 class="title">{{ 'CONTRACT.LOTS.TITLE' | translate }}</h4>
+        <div class="contract-lots mb-4" *ngFor="let lots of contractData?.lots">
+          <div class="contract-lots__items">
+            <p>{{ 'CONTRACT.LOTS.NUMBER' | translate }}</p>
+            <p class="data">{{ lots.lotNumber }}</p>
+          </div>
+          <div class="contract-lots__items">
+            <p>{{ 'CONTRACT.LOTS.AMOUNT' | translate }}</p>
+            <p class="data">{{ lots.amount | number: '1.2-2' }}</p>
+          </div>
+          <div class="contract-lots__items">
+            <p>
+              {{
+                'EX.R_CONTRACTS.DISTRIBUTION_COSTS_CURRENCY_TYPE' | translate
+              }}
+            </p>
+            <p class="data">{{ lots.currency }}</p>
+          </div>
+          <div class="contract-lots__items">
+            <p>{{ 'R.CONTRACT.VALIDATION_ERRORS.LOTS_UNITS' | translate }}</p>
+            <p class="data">{{ lots.unit }}</p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- GUARANTEES -->
+    <ng-container
+      *ngIf="contractData?.additionalInformation.guarantees?.length > 0"
+    >
+      <div class="contract-guarantee mb-4">
+        <h4 class="title">
+          {{ 'EX.R_CONTRACTS_WARRANTY_DEPOSIT_LABEL' | translate }}
+        </h4>
+        <div
+          *ngFor="
+            let guarantee of contractData?.additionalInformation.guarantees
+          "
+          class="section-guarantee"
+        >
+          <div class="section-guarantee__item">
+            <p>{{ 'EX.R_CONTRACTS_WARRANTY_DEPOSIT_LABEL' | translate }}</p>
+            <p class="data">
+              {{
+                biddingContractSecurityTypes[guarantee.guaranteeTypeId - 1].name
+              }}
+            </p>
+          </div>
+          <div class="section-guarantee__item">
+            <p>{{ 'EX.R_CONTRACTS_CURRENCY_TYPE_LABEL' | translate }}</p>
+            <p class="data">{{ guarantee.currency }}</p>
+          </div>
+          <div class="section-guarantee__item">
+            <p>{{ 'EX.R_CONTRACTS_AMOUNT_LABEL' | translate }}</p>
+            <p class="data">{{ guarantee.amount | number: '1.2-2' }}</p>
+          </div>
+
+          <div class="section-guarantee__item">
+            <p>{{ 'EX.R_CONTRACTS_DATE_OF_ISSUE_LABEL' | translate }}</p>
+            <p class="data">{{ guarantee.issueDate | date }}</p>
+          </div>
+          <div class="section-guarantee__item">
+            <p>{{ 'EX.R_CONTRACTS_COMPLETION_DATE_LABEL' | translate }}</p>
+            <p class="data">{{ guarantee.endDate | date }}</p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container
+      *ngIf="contractData?.additionalInformation.liquidationOfDamage"
+    >
+      <mat-divider></mat-divider>
+      <div class="contract-liquidatedDamage mb-4">
+        <h4 class="title">
+          {{
+            'EX.R_CONTRACTS_SETTLEMENT_FOR_DAMAGES_PERJURY_LABEL' | translate
+          }}
+        </h4>
+        <div class="section-liquidatedDamage">
+          <div class="section-liquidatedDamage__items">
+            <p>{{ 'CONTRACT.ADDITIONAL_INFO.DAMAGES' | translate }}</p>
+            <p class="data">
+              {{
+                biddingContractLiquidatedDamageTypes[
+                  contractData?.additionalInformation?.liquidationOfDamage
+                    .liquidationOfDamageTypeId - 1
+                ].name
+              }}
+            </p>
+          </div>
+          <div class="section-liquidatedDamage__items">
+            <p>
+              {{ 'EX.R_CONTRACTS_DAILY_OR_WEEKLY_PAYMENT_LABEL' | translate }}
+            </p>
+            <p class="data">
+              {{
+                biddingContractBonusPaymentFrequency[
+                  contractData?.additionalInformation.liquidationOfDamage
+                    .paymentFrequencyTypeId - 1
+                ].name
+              }}
+            </p>
+          </div>
+          <div class="section-liquidatedDamage__items">
+            <p>{{ 'CONTRACT.ADDITIONAL_INFO.PERCENTAGE' | translate }}</p>
+            <p class="data">
+              {{
+                contractData?.additionalInformation.liquidationOfDamage
+                  ?.percentage
+              }}
+              %
+            </p>
+          </div>
+          <div class="section-liquidatedDamage__items">
+            <p>{{ 'EX.R_CONTRACTS_MAXIMUM_PERCENTAGE_LABEL' | translate }}</p>
+            <p class="data">
+              {{
+                contractData?.additionalInformation.liquidationOfDamage
+                  ?.maximumPercentage
+              }}
+              %
+            </p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="contractData?.additionalInformation.bonus">
+      <mat-divider></mat-divider>
+      <div class="section-bonus mb-4">
+        <h4 class="title">{{ 'EX.R_CONTRACTS_BONUS_LABEL' | translate }}</h4>
+        <div class="section-bonus__items">
+          <div>
+            <p>{{ 'CONTRACT.ADDITIONAL_INFO.BONUS' | translate }}</p>
+            <p class="data">
+              {{
+                biddingContractBonusTypes[
+                  contractData?.additionalInformation?.bonus.bonusTypeId - 1
+                ]?.name
+              }}
+            </p>
+          </div>
+          <div>
+            <p>
+              {{ 'EX.R_CONTRACTS_DAILY_OR_WEEKLY_PAYMENT_LABEL' | translate }}
+            </p>
+            <p class="data">
+              {{
+                biddingContractBonusPaymentFrequency[
+                  contractData?.additionalInformation?.bonus
+                    ?.paymentFrequencyTypeId - 1
+                ]?.name
+              }}
+            </p>
+          </div>
+          <div>
+            <p>{{ 'CONTRACT.ADDITIONAL_INFO.PERCENTAGE' | translate }}</p>
+            <p class="data">
+              {{ contractData?.additionalInformation.bonus?.percentage }} %
+            </p>
+          </div>
+          <div>
+            <p>{{ 'EX.R_CONTRACTS_MAXIMUM_PERCENTAGE_LABEL' | translate }}</p>
+            <p class="data">
+              {{ contractData?.additionalInformation.bonus?.maximumPercentage }}
+              %
+            </p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container>
+      <h4 class="title">
+        {{ 'R.CONTRACTS._CONFIRM_DOCUMENTS_TITLE' | translate }}
+      </h4>
+      <fi-mat-finished-docs
+        [biddingContractDocumentGroupCodes]="biddingContractDocumentGroupCodes"
+        [documents]="documents()"
+        (downloadEmitter)="downloadDoc($event)"
+      ></fi-mat-finished-docs>
+    </ng-container>
+  </div>
+</ng-container>

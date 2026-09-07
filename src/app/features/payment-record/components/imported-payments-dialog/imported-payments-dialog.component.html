@@ -1,0 +1,112 @@
+<div class="pr-dialog">
+  <div class="pr-dialog__row">
+    <div class="pr-dialog__field">
+      <span class="pr-dialog__label">
+        {{ "PAYMENT_RECORD.IMPORT.AGENCY" | translate }}
+      </span>
+      <span class="pr-field__value">{{ result?.executingAgency }}</span>
+    </div>
+    <div class="pr-dialog__field">
+      <span class="pr-dialog__label">
+        {{ "PAYMENT_RECORD.IMPORT.LOAN_CONTRACT" | translate }}
+      </span>
+      <span class="pr-field__value">{{ result?.loanContractNumber }}</span>
+    </div>
+    <div class="pr-dialog__field">
+      <span class="pr-dialog__label">
+        {{ "PAYMENT_RECORD.IMPORT.DATE" | translate }}
+      </span>
+      <span class="pr-field__value">{{ result?.importedOn | dateIF }}</span>
+    </div>
+  </div>
+
+  <div class="pr-import__stats">
+    <span>
+      {{ "PAYMENT_RECORD.IMPORT.ROW_COUNT" | translate }}:
+      <strong>{{ rows.length }}</strong>
+    </span>
+    <span>
+      {{ "PAYMENT_RECORD.IMPORT.SELECTED" | translate }}:
+      <strong>{{ selectedRowNumbers.length }}</strong>
+    </span>
+    <span>
+      {{ "PAYMENT_RECORD.IMPORT.SELECTED_TOTAL" | translate }}:
+      <strong>{{ selectedTotal | ifNumber }}</strong>
+    </span>
+  </div>
+
+  <fi-filter
+    class="d-block"
+    [minLength]="3"
+    [placeholder]="'PAYMENT_RECORD.ADVANCED_SEARCH' | translate"
+    (filterValue)="onSearch($event)"
+  ></fi-filter>
+
+  <div class="pr-import__table">
+    <table class="pr-rates pr-rates--wide">
+      <thead>
+        <tr>
+          <th scope="col" class="pr-rates__check">
+            <input
+              type="checkbox"
+              id="Chk_Imported_All"
+              [checked]="allSelected"
+              (change)="toggleAll()"
+              [attr.aria-label]="'PAYMENT_RECORD.IMPORT.SELECT_ALL' | translate"
+            />
+          </th>
+          <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.COUNTRY" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.COMMITMENT" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.RECEIVER" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.DATE" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY" | translate }}</th>
+          <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT" | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of filteredRows">
+          <td class="pr-rates__check">
+            <input
+              type="checkbox"
+              [attr.id]="'Chk_Imported_' + row.rowNumber"
+              [(ngModel)]="selection[row.rowNumber]"
+              [attr.aria-label]="row.concept"
+            />
+          </td>
+          <td>{{ row.country }}</td>
+          <td>{{ row.commitmentNumber }}</td>
+          <td>{{ row.concept }}</td>
+          <td>{{ row.beneficiaryName }}</td>
+          <td>{{ row.accountingVoucher }}</td>
+          <td>{{ row.paymentDate | dateIF }}</td>
+          <td>{{ row.currency }}</td>
+          <td class="pr-grid__number">{{ row.amount | ifNumber }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="pr-dialog__note">{{ "PAYMENT_RECORD.AUDIT_NOTE" | translate }}</p>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <button
+    kendoButton
+    class="btn btn-neutral"
+    id="Btn_Imported_Cancel"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+  <button
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_Imported_Continue"
+    [disabled]="saving || selectedRowNumbers.length === 0"
+    (click)="confirm()"
+  >
+    {{ "PAYMENT_RECORD.ADD_PAYMENTS.CONTINUE" | translate }}
+  </button>
+</kendo-dialog-actions>

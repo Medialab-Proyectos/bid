@@ -1,0 +1,60 @@
+////
+/// Override kendo-drawer component
+///
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group components of kendo ui
+/// @name .k-drawer**
+////
+.k-drawer {
+  border-color: #DEDBDA;
+  background-color: white;
+  border-width: 1px !important;
+  .btn.btn-drawer-toggler {
+    position: absolute;
+    padding: rem(2);
+    width: rem(24);
+    height: rem(24);
+    right: rem(-13);
+    top: rem(20);
+    background: color('primary-light');
+    color: color('white');
+    font-size: rem(10);
+    z-index: 12;
+
+    &:hover,
+    &:focus {
+      background: color('primary');
+    }
+  }
+
+  & > .k-drawer-wrapper {
+    overflow: visible;
+  }
+  &-content {
+    .btn.btn-drawer-toggler {
+      position: absolute;
+      padding: rem(2);
+      width: rem(24);
+      height: rem(24);
+      left: rem(-13);
+      top: rem(81);
+      background: color('white');
+      color: color('white');
+      font-size: rem(10);
+      z-index: 12;
+
+      &:hover,
+      &:focus {
+        background: color('primary');
+      }
+    }
+    &--closed {
+      padding-left: rem(16);
+      .btn.btn-drawer-toggler {
+        left: rem(-28);
+      }
+    }
+  }
+}

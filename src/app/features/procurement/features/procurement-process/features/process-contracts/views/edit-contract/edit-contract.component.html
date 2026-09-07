@@ -1,0 +1,42 @@
+<div
+  class="c-upload-contract-information"
+  *ngIf="!isLoading; else loader"
+  id="top"
+>
+  <fi-card-header [title]="'CONTRACT.UPLOAD_INFORMATION' | translate">
+  </fi-card-header>
+
+  <div class="c-card-subtitle">
+    <p>{{ "CONTRACT.ID" | translate }}</p>
+    <p>{{ visualCode }}</p>
+  </div>
+
+  <div class="contract-body" *fiDisplayByPermissions="contractEditPermission">
+    <p class="c-upload-contract-information__form-legend">
+      {{ "CONTRACT.INSTRUCTIONS" | translate }}
+    </p>
+
+    <div class="row">
+      <div class="col-12">
+        <ng-container *ngIf="formErrorCollection.length > 0">
+          <fi-error-list
+            data-testid="ErrorMessage"
+            [errorList]="formErrorCollection"
+            [errorListTitle]="errorListTitle"
+          ></fi-error-list>
+        </ng-container>
+      </div>
+    </div>
+    <fi-contracts-form
+      [stateSubmit]="stateSubmit"
+      [form]="form"
+      [modeEnum]="mode"
+      (errorList)="updateErrorList($event)"
+    ></fi-contracts-form>
+  </div>
+</div>
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

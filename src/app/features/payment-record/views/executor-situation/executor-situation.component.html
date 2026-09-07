@@ -1,0 +1,359 @@
+<div class="container-fluid pr-page">
+  <!--
+    Same affordance, same position as the rest of the module: right under the
+    breadcrumb, above the card.
+  -->
+  <button
+    kendoButton
+    class="btn btn-neutral pr-back-button"
+    id="Btn_Situation_BackToList"
+    iconClass="fas fa-arrow-left"
+    (click)="goToRecord()"
+  >
+    {{ "PAYMENT_RECORD.COMMITMENT.BACK_TO_LIST" | translate }}
+  </button>
+
+  <fi-payment-record-project-card
+    [contract]="contract"
+    [summary]="summary"
+    [balances]="balances"
+    [loading]="loading"
+  ></fi-payment-record-project-card>
+
+  <div class="pr-card" *ngIf="situation">
+    <div class="pr-card__head">
+      <div class="pr-card__identity">
+        <span class="pr-card__icon"><em class="fas fa-compass"></em></span>
+        <div>
+          <div class="pr-card__eyebrow">
+            {{ "PAYMENT_RECORD.SITUATION.EYEBROW" | translate }}
+          </div>
+          <h2 class="pr-card__title">
+            {{ "PAYMENT_RECORD.SITUATION.TITLE" | translate }}
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <p class="pr-panel__lead pr-situation__intro">
+      {{
+        "PAYMENT_RECORD.SITUATION.INTRO"
+          | translate : { total: totalPayments }
+      }}
+    </p>
+
+    <!-- ---------- the three figures that answer "where do I stand" ---------- -->
+    <div class="pr-position">
+      <div class="pr-position__cell pr-position__cell--ready">
+        <span class="pr-position__label">
+          <em class="fas fa-hand-holding-usd" aria-hidden="true"></em>
+          {{ "PAYMENT_RECORD.SITUATION.READY" | translate }}
+        </span>
+        <span class="pr-position__amount">
+          {{ situation.readyToJustify.amount | ifNumber }}
+          <span class="pr-position__currency">{{ situation.approvalCurrency }}</span>
+        </span>
+        <span class="pr-position__meta">
+          {{
+            "PAYMENT_RECORD.SITUATION.READY_META"
+              | translate : { count: situation.readyToJustify.payments }
+          }}
+        </span>
+        <span
+          class="pr-position__age"
+          *ngIf="situation.readyToJustify.oldestDate"
+        >
+          {{
+            "PAYMENT_RECORD.SITUATION.WAITING_SINCE"
+              | translate
+                : { days: daysWaiting(situation.readyToJustify.oldestDate) }
+          }}
+        </span>
+        <button
+          kendoButton
+          class="btn btn-brand pr-position__action"
+          id="Btn_Situation_Claim"
+          iconClass="fas fa-file-invoice"
+          [disabled]="!hasSomethingToClaim"
+          (click)="goToStatement()"
+        >
+          {{ "PAYMENT_RECORD.STATEMENT.BTN" | translate }}
+        </button>
+      </div>
+
+      <div class="pr-position__cell">
+        <span class="pr-position__label">
+          <em class="fas fa-university" aria-hidden="true"></em>
+          {{ "PAYMENT_RECORD.SITUATION.AWAITING" | translate }}
+        </span>
+        <span class="pr-position__amount">
+          {{ situation.awaitingBank.amount | ifNumber }}
+          <span class="pr-position__currency">{{ situation.approvalCurrency }}</span>
+        </span>
+        <span class="pr-position__meta">
+          {{
+            "PAYMENT_RECORD.SITUATION.AWAITING_META"
+              | translate : { count: situation.awaitingBank.payments }
+          }}
+        </span>
+        <span class="pr-position__note">
+          {{ "PAYMENT_RECORD.SITUATION.AWAITING_NOTE" | translate }}
+        </span>
+      </div>
+
+      <div
+        class="pr-position__cell"
+        [class.pr-position__cell--blocked]="situation.blocked.payments > 0"
+      >
+        <span class="pr-position__label">
+          <em class="fas fa-exclamation-triangle" aria-hidden="true"></em>
+          {{ "PAYMENT_RECORD.SITUATION.BLOCKED" | translate }}
+        </span>
+        <span class="pr-position__amount">
+          {{ situation.blocked.amount | ifNumber }}
+          <span class="pr-position__currency">{{ situation.approvalCurrency }}</span>
+        </span>
+        <span class="pr-position__meta">
+          {{
+            "PAYMENT_RECORD.SITUATION.BLOCKED_META"
+              | translate : { count: situation.blocked.payments }
+          }}
+        </span>
+        <span class="pr-position__note" *ngIf="situation.blocked.payments === 0">
+          {{ "PAYMENT_RECORD.SITUATION.NOTHING_BLOCKED" | translate }}
+        </span>
+      </div>
+    </div>
+
+    <!-- ---------- what is standing in the way ---------- -->
+    <div class="pr-step">
+      <span class="pr-step__number"><em class="fas fa-hand-paper"></em></span>
+      <h3 class="pr-step__title">
+        {{ "PAYMENT_RECORD.SITUATION.BLOCKERS_TITLE" | translate }}
+      </h3>
+    </div>
+
+    <div class="pr-step__body">
+      <p class="pr-panel__lead">
+        {{ "PAYMENT_RECORD.SITUATION.BLOCKERS_HELP" | translate }}
+      </p>
+
+      <fi-no-content
+        *ngIf="!hasBlockers"
+        [content]="'PAYMENT_RECORD.SITUATION.BLOCKERS_EMPTY' | translate"
+      ></fi-no-content>
+
+      <ul class="pr-blockers" *ngIf="hasBlockers">
+        <li
+          class="pr-blockers__item"
+          *ngFor="let blocker of situation.blockers; trackBy: trackBlocker"
+        >
+          <div class="pr-blockers__head">
+            <div class="pr-blockers__body">
+              <span class="pr-blockers__what">
+                {{ blockerLabel(blocker) | translate }}
+              </span>
+              <span class="pr-blockers__fix">
+                {{ blockerFix(blocker) | translate }}
+              </span>
+            </div>
+            <div class="pr-blockers__weight">
+            <span class="pr-blockers__count">
+              {{
+                "PAYMENT_RECORD.SITUATION.BLOCKER_COUNT"
+                  | translate : { count: blocker.payments }
+              }}
+            </span>
+              <span class="pr-blockers__amount">
+                {{ blocker.amount | ifNumber }} {{ situation.approvalCurrency }}
+              </span>
+            </div>
+          <!--
+            One commitment means one button. Several means the agency picks:
+            landing on a commitment chosen for them left them wondering what
+            they were looking at.
+          -->
+            <button
+              *ngIf="(blocker.commitments?.length ?? 0) === 1"
+              kendoButton
+              class="btn btn-neutral"
+              [attr.id]="'Btn_Situation_Fix_' + blocker.reason"
+              (click)="goToBlocked(blocker, blocker.commitments[0].commitmentId)"
+            >
+              {{ "PAYMENT_RECORD.SITUATION.GO_FIX" | translate }}
+            </button>
+          </div>
+
+          <div class="pr-blockers__where" *ngIf="(blocker.commitments?.length ?? 0) > 1">
+            <span class="pr-blockers__where-label">
+              {{ "PAYMENT_RECORD.SITUATION.WHERE" | translate }}
+            </span>
+            <button
+              *ngFor="let place of blocker.commitments"
+              type="button"
+              class="pr-blockers__place"
+              [attr.id]="'Btn_Situation_Fix_' + blocker.reason + '_' + place.commitmentId"
+              (click)="goToBlocked(blocker, place.commitmentId)"
+            >
+              {{ place.commitmentNumber }}
+              <span class="pr-blockers__place-count">{{ place.payments }}</span>
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ---------- what runs out of time first ---------- -->
+    <div class="pr-step">
+      <span class="pr-step__number"><em class="fas fa-hourglass-half"></em></span>
+      <h3 class="pr-step__title">
+        {{ "PAYMENT_RECORD.SITUATION.DEADLINES_TITLE" | translate }}
+      </h3>
+    </div>
+
+    <div class="pr-step__body">
+      <p class="pr-panel__lead">
+        {{ "PAYMENT_RECORD.SITUATION.DEADLINES_HELP" | translate }}
+      </p>
+
+      <div class="pr-deadlines__key" *ngIf="situation.deadlines?.length">
+        <span class="pr-deadlines__key-item">
+          <span class="pr-deadlines__key-dot pr-deadlines__key-dot--time"></span>
+          {{ "PAYMENT_RECORD.SITUATION.GAUGE_TIME" | translate }}
+        </span>
+        <span class="pr-deadlines__key-item">
+          <span class="pr-deadlines__key-dot pr-deadlines__key-dot--money"></span>
+          {{ "PAYMENT_RECORD.SITUATION.GAUGE_MONEY" | translate }}
+        </span>
+      </div>
+
+      <ul class="pr-deadlines">
+        <li
+          class="pr-deadlines__item"
+          *ngFor="let deadline of situation.deadlines; trackBy: trackDeadline"
+          [ngClass]="'pr-deadlines__item--' + deadlineTone(deadline)"
+        >
+          <div class="pr-deadlines__identity">
+            <a
+              href="javascript:void(0)"
+              class="pr-link"
+              [attr.id]="'Lnk_Situation_Deadline_' + deadline.commitmentId"
+              (click)="goToCommitment(deadline.commitmentId)"
+            >
+              {{ deadline.commitmentNumber }}
+            </a>
+            <!--
+              The code alone tells nobody which contract this is. The receiver
+              is how people recognise one.
+            -->
+            <span
+              class="pr-deadlines__who"
+              [title]="deadline.beneficiaryName + ' · ' + deadline.componentName"
+            >
+              {{ deadline.beneficiaryName }}
+            </span>
+            <span class="pr-deadlines__what">{{ deadline.componentName }}</span>
+            <span class="pr-deadlines__date">
+              {{ "PAYMENT_RECORD.COMMITMENT.END_DATE" | translate }}:
+              {{ deadline.effectiveEndDate | dateIF }}
+            </span>
+          </div>
+
+          <div class="pr-deadlines__gauge">
+            <div class="pr-deadlines__bar">
+              <span
+                class="pr-deadlines__bar-fill pr-deadlines__bar-fill--time"
+                [style.width.%]="deadline.elapsedPercent"
+              ></span>
+            </div>
+            <div class="pr-deadlines__bar">
+              <span
+                class="pr-deadlines__bar-fill pr-deadlines__bar-fill--money"
+                [style.width.%]="deadline.paidPercent"
+              ></span>
+            </div>
+            <span class="pr-deadlines__legend">
+              {{
+                "PAYMENT_RECORD.SITUATION.GAUGE"
+                  | translate
+                    : {
+                        elapsed: deadline.elapsedPercent,
+                        paid: deadline.paidPercent
+                      }
+              }}
+            </span>
+          </div>
+
+          <span class="pr-deadlines__verdict">
+            {{
+              "PAYMENT_RECORD.SITUATION.DEADLINE." + deadlineTone(deadline)
+                | translate : { days: deadline.daysRemaining }
+            }}
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ---------- how the cycle is moving ---------- -->
+    <div class="pr-step">
+      <span class="pr-step__number"><em class="fas fa-stopwatch"></em></span>
+      <h3 class="pr-step__title">
+        {{ "PAYMENT_RECORD.SITUATION.CYCLE_TITLE" | translate }}
+      </h3>
+    </div>
+
+    <div class="pr-step__body">
+      <p class="pr-panel__lead">
+        {{ "PAYMENT_RECORD.SITUATION.CYCLE_HELP" | translate }}
+      </p>
+
+      <dl class="pr-cycle">
+        <div class="pr-cycle__item">
+          <dt>{{ "PAYMENT_RECORD.SITUATION.CYCLE_MEDIAN" | translate }}</dt>
+          <dd>
+            {{ situation.cycle.medianDaysToTravel }}
+            <span>{{ "PAYMENT_RECORD.SITUATION.DAYS" | translate }}</span>
+          </dd>
+        </div>
+        <div class="pr-cycle__item">
+          <dt>{{ "PAYMENT_RECORD.SITUATION.CYCLE_LONGEST" | translate }}</dt>
+          <dd>
+            {{ situation.cycle.longestWaitDays }}
+            <span>{{ "PAYMENT_RECORD.SITUATION.DAYS" | translate }}</span>
+          </dd>
+        </div>
+        <div class="pr-cycle__item">
+          <dt>{{ "PAYMENT_RECORD.SITUATION.CYCLE_TRAVELLED" | translate }}</dt>
+          <dd>{{ situation.cycle.travelledPercent }}<span>%</span></dd>
+        </div>
+      </dl>
+
+      <p class="pr-notice">
+        <em class="fas fa-info-circle"></em>
+        {{ "PAYMENT_RECORD.SITUATION.CYCLE_CAVEAT" | translate }}
+      </p>
+    </div>
+
+    <div class="pr-toolbar">
+      <p class="pr-toolbar__hint">
+        {{ "PAYMENT_RECORD.SITUATION.FOOTER" | translate }}
+      </p>
+      <div class="pr-toolbar__actions">
+        <button
+          kendoButton
+          class="btn btn-neutral"
+          id="Btn_Situation_ToRecord"
+          iconClass="fas fa-list"
+          (click)="goToRecord()"
+        >
+          {{ "PAYMENT_RECORD.SITUATION.TO_RECORD" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <fi-no-content
+    *ngIf="!loading && !situation"
+    [content]="'PAYMENT_RECORD.SITUATION.UNAVAILABLE' | translate"
+  ></fi-no-content>
+</div>

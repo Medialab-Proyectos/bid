@@ -1,0 +1,154 @@
+<ng-template #template let-anchor>
+  <span
+    [innerHTML]="
+      anchor.nativeElement.innerText | highlightSearch: highlightValue
+    "
+  ></span>
+</ng-template>
+
+<div
+  kendoTooltip
+  showOn="none"
+  [tooltipTemplate]="template"
+  (mouseover)="showTooltip($event)"
+>
+  <div class="c-ani-header-details">
+    <fi-accordion-panel [open]="true" [collapsible]="true">
+      <ng-container title
+        >{{ "TRANSACTION.ANI.TRANSACTION_DETAIL_ANT_TITLE" | translate }}
+        {{
+          transactionPrefix +
+            aniHeaderDetail?.requestAntDetails.transactionNumber
+        }}</ng-container
+      >
+      <ng-container body>
+        <div class="c-ani-header-details__container">
+          <div class="c-ani-header-details__detail">
+            <h1>{{ "TRANSACION_DETAILS.TITLE" | translate }}</h1>
+            <div class="row">
+              <div class="col-2">
+                <div class="c-ani-header-details__detail__title">
+                  {{ "TRANSACION_DETAILS.REQ_#" | translate }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{ aniHeaderDetail?.requestAntDetails.requestNumber }}
+                </div>
+              </div>
+              <div class="col-2">
+                <div>{{ "TRANSACION_DETAILS.PART_#" | translate }}</div>
+                <div class="c-ani-header-details__detail__data">
+                  {{ aniHeaderDetail?.requestAntDetails.partNumber }}
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="c-ani-header-details__detail__title">
+                  {{
+                    "TRANSACION_DETAILS.FINANCIAL_PLANNING_PERIOD" | translate
+                  }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{
+                    aniHeaderDetail?.requestAntDetails
+                      .numberDaysFinancialPlanning
+                  }}
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="c-ani-header-details__detail__title">
+                  {{
+                    "TRANSACION_DETAILS.FINANCIAL_PLANNING_PERIOD_DEAD_LINE"
+                      | translate
+                  }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{
+                    aniHeaderDetail?.requestAntDetails
+                      .financialPlanningPeriodDeadLine | dateIF
+                  }}
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="c-ani-header-details__detail__title">
+                  {{ "TRANSACION_DETAILS.TRANSACTION_#" | translate }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{
+                    transactionPrefix +
+                      aniHeaderDetail?.requestAntDetails.transactionNumber
+                  }}
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="c-ani-header-details__detail__title">
+                  {{ "TRANSACION_DETAILS.STATUS" | translate }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{
+                    aniHeaderDetail?.requestAntDetails.statusId
+                      | translateEnum: enumTransactionStatus
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="c-ani-header-details__detail">
+            <h1>{{ "TRANSACTION.REQUEST_AMOUNTS.TITLE" | translate }}</h1>
+            <div class="row">
+              <div class="col-2">
+                <div class="c-ani-header-details__detail__title">
+                  {{ "ANT_TRANSACTION.AMOUNTS.APPROVED_CURRENCY" | translate }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{ aniHeaderDetail?.requestAntAmounts.approvedCurrency }}
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="c-ani-header-details__detail__title">
+                  {{ "ANT_TRANSACTION.AMOUNTS.REQUEST_CURRENCY" | translate }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{ aniHeaderDetail?.requestAntAmounts.requestedCurrency }}
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="c-ani-header-details__detail__title">
+                  {{ "ANT_TRANSACTION.AMOUNTS.REQUEST_AMOUNT" | translate }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{
+                    aniHeaderDetail?.requestAntAmounts.requiredAmount
+                      | number: "1.2-2"
+                  }}
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="c-ani-header-details__detail__title">
+                  {{
+                    "ANT_TRANSACTION.AMOUNTS.EQUIVALENT_APPROVED_CURRENCY"
+                      | translate
+                  }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{
+                    aniHeaderDetail?.requestAntAmounts
+                      .equivalentApprovedCurrency | number: "1.2-2"
+                  }}
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="c-ani-header-details__detail__title">
+                  {{ "TRANSACION_DETAILS.REAL_VALUE_DATE" | translate }}
+                </div>
+                <div class="c-ani-header-details__detail__data">
+                  {{
+                    aniHeaderDetail?.requestAntAmounts.realValueDate | dateIF
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </fi-accordion-panel>
+  </div>
+</div>

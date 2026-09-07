@@ -1,0 +1,329 @@
+<div [class]="CLASS">
+  <fi-accordion-panel>
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      'CONTRACT.GENERAL_INFO.TITLE' | translate
+    }}</ng-container>
+    <ng-container body>
+      <div class="contract-general-information" [formGroup]="form">
+        <div class="row mb-3" *ngIf="startDateLowerThanSignatureDate()">
+          <div class="col-12 col-md-12">
+            <fi-alert
+              [type]="'warning'"
+              [title]="
+                'CONTRACT.VALIDATION_ERRORS.START_DATE_LOWER_SIGNATURE_DATE'
+                  | translate
+              "
+            >
+            </fi-alert>
+          </div>
+        </div>
+        <div class="row my-3" *ngIf="endDateLessThanStartDate()">
+          <div class="col-12 col-md-12">
+            <fi-alert
+              [type]="'warning'"
+              [title]="
+                'CONTRACT.VALIDATION_ERRORS.END_DATE_LOWER_START_DATE'
+                  | translate
+              "
+            >
+            </fi-alert>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <mat-form-field class="w-100">
+              <mat-label>
+                {{ 'CONTRACT.GENERAL_INFO.CONTRACT_NAME' | translate }}
+              </mat-label>
+              <input
+                matInput
+                formControlName="name"
+                [fiDisableControl]="baseConfig.settings.disabled"
+                id="Txb_name"
+              />
+              <mat-error *ngIf="form.controls?.name.errors?.required">{{
+                'CONTRACT.GENERAL_INFO.CONTRACT_NAME_REQUIRED' | translate
+              }}</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12">
+            <mat-form-field class="w-100">
+              <mat-label>
+                {{ 'CONTRACT.GENERAL_INFO.CONTRACT_OBJECTIVE' | translate }}
+              </mat-label>
+              <textarea
+                matInput
+                formControlName="objective"
+                [fiDisableControl]="baseConfig.settings.disabled"
+                id="Txa_objetive"
+              ></textarea>
+              <mat-error *ngIf="form.controls?.objective.errors?.required">
+                {{
+                  'CONTRACT.GENERAL_INFO.CONTRACT_OBJECTIVE_REQUIRED'
+                    | translate
+                }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-4">
+            <fi-mat-date
+              [label]="'CONTRACT.GENERAL_INFO.CONTRACT_SIGN_DATE' | translate"
+              formControlName="signatureDate"
+              outputFormat="YYYY-MM-DD"
+              [fiDisableControl]="baseConfig.settings.disabled"
+            ></fi-mat-date>
+          </div>
+          <div class="col-12 col-md-4">
+            <fi-mat-date
+              [label]="'CONTRACT.GENERAL_INFO.START_DATE' | translate"
+              formControlName="startDate"
+              outputFormat="YYYY-MM-DD"
+              [fiDisableControl]="baseConfig.settings.disabled"
+            ></fi-mat-date>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <fi-mat-date
+              [label]="'CONTRACT.GENERAL_INFO.END_DATE' | translate"
+              formControlName="endDate"
+              outputFormat="YYYY-MM-DD"
+              [fiDisableControl]="baseConfig.settings.disabled"
+            ></fi-mat-date>
+          </div>
+        </div>
+        <div
+          class="row"
+          *ngFor="let group of currencyList.controls; index as i"
+          [formGroup]="group"
+        >
+          <div class="col-12 col-md-4">
+            <mat-form-field class="w-100">
+              <mat-label>
+                {{ 'CONTRACT.GENERAL_INFO.TYPE_OF_CURRENCY' | translate }}
+              </mat-label>
+              <mat-select
+                formControlName="currency"
+                [id]="'Down_Currency_type_' + (i + 1)"
+                (selectionChange)="onCurrencyChange($event, i)"
+                [fiDisableControl]="baseConfig.settings.disabled"
+              >
+                <mat-option
+                  [value]="currency.id"
+                  *ngFor="let currency of baseConfig.data.currencies"
+                  >{{ currency.currency }}</mat-option
+                >
+              </mat-select>
+              <mat-error *ngIf="group.controls.currency.errors?.required">
+                {{
+                  'CONTRACT.GENERAL_INFO.TYPE_OF_CURRENCY_REQUIRED' | translate
+                }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-4">
+            <fi-mat-numeric
+              [label]="'CONTRACT.GENERAL_INFO.TOTAL_AMOUNT'"
+              [step]="0.1"
+              [decimals]="selectedCurrency[i]?.numberOfDecimals"
+              [requiredLiteral]="'CONTRACT.GENERAL_INFO.TOTAL_AMOUNT_REQUIRED'"
+              (valueChange)="onTotalAmountChange($event, i)"
+              formControlName="totalAmount"
+              [fiDisableControl]="baseConfig.settings.disabled"
+              min="0"
+            >
+              <ng-container validation-error>
+                <mat-error *ngIf="group.controls.totalAmount.errors?.required">
+                  {{
+                    'CONTRACT.GENERAL_INFO.TOTAL_AMOUNT_REQUIRED' | translate
+                  }}
+                </mat-error>
+              </ng-container>
+            </fi-mat-numeric>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <div class="d-flex align-items-center">
+              <div class="mr-2">
+                {{ 'CONTRACT.GENERAL_INFO.EQUIVALENT_IN_DOLLARS' | translate }}
+              </div>
+              <div [matTooltip]="'CONTRACT.ORIGIN_EXCHANGE_RATE' | translate">
+                <em class="fas fa-info-circle"></em>
+              </div>
+            </div>
+            <div class="c-equivalent-dollars">
+              <span #usdEquivalentAmount data-testid="usdEquivalentAmount">
+                {{
+                  currencyList.at(i).get('usdEquivalentAmount').value | ifNumber
+                }}
+              </span>
+              <ng-container *ngIf="i > 0 && !baseConfig.settings.disabled">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  [id]="'Btn_Remove_currency_' + i"
+                  *fiDisplayByPermissions="removeCurrencyPermission"
+                  (click)="removeCurrency(i)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div class="row actions" *ngIf="!baseConfig.settings.disabled">
+          <div class="col-12">
+            <ng-container *ngIf="currencyList.length <= 3">
+              <button
+                mat-stroked-button
+                color="primary"
+                id="Btn_Add_currency"
+                *fiDisplayByPermissions="addCurrencyPermission"
+                (click)="addCurrency()"
+              >
+                <mat-icon slot="start">add</mat-icon>
+                {{ 'CONTRACT.GENERAL_INFO.ADD_CURRENCY' | translate }}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12 col-md-4">
+            <mat-form-field class="w-100">
+              <mat-label>{{
+                'CONTRACT.GENERAL_INFO.CONTROL_NUMBER' | translate
+              }}</mat-label>
+              <input
+                matInput
+                formControlName="controlNumber"
+                [fiDisableControl]="baseConfig.settings.disabled"
+                id="Txb_Control_number"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-4">
+            <mat-form-field class="w-100">
+              <mat-label>{{
+                'CONTRACT.GENERAL_INFO.TYPE_OF_CONTRACT' | translate
+              }}</mat-label>
+              <mat-select
+                formControlName="contractType"
+                [fiDisableControl]="baseConfig.settings.disabled"
+                (selectionChange)="typeContractChange($event)"
+              >
+                <mat-option
+                  *ngFor="let contractType of baseConfig.data.contractTypesList"
+                  [value]="contractType.id"
+                  >{{ contractType.name | translate }}</mat-option
+                >
+              </mat-select>
+              <mat-error *ngIf="form.controls.contractType.errors?.required">{{
+                'CONTRACT.GENERAL_INFO.TYPE_OF_CONTRACT_REQUIRED' | translate
+              }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4" *ngIf="_contractTypeDesignation">
+            <mat-form-field class="w-100">
+              <mat-label>
+                {{ 'CONTRACT.GENERAL_INFO.TYPE_DESIGNATION' | translate }}
+              </mat-label>
+              <input
+                matInput
+                formControlName="typeDesignation"
+                [fiDisableControl]="baseConfig.settings.disabled"
+                id="Txb_Control_number"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <mat-form-field class="w-100">
+              <mat-label>
+                {{
+                  'CONTRACT.GENERAL_INFO.CONFLICT_RESOLUTION_METHOD' | translate
+                }}
+              </mat-label>
+              <mat-select
+                [fiDisableControl]="baseConfig.settings.disabled"
+                formControlName="conflictResolutionMethod"
+                id="Down_Conflict_resolution_method"
+              >
+                <mat-option
+                  *ngFor="
+                    let conflictResolution of baseConfig.data
+                      .conflictsResolutionsList
+                  "
+                  [value]="conflictResolution.id"
+                  >{{ conflictResolution.name | translate }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="form.controls.conflictResolutionMethod.errors?.required"
+                >{{
+                  'CONTRACT.GENERAL_INFO.CONFLICT_RESOLUTION_METHOD_REQUIRED'
+                    | translate
+                }}</mat-error
+              >
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <mat-form-field class="w-100">
+              <mat-label>
+                {{ 'CONTRACT.GENERAL_INFO.APPLICABLE_LAW' | translate }}
+              </mat-label>
+              <input
+                matInput
+                formControlName="applicableLaw"
+                [fiDisableControl]="baseConfig.settings.disabled"
+                id="Txb_Applicable_law"
+              />
+              <mat-error *ngIf="form.controls.applicableLaw.errors?.required">{{
+                'CONTRACT.GENERAL_INFO.APPLICABLE_LAW_REQUIRED' | translate
+              }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4 d-flex flex-column">
+            <label for="Rbn_Has_advanced_payment_yes">{{
+              'CONTRACT.GENERAL_INFO.ADVANCE_PAYMENT' | translate
+            }}</label>
+            <mat-radio-group
+              formControlName="hasAdvancedPayment"
+              [fiDisableControl]="baseConfig.settings.disabled"
+              color="primary"
+            >
+              <mat-radio-button [value]="true">{{
+                'CONTRACT.GENERAL_INFO.YES' | translate
+              }}</mat-radio-button>
+              <mat-radio-button [value]="false">{{
+                'CONTRACT.GENERAL_INFO.NO' | translate
+              }}</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="col-12 col-md-4" *ngIf="goodsVisibility">
+            <mat-form-field class="w-100">
+              <mat-label>
+                {{ 'CONTRACT.GENERAL_INFO.GOODS_SOURCE' | translate }}
+              </mat-label>
+              <mat-select formControlName="goodsSource">
+                <mat-option
+                  *ngFor="let item of baseConfig.data.goodsSourceList"
+                  [value]="item.id"
+                  >{{ item.name | translate }}</mat-option
+                >
+              </mat-select>
+              <mat-error *ngIf="form.controls.goodsSource.errors?.required">{{
+                'CONTRACT.GENERAL_INFO.GOODS_SOURCE_REQUIRED' | translate
+              }}</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

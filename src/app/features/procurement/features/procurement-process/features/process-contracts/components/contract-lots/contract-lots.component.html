@@ -1,0 +1,131 @@
+<div class="c-lots">
+  <ng-container *ngIf="showLotsSection">
+    <fi-accordion-panel>
+      <ng-container number *ngIf="number">{{ number }}</ng-container>
+      <ng-container title>{{ "CONTRACT.LOTS.TITLE" | translate }}</ng-container>
+
+      <ng-container body *ngIf="showLost">
+        <div class="lots">
+          <fi-accordion-panel
+            #lotPanel
+            mode="slim"
+            *ngFor="let group of form.controls; index as i"
+          >
+            <ng-container title>Lotes {{ i + 1 }}</ng-container>
+            <ng-container body>
+              <div class="row" [formGroup]="group">
+                <div [ngClass]="isAmendment ? 'col-12' : 'col-12 col-md-11'">
+                  <div class="row mb-1">
+                    <div class="col-12 col-md-4">
+                      <mat-form-field class="w-100">
+                        <mat-label>{{
+                          "CONTRACT.LOTS.NUMBER" | translate
+                        }}</mat-label>
+                        <input
+                          matInput
+                          formControlName="name"
+                          [fiDisableControl]="baseConfig.settings.disabled"
+                          [id]="'Txb_Lots_number_' + (i + 1)"
+                        />
+                        <mat-error
+                          *ngIf="group.controls.name.errors?.required"
+                          >{{ "BIDDER.REQUIRED" | translate }}</mat-error
+                        >
+                      </mat-form-field>
+                    </div>
+                    <div
+                      class="col-12 col-md-4"
+                      *ngIf="baseConfig.data.showUnits"
+                    >
+                      <fi-mat-numeric
+                        [label]="'CONTRACT.LOTS.UNITS'"
+                        formControlName="units"
+                        [fiDisableControl]="baseConfig.settings.disabled"
+                        [id]="'Txb_Lots_units_' + (i + 1)"
+                        [placeholder]="'0.00'"
+                        [decimals]="0"
+                        [maxlength]="18"
+                        [min]="0"
+                      ></fi-mat-numeric>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <fi-mat-numeric
+                        [label]="'CONTRACT.LOTS.AMOUNT'"
+                        formControlName="amount"
+                        [fiDisableControl]="baseConfig.settings.disabled"
+                        [min]="minAmount"
+                        [decimals]="2"
+                        [maxlength]="18"
+                        [id]="'Txb_Lots_amount_' + (i + 1)"
+                        [placeholder]="0 | ifNumber"
+                      >
+                      </fi-mat-numeric>
+                    </div>
+                  </div>
+                </div>
+                <ng-container *ngIf="!isAmendment">
+                  <div
+                    class="col-12 col-md-1"
+                    *ngIf="!baseConfig.settings.disabled"
+                  >
+                    <button
+                      mat-icon-button
+                      color="primary"
+                      type="button"
+                      [id]="'Btn_Remove_lot_' + (i + 1)"
+                      *fiDisplayByPermissions="removeLotPermission"
+                      (click)="removeLot(i)"
+                    >
+                      <mat-icon slot="start">delete</mat-icon>
+                    </button>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </fi-accordion-panel>
+          <div
+            class="row actions"
+            *ngIf="!baseConfig.settings.disabled && !isAmendment"
+          >
+            <div class="col-12">
+              <button
+                mat-stroked-button
+                color="primary"
+                type="button"
+                [id]="'Btn_Add_batch'"
+                *fiDisplayByPermissions="addLotPermission"
+                (click)="addLot()"
+              >
+                <mat-icon slot="start">add</mat-icon>
+                {{ "CONTRACT.LOTS.ADD_BATCH" | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="container-fluid wrapBox mt-3"
+            *ngIf="form.controls.length !== 0"
+          >
+            <div class="row">
+              <div class="col-6"></div>
+              <div class="col-6">
+                <div class="c-process-outputs__missing_allocation">
+                  <span>{{ "CONTRACT.LOTS.TOTAL_AMOUNT" | translate }} </span>
+                  <span> {{ totalLotsAmount | ifNumber }} USD </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="form.errors" class="pt-3 mt-3">
+            <fi-alert
+              [type]="'error'"
+              [title]="'CONTRACT.LOTS.ERROR.NOT_EQUAL_AMOUNT' | translate"
+            >
+            </fi-alert>
+          </div>
+        </div>
+      </ng-container>
+    </fi-accordion-panel>
+  </ng-container>
+</div>

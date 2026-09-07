@@ -1,0 +1,233 @@
+<fi-accordion-panel [collapsible]="false">
+  <ng-container title>
+    <b>{{ 'EX.R_CONTRACTS_BIDDER_INFORMATION_LABEL' | translate }}</b>
+  </ng-container>
+
+  <ng-container body>
+    <div class="bidder_detail-container">
+      <div class="bidder_detail-container__content" [class.blur]="isLoading">
+        <div class="first-column">
+          <div class="inputs">
+            <label> {{ 'BIDDER.NAME' | translate }} </label><br />
+            <mat-form-field class="w-100">
+              <input matInput disabled value="{{ Bidderdata?.name }}" />
+            </mat-form-field>
+          </div>
+          <ng-container *ngIf="Bidderdata?.type !== 'Individual'">
+            <div class="inputs">
+              <p>{{ 'BIDDER.LEGAL_REPRESENTATIVE' | translate }}</p>
+              <mat-form-field class="w-100">
+                <input
+                  matInput
+                  disabled
+                  value="{{ Bidderdata?.legalRepresentative }}"
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+          <div class="inputs">
+            <p>{{ 'BIDDER.ADDRESS' | translate }}</p>
+            <mat-form-field class="w-100">
+              <input
+                matInput
+                disabled
+                value="{{ Bidderdata?.location?.address }}"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="second-column">
+          <div class="inputs">
+            <p>{{ 'BIDDER.TYPE' | translate }}</p>
+            <mat-form-field class="w-100">
+              <input matInput disabled value="{{ Bidderdata?.type }}" />
+            </mat-form-field>
+          </div>
+          <ng-container *ngIf="Bidderdata?.type !== 'Individual'">
+            <div class="inputs">
+              <p>{{ 'BIDDER.ECONOMIC_SECTOR' | translate }}</p>
+              <mat-form-field class="w-100">
+                <input
+                  matInput
+                  disabled
+                  value="{{ Bidderdata?.economicSector }}"
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="inputs">
+            <p>{{ 'BIDDER.ZIP_CODE' | translate }}</p>
+            <mat-form-field class="w-100">
+              <input
+                matInput
+                disabled
+                value="{{ Bidderdata?.location?.zipCode }}"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="therd-column">
+          <div class="inputs">
+            <p>{{ 'BIDDER.NATIONALITY' | translate }}</p>
+            <mat-form-field class="w-100">
+              <input
+                matInput
+                disabled
+                value="{{ data?.bidderInfo?.nationality }}"
+              />
+            </mat-form-field>
+          </div>
+          <ng-container *ngIf="Bidderdata?.type !== 'Individual'">
+            <div class="inputs">
+              <p>{{ 'BIDDER.BENEFICIARY_OWNER' | translate }}</p>
+              <mat-form-field class="w-100">
+                <input
+                  matInput
+                  disabled
+                  value="{{ Bidderdata?.beneficiaryOwner }}"
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="inputs">
+            <p>{{ 'BIDDER.HOME_COUNTRY' | translate }}</p>
+            <mat-form-field class="w-100">
+              <input matInput disabled value="{{ Bidderdata?.location }}" />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <ng-container
+        *ngIf="
+          Bidderdata?.biddersJointVenture &&
+          Bidderdata?.biddersJointVenture.length > 0
+        "
+      >
+        <p class="title">{{ 'BIDDER.JOINT_VENTURE' | translate }}</p>
+        <div
+          *ngFor="
+            let venture of Bidderdata?.biddersJointVenture;
+            let idex = index
+          "
+          class="container-joint-venture"
+        >
+          <p>{{ 'BIDDER.BIDDER' | translate }} {{ idex + 1 }}</p>
+          <div class="container">
+            <div class="first-column">
+              <div class="inputs">
+                <label>{{ 'BIDDER.NAME' | translate }}</label
+                ><br />
+                <mat-form-field class="w-100">
+                  <input matInput disabled value="{{ venture?.name }}" />
+                </mat-form-field>
+              </div>
+              <div class="inputs">
+                <p>{{ 'BIDDER.LEGAL_REPRESENTATIVE' | translate }}</p>
+                <mat-form-field class="w-100">
+                  <input
+                    matInput
+                    disabled
+                    value="{{ venture?.legalRepresentative }}"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="inputs">
+                <p>{{ 'BIDDER.ADDRESS' | translate }}</p>
+                <mat-form-field class="w-100">
+                  <input
+                    matInput
+                    disabled
+                    value="{{
+                      venture?.location ? venture?.location.address : ''
+                    }}"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="second-column">
+              <div class="inputs">
+                <p>{{ 'BIDDER.TYPE' | translate }}</p>
+                <mat-form-field class="w-100">
+                  <input matInput disabled value="{{ venture?.type }}" />
+                </mat-form-field>
+              </div>
+              <div class="inputs">
+                <p>{{ 'BIDDER.ECONOMIC_SECTOR' | translate }}</p>
+                <mat-form-field class="w-100">
+                  <input
+                    matInput
+                    disabled
+                    value="{{ venture?.economicSector || '' }}"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="inputs">
+                <p>{{ 'BIDDER.ZIP_CODE' | translate }}</p>
+                <mat-form-field class="w-100">
+                  <input
+                    matInput
+                    disabled
+                    value="{{
+                      venture?.location ? venture?.location.zipCode : ''
+                    }}"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="therd-column">
+              <div class="inputs">
+                <p>{{ 'BIDDER.NATIONALITY' | translate }}</p>
+                <mat-form-field class="w-100">
+                  <input
+                    matInput
+                    disabled
+                    value="{{ data?.bidderInfo?.nationality }}"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="inputs">
+                <p>{{ 'BIDDER.BENEFICIARY_OWNER' | translate }}</p>
+                <mat-form-field class="w-100">
+                  <input
+                    matInput
+                    disabled
+                    value="{{ venture?.beneficiaryOwner || '' }}"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="inputs">
+                <p>{{ 'BIDDER.HOME_COUNTRY' | translate }}</p>
+                <mat-form-field class="w-100">
+                  <input
+                    matInput
+                    disabled
+                    value="{{
+                      venture?.location ? venture?.location?.country : ''
+                    }}"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div *ngIf="isLoading" class="bidder_detail-container__loading-overlay">
+      <mat-progress-spinner
+        class="bidder_detail-container__spinner"
+        [color]="color"
+        [mode]="mode"
+      >
+      </mat-progress-spinner>
+    </div>
+    <!-- </div> -->
+  </ng-container>
+</fi-accordion-panel>

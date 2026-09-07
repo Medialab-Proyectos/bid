@@ -1,0 +1,46 @@
+<div style="padding-top: 1.3rem; padding-left: 1rem">
+  <ng-container
+    *ngIf="
+      groupCode === groupCodeEnum.EOI &&
+      documentGroupConfiguration.isMandatoryPublication !==
+        docPackageGroupPublication.NOT_REQUIRED &&
+      fiduciaryProcessDocuments?.length === 0
+    "
+  >
+    <div class="d-flex align-items-center">
+      <a
+        color="primary"
+        (click)="goToRegisterEoi()"
+        class="ml-3"
+        style="cursor: pointer"
+        *fiDisplayByPermissions="canRegisterNotice"
+      >
+        {{ "UNDB.DOCUMENT_PACKAGES.REGISTER_NOTICE" | translate }}
+      </a>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="validateSPNBtn()">
+    <div class="d-flex align-items-center">
+      <a
+        color="primary"
+        (click)="openModal()"
+        class="ml-3"
+        style="cursor: pointer"
+        *fiDisplayByPermissions="canRegisterNotice"
+      >
+        {{ "UNDB.DOCUMENT_PACKAGES.REGISTER_NOTICE" | translate }}
+      </a>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="showEditEoiBtn">
+    <a
+      color="primary"
+      (click)="goToRegisterEoiAmendment()"
+      class="ml-3"
+      style="cursor: pointer"
+      *fiDisplayByPermissions="canRegisterNotice"
+    >
+      {{ "UNDB.EOI.EDIT_AMENDMENT" | translate }}
+    </a>
+  </ng-container>
+</div>

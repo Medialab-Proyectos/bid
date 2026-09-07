@@ -1,0 +1,34 @@
+<div class="c-header-feature">
+  <div class="c-header-feature__header">
+    <div class="c-header-feature__header-container">
+      <div class="c-header-feature__icon">
+        <em class="fas fa-list-alt"></em>
+      </div>
+      <div class="ml-3">
+        <div class="c-header-feature__title">
+          <span> {{ title }} </span>
+          <span *ngIf="subtitle">
+            <span>&nbsp;>&nbsp;</span>
+            <span>
+              {{ subtitle }}
+            </span>
+          </span>
+        </div>
+
+        <div class="c-header-feature__subtitle">
+          <span> {{ contract }} </span>
+          <ng-container *ngIf="needProcessId">
+            <span>&nbsp;>&nbsp;</span>
+            <span>{{ processCode }}</span>
+          </ng-container>
+          <span *ngIf="feature">
+            <span>&nbsp;>&nbsp;</span>
+            <span>
+              {{ feature }}
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

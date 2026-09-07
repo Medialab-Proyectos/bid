@@ -1,0 +1,12 @@
+<div class="form-options">
+  <span class="title">{{ data.title | translate }}</span>
+  <mat-radio-group
+    color="primary"
+    [ngModel]="selectedOption"
+    (ngModelChange)="onSelectionChange($event)"
+  >
+    <mat-radio-button *ngFor="let option of data.options" [value]="option">
+      {{ option | translate }}
+    </mat-radio-button>
+  </mat-radio-group>
+</div>

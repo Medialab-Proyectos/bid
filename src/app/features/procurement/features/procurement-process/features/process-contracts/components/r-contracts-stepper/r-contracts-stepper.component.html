@@ -1,0 +1,253 @@
+<div *ngIf="isLoading$ | async" class="spinner-container">
+  <mat-spinner></mat-spinner>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <ng-container *ngIf="formErrorCollection.length > 1">
+      <fi-error-alert-list
+        fiErrorFocus
+        [formErrorCollection]="formErrorCollection"
+      >
+      </fi-error-alert-list>
+    </ng-container>
+  </div>
+</div>
+
+<mat-stepper
+  style="min-height: calc(100vh - 31rem)"
+  *ngIf="!(isLoading$ | async)"
+  [selectedIndex]="currentStepIndex"
+  labelPosition="bottom"
+  linear="false"
+  #stepper
+  (selectionChange)="onStepChange($event)"
+>
+  <mat-step [stepControl]="contract">
+    <form [formGroup]="contract">
+      <fi-r-contracts-detail-bidder
+        [participants]="participants"
+        [form]="participantsForm"
+      ></fi-r-contracts-detail-bidder>
+      <fi-r-contracts-general-info
+        [biddingContractTypes]="biddingContractTypes"
+        [biddingContractConflictResolutionMethods]="
+          biddingContractConflictResolutionMethods
+        "
+        [countries]="countries"
+        [isGoods]="isGoods"
+        [form]="generalInfoContract"
+      ></fi-r-contracts-general-info>
+      <fi-r-contracts-execution-place
+        [form]="executionPlaceForm"
+        [countries]="countries"
+        [operationCountryCode]="countryCode"
+      ></fi-r-contracts-execution-place>
+      <fi-r-contracts-cost-distribution
+        *ngIf="dataLoaded"
+        [form]="costDistributionForm"
+        [allCurrencies$]="allCurrencies$"
+        [allProjectTasks$]="allProjectTasks$"
+        [currenciesMap]="currenciesMap"
+        [preloadedData]="costDistributionComponentData"
+        [currencyApprovalCode]="currencyApprovalCode"
+      ></fi-r-contracts-cost-distribution>
+
+      <fi-r-contracts-lots
+        [form]="lotsForm"
+        [allCurrencies$]="allCurrencies$"
+        [currenciesList]="currenciesList"
+        [showLots]="showLots"
+      ></fi-r-contracts-lots>
+      <fi-r-contracts-fees
+        [form]="feesForm"
+        [allCurrencies$]="allCurrencies$"
+        [currenciesList]="currenciesList"
+        [showFees]="showFees"
+        [isExternalAudit]="isExternalAudit"
+      ></fi-r-contracts-fees>
+
+      <fi-r-contracts-additional-info
+        [form]="additionalInfoForm"
+        [biddingContractSecurityTypes]="biddingContractSecurityTypes"
+        [biddingContractBonusPaymentFrequency]="
+          biddingContractBonusPaymentFrequency
+        "
+        [currencies]="currencies"
+        [biddingContractLiquidatedDamageTypes]="
+          biddingContractLiquidatedDamageTypes
+        "
+        [biddingContractBonusTypes]="biddingContractBonusTypes"
+        [showDamages]="showDamages"
+        [showBonus]="showBonus"
+        [showGuarantees]="showGuarantees"
+      ></fi-r-contracts-additional-info>
+      <ng-template matStepLabel>
+        {{ 'STEPPER_CONTRACT_REGISTRATION' | translate }}
+      </ng-template>
+      <div class="d-flex justify-content-between pt-5">
+        <button
+          mat-button
+          color="primary"
+          class="fi-flat-btn"
+          id="Btn_Cancel"
+          (click)="onLeave()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          {{ 'EX.R_CONTRACTS_LEAVE_BTN' | translate }}
+        </button>
+        <button
+          *ngIf="!contractId"
+          mat-raised-button
+          color="primary"
+          class="fi-flat-btn mr-3"
+          (click)="gotoStep(1)"
+        >
+          {{ 'EX.R_CONTRACTS_SAVE_CONTINUE_BTN' | translate }}
+        </button>
+        <button
+          *ngIf="contractId && hasFormChanges()"
+          mat-raised-button
+          color="primary"
+          class="fi-flat-btn mr-3"
+          (click)="updateContract()"
+        >
+          <i class="fa-regular fa-floppy-disk"></i>
+          {{ 'EX.R_CONTRACTS_UPDATE_BTN' | translate }}
+        </button>
+        <button
+          *ngIf="contractId && !hasFormChanges()"
+          mat-raised-button
+          color="primary"
+          class="fi-flat-btn mr-3"
+          (click)="gotoStep(1)"
+        >
+          {{ 'EX.R_CONTRACTS_NEXT_BTN' | translate }}
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <fi-r-contracts-payment-schedule
+      [contractId]="contractId"
+      [contractsPaymentRequests]="contractsPaymentRequests"
+      [allCurrenciesRegistered]="allCurrenciesRegistered"
+      [contractStartDate]="contractStartDate"
+      [contractEndDate]="contractEndDate"
+      [componentProducts]="componentProducts"
+      [allCurrenciesObs]="allCurrencies$"
+      [allProjectTasks$]="selectedProjectTasks$"
+      [paymentSchedule]="paymentSchedule()"
+      [contractData]="contractData"
+      (omitStep)="omitStep()"
+    ></fi-r-contracts-payment-schedule>
+    <ng-template matStepLabel>
+      {{ 'STEPPER_PAYMENT_SCHEDULE' | translate }}
+    </ng-template>
+    <div class="d-flex justify-content-between pt-5">
+      <button
+        (click)="gotoStep(0)"
+        mat-button
+        color="primary"
+        class="fi-flat-btn"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'EX.R_CONTRACTS_BACK_BTN' | translate }}
+      </button>
+      <button
+        (click)="gotoStep(2)"
+        mat-raised-button
+        color="primary"
+        class="fi-flat-btn mr-3"
+        [disabled]="!canProceedFromPaymentSchedule()"
+        [matTooltip]="
+          !canProceedFromPaymentSchedule()
+            ? ('R.CONTRACT.PAYMENT_SCHEDULE.VALIDATION_REQUIRED' | translate)
+            : ''
+        "
+      >
+        {{ 'EX.R_CONTRACTS_NEXT_BTN' | translate }}
+        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>
+      {{ 'STEPPER_SIGNED_DOCUMENT' | translate }}
+    </ng-template>
+    <fi-r-contracts-documents
+      [groupEnum]="filteredBiddingContractDocumentGroupCodes"
+      [groupsWDocuments]="contractsSvc.contractGroups()"
+      [biddingContractId]="contractId"
+    ></fi-r-contracts-documents>
+    <div class="d-flex justify-content-between pt-4">
+      <button
+        mat-button
+        color="primary"
+        class="fi-flat-btn"
+        (click)="gotoStep(1)"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'EX.R_CONTRACTS_BACK_BTN' | translate }}
+      </button>
+      <button
+        [disabled]="!contractDocumentsComponent?.canProceed()"
+        (click)="gotoStep(3)"
+        mat-raised-button
+        color="primary"
+        class="fi-flat-btn mr-3"
+      >
+        {{ 'EX.R_CONTRACTS_NEXT_BTN' | translate }}
+        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </mat-step>
+  <mat-step [editable]="!isStepDisabled(3)" [completed]="false">
+    <ng-template matStepLabel>
+      {{ 'STEPPER_CONFIRM_CONTRACT' | translate }}
+    </ng-template>
+
+    <fi-r-contracts-confirm
+      [participants]="participants"
+      [biddingContractConflictResolutionMethods]="
+        biddingContractConflictResolutionMethods
+      "
+      [biddingContractBonusPaymentFrequency]="
+        biddingContractBonusPaymentFrequency
+      "
+      [biddingContractLiquidatedDamageTypes]="
+        biddingContractLiquidatedDamageTypes
+      "
+      [biddingContractDocumentGroupCodes]="biddingContractDocumentGroupCodes"
+      [biddingContractSecurityTypes]="biddingContractSecurityTypes"
+      [biddingContractTypes]="biddingContractTypes"
+      [biddingContractBonusTypes]="biddingContractBonusTypes"
+      [allProjectTasks$]="selectedProjectTasks$"
+      [constDistributionData]="costDistributionComponentData"
+      [contractData]="contractData"
+      (editContract)="gotoStep(0)"
+    ></fi-r-contracts-confirm>
+
+    <div *ngIf="!isStepDisabled(3)">
+      <button (click)="gotoStep(2)" mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="stepper.reset()">Reset</button>
+    </div>
+  </mat-step>
+
+  <ng-template matStepperIcon="default">
+    <mat-icon>radio_button_checked</mat-icon>
+  </ng-template>
+
+  <ng-template matStepperIcon="done">
+    <mat-icon>radio_button_checked</mat-icon>
+  </ng-template>
+
+  <ng-template matStepperIcon="edit">
+    <mat-icon>radio_button_checked</mat-icon>
+  </ng-template>
+
+  <ng-template matStepperIcon="error">
+    <mat-icon>radio_button_checked</mat-icon>
+  </ng-template>
+</mat-stepper>

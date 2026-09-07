@@ -1,0 +1,36 @@
+.main-header {
+  background-color: white;
+  border-bottom: 3px solid #2e70cb;
+}
+
+.desktop-header {
+  height: 97px;
+
+  &__container {
+    height: 100%;
+  }
+
+  &__options {
+    height: 100%;
+    padding-top: 30px;
+  }
+}
+.header-container {
+  height: 100%;
+  display: flex;
+}
+
+.header-menu {
+  display: flex;
+  align-items: flex-end;
+}
+
+.header-options {
+  width: 15%;
+}
+.margin-r {
+  margin-right: 2%;
+}
+.burger-div {
+  z-index: 500;
+}

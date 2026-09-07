@@ -1,0 +1,26 @@
+.execution-place-form {
+  padding: 2rem 0rem;
+
+  .location-section {
+    margin-bottom: 25px;
+  }
+
+  .location-section:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .location-section:last-child {
+    margin-bottom: 0px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 48px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+}

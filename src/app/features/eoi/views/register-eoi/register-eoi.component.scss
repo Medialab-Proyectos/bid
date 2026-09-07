@@ -1,0 +1,53 @@
+.eoi-form {
+  .title {
+    font-size: 16px;
+  }
+
+  p {
+    text-wrap: pretty;
+    margin-block: 1.5rem;
+  }
+  .optional-field {
+    font-size: 14px;
+    background-color: #f5f5f5;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 2rem;
+
+    .tooltip-icon {
+      transform: scale(0.5);
+    }
+  }
+
+  .recipient-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .field-group {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      span {
+        width: 120px;
+      }
+
+      mat-form-field {
+        min-width: 500px;
+      }
+    }
+  }
+
+  .form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 32px;
+  }
+
+  .operation-hour-group {
+    display: flex;
+    gap: 16px;
+  }
+}

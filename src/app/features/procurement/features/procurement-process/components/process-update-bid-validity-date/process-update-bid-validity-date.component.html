@@ -1,0 +1,17 @@
+  <kendo-label
+    class="fi-kendo-label"
+    [for]="dateTimeUpdateBidValidityDate"
+    text="{{labelTitle}}"
+  ></kendo-label>
+  <kendo-datepicker
+    #dateTimeUpdateBidValidityDate
+    class="c-datepicker k-datepicker k-input k-input-md k-rounded-md k-input-solid"
+    style="width: 20rem"
+    [calendarType]="caledaryType"
+    [format]="caledaryFormat"
+    [(value)]="dateValue"
+    (valueChange)="onValueChange($event)"
+    [disabled]="disabled"
+    [min]="minDate"
+  >
+  </kendo-datepicker>

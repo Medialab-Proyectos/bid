@@ -1,0 +1,21 @@
+<div class="c-transactions-beneficiary__detail">
+  <fi-accordion-panel [open]="true" [collapsible]="true" [id]="id">
+    <ng-container title>
+      {{ sectionTitle | translate }}
+    </ng-container>
+    <ng-container body>
+      <div class="c-transactions-beneficiary__detail-container">
+        <ng-container *ngFor="let ref of sectionKeys; let i = index">
+          <div class="c-transactions-beneficiary__detail-data">
+            <p>
+              {{ sectionLiterals[i] | translate }}
+            </p>
+            <p class="data">
+              {{ detail[ref] ? detail[ref] : "&mdash;" }}
+            </p>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

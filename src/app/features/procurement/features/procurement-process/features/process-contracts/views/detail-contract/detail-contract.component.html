@@ -1,0 +1,104 @@
+<div class="c-upload-contract-information">
+  <div *ngIf="!isLoading && !isAmendmentLoading; else loader">
+    <fi-card-header [title]="'CONTRACT.DETAIL_INFORMATION' | translate">
+      <ng-container
+        *ngIf="
+          status !== statusEnum.FINISHED &&
+          status !== statusEnum.TERMINATED &&
+          status !== statusEnum.TERMINATION_UNDER_REV &&
+          !planInSync
+        "
+      >
+        <ng-container *ngIf="showAddAmentment">
+          <button
+            kendoButton
+            class="btn btn-neutral"
+            id="Btn_Add_amendment"
+            data-testid="Btn_Add_amendment"
+            *ngIf="
+              status === statusEnum.SIGNED ||
+              status === statusEnum.EXECUTION ||
+              status === statusEnum.EXECUTION_AMENDMENTS ||
+              status === statusEnum.EXPIRED
+            "
+            routerLink="../addAmendment"
+          >
+            {{ "CONTRACT.ADD_AMENDMENT" | translate }}
+          </button>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            (status === statusEnum.SIGNED ||
+              status === statusEnum.EXECUTION ||
+              status === statusEnum.EXECUTION_AMENDMENTS ||
+              status === statusEnum.EXPIRED) &&
+            !hasPendingSignatureAmendment
+          "
+        >
+          <button
+            *fiDisplayByPermissions="terminateContractButtonPermission"
+            (click)="terminateContract()"
+            kendoButton
+            class="btn btn-brand"
+            id="Btn_Terminate_contract"
+            data-testid="Btn_Terminate_contract"
+          >
+            {{ "CONTRACT.TERMINATE_CONTRACT" | translate }}
+          </button>
+        </ng-container>
+        <ng-container *ngIf="status === statusEnum.PENDING_SIGNATURE">
+          <button
+            *fiDisplayByPermissions="deleteContractButtonPermission"
+            (click)="deleteContract()"
+            kendoButton
+            class="btn btn-brand"
+            id="Btn_Delete_contract"
+            data-testid="Btn_Delete_contract"
+          >
+            {{ "CONTRACT.DELETE_CONTRACT" | translate }}
+          </button>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            status === statusEnum.EXECUTION ||
+            status === statusEnum.EXECUTION_AMENDMENTS ||
+            status === statusEnum.EXPIRED
+          "
+        >
+          <button
+            *fiDisplayByPermissions="completeContractButtonPermission"
+            kendoButton
+            class="btn btn-brand"
+            id="Btn_Complete_contract"
+            data-testid="Btn_Complete_contract"
+            (click)="completeContract()"
+          >
+            {{ "CONTRACT.COMPLETE" | translate }}
+          </button></ng-container
+        >
+      </ng-container>
+    </fi-card-header>
+    <div class="c-card-subtitle">
+      <p>{{ "CONTRACT.ID" | translate }}</p>
+      <p>{{ visualCode }}</p>
+    </div>
+    <div
+      class="contract-body"
+      *fiDisplayByPermissions="viewContractFormPermission"
+    >
+      <p class="c-upload-contract-information__form-legend">
+        {{ "CONTRACT.INSTRUCTIONS" | translate }}
+      </p>
+      <fi-contracts-form
+        [form]="form"
+        [modeEnum]="mode"
+        [statusEnum]="status"
+      ></fi-contracts-form>
+    </div>
+  </div>
+</div>
+<ng-template #loader>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

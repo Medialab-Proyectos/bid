@@ -1,0 +1,207 @@
+<ng-template #template let-anchor>
+  <span
+    [innerHTML]="
+      anchor.nativeElement.innerText | highlightSearch : highlightValue
+    "
+  ></span>
+</ng-template>
+
+<div
+  kendoTooltip
+  showOn="none"
+  [tooltipTemplate]="template"
+  (mouseover)="showTooltip($event)"
+>
+  <div class="transactions-list">
+    <div class="transactions-list__table">
+      <div class="table-transactions">
+        <kendo-grid
+          [kendoGridBinding]="gridView"
+          [sort]="gridSettings.state.sort"
+          [filter]="gridSettings.state.filter"
+          [sortable]="true"
+          [filterable]="false"
+          [resizable]="true"
+          [sortNullsLast]="true"
+          [reorderable]="true"
+          (columnReorder)="onReorder($event)"
+          (columnResize)="onResize($event)"
+          (columnVisibilityChange)="onVisibilityChange($event)"
+          (dataStateChange)="dataStateChange($event)"
+          [groupable]="true"
+          [columnMenu]="{
+            filter: true,
+            columnChooser: { expanded: true }
+          }"
+          [loading]="isFileDownloading || isPlanLoading"
+          kendoGridSelectBy="documentEzShareID"
+        >
+          <ng-template kendoGridToolbarTemplate position="top">
+            <fi-filter
+              class="d-block"
+              [minLength]="3"
+              (filterValue)="filterValue($event)"
+              [placeholder]="'DASHBOARD.ADVANCED_SEARCH' | translate"
+            ></fi-filter>
+          </ng-template>
+
+          <kendo-grid-column
+            *ngFor="let col of gridSettings.columnsConfig; let i = index"
+            [field]="col.field"
+            [title]="col.title"
+            [width]="col.width"
+            [hidden]="col.hidden"
+            [format]="col.format"
+            [filter]="col.filter"
+            [filterable]="col.filterable"
+            [columnMenu]="false"
+          >
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="
+                col.field === ApprovedPlansColumnName.documentEzShareNumber
+              "
+            >
+              <p
+                *ngIf="dataItem.document?.ezShareNumber"
+                class="table-transactions__kendo-p link has-ellipsis"
+                (click)="
+                  donwloadDocument(
+                    dataItem.document.fiduciaryProcessDocumentId,
+                    dataItem.document.name
+                  )
+                "
+                [innerHTML]="
+                  dataItem.document?.ezShareNumber
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+              <p
+                *ngIf="!dataItem.document?.ezShareNumber"
+                class="table-transactions__kendo-p"
+                [innerHTML]="'&mdash;'"
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ApprovedPlansColumnName.documentName"
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  (dataItem.document?.name
+                    ? dataItem.document?.name
+                    : '&mdash;'
+                  ) | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ApprovedPlansColumnName.version"
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.version
+                    | orderablePipe
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+              *ngIf="col.field === ApprovedPlansColumnName.statusTranslation"
+            >
+              <fi-status-label
+                [cssClass]="'c-status-label__light-blue'"
+                [text]="dataItem.statusTranslation | translate"
+              ></fi-status-label>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ApprovedPlansColumnName.approvedBy"
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.approvedBy | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="
+                col.field === ApprovedPlansColumnName.submissionDateFormated
+              "
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  (dataItem.submissionDateFormated
+                    ? dataItem.submissionDateFormated
+                    : '&mdash;'
+                  ) | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="col.field === ApprovedPlansColumnName.approvedDateFormated"
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  (dataItem.approvedDateFormated
+                    ? dataItem.approvedDateFormated
+                    : '&mdash;'
+                  ) | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              *ngIf="
+                col.field ===
+                ApprovedPlansColumnName.documentDisclosureDateFormated
+              "
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  (dataItem.document?.disclosureDateFormated
+                    ? dataItem.document?.disclosureDateFormated
+                    : '&mdash;'
+                  ) | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-messages
+            [groupPanelEmpty]="'PROCUREMENT.TABLE.DRAG_COLUMN_MSG' | translate"
+          >
+          </kendo-grid-messages>
+
+          <kendo-grid-column [width]="50"> </kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</div>

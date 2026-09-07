@@ -1,0 +1,42 @@
+<ng-container>
+  <fi-accordion-panel
+    [open]="false"
+    [collapsible]="true"
+    [id]="beneficiaryIndex + 1"
+  >
+    <ng-container title>
+      <div class="c-transactions-beneficiary__table-body">
+        <div class="column institution-name">
+          {{ beneficiary.institutionName }}
+        </div>
+        <div class="column acronym">
+          {{ beneficiary.acronym }}
+        </div>
+        <div class="column beneficiary-name">
+          {{ beneficiary.beneficiaryName }}
+        </div>
+        <div class="column account-number">
+          {{ beneficiary.accountNumber }}
+        </div>
+        <div class="column account-special-instructions">
+          {{
+            beneficiary?.details?.beneficiaryAccountData
+              ?.accountSpecialInstructions
+              ? beneficiary.details.beneficiaryAccountData
+                  .accountSpecialInstructions
+              : "&mdash;"
+          }}
+        </div>
+      </div>
+    </ng-container>
+    <ng-container body>
+      <ng-container *ngFor="let section of sections; let i = index">
+        <fi-beneficiary-detail
+          [detail]="beneficiary.details[section]"
+          [sectionKey]="section"
+          [id]="i + 1"
+        ></fi-beneficiary-detail>
+      </ng-container>
+    </ng-container>
+  </fi-accordion-panel>
+</ng-container>

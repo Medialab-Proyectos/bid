@@ -1,0 +1,98 @@
+<div
+  class="col-12 c-transactions-documents pb-3"
+  data-testid="c-transaction-documents"
+>
+  <div class="c-transaction-documents">
+    <fi-accordion-panel [open]="true" [collapsible]="false">
+      <ng-container number *ngIf="number">{{ number }}</ng-container>
+      <ng-container title>{{ title | translate }}</ng-container>
+
+      <ng-container body>
+        <div *ngIf="showAlert" class="px-4 py-3">
+          <fi-alert
+            [title]="'TRANSACTION.INVALID.MIN_DOC' | translate"
+            [closable]="false"
+          ></fi-alert>
+        </div>
+
+        <ng-container *ngIf="!isLoadingDoc; else showSpinner">
+          <div
+            class="c-transactions-amount__container"
+            *ngIf="documentGroups.length > 0; else noData"
+          >
+            <ng-container *ngIf="!showReadOnly; else completeView">
+              <div class="c-docs-list">
+                <kendo-tabstrip class="doc-package-menu">
+                  <kendo-tabstrip-tab [selected]="true">
+                    <ng-template kendoTabTitle>
+                      <span>
+                        {{
+                          "TRANSACTION.DOCUMENT.FINANCIAL_DOCUMENTS" | translate
+                        }}
+                      </span>
+                    </ng-template>
+                    <ng-template kendoTabContent>
+                      <div
+                        *ngFor="let group of documentGroups"
+                        class="doc-package-menu__doc-item"
+                      >
+                        <div class="icon-col">
+                          <em
+                            *ngIf="group.documents?.length > 0"
+                            data-testid="checkedIcon"
+                            class="fas fa-check-circle"
+                          ></em>
+                        </div>
+                        <div class="doc-package-menu__doc-item-title">
+                          {{
+                            group.documentGroupCode | translateEnum: groupEnum
+                          }}
+                        </div>
+                      </div>
+                    </ng-template>
+                  </kendo-tabstrip-tab>
+                </kendo-tabstrip>
+              </div>
+              <ng-container *ngIf="!isLoading; else showSpinner">
+                <fi-transaction-document-list
+                  [documents]="documents"
+                  [documentGroups]="documentGroups"
+                  [groupEnum]="groupEnum"
+                  [resetSelectedGroup]="resetSelectedGroup"
+                  [setSelectedGroup]="setSelectedGroup"
+                  (editDocumentEvent)="onEditDocumentEvent($event)"
+                  (deleteDocumentEvent)="onDeleteDocumentEvent($event)"
+                >
+                </fi-transaction-document-list>
+                <fi-file-selector
+                  [setAllowedTransactionExtensions]="true"
+                  (valueChange)="onSelectedFiles($event)"
+                ></fi-file-selector>
+              </ng-container>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ng-container>
+    </fi-accordion-panel>
+  </div>
+</div>
+
+<ng-template #completeView>
+  <fi-finished-docs
+    [mode]="mode"
+    [files]="documents"
+    [noDocumentsMessage]="'TRANSACTION.ATTACHMENTS.NO_DATA'"
+  ></fi-finished-docs>
+</ng-template>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>
+
+<ng-template #noData>
+  <fi-no-content
+    [content]="'TRANSACTION.DOCUMENT_GROUPS.NO_DATA' | translate"
+  ></fi-no-content>
+</ng-template>

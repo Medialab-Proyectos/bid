@@ -1,0 +1,101 @@
+.c-bidder-search.k-combobox {
+  width: 100%;
+  kendo-searchbar {
+    input {
+      border: none;
+    }
+  }
+  .k-dropdown-wrap {
+    display: flex;
+    align-items: center;
+    .k-input {
+      font-size: rem(13);
+    }
+    &::before {
+      content: "\e13e"; // search icon
+      height: 1.3em;
+      width: 1.3em;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-font-smoothing: antialiased;
+      font-size: rem(17);
+      font-family: "WebComponentsIcons", Arial, Verdana, Tahoma, sans-serif;
+      margin-left: 0.7rem;
+    }
+  }
+  .k-select {
+    display: none;
+  }
+  .bidders-list-popup {
+    box-shadow: 0px 2px 6px #00000029 !important;
+    max-height: 100%;
+    min-width: 180px;
+    .k-nodata {
+      min-height: 100px;
+      .no-results {
+        text-transform: lowercase;
+        text-transform: capitalize;
+        text-overflow: wrap;
+        text-align: left;
+        font-size: 13px;
+        padding: 5px;
+      }
+      .k-button {
+        position: relative;
+        max-width: 195px;
+        background-color: #fff;
+        max-height: 31px;
+        font-size: 12px;
+        color: #0070d2;
+        text-overflow: wrap;
+        border-radius: 0.5em;
+      }
+    }
+    .k-list {
+      border: 0;
+    }
+  }
+  .k-i-close::before {
+    content: "\e11d"; // delete-circle icon
+    font-size: rem(17);
+  }
+  &.k-focus {
+    kendo-searchbar {
+      input {
+        border: none;
+        outline: none;
+      }
+    }
+  }
+  button {
+    display: none;
+  }
+}
+
+.c-bidder-search {
+  &.empty {
+    kendo-searchbar {
+      &::before {
+        content: "\e13e"; // search icon
+        height: 1.3em;
+        width: 1.3em;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        font-size: rem(17);
+        font-family: "WebComponentsIcons", Arial, Verdana, Tahoma, sans-serif;
+        margin-left: 0.7rem;
+      }
+    }
+  }
+}
+
+.c-bidder-search {
+  border: none;
+  &--readonly {
+    & .k-dropdown-wrap::before {
+      content: "" !important;
+      height: 0 !important;
+      width: 0 !important;
+      margin-left: 0 !important;
+    }
+  }
+}

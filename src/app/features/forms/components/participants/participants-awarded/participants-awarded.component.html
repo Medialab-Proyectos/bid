@@ -1,0 +1,193 @@
+<fieldset class="c-participants" [formGroup]="form">
+  <legend class="o-fieldset__legend">
+    <span class="o-fieldset__legend-number"> {{ number }}</span>
+    {{ "FORMS.PARTICIPANTS.LIST.STATIC_TEXT5" | translate }}
+  </legend>
+
+  <div
+    class="c-participants__container"
+    formArrayName="participants"
+    *ngIf="showParticipantsAwarded; else noContent"
+  >
+    <div
+      *ngFor="let participant of participantFormArray?.controls; let i = index"
+    >
+      <div
+        *ngIf="participant.get('result')?.value === ParticipantsResult.AWARDED"
+      >
+        <fieldset [formGroupName]="i">
+          <div class="row">
+            <div class="col-4">
+              <kendo-label
+                class="fi-kendo-label"
+                [for]="awardedBidderName"
+                text="{{
+                  'FORMS.PARTICIPANTS.LIST.AWARDED_BIDDER_NAME' | translate
+                }}"
+              >
+              </kendo-label>
+              <kendo-textbox
+                #awardedBidderName
+                class="c-textbox"
+                formControlName="bidderName"
+                [id]="'Txb_awarded_bidder_name' + i"
+              ></kendo-textbox>
+            </div>
+
+            <div class="col-4">
+              <kendo-label
+                class="fi-kendo-label"
+                [for]="awardedBidderNationality"
+                text="{{
+                  'FORMS.PARTICIPANTS.LIST.AWARDED_BIDDER_NATIONALITY'
+                    | translate
+                }}"
+              >
+              </kendo-label>
+              <kendo-textbox
+                #awardedBidderNationality
+                class="c-textbox"
+                formControlName="nationality"
+                [id]="'Txb_awarded_bidder_nationality' + i"
+              ></kendo-textbox>
+            </div>
+
+            <div class="col-4">
+              <kendo-label
+                class="fi-kendo-label"
+                [for]="amount"
+                text="{{
+                  'FORMS.PARTICIPANTS.LIST.PARTICIPANT_AMOUNT' | translate
+                }}"
+              >
+              </kendo-label>
+              <kendo-numerictextbox
+                #amount
+                class="c-numerictextbox"
+                [id]="'Txb_participant_amount' + i"
+                [changeValueOnScroll]="false"
+                [spinners]="false"
+                [format]="format"
+                [decimals]="decimals"
+                [min]="0"
+                [maxlength]="18"
+                [autoCorrect]="true"
+                [placeholder]="
+                  'FORMS.PARTICIPANTS.LIST.PARTICIPANT_AMOUNT_PLACEHOLDER'
+                    | translate
+                "
+                formControlName="amount"
+              >
+              </kendo-numerictextbox>
+              <div
+                *ngIf="
+                  participant.controls.amount?.errors &&
+                  (participant.controls.amount?.dirty ||
+                    participant.controls.amount?.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "FORMS.VALIDATIONS.IS_REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-8">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                [for]="contractScope"
+                text="{{
+                  'FORMS.PARTICIPANTS.LIST.CONTRACT_SCOPE' | translate
+                }}"
+              >
+              </kendo-label>
+              <kendo-textbox
+                #contractScope
+                class="c-textbox"
+                formControlName="contractScope"
+                [placeholder]="
+                  'FORMS.PARTICIPANTS.LIST.CONTRACT_SCOPE' | translate
+                "
+                [id]="'Txb_awarded_contractScope' + i"
+              ></kendo-textbox>
+              <div
+                *ngIf="
+                  participant.controls.contractScope?.errors &&
+                  (participant.controls.contractScope?.dirty ||
+                    participant.controls.contractScope?.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "FORMS.VALIDATIONS.IS_REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <kendo-label
+                class="fi-kendo-label"
+                [for]="signatureDate"
+                text="{{
+                  'FORMS.PARTICIPANTS.LIST.CONTRACT_SIGNATURE_DATE' | translate
+                }}"
+              >
+              </kendo-label>
+              <kendo-datepicker
+                #signatureDate
+                class="c-datepicker"
+                format="dd MMM yyyy"
+                [navigation]="false"
+                [style.width]="'100%'"
+                [placeholder]="'COMMON.ENTER_DATE' | translate"
+                [id]="'Cal_Milestone_estimated_date' + i"
+                formControlName="signatureDate"
+                calendarType="classic"
+                *ngIf="!participant.controls.hasEmptyYear?.value; else noDate"
+              >
+                <kendo-datepicker-messages
+                  [today]="'COMMON.CALENDAR.TODAY' | translate"
+                  [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+                ></kendo-datepicker-messages>
+              </kendo-datepicker>
+              <div
+                *ngIf="
+                  participant.controls.signatureDate?.errors &&
+                  (participant.controls.signatureDate?.dirty ||
+                    participant.controls.signatureDate?.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "FORMS.VALIDATIONS.IS_REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="c-participants__total_score">
+          <span>{{ "FORMS.PARTICIPANTS.LIST.FINAL_SCORE" | translate }}:</span>
+          <span>{{
+            participant.get("totalScore")?.value !== null
+              ? (participant.get("totalScore")?.value | number: "1.2-2")
+              : (0 | number: "1.2-2")
+          }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</fieldset>
+
+<ng-template #noContent>
+  <fi-no-content
+    [content]="'FORMS.PARTICIPANTS.LIST.NO_PARTICIPANT' | translate"
+  ></fi-no-content>
+</ng-template>
+
+<ng-template #noDate>
+  <div class="c-participants__no-date">&mdash;</div>
+</ng-template>

@@ -1,0 +1,102 @@
+<ng-container *ngIf="showLots">
+  <fi-accordion-panel [collapsible]="false">
+    <ng-container title class="title-lots">
+      <b
+        >{{ 'CONTRACT.LOTS.TITLE' | translate }}
+        {{ 'R.CONTRACT.OPTIONAL_ONLY_IF_APPLICABLE_LABEL' | translate }}</b
+      >
+    </ng-container>
+
+    <ng-container body>
+      <fi-r-contract-error
+        *ngIf="hasLotErrors"
+        [title]="'R.CONTRACT.VALIDATION.LOTS.TITLE'"
+        [errors]="currencyErrors"
+      ></fi-r-contract-error>
+
+      <form [formGroup]="form">
+        <div formArrayName="lots" class="contracts-lots-from">
+          <div
+            *ngFor="let lots of lotsArray.controls; let i = index"
+            [formGroupName]="i"
+            class="lot-row"
+          >
+            <mat-form-field>
+              <mat-label>{{ 'CONTRACT.LOTS.NUMBER' | translate }}</mat-label>
+              <input formControlName="name" type="text" matInput />
+              <mat-error
+                *ngIf="form.get(['lots', i, 'name'])?.hasError('required')"
+              >
+                {{ 'BIDDER.REQUIRED' | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>
+                {{
+                  'EX.R_CONTRACTS.DISTRIBUTION_COSTS_CURRENCY_TYPE' | translate
+                }}
+              </mat-label>
+              <mat-select formControlName="currency" id="Down_Currency_type">
+                <mat-option
+                  *ngFor="let currency of allCurrencies$ | async"
+                  [value]="currency.currency"
+                >
+                  {{ currency.currency }}
+                </mat-option>
+              </mat-select>
+              <mat-error
+                *ngIf="form.get(['lots', i, 'currency'])?.hasError('required')"
+              >
+                {{ 'BIDDER.REQUIRED' | translate }}
+              </mat-error>
+              <mat-error
+                *ngIf="
+                  form.get(['lots', i, 'currency'])?.hasError('invalidCurrency')
+                "
+              >
+                {{ 'R.CONTRACT.VALIDATION.LOTS.INVALID_CURRENCY' | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <fi-mat-numeric
+              label="CONTRACT.LOTS.AMOUNT"
+              min="0"
+              [decimals]="2"
+              formControlName="amount"
+            />
+
+            <fi-mat-numeric
+              label="{{ 'CONTRACT.LOTS.UNITS' | translate }}"
+              min="0"
+              [decimals]="0"
+              formControlName="unit"
+            />
+
+            <button
+              (click)="removeLot(i)"
+              mat-icon-button
+              color="primary"
+              type="button"
+              class="fi-flat-btn"
+              [attr.aria-label]="'CONTRACT.LOTS.DELETE_LOT' | translate"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        class="mb-3 fi-flat-btn"
+        (click)="addLot()"
+      >
+        <mat-icon>add</mat-icon>
+        {{ 'CONTRACT.LOTS.ADD_LOT' | translate }}
+      </button>
+    </ng-container>
+  </fi-accordion-panel>
+</ng-container>

@@ -1,0 +1,11 @@
+<div style="max-width: 1080px; margin: auto" *ngIf="!loading">
+  <fi-process-draft-comments
+    [draftComments]="comments"
+    [commentVisibilitiesEnum]="commentVisibilitiesEnum"
+    [userEmail]="userEmail"
+    [commentType]="commentType"
+    [parentId]="parentId"
+    [form]="form"
+    [planStatus]="planStatus"
+  ></fi-process-draft-comments>
+</div>

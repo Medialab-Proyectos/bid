@@ -1,0 +1,66 @@
+<div class="row">
+  <div class="col-12" [ngClass]="false ? 'p-0' : null">
+    <div
+      class="qa-dashboardComponent-onGoingProjects"
+      [ngClass]="false ? null : 'card-projects'"
+    >
+      <div class="qa-dashboardComponent-onGoingProjects">
+        <div class="card-projects__title pb-3">
+          <div style="width: 200px"></div>
+        </div>
+        <ng-container *ngIf="!refreshingTable">
+          <kendo-grid
+            [data]="gridView"
+            [selectable]="true"
+            class="c-table-notifications"
+            [groupable]="false"
+            [group]="state.group"
+            [sortable]="true"
+            [sort]="state.sort"
+            [reorderable]="true"
+            [pageSize]="pageSize"
+            [skip]="skip"
+            [pageable]="true"
+            (dataStateChange)="dataStateChange($event)"
+            [kendoGridExpandDetailsBy]="expandDetailsBy"
+            [(expandedDetailKeys)]="expandedDetailKeys"
+            [loading]="loading"
+          >
+            <ng-template kendoGridNoRecordsTemplate>
+              <div>
+                {{ "PROCUREMENT.COMMENTS_TAB.ZERO_COMMENTS" | translate }}
+              </div>
+            </ng-template>
+
+            <kendo-grid-messages
+              [pagerItems]="'COMMENTS.TABLE.ITEMS' | translate"
+              [pagerOf]="'COMMENTS.TABLE.OF' | translate"
+            >
+            </kendo-grid-messages>
+            
+            <kendo-grid-column
+              field="id"
+              [title]="null"
+              [sortable]="true"
+              width="200"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                {{ dataItem.planVersion }}</ng-template
+              >
+            </kendo-grid-column>
+
+            <ng-template kendoGridDetailTemplate let-dataItem>
+              <div class="detail-template">
+                <div id="{{ 'output_' + dataItem.id }}">
+                  <fi-procurement-process-completed-comments
+                    [comments]="dataItem.commentsComplete"
+                    [commentVisibilitiesEnum]="commentVisibilitiesEnum"
+                  ></fi-procurement-process-completed-comments>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-grid>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

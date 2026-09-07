@@ -1,0 +1,35 @@
+////
+/// MESSAGE component
+///
+/// Description of the component
+///
+/// @access public
+/// @author Dfront Specialist Team
+/// @group components of repository
+/// @name .#{$wf__ns}message
+/// @since version 1.0.0
+////
+.#{$ns}message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: rem(5) rem(15);
+    background-color: color('white');
+    color: color(gray-800);
+    border-radius: 4px;
+    border: 1px solid color(gray-200);
+
+    &__content {
+        margin: 0;
+        color: inherit;
+    }
+    &__button {
+        color: inherit;
+        padding: rem(14);
+    }
+    &--warning {
+        background-color: color(warning-lighter);
+        border-color: color(warning-light);
+        color: color(warning-dark);
+    }
+}

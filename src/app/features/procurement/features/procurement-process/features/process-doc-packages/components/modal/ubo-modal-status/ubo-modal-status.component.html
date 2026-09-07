@@ -1,0 +1,34 @@
+<div class="ubo-modal-container">
+  <table class="o-fi-table-modal mt-5">
+    <thead>
+      <tr>
+        <th>
+          {{ "UBO.MODAL.EMAIL_STATUS.EMAIL" | translate }}
+        </th>
+        <th>
+          {{ "UBO.MODAL.EMAIL_STATUS.FULL_NAME" | translate }}
+        </th>
+        <th>{{ "UBO.MODAL.EMAIL_STATUS.STATUS" | translate }}</th>
+      </tr>
+    </thead>
+    <tbody class="text-left">
+      <ng-container *ngFor="let bidder of bidders">
+        <tr>
+          <td colspan="3" class="font-weight-bold pt-3 pb-3 pl-3">
+            {{ bidder.name }}
+          </td>
+        </tr>
+
+        <tr *ngFor="let email of bidder.emails; let i = index">
+          <td [ngClass]="getCellClasses(i)">
+            {{ email?.emailAddress }}
+          </td>
+          <td [ngClass]="getCellClasses(i)">{{ email?.fullName }}</td>
+          <td [ngClass]="getCellClasses(i)">
+            {{ email.recipientStatus?.name[selectedLang] }}
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

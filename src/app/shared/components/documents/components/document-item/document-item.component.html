@@ -1,0 +1,114 @@
+<div
+  class="card-fi"
+  [ngClass]="mobileView ? 'card-fi-mobile' : null"
+  *fiDisplayByPermissions="documentListPermission"
+>
+  <div role="DooocItem">
+    <div class="card-fi__header" [ngClass]="mobileView ? 'd-block' : null">
+      <div class="d-flex justify-content-between" style="width: 100%">
+        <div class="card-fi__header--data">
+          <div>
+            <em class="project-icon fas fa-file"></em>
+          </div>
+          <div class="px-3 doc-name qa-document-name">
+            <div class="card-fi__content--tag">
+              {{ "SHARED.DOCUMENT.DOCUMENT_NAME" | translate }}
+            </div>
+            <div
+              [ngClass]="
+                mobileView ? 'mobile-doc-name--content' : 'doc-name--content'
+              "
+              class="card-fi__content--detail sf700"
+            >
+              {{ data?.name }}
+            </div>
+          </div>
+          <div
+            *ngIf="!mobileView && data?.ezshareNumber"
+            class="pl-3 ezshare qa-document-ezShareId"
+          >
+            <div class="card-fi__content--tag">
+              {{ "SHARED.DOCUMENT.EZSHARE_NUMBER" | translate }}
+            </div>
+            <div class="card-fi__content--detail sf700">
+              {{ data?.ezshareNumber }}
+            </div>
+          </div>
+        </div>
+        <div class="card-fi__header--options mr-0">
+          <fi-document-state-tag
+            *ngIf="!mobileView"
+            [tag]="data?.status"
+          ></fi-document-state-tag>
+          <div class="k-card__button-container mr-0">
+            <kendo-dropdownbutton
+              class="k-card__button"
+              role="btnDropdownOptionsDoc"
+              document-select="qa-options-documents"
+              [data]="itemMenu"
+              [textField]="'actionName'"
+              [popupSettings]="{ popupClass: 'popupClass', animate: true }"
+              id="Btn_options"
+            >
+              <span class="fas fa-ellipsis-h"></span>
+              <ng-template kendoDropDownButtonItemTemplate let-dataItem>
+                <span [id]="'Btn_Option_' + dataItem.actionName">{{
+                  dataItem.actionName | translate
+                }}</span>
+              </ng-template>
+            </kendo-dropdownbutton>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div *ngIf="mobileView" class="card-fi__header--data-mobile pt-2">
+          <div
+            *ngIf="data?.ezshareNumber"
+            class="pl-3 ezshare-mobile qa-document-ezShareId"
+          >
+            <div class="card-fi__content--tag">
+              {{ "SHARED.DOCUMENT.EZSHARE_NUMBER" | translate }}
+            </div>
+            <div class="sf700">{{ data?.ezshareNumber }}</div>
+          </div>
+          <fi-document-state-tag
+            *ngIf="mobileView"
+            [tag]="data?.status"
+          ></fi-document-state-tag>
+        </div>
+      </div>
+    </div>
+    <div
+      class="card-fi__content row"
+      [ngClass]="mobileView ? 'mobile-content' : null"
+    >
+      <div class="col-5 col-md-4">
+        <div class="card-fi__content--tag">
+          {{ "SHARED.DOCUMENT.DATE" | translate }}
+        </div>
+        <div
+          class="card-fi__content--detail qa-document-publishDate"
+          [innerHTML]="data?.created | date: 'dd MMM y'"
+        ></div>
+      </div>
+      <div class="col-7 col-md-4">
+        <div class="card-fi__content--tag">
+          {{ "SHARED.DOCUMENT.UPLOADED_BY" | translate }}
+        </div>
+        <div
+          class="card-fi__content--detail qa-document-publisherName"
+          [innerHTML]="data?.createdBy"
+        ></div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card-fi__content--tag">
+          {{ "SHARED.DOCUMENT.UPDATED" | translate }}
+        </div>
+        <div
+          class="card-fi__content--detail qa-document-updateDate"
+          [innerHTML]="data?.modified | date: 'dd MMM y'"
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<mat-form-field
+  appearance="outline"
+  [class.mat-form-field-readonly]="readonly"
+  [floatLabel]="textPrefix ? 'always' : 'auto'"
+  class="w-100"
+>
+  <mat-label>
+    <span class="label-with-icon">
+      {{ label | translate }}
+      <ng-container *ngIf="icon">
+        <mat-icon
+          class="info-icon"
+          style="font-size: 25px; margin-left: 4px"
+          [matTooltip]="tooltipText"
+          matTooltipPosition="right"
+        >
+          info
+        </mat-icon>
+      </ng-container>
+    </span>
+  </mat-label>
+  <span matTextPrefix *ngIf="textPrefix">{{ textPrefix }}&nbsp;</span>
+  <input
+    matInput
+    type="text"
+    [disabled]="isDisabled"
+    [placeholder]="placeholder | translate"
+    [(ngModel)]="_displayValue"
+    (input)="onInput($event)"
+    (focus)="onFocus()"
+    (keydown.arrowup)="updateValue(step)"
+    (keydown.arrowdown)="updateValue(-step)"
+    (blur)="onBlur()"
+    [required]="isRequired"
+    [max]="max"
+    [min]="min"
+  />
+  <mat-icon *ngIf="suffix_icon" matSuffix>{{ suffix_icon }}</mat-icon>
+  <mat-error *ngIf="isInvalid && isRequired">
+    {{ requiredLiteral | translate }}
+  </mat-error>
+</mat-form-field>

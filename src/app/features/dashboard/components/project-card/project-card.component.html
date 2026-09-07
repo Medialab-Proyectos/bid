@@ -1,0 +1,102 @@
+<kendo-card
+  width="'100%'"
+  class="c-cardComponent-card sf400"
+  [ngClass]="mobileView ? 'c-cardComponent-card-mobile' : null"
+  *ngIf="data?.project"
+  (click)="
+    selectedCard(data?.project?.operationNumber, data?.project?.contract)
+  "
+>
+  <div style="padding: 0 1rem !important">
+    <kendo-card-header class="k-hbox">
+      <div class="d-flex justify-content-between" style="width: 100%">
+        <div
+          (click)="
+            selectedCard(
+              data?.project?.operationNumber,
+              data?.project?.contract
+            )
+          "
+        >
+          <div class="row">
+            <span style="font-size: 12px">
+              {{ "DASHBOARD.PROJECT_CARD.TITLE" | translate }}
+            </span>
+          </div>
+          <div class="row" style="font-size: 20px; color: #080707">
+            <span
+              class="qa-cardComponent-contract"
+              [innerHTML]="
+                data?.project?.contract | highlightSearch : data?.highlight
+              "
+            ></span>
+            <span class="c-cardComponent-card__separator">&nbsp;>&nbsp;</span>
+            <span
+              class="qa-cardComponent-opNumber"
+              [innerHTML]="
+                data?.project?.operationNumber
+                  | highlightSearch : data?.highlight
+              "
+            ></span>
+          </div>
+        </div>
+      </div>
+      <div (click)="addfavorite($event)">
+        <i
+          class="favorite-icon"
+          [ngClass]="data?.project?.favorite ? 'favorite' : 'no-favorite'"
+        ></i>
+      </div>
+    </kendo-card-header>
+    <kendo-card-body *ngIf="expanded" class="kendo-card-body">
+      <div>
+        <div class="row d-flex justify-content-between">
+          <div class="col-sm-12 col-md-4">
+            <kendo-label
+              class="body-label label-card-project"
+              [for]="role"
+              [text]="'DASHBOARD.PROJECT_CARD.EXECUTOR' | translate"
+            >
+              <div
+                class="qa-cardComponent-executor body-value sf700"
+                #role
+                [innerHTML]="
+                  data?.project?.executor | highlightSearch : data?.highlight
+                "
+              ></div>
+            </kendo-label>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <kendo-label
+              class="label-card-project body-label"
+              [for]="contractNumber"
+              [text]="'DASHBOARD.PROJECT_CARD.CONTRAC_#' | translate"
+            >
+              <div
+                class="qa-cardComponent-projectName body-value sf700"
+                #contractNumber
+                [innerHTML]="projectName | highlightSearch : data?.highlight"
+              ></div>
+            </kendo-label>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <kendo-label
+              class="label-card-project body-label"
+              [for]="contractNumber"
+              [text]="
+                'DASHBOARD.PROJECT_CARD.TOTAL_APPROVED_AMOUNT' | translate
+              "
+            >
+              <div
+                class="qa-cardComponent-approvedAmount body-value sf700"
+                #contractNumber
+              >
+                {{ data?.project?.approvedAmount | number : "1.2-2" }}
+              </div>
+            </kendo-label>
+          </div>
+        </div>
+      </div>
+    </kendo-card-body>
+  </div>
+</kendo-card>

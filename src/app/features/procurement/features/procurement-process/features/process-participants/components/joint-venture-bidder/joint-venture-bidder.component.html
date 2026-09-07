@@ -1,0 +1,74 @@
+<div class="row">
+  <div class="col-12">
+    <div class="mx-md-3">
+      <div (click)="toogleExpanded()" class="title-bidder-participant">
+        <div>
+          {{ "BIDDER.BIDDER" | translate }} {{ jointventureBidderIndex + 1 }}
+        </div>
+        <div>
+          <ng-container>
+            <em
+              class="fas"
+              [ngClass]="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"
+            ></em>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <div class="row mb-4">
+    <div class="col-12 col-md-4">
+      <div class="pl-md-3">
+        <fi-bidder-search
+          *ngIf="!isDetailMode"
+          (newBidder)="onNewBidder()"
+          (bidder)="selectionChange($event)"
+          [id]="jointventureBidderIndex + 1"
+          [searchPermission]="searchPermission"
+          [allUnfilterCountries]="allUnfilterCountries"
+        ></fi-bidder-search>
+      </div>
+    </div>
+    <div class="col-7"></div>
+    <div class="col-1" *ngIf="jointventureBidderIndex > 1">
+      <ng-container *ngIf="!isDetailMode">
+        <button
+          [id]="'Btn_DeleteJV_' + (jointventureBidderIndex + 1)"
+          kendoButton
+          iconClass="far fa-trash-alt"
+          type="button"
+          look="clear"
+          data-testid="deleteBidderButton"
+          *fiDisplayByPermissions="removeJointVenturePermission"
+          (click)="deleteJointVentureBidder(jointventureBidderIndex)"
+        ></button>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="pb-md-3" [ngClass]="expanded ? null : 'd-none'">
+    <div [formGroup]="bidderForm" *ngIf="!loading">
+      <!-- New Bidder Registration section -->
+      <div class="row pb-md-3">
+        <div class="col-12">
+          <fi-bidder-registration-form
+            [bidderForm]="participantBidderForm"
+            [isParticipant]="false"
+            [isReadOnly]="isReadOnly"
+            [typeList]="bidderTypeList"
+            [economicSectorList]="economicSectorList"
+            [requiredErrorMessage]="requiredErrorMessage | translate"
+            [id]="jointventureBidderIndex + 1"
+            [hideAditionalFields]="hideAditionalFields"
+            [countries]="countries"
+            [memberCountries]="memberCountries"
+            [allUnfilterCountries]="allUnfilterCountries"
+            (bidderType)="bidderTypeChange($event)"
+          ></fi-bidder-registration-form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

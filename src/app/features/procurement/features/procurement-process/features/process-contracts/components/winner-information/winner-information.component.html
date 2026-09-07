@@ -1,0 +1,68 @@
+<div class="c-winner-information">
+  <fi-accordion-panel>
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "CONTRACT.WINNER_INFORMATION.TITLE" | translate
+    }}</ng-container>
+
+    <ng-container body>
+      <div class="winner-information" [formGroup]="form" *ngIf="winnerList">
+        <div class="o-header-group row">
+          <div
+            class="o-header-group__item col-md-1"
+            [class.col-md-1]="baseConfig.settings.mode !== ModeEnum.READ"
+          ></div>
+          <div
+            class="o-header-group__item o-header-group__item--no-left-border col-md-4"
+          >
+            {{ "CONTRACT.WINNER_INFORMATION.NAME" | translate }}
+          </div>
+          <div class="o-header-group__item col-12 col-md-7">
+            {{ "CONTRACT.WINNER_INFORMATION.NATIONALITY" | translate }}
+          </div>
+        </div>
+        <div
+          class="row py-2"
+          *ngFor="let group of winnerList.controls; index as i"
+          [formGroup]="group"
+        >
+          <input type="hidden" formControlName="biddingProcessParticipantId" />
+          <div
+            *ngIf="baseConfig.settings.mode !== ModeEnum.READ"
+            class="col-12 col-md-1"
+          >
+            <mat-checkbox
+              formControlName="checked"
+              color="primary"
+              #checked
+              data-testid="winnerCheckbox"
+              [id]="'Chk_winner_' + (i + 1)"
+            ></mat-checkbox>
+          </div>
+          <div class="col-12 col-md-4">
+            <mat-form-field class="w-100">
+              <input matInput data-testid="winnerName" formControlName="name" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <mat-form-field>
+              <mat-select
+                data-testid="winnerNationality"
+                formControlName="nationality"
+                [id]="'Down_nationality_winners' + (i + 1)"
+              >
+                <mat-option
+                  *ngFor="let memberCountry of baseConfig.data.memberCountries"
+                  [value]="memberCountry.id"
+                >
+                  {{ memberCountry.name | translate }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

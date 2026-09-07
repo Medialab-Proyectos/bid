@@ -1,0 +1,65 @@
+<div
+  class="col files-list"
+  *ngIf="!isDowloading && !isLoading; else showSpinner"
+>
+  <div class="row files-list--header">
+    <div class="col-4">{{ "PROCESS_DOC.FILES_LIST.FILE" | translate }}</div>
+    <div class="col-6">
+      {{ "PROCESS_DOC.FILES_LIST.DOCUMENT_TYPE" | translate }}
+    </div>
+  </div>
+  <div
+    class="row files-list--item"
+    *ngFor="let doc of documents; let i = index"
+  >
+    <div class="col-4">
+      <div
+        kendoTooltip
+        [title]="doc.id ? doc.name : ''"
+        [ngClass]="doc.id ? 'files-list--item__name' : ''"
+        (click)="downloadDocument(doc)"
+      >
+        {{ doc.name }}
+      </div>
+    </div>
+    <div class="col-6">
+      <kendo-dropdownlist
+        [id]="'Down_Type_doc_' + (i + 1)"
+        [(ngModel)]="doc.groupCode"
+        [data]="transactionDocumentGroup"
+        [textField]="'documentGroupCode'"
+        [valueField]="'documentGroupCode'"
+        [valuePrimitive]="true"
+        [fiDropdownFormControl]
+        class="c-dropdown-list k-dropdown"
+        (valueChange)="onChangeDocumentType($event, doc)"
+        [itemDisabled]="itemDisabled"
+        [disabled]="doc.systemGenerated"
+      >
+        <ng-template kendoDropDownListValueTemplate let-item>
+          {{ item?.documentGroupCode | translateEnum: groupEnum }}
+        </ng-template>
+        <ng-template kendoDropDownListItemTemplate let-item>
+          {{ item?.documentGroupCode | translateEnum: groupEnum }}
+        </ng-template>
+      </kendo-dropdownlist>
+    </div>
+    <div class="col-1">
+      <button
+        [id]="'Btn_Delete_doc_' + (i + 1)"
+        kendoButton
+        iconClass="far fa-trash-alt"
+        type="button"
+        look="clear"
+        (click)="onDeleteDocument(doc)"
+        [disabled]="doc.systemGenerated"
+      ></button>
+    </div>
+  </div>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

@@ -1,0 +1,19 @@
+<div class="form-field-section optional-field">
+  <span class="sf700">
+    {{ "GPN.FORM.COMMON.OPTIONAL_FIELD.HELPER_TEXT" | translate }}
+  </span>
+
+  <span>{{ "GPN.FORM.SECTION_1.OPTIONAL_FIELD.DESCRIPTION" | translate }}</span>
+
+  <mat-form-field class="w-100">
+    <mat-label>{{
+      "GPN.FORM.SECTION_1.OPTIONAL_FIELD.LABEL" | translate
+    }}</mat-label>
+    <textarea
+      matInput
+      [value]="value"
+      (input)="onInput($event)"
+      maxlength="500"
+    ></textarea>
+  </mat-form-field>
+</div>

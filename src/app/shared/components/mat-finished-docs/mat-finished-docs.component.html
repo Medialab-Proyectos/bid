@@ -1,0 +1,34 @@
+<div class="documents-grid">
+  <!-- Header -->
+  <div class="grid-header">
+    {{ 'R.CONTRACTS.FINISHED_DOCS.HEADER.FILE' | translate }}
+  </div>
+  <div class="grid-header">
+    {{ 'R.CONTRACTS.FINISHED_DOCS.HEADER.TYPE' | translate }}
+  </div>
+  <div class="grid-header">
+    {{ 'R.CONTRACTS.FINISHED_DOCS.HEADER.DATE' | translate }}
+  </div>
+  <div class="grid-header">
+    {{ 'R.CONTRACTS.FINISHED_DOCS.HEADER.DOCUMENT_ID' | translate }}
+  </div>
+  <div class="grid-header">
+    {{ 'R.CONTRACTS.FINISHED_DOCS.HEADER.DESCRIPTION' | translate }}
+  </div>
+
+  <!-- Rows -->
+  <ng-container *ngFor="let doc of documents">
+    <div class="grid-cell">
+      <div class="file-info">
+        <i class="doc-icon"></i>
+        <button (click)="downloadFile(doc)" class="file-link">
+          {{ doc.name }}
+        </button>
+      </div>
+    </div>
+    <div class="grid-cell">{{ getGroupName(doc.groupCode) | translate }}</div>
+    <div class="grid-cell">{{ doc.created | date: 'dd MMM yyyy' }}</div>
+    <div class="grid-cell">{{ doc.ezshareNumber }}</div>
+    <div class="grid-cell">{{ doc.description }}</div>
+  </ng-container>
+</div>

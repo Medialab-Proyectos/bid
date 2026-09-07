@@ -1,0 +1,220 @@
+<div class="c-transactions px-3">
+  <fi-transactions-header [transaction]="transactionTitle">
+  </fi-transactions-header>
+
+  <div
+    class="form-container"
+    *ngIf="!isLoading && !apiLoading; else showSpinner"
+  >
+    <ng-container *fiDisplayByPermissions="displayTransactionListPermission">
+      <ng-container *fiDisabledByActions="displayTransactionListActions">
+        <fi-transaction-detail-atj
+          class="form-section"
+          number="1"
+          [detailForm]="requestDetailsForm"
+          [isEditMode]="isEditMode"
+          [transactionNumberANJ]="transactionNumberANJ"
+          [transactionNumberANT]="transactionNumberANT"
+          [transactionNumberATJ]="transactionNumberATJ"
+          [transactionStatusId]="
+            transactionStatusService.transactionStatusId | async
+          "
+          [requestNumberANT]="requestNumberANT"
+          [transactionId]="transactionId"
+          [availableNumbers]="availableNumbers"
+          [transactionType]="transactionType"
+        >
+        </fi-transaction-detail-atj>
+
+        <hr />
+
+        <div class="px-4">
+          <h3>{{ "TRANSACTION.ATJ.JUSTIFICATION" | translate }}</h3>
+        </div>
+
+        <fi-amounts-justification
+          number="2"
+          [form]="requestAmountsForm"
+          [approvedCurrency]="approvedCurrency$ | async"
+        >
+        </fi-amounts-justification>
+
+        <fi-transaction-components
+          number="3"
+          [form]="componentsForm"
+          data-testid="componentsSection"
+          class="form-section"
+          [isLoading]="isLoading"
+          [approvedCurrency]="approvedCurrency$ | async"
+          [readonly]="readonlyDistributeCofinancing"
+        >
+        </fi-transaction-components>
+
+        <hr />
+
+        <div class="px-4">
+          <h3 [innerText]="'TRANSACTION.ATJ.ADVANCEOFFUNDS' | translate"></h3>
+        </div>
+
+        <fi-amounts-disbursement
+          number="4"
+          data-testid="amounts"
+          [amountsForm]="amountsForm"
+          [isEditMode]="isEditMode"
+          [approvedCurrency]="approvedCurrency$ | async"
+        ></fi-amounts-disbursement>
+
+        <fi-transaction-beneficiary
+          data-testid="beneficiary"
+          [order]="5"
+          [isEditMode]="isEditMode"
+          [beneficiaryForm]="beneficiaryForm"
+          [beneficiaries]="beneficiaries"
+          [projectBucketId]="projectBucketId"
+          (beneficiaryEmmiter)="onBeneficiaryChange($event)"
+          [isInvalidBeneficiary]="beneficiaryForm?.errors?.invalidCurrency"
+          [showAlert]="!bankFlowIdControl.value && isEditMode && secondStep"
+          (reloadBeneficiaryEmmiter)="reloadBeneficiary()"
+        ></fi-transaction-beneficiary>
+
+        <hr *ngIf="secondStep" />
+
+        <fi-transaction-documents
+          number="6"
+          *ngIf="secondStep"
+          data-testid="documents"
+          [showReadOnly]="!isEditMode"
+          [transactionData]="{
+            id: transactionId,
+            type: transactionType,
+            status: transactionStatusService.transactionStatusId | async,
+            pendingGroupsGet: pendingGroupsGet
+          }"
+          (oneDocumentValidation)="onOneDocumentValidation($event)"
+          [showAlert]="!hasMinimumDocs && isEditMode && secondStep"
+        ></fi-transaction-documents>
+
+        <div
+          class="px-5 py-3"
+          *ngIf="
+            requestDetailsForm.controls.requestNumberJustification.errors
+              ?.invalidPartNumber
+          "
+        >
+          <fi-alert
+            type="warning"
+            [title]="'TRANSACTION.INVALID.PART_REQUEST_NUMBERS' | translate"
+            [closable]="false"
+            [transactionNumbers]="[
+              requestDetailsForm.controls.requestNumberJustification.value,
+              requestDetailsForm.controls.partNumberJustification.value
+            ]"
+          ></fi-alert>
+        </div>
+        <div
+          class="px-5 py-3"
+          *ngIf="
+            requestDetailsForm.controls.requestNumberAdvanceOfFunds.errors
+              ?.invalidPartNumber
+          "
+        >
+          <fi-alert
+            type="warning"
+            [title]="'TRANSACTION.INVALID.PART_REQUEST_NUMBERS' | translate"
+            [closable]="false"
+            [transactionNumbers]="[
+              requestDetailsForm.controls.requestNumberAdvanceOfFunds.value,
+              requestDetailsForm.controls.partNumberAdvanceOfFunds.value
+            ]"
+          ></fi-alert>
+        </div>
+        <div
+          class="px-5 py-3"
+          *ngIf="
+            requestDetailsForm.controls.requestNumberJustification?.errors
+              ?.anjAndAtjEqualsNumbers
+          "
+        >
+          <fi-alert
+            type="warning"
+            [title]="'TRANSACTION.INVALID.DUPLICATED_ANJ_ATJ' | translate"
+            [closable]="false"
+          ></fi-alert>
+        </div>
+
+        <div
+          class="o-form-actions c-transactions-beneficiary__footer"
+          data-testid="form-actions"
+        >
+          <ng-container *ngIf="!isEditMode">
+            <button
+              kendoButton
+              class="btn btn-online-brand"
+              (click)="cancel()"
+              id="Btn_Return"
+            >
+              {{ "TRANSACTION.RETURN" | translate }}
+            </button>
+          </ng-container>
+          <ng-container *ngIf="isEditMode">
+            <button
+              kendoButton
+              class="btn btn-base"
+              (click)="cancel()"
+              id="Btn_Cancel"
+            >
+              {{ "TRANSACTION.ANJ.CANCEL" | translate }}
+            </button>
+
+            <button
+              *ngIf="!secondStep"
+              kendoButton
+              class="btn btn-brand"
+              (click)="submitSave()"
+              id="Btn_Next"
+              [disabled]="formGroup.invalid || partNumberLoading"
+              [icon]="partNumberLoading && 'loading'"
+            >
+              {{ "TRANSACTION.NEXT" | translate }}
+            </button>
+
+            <ng-container *ngIf="secondStep">
+              <button
+                kendoButton
+                class="btn btn-online-brand"
+                (click)="submitSave(true)"
+                [disabled]="formGroup.invalid || partNumberLoading"
+                id="Btn_Save_transaction"
+                [icon]="partNumberLoading && 'loading'"
+              >
+                {{ "TRANSACTION.ANJ.SAVE" | translate }}
+              </button>
+              <button
+                kendoButton
+                [disabled]="
+                  formGroup.invalid ||
+                  !hasMinimumDocs ||
+                  workFlowLoading ||
+                  partNumberLoading ||
+                  !bankFlowIdControl.value
+                "
+                (click)="submitSave(false, true)"
+                class="btn btn-brand"
+                id="Btn_Request_transaction"
+                [icon]="partNumberLoading && 'loading'"
+              >
+                {{ "TRANSACTION.ANJ.SEND_REQUEST" | translate }}
+              </button>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

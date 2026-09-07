@@ -1,0 +1,62 @@
+.files-list {
+  &--header {
+    @extend .sf700;
+    font-size: rem(13);
+    background-color: #fafaf9;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #c9c7c5;
+    :last-child {
+      &::before {
+        content: "";
+      }
+    }
+    :nth-child(1),
+    :nth-child(2),
+    :nth-child(3),
+    :nth-child(4),
+    :nth-child(5),
+    :nth-child(6),
+    :nth-child(7) {
+      &::before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 1px;
+        background: #c9c7c5;
+        right: 0;
+        height: calc(100% + 8px);
+        top: -4px;
+      }
+    }
+    .col-1 {
+      div {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+  &--item {
+    align-items: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-of-type {
+      border-bottom: 0;
+    }
+    &__name {
+      color: #0070d2;
+      cursor: pointer;
+      @include truncate();
+    }
+    .col-1 {
+      div {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}

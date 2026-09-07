@@ -1,0 +1,43 @@
+.fi-error-alert {
+  display: block;
+  background: #fff0f0;
+  border-left: 4px solid #f44336;
+  color: rgba(0, 0, 0, 0.87);
+  padding: 0;
+  margin: 0.5rem 0;
+  box-shadow: none;
+
+  &__content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  &__icon {
+    font-size: 20px;
+    margin-top: 2px;
+    color: #f44336;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.25rem;
+  }
+
+  &__title {
+    font-weight: 600;
+    margin-bottom: 0.125rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 0.5rem;
+  }
+
+  &__message {
+    font-weight: 500;
+    color: #4a4a4a;
+    font-size: 1rem;
+  }
+}

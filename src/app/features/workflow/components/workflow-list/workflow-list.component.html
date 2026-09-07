@@ -1,0 +1,302 @@
+<div class="transactions-list c-workflow-list">
+  <div class="transactions-list__table">
+    <div class="table-transactions">
+      <ng-container>
+        <kendo-grid
+          [kendoGridBinding]="gridView | async"
+          kendoGridSelectBy="step"
+          [resizable]="true"
+          [height]="500"
+          (dataStateChange)="onDateStateChange($event)"
+          (edit)="onEditHandler($event)"
+          (cancel)="onCancelHandler($event)"
+          (save)="onSaveHandler($event)"
+          (remove)="onRemoveHandler($event)"
+          (add)="onAddHandler()"
+          class="table-transactions__kendo"
+          [loading]="isLoading"
+        >
+          <ng-template kendoGridToolbarTemplate position="top"> </ng-template>
+
+          <ng-template kendoGridLoadingTemplate>
+            <fi-loader class="workflow-loader"></fi-loader>
+          </ng-template>
+
+          <ng-template kendoGridNoRecordsTemplate>
+            <div>
+              <p
+                [innerText]="
+                  'TRANSACTION.WORKFLOWCONFIGURATION.TABLE.NORECORDS'
+                    | translate
+                "
+              ></p>
+            </div>
+          </ng-template>
+
+          <kendo-grid-column
+            field="step"
+            title="{{
+              'TRANSACTION.WORKFLOWCONFIGURATION.TABLE.HEAD.ACTION' | translate
+            }}"
+            class=""
+            [columnMenu]="false"
+            [width]="150"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{
+                dataItem.step
+                  | translateEnum : enum.onlineDisburmentWorkflowSteps
+              }}
+            </ng-template>
+
+            <ng-template
+              kendoGridEditTemplate
+              let-dataItem="dataItem"
+              let-column="column"
+              let-formGroup="formGroup"
+            >
+              <kendo-dropdownlist
+                class="c-dropdown-list k-dropdown k-widget"
+                id="DDL_actionlist_wfc"
+                [data]="actionList"
+                textField="name"
+                valueField="id"
+                [valuePrimitive]="true"
+                [ngClass]="disableIfNotWorkflowActive ? 'force-disabled' : ''"
+                [fiDropdownFormControl]
+                [formControl]="formGroup.get('step')"
+              >
+                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                  {{ dataItem?.name | translate }}
+                </ng-template>
+                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                  {{ dataItem?.name | translate }}
+                </ng-template>
+              </kendo-dropdownlist>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="institutionCode"
+            title="{{
+              'TRANSACTION.WORKFLOWCONFIGURATION.TABLE.HEAD.INSTITUTION'
+                | translate
+            }}"
+            class=""
+            [columnMenu]="false"
+            [width]="150"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.institutionCode }}
+            </ng-template>
+
+            <ng-template
+              kendoGridEditTemplate
+              let-dataItem="dataItem"
+              let-column="column"
+              let-formGroup="formGroup"
+            >
+              <kendo-dropdownlist
+                class="c-dropdown-list k-dropdown k-widget"
+                id="DDL_institutionlist_wfc"
+                [data]="institutionList"
+                textField="institutionCode"
+                valueField="institutionCode"
+                [valuePrimitive]="true"
+                [formControl]="formGroup.get('institutionCode')"
+                (valueChange)="onSelectInstitution($event)"
+              ></kendo-dropdownlist>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="assignedUsers"
+            title="{{
+              'TRANSACTION.WORKFLOWCONFIGURATION.TABLE.HEAD.ASSIGNEDUSERS'
+                | translate
+            }}"
+            class=""
+            [columnMenu]="false"
+            [width]="130"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <span *ngFor="let item of dataItem.assignedUsers; let i = index">
+                <div class="nowrap">
+                  <span>{{ item.email }}</span>
+                  <span *ngIf="dataItem.assignedUsers.length - 1 > i">, </span>
+                </div>
+              </span>
+            </ng-template>
+
+            <ng-template kendoGridEditTemplate>
+              <kendo-multiselect
+                #multiselect
+                class="k-multiselect"
+                [filterable]="true"
+                id="MTS_assignedusers_wfc"
+                [data]="assignedUsers"
+                textField="email"
+                valueField="email"
+                [formControl]="formGroup.get('assignedUsers')"
+                (valueChange)="valueChange($event)"
+                class=""
+              >
+                <ng-template
+                  *ngIf="isUsersLoading"
+                  kendoAutoCompleteNoDataTemplate
+                >
+                  <fi-loader></fi-loader>
+                </ng-template>
+              </kendo-multiselect>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="taskDescription"
+            title="{{
+              'TRANSACTION.WORKFLOWCONFIGURATION.TABLE.HEAD.TASKDESCRIPTION'
+                | translate
+            }}"
+            class=""
+            [columnMenu]="false"
+            [width]="175"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <p>{{ dataItem.taskDescription }}</p>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="lastUpdate"
+            title="{{
+              'TRANSACTION.WORKFLOWCONFIGURATION.TABLE.HEAD.LASTUPDATE'
+                | translate
+            }}"
+            class=""
+            [columnMenu]="false"
+            [width]="165"
+          >
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              {{ dataItem.lastUpdate | dateIF }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="lastUpdateBy"
+            title="{{
+              'TRANSACTION.WORKFLOWCONFIGURATION.TABLE.HEAD.LASTUPDATEBY'
+                | translate
+            }}"
+            class=""
+            [columnMenu]="false"
+            [width]="165"
+          >
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              {{ dataItem.lastUpdateBy }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column [columnMenu]="true" [width]="100">
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              <ng-container *fiDisplayByPermissions="canEdit">
+                <fi-dropdownbutton
+                  [disabled]="disableButtons"
+                  [itemOptions]="
+                    handleMenuOptions(dataItem, disableIfNotWorkflowActive)
+                  "
+                  (selectedOption)="onOpenMenu($event, dataItem, rowIndex)"
+                ></fi-dropdownbutton>
+              </ng-container>
+            </ng-template>
+            <ng-template
+              kendoGridEditTemplate
+              let-dataItem="dataItem"
+              let-column="column"
+              let-formGroup="formGroup"
+              let-rowIndex="rowIndex"
+            >
+              <div>
+                <button
+                  id="Btn_save_step_wfc"
+                  [disabled]="formGroup?.invalid"
+                  kendoGridSaveCommand
+                  icon="check"
+                  class="btn mr-3"
+                  (click)="onSave(rowIndex); disableButtons = false"
+                ></button>
+                <button
+                  id="Btn_cancel_step_wfc"
+                  kendoGridCancelCommand
+                  icon="cancel"
+                  class="btn"
+                  (click)="disableButtons = false"
+                ></button>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div class="row pt-3">
+  <div class="col-md-3">
+    <ng-container *ngIf="!hideCreateStepsButton">
+      <ng-container *fiDisplayByPermissions="canEdit">
+        <button
+          kendoButton
+          id="Btn_addstep_wfc"
+          icon="plus"
+          class="btn btn-brand"
+          [disabled]="
+            isLoading ||
+            disableButtons ||
+            disableIfNotWorkflowActive ||
+            isFinalAuthorize
+          "
+          (click)="onAddHandler(); onEditForm = false"
+        >
+          {{ "TRANSACTION.WORKFLOWCONFIGURATION.BTN.ADDSTEP" | translate }}
+        </button>
+      </ng-container>
+    </ng-container>
+  </div>
+  <div class="d-flex justify-content-end col-md-9">
+    <ng-container *fiDisplayByPermissions="canEdit">
+      <button
+        kendoButton
+        id="Btn_cancel_wfc"
+        class="btn btn-cancel mr-1"
+        (click)="onCancelWorkflow()"
+        [disabled]="isLoading || disableButtons"
+      >
+        {{ "TRANSACTION.WORKFLOWCONFIGURATION.BTN.CANCEL" | translate }}
+      </button>
+      <button
+        kendoButton
+        id="Btn_save_wfc"
+        class="btn btn-brand ml-3"
+        (click)="onSaveWorkflow()"
+        [disabled]="
+          isLoading || disableButtons || disableButtonSave || errorToast
+        "
+        [icon]="isLoading && 'loading'"
+      >
+        {{ "TRANSACTION.WORKFLOWCONFIGURATION.BTN.SAVE" | translate }}
+      </button>
+    </ng-container>
+  </div>
+</div>

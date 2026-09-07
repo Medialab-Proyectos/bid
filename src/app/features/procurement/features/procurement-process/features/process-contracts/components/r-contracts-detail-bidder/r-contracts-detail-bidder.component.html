@@ -1,0 +1,83 @@
+<fi-accordion-panel [collapsible]="false">
+  <ng-container title>
+    <b>{{ 'EX.R_CONTRACTS_BIDDER_INFORMATION_LABEL' | translate }}</b>
+  </ng-container>
+
+  <ng-container body>
+    <div class="radditional-info">
+      <div class="row">
+        <div class="col-12">
+          <ng-container *ngIf="hasError">
+            <fi-error-alert
+              fiErrorFocus
+              [formErrorCollection]="formErrorCollection"
+              [description]="
+                'R.CONTRACT.VALIDATION_ERRORS.BIDDER_REQUIRED' | translate
+              "
+            >
+            </fi-error-alert>
+          </ng-container>
+        </div>
+      </div>
+      <ng-container *ngIf="hasParticipants()">
+        <div class="o-header-group row">
+          <div class="o-header-group__item">
+            <span>{{
+              'EX.R_CONTRACTS_NAME_SUCCESSFUL_BIDDER__LABEL' | translate
+            }}</span>
+          </div>
+          <div class="o-header-group__item">
+            {{ 'EX.R_CONTRACTS_BIDDER_NATIONALITY_LABEL' | translate }}
+          </div>
+          <div class="o-header-group__item">
+            {{ 'EX.R_CONTRACTS_BIDDER_TYPE_LABEL' | translate }}
+          </div>
+        </div>
+
+        <div *ngIf="selectedBidderControl() as control">
+          <mat-radio-group [formControl]="control">
+            <div
+              class="bidderRow w-100"
+              *ngFor="let bidder of participantsSignal()"
+            >
+              <div class="bidder_items__row">
+                <div class="bidderRow__items">
+                  <mat-radio-button
+                    color="primary"
+                    [value]="bidder.biddingProcessParticipantId"
+                  ></mat-radio-button>
+                  <mat-form-field class="w-100">
+                    <input matInput disabled [value]="bidder.name" />
+                  </mat-form-field>
+                </div>
+
+                <div class="bidderRow__items">
+                  <mat-form-field class="w-100">
+                    <input matInput disabled [value]="bidder.nationality" />
+                  </mat-form-field>
+                </div>
+
+                <div class="bidderRow__items">
+                  <mat-form-field class="w-100">
+                    <input matInput disabled [value]="bidder.type" />
+                  </mat-form-field>
+                </div>
+
+                <div class="bidderRow__btn">
+                  <button
+                    type="button"
+                    (click)="openDetails(bidder)"
+                    mat-icon-button
+                    [attr.aria-label]="'Ver detalles de ' + bidder.name"
+                  >
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </mat-radio-group>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</fi-accordion-panel>

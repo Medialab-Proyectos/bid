@@ -1,0 +1,30 @@
+<div class="optional-field">
+  <span *ngIf="title !== ''" class="sf700">
+    {{ title | translate }}
+  </span>
+  <div class="d-flex align-items-center">
+    <span *ngIf="subtitle !== ''">
+      {{ subtitle | translate }}
+    </span>
+    <mat-icon
+      *ngIf="tooltip !== ''"
+      class="tooltip-icon"
+      [matTooltip]="tooltip | translate"
+      fontIcon="help"
+      >help</mat-icon
+    >
+  </div>
+  <mat-form-field class="w-100 mt-2">
+    <mat-label *ngIf="label !== ''">{{ label | translate }}</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="value"
+      [attr.maxlength]="maxlength"
+      (input)="onInputChange($event)"
+      (blur)="onTouched()"
+    ></textarea>
+    <mat-hint *ngIf="ngControl && ngControl.control" align="end">
+      {{ this.ngControl?.control?.value?.length || 0 }}/{{ maxlength }}
+    </mat-hint>
+  </mat-form-field>
+</div>

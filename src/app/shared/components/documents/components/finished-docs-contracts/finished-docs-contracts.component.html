@@ -1,0 +1,61 @@
+<ng-container *ngIf="_files?.length; else noData">
+  <div class="col files-list" *ngIf="!isDowloading; else showSpinner">
+    <div class="row sf700 files-list--header">
+      <div class="col-3">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.FILES" | translate }}
+      </div>
+      <div class="col-3">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.TYPE" | translate }}
+      </div>
+      <div class="col-3">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.ID" | translate }}
+      </div>
+      <div class="col-3">
+        {{ "SHARED.DOCUMENT.DOCUMENT_FINISHED.DESCRIPTION" | translate }}
+      </div>
+    </div>
+
+    <div
+      class="row finished-doc--item"
+      *ngFor="let item of _files; let i = index"
+    >
+      <div class="col-3">
+        <div class="finished-doc__name">
+          <em class="fas fa-file"></em>
+          <a
+            id="{{ 'Lnk_FiduciaryProcessFile_' + (i + 1) }}"
+            href="javascript:void(0);"
+            (click)="donwloadDocument(item)"
+          >
+            {{ item.name }}</a
+          >
+        </div>
+      </div>
+      <div class="col-3">
+        <div>
+          {{ item?.groupCode | translateEnum : enumType }}
+        </div>
+      </div>
+      <div class="col-3">
+        <div>
+          {{ item.ezshareNumber || "&mdash;" }}
+        </div>
+      </div>
+      <div class="col-3">
+        <div>
+          {{ item.description }}
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #noData>
+  <fi-no-content [content]="noDocumentsMessage | translate"></fi-no-content>
+</ng-template>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

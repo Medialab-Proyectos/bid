@@ -1,0 +1,27 @@
+////
+/// z-index trump
+///
+/// This is the z-index triumphs styles
+////
+@if $include__trump--z-index {
+    @for $i from $ns-trumps-z-index-init through $ns-trumps-z-index-end {
+        $value: $i * $ns-trumps-z-index-steps;
+        /// z-index trump
+        /// @access public
+        /// @author Dfront Specialist Team
+        /// @group trumps
+        /// @name .t-z-index-#{$value}
+        /// @see ns-trumps-z-index-init
+        /// @see ns-trumps-z-index-steps
+        /// @see ns-trumps-z-index-end
+        /// @since version 1.0.0
+
+        .t-z-index-#{'' + $value} {
+            z-index: #{'' + $value} !important;
+        }
+
+        /*------------------------------------
+     # END TRUMP z-index
+    ------------------------------------*/
+    }
+}

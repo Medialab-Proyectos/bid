@@ -1,0 +1,157 @@
+<div class="c-documents sf400">
+  <div
+    class="document-card"
+    [ngClass]="mobileView && docs.length > 0 ? 'mobile_padding' : null"
+  >
+    <fi-alert
+      *ngIf="btnBusiness?.literal?.toLowerCase()?.includes(generateSearchText)"
+      type="info"
+      title="
+        {{ 'PROCESS_DOC.DOCUMENT_TAB.STICKY_1' | translate }}
+        {{ btnBusiness.literal | translate }}
+        {{ 'PROCESS_DOC.DOCUMENT_TAB.STICKY_2' | translate }}  
+      "
+      [closable]="true"
+      [customClass]="'mb-3'"
+    ></fi-alert>
+
+    <form [formGroup]="docForm" novalidate>
+      <div *ngIf="!loading && !isEnumLoading; else showSpinner">
+        <fi-document-item
+          data-testId="doc-item"
+          *ngFor="let doc of docs"
+          [data]="doc"
+          [permissions]="permissions"
+          (previewDocEmitter)="previewDoc($event)"
+          (downloadDocEmitter)="downloadDoc($event)"
+          (deleteDocEmitter)="deleteDoc($event)"
+          [documentListPermission]="documentListPermission"
+        ></fi-document-item>
+        <div
+          [ngClass]="
+            replacingDoc || (!docForm.valid && docs.length <= 0)
+              ? 'displayBlock'
+              : 'hideBlock'
+          "
+          *fiDisplayByPermissions="uploadDocumentPermission"
+        >
+          <div
+            kendoTooltip
+            [title]="labelUploadFilesTooltip | translate"
+            class="o-fieldset__legend-icon"
+            *ngIf="showGPNTooltip"
+          >
+            <ng-content *ngTemplateOutlet="uploadDocument"> </ng-content>
+          </div>
+          <div *ngIf="!showGPNTooltip">
+            <ng-content *ngTemplateOutlet="uploadDocument"> </ng-content>
+          </div>
+
+          <ng-template #uploadDocument>
+            <div
+              kendoTooltip
+              [title]="testGPNTooltip | translate"
+              class="o-fieldset__legend-icon"
+            >
+              <kendo-fileselect
+                formControlName="files"
+                (select)="onValueChange($event)"
+                class="k-upload--document qa-uploadZone"
+                id="File_Upload_zone"
+                showFileList
+                required
+                role="uploadZone"
+                style="
+              --before-content: '{{ labelUploadDoc }}';
+              --button-upload-content: '\f093  {{ labelUploadFiles }}';
+              --button-replace-content: '\f0c5 {{ labelGenerateDoc }}'
+              "
+                [multiple]="multipleDocs"
+                [ngClass]="mobileView ? 'mobile' : null"
+              >
+              </kendo-fileselect>
+            </div>
+          </ng-template>
+
+          <div *ngIf="invalidDocument" class="pb-3 qa-incorrect-format">
+            <fi-alert
+              [title]="errorMessage.title"
+              [subtitle]="errorMessage.subtitle"
+              [type]="errorMessage.type"
+              [closable]="false"
+            ></fi-alert>
+          </div>
+        </div>
+        <ng-container *ngIf="!noObjection; else showNoObjection">
+          <div
+            role="btnOptionsDoc"
+            class="document-card__footer"
+            [ngClass]="mobileView ? 'document-card__footer--mobile' : null"
+          >
+            <button
+              *ngIf="btnBusiness"
+              id="{{ btnBusiness.id }}"
+              type="button"
+              kendoButton
+              class="btn btn-brand btn-generate-gpn btn-gpn-margin"
+              [ngClass]="btnBusiness.class !== '' ? btnBusiness.class : ''"
+              (click)="routerDocumentGPN(btnBusiness)"
+            >
+              {{ btnBusiness.literal | translate }}
+            </button>
+
+            <div *fiDisplayByPermissions="requestPublicationButtonPermission">
+              <button
+                *ngIf="
+                  docState === rejectedState ||
+                  docState === draftState ||
+                  docState === undisclosedState ||
+                  docState === errorEzshareUpload ||
+                  docState === ReturnWithComment
+                "
+                kendobutton
+                class="btn btn-brand qa-btn-publication"
+                id="Btn_Request_publicacion"
+                role="requestPublicationBtn"
+                [disabled]="!docForm.valid"
+                (click)="publishDoc()"
+              >
+                {{ "SHARED.DOCUMENT.REQUEST_PUBLICATION" | translate }}
+              </button>
+              <button
+                *ngIf="agaDocState === rejectedState"
+                kendobutton
+                class="btn btn-brand"
+                id="Btn_Request_replace"
+                [disabled]="!docForm.valid"
+                (click)="replaceRejectedDoc()"
+              >
+                <em class="fal fa-file-upload qa-btn-replace">
+                  <span data-testId="requestReplaceBtn">{{
+                    "SHARED.DOCUMENT.REPLACE_DOCUMENT" | translate
+                  }}</span>
+                </em>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #showNoObjection>
+          <button
+            kendoButton
+            class="btn btn-brand d-block ml-auto"
+            id="Btn_Request_no_objection"
+          >
+            {{ "SHARED.DOCUMENT.REQUEST_NO_OBJECTION" | translate }}
+          </button>
+        </ng-template>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

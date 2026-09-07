@@ -1,0 +1,51 @@
+<div class="c-amendment-date-update">
+  <fi-accordion-panel>
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{ "AMENDMENT.DATE_UPDATE" | translate }}</ng-container>
+
+    <ng-container body>
+      <div class="amendment-container" [formGroup]="form">
+        <div class="row" *ngIf="showAlert && displaySignatureWarning">
+          <div class="col-12 col-md-12">
+            <fi-alert
+              [type]="'warning'"
+              [title]="
+                'CONTRACT.VALIDATION_ERRORS.START_DATE_LOWER_SIGNATURE_DATE'
+                  | translate
+              "
+            >
+            </fi-alert>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-4">
+            <fi-mat-date
+              [minDate]="null"
+              data-testid="signatureDate"
+              [label]="'AMENDMENT.SIGNATURE_DATE'"
+              formControlName="signatureDate"
+            ></fi-mat-date>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <fi-mat-date
+              [minDate]="null"
+              data-testid="startDate"
+              [label]="'AMENDMENT.START_DATE'"
+              formControlName="startDate"
+            ></fi-mat-date>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <fi-mat-date
+              [minDate]="null"
+              data-testid="endDate"
+              [label]="'AMENDMENT.END_DATE'"
+              formControlName="endDate"
+            ></fi-mat-date>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

@@ -1,0 +1,125 @@
+<fi-accordion-panel [collapsible]="false">
+  <ng-container title class="title-execution-place">
+    <b>{{ 'EX.R_CONTRACTS_EXECUTION_PLACE_LABEL' | translate }}</b>
+  </ng-container>
+
+  <ng-container body>
+    <form [formGroup]="form" class="execution-place-form">
+      <div formArrayName="locations">
+        <div
+          *ngFor="
+            let location of form.get('locations')?.controls;
+            let i = index
+          "
+          [formGroupName]="i"
+          class="location-section"
+        >
+          <ng-container>
+            <div class="form-row">
+              <div class="address-field">
+                <mat-form-field class="w-100">
+                  <mat-label>
+                    {{ 'EX.R_CONTRACTS_ADDRESS_LABEL' | translate }}
+                  </mat-label>
+                  <input
+                    matInput
+                    [maxlength]="EXECUTION_PLACE_ADRRESS_MAX_LENGTH"
+                    formControlName="address"
+                    placeholder="{{
+                      'EX.R_CONTRACTS_ADDRESS_LABEL' | translate
+                    }}"
+                  />
+                  <mat-error
+                    *ngIf="location.get('address')?.hasError('required')"
+                  >
+                    {{ 'EX.R_CONTRACTS_REQUIRED_FIELD_ERROR' | translate }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="zip-field">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>
+                    {{ 'EX.R_CONTRACTS_POSTAL_CODE_LABEL' | translate }}
+                  </mat-label>
+                  <input
+                    matInput
+                    formControlName="zipCode"
+                    [maxlength]="EXECUTION_PLACE_POSTAL_CODE_MAX_LENGTH"
+                    placeholder="{{
+                      'EX.R_CONTRACTS_POSTAL_CODE_LABEL' | translate
+                    }}"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="country-field">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>
+                    {{ 'EX.R_CONTRACTS_COUNTRY_LABEL' | translate }}
+                  </mat-label>
+                  <mat-select formControlName="country">
+                    <mat-option
+                      *ngFor="let c of sortedCountries"
+                      [value]="getCountryCode(c.code)"
+                    >
+                      {{ c.translatedName | translate | titlecase }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="location.get('country')?.hasError('required')"
+                  >
+                    {{ 'EX.R_CONTRACTS_REQUIRED_FIELD_ERROR' | translate }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="locality-field">
+                <mat-form-field class="w-100">
+                  <mat-label>
+                    {{
+                      'R_CONTRACTS_EXECUTION_PLACE_LOCALITY_LABEL' | translate
+                    }}
+                  </mat-label>
+                  <input
+                    matInput
+                    [maxlength]="EXECUTION_PLACE_LOCALITY_MAX_LENGTH"
+                    formControlName="locality"
+                    placeholder="{{
+                      'R_CONTRACTS_EXECUTION_PLACE_LOCALITY_LABEL' | translate
+                    }}"
+                  />
+                </mat-form-field>
+              </div>
+              <ng-container *ngIf="i !== 0">
+                <button
+                  (click)="removeLocation(i)"
+                  mat-icon-button
+                  color="primary"
+                  type="button"
+                  class="fi-flat-btn"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Botón Añadir otro lugar -->
+      <div class="add-location-section">
+        <button
+          type="button"
+          mat-stroked-button
+          color="primary"
+          (click)="addLocation()"
+          class="fi-flat-btn"
+        >
+          <mat-icon>add</mat-icon>
+          {{ 'EX.R_CONTRACTS_ANOTHER_DESTINATION_BTN' | translate }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</fi-accordion-panel>

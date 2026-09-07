@@ -1,0 +1,37 @@
+<div *ngIf="!loading; else spinner">
+  <fi-no-content
+    *ngIf="!hasDocuments"
+    [content]="'WORKFLOW.ADD_DOCUMENT.NO_DOCUMENTS' | translate"
+  ></fi-no-content>
+
+  <fi-files-list
+    [mode]="_mode"
+    (deleteFile)="deleteFileAction($event)"
+    (editFile)="editFileAction($event)"
+    [cleanSelection]="cleanSelection"
+    [procurementProcess]="procurementProcess"
+    [workflowDocs]="workflowDocs"
+    [workflowDropDown]="workflowDropDownOptions"
+    (editWorkflowDocDescription)="changeDescriptionWorkflowDocs($event)"
+    (editWorkflowDocVisibility)="changenWorkflowDocsVisibility($event)"
+  ></fi-files-list
+  ><fi-file-selector
+    (valueChange)="uploadDocs($event)"
+    [permission]="editPermissions"
+  ></fi-file-selector>
+
+  <div class="bottomAlert-document">
+    <fi-alert
+      *ngIf="hasDocumentWithVisibilityZero"
+      [type]="'warning'"
+      [title]="'WORKFLOW.ADD_DOCUMENT.WARNING_PUBLIC_DOCS' | translate"
+    >
+    </fi-alert>
+  </div>
+</div>
+
+<ng-template #spinner>
+  <div class="spinner-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

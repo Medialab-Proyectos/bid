@@ -1,0 +1,270 @@
+<ng-template #template let-anchor>
+  <span [innerHTML]="anchor.nativeElement.innerText"></span>
+</ng-template>
+
+<div
+  kendoTooltip
+  showOn="none"
+  [tooltipTemplate]="template"
+  (mouseover)="showTooltip($event)"
+>
+  <div class="transactions-list">
+    <div class="transactions-list__table">
+      <div class="table-transactions">
+        <kendo-grid
+          [loading]="isLoading"
+          [kendoGridBinding]="gridView"
+          [sort]="gridSettings.state.sort"
+          [filter]="gridSettings.state.filter"
+          [sortable]="true"
+          [filterable]="false"
+          [resizable]="true"
+          [reorderable]="true"
+          (columnReorder)="onReorder($event)"
+          (columnResize)="onResize($event)"
+          (columnVisibilityChange)="onVisibilityChange($event)"
+          (dataStateChange)="dataStateChange($event)"
+          [groupable]="true"
+          [columnMenu]="{
+            filter: true,
+            columnChooser: { expanded: true }
+          }"
+          kendoGridSelectBy="transactionNumber"
+        >
+          <ng-template
+            class="table-transactions__search"
+            kendoGridToolbarTemplate
+            position="top"
+          >
+            <fi-filter
+              class="d-block"
+              [minLength]="3"
+              (filterValue)="onFilter($event)"
+              [placeholder]="'DASHBOARD.ADVANCED_SEARCH' | translate"
+            ></fi-filter>
+          </ng-template>
+
+          <kendo-grid-column
+            *ngFor="let col of gridSettings.columnsConfig; let i = index"
+            [field]="col.field"
+            [title]="col.title"
+            [width]="col.width"
+            [hidden]="col.hidden"
+            [format]="col.format"
+            [filter]="col.filter"
+            [filterable]="col.filterable"
+            [columnMenu]="false"
+          >
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.transactionNumber"
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              <p
+                [id]="'Lnk_Transaction_number_' + rowIndex"
+                (click)="goToDetails(dataItem)"
+                [innerHTML]="
+                  dataItem.transactionNumber | highlightSearch : highlightValue
+                "
+                class="table-transactions__kendo-p link has-ellipsis"
+              ></p>
+            </ng-template>
+
+            <ng-template
+              *ngIf="
+                col.field === TransactionsColumnName.transactionTypeFormatted
+              "
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.transactionTypeFormatted
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.currency"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  (dataItem.currency ? dataItem.currency : '&mdash;')
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.amount"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis text-right"
+                [innerHTML]="
+                  (dataItem.amount !== null
+                    ? (dataItem.amount | ifNumber)
+                    : '&mdash;'
+                  ) | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              *ngIf="
+                col.field === TransactionsColumnName.transactionStatusTranslated
+              "
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <fi-status-label
+                [cssClass]="transactionStyles(dataItem.transactionStatusId)"
+                [text]="dataItem.statusEnum.name | translate"
+              ></fi-status-label>
+            </ng-template>
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.valueDate"
+              kendoGridGroupHeaderTemplate
+              let-value="value"
+            >
+              {{ value | dateIF }}
+            </ng-template>
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.valueDate"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  (dataItem.valueDateFormatted
+                    ? dataItem.valueDateFormatted
+                    : '&mdash;'
+                  ) | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.lastUpdate"
+              kendoGridGroupHeaderTemplate
+              let-value="value"
+            >
+              {{ value | dateIF }}
+            </ng-template>
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.lastUpdate"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.lastUpdateFormatted
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.approvalDate"
+              kendoGridGroupHeaderTemplate
+              let-value="value"
+            >
+              {{ value | dateIF }}
+            </ng-template>
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.approvalDate"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  (dataItem.approvalDateFormatted
+                    ? dataItem.approvalDateFormatted
+                    : '&mdash;'
+                  ) | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.lastUpdatedBy"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.lastUpdatedBy
+                    | highlightSearch : highlightValue
+                    | translate
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.requestNumber"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.requestNumber
+                    | transactionStatus : dataItem.transactionStatusId
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+
+            <ng-template
+              *ngIf="col.field === TransactionsColumnName.partNumber"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <p
+                class="table-transactions__kendo-p has-ellipsis"
+                [innerHTML]="
+                  dataItem.partNumber
+                    | transactionStatus : dataItem.transactionStatusId
+                    | highlightSearch : highlightValue
+                "
+              ></p>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column [columnMenu]="true" [width]="50">
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              <fi-dropdownbutton
+                *ngIf="dataItem.transactionActions.length > 0"
+                [itemOptions]="dataItem.transactionActions"
+                [textField]="'text'"
+                [id]="rowIndex"
+                [popupSettings]="{ popupClass: 'popupClass', animate: true }"
+                (selectedOption)="onItemClick($event, dataItem)"
+              >
+              </fi-dropdownbutton>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-messages
+            [groupPanelEmpty]="'PROCUREMENT.TABLE.DRAG_COLUMN_MSG' | translate"
+          >
+          </kendo-grid-messages>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</div>

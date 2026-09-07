@@ -1,0 +1,112 @@
+<div
+  class="col-12 c-transactions-amount anj pb-3"
+  data-testid="c-transaction-anj-amount"
+>
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "TRANSACTION.JUSTIFICATION_AMOUNTS.TITLE" | translate
+    }}</ng-container>
+
+    <ng-container body>
+      <div class="c-transactions-amount__container">
+        <div class="c-transactions-amount__table-header anj">
+          <div class="column fi-kendo-label--required">
+            {{ "TRANSACTION.ANJ.AMOUNTS.BID" | translate }}
+          </div>
+
+          <div class="column">
+            {{ "TRANSACTION.ANJ.AMOUNTS.LOCAL_COUNTERPART" | translate }}
+          </div>
+
+          <div class="column">
+            {{ "TRANSACTION.ANJ.AMOUNTS.CO_FINANCING" | translate }}
+          </div>
+        </div>
+        <div class="c-transactions-amount__table-body anj" [formGroup]="form">
+          <div class="column">
+            <kendo-numerictextbox
+              class="c-numerictextbox k-numerictextbox"
+              formControlName="bid"
+              data-testid="bid"
+              [spinners]="false"
+              [min]="0"
+              [autoCorrect]="true"
+              [format]="format"
+              [decimals]="decimals"
+              [maxlength]="18"
+              placeholder="0.00"
+              id="Txb_Bid"
+              [changeValueOnScroll]="false"
+            >
+            </kendo-numerictextbox>
+            <ng-container *ngIf="amountPendingJustificationControl.errors">
+              <p class="o-input-error">
+                {{ "TRANSACTION.AMOUNT.ERROR.EXCEEDS_BUDGET" | translate }}
+              </p>
+            </ng-container>
+            <ng-container *ngIf="bidControl?.errors?.minAmountError">
+              <p class="o-input-error">
+                {{ "TRANSACTION.ATJ.MIN_AMOUNT_ERROR" | translate }}
+              </p>
+            </ng-container>
+
+            <div class="amounts-to-assign d-flex">
+              <div class="w-50">
+                <p class="amount-box">
+                  {{ "ANT_TRANSACTION.AMOUNTS.APPROVED_CURRENCY" | translate }}
+                  <span class="data">{{ approvedCurrency }}</span>
+                </p>
+              </div>
+              <div class="w-50">
+                <p class="amount-box">
+                  {{
+                    "TRANSACTION.ANJ.AMOUNTS.AMOUNT_PENDING_JUSTIFICATTON"
+                      | translate
+                  }}
+                  <span class="data">{{
+                    amountPendingJustificationControl.value | ifNumber
+                  }}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            <kendo-numerictextbox
+              class="c-numerictextbox k-numerictextbox"
+              formControlName="localCounterpart"
+              data-testid="localCounterpart"
+              [spinners]="false"
+              [min]="0"
+              [autoCorrect]="true"
+              [format]="format"
+              [decimals]="decimals"
+              [maxlength]="18"
+              placeholder="0.00"
+              id="Txb_Local_Counterpart"
+              [changeValueOnScroll]="false"
+            >
+            </kendo-numerictextbox>
+          </div>
+          <div class="column">
+            <kendo-numerictextbox
+              class="c-numerictextbox k-numerictextbox"
+              formControlName="cofinancing"
+              data-testid="cofinancing"
+              [spinners]="false"
+              [min]="0"
+              [autoCorrect]="true"
+              [format]="format"
+              [decimals]="decimals"
+              [maxlength]="18"
+              placeholder="0.00"
+              id="Txb_Cofinancing"
+              [changeValueOnScroll]="false"
+            >
+            </kendo-numerictextbox>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

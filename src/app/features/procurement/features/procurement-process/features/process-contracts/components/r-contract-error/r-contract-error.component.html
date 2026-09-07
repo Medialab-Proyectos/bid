@@ -1,0 +1,32 @@
+<div
+  *ngIf="hasErrors"
+  class="fi-error-alert w-100"
+  role="alert"
+  aria-live="assertive"
+>
+  <div class="fi-error-alert__content w-100">
+    <mat-icon class="fi-error-alert__icon" color="warn">error</mat-icon>
+
+    <div class="fi-error-alert__list">
+      <div class="fi-error-alert__item">
+        <div class="fi-error-alert__title">{{ title | translate }}</div>
+        <ul class="fi-error-alert__message">
+          <li *ngFor="let error of errors">
+            <!-- Mensaje principal traducido -->
+            <span>{{ error.translationKey | translate : error.params }}</span>
+
+            <!-- Sublista anidada si tiene sub-errores -->
+            <ul
+              *ngIf="error.subErrors && error.subErrors.length > 0"
+              class="fi-error-alert__sub-list"
+            >
+              <li *ngFor="let subError of error.subErrors">
+                {{ subError.translationKey | translate : subError.params }}
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

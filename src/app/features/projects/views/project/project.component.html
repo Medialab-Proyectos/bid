@@ -1,0 +1,26 @@
+<kendo-drawer-container>
+  <kendo-drawer
+    [mode]="'push'"
+    class="nav-padding-top-outsize drawwer project-sidebar"
+    #kendoDrawerHeaderTemplate
+    [ngClass]="mobileView ? 'd-none' : ''"
+    [(expanded)]="expanded"
+    [style.flex-basis]="expanded ? '270px' : '0px'"
+    ><ng-template kendoDrawerHeaderTemplate>
+      <fi-project-sidebar></fi-project-sidebar>
+    </ng-template>
+  </kendo-drawer>
+  <kendo-drawer-content [ngClass]="mobileView ? 'mobile_padding' : null">
+    <xng-breadcrumb separator=">">
+      <ng-container *xngBreadcrumbItem="let breadcrumb">
+        <ng-container>{{ breadcrumb | translate }}</ng-container>
+      </ng-container>
+    </xng-breadcrumb>
+    <fi-project-header
+      [projects]="projectCollection"
+      [isLoading]="isLoading"
+    ></fi-project-header>
+    <router-outlet></router-outlet>
+    <fi-flow-sticky-footer></fi-flow-sticky-footer>
+  </kendo-drawer-content>
+</kendo-drawer-container>

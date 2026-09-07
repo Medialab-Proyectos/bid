@@ -1,0 +1,40 @@
+<div
+  *ngIf="!loading && !loadingPermissions; else spinner"
+  class="c-procurement-process-tab"
+  [ngClass]="mobileView ? 'mobile' : 'not-mobile'"
+>
+  <ul class="sf400">
+    <li class="desktop-item" *ngFor="let link of navLinks; let i = index">
+      <a
+        class="tab-item"
+        [routerLink]="link.link"
+        [routerLinkActive]="['tab-active']"
+        [id]="'Lnk_Procurement_tab_' + (i + 1)"
+        >{{ link.label | translate }}</a
+      >
+    </li>
+    <li *ngIf="mobileView" class="pl-3" #anchor (click)="onToggleMobileMenu()">
+      <em class="fas fa-chevron-down"></em>
+    </li>
+    <kendo-popup [anchor]="anchor" *ngIf="showMenuMobile">
+      <div
+        class="content"
+        style="border: 1px solid #d8dde6; border-radius: 4px"
+      >
+        <ul class="mobileMenuItems">
+          <li *ngFor="let link of dropdownLinks">
+            <a class="tab-item" [routerLink]="link.link"
+              >{{ link.label }} [id]="'Lnk_Procurement_tab_' + (i + 1)"</a
+            >
+          </li>
+        </ul>
+      </div>
+    </kendo-popup>
+  </ul>
+</div>
+
+<ng-template #spinner>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

@@ -1,0 +1,83 @@
+<div
+  class="c-procurement-form"
+  *fiDisplayByPermissions="viewProcurementFormPermission"
+>
+  <fi-procurement-process-data
+    number="1"
+    [processForm]="processForm"
+    [categories$]="categories$"
+    [procurementMethods$]="procurementMethods$"
+    [supervisionMethods$]="supervisionMethods$"
+    (changeDropdown)="valueChange($event)"
+    [justificationVisibility]="justificationVisibility"
+    [warningMessage]="warningMessage"
+  >
+  </fi-procurement-process-data>
+
+  <fi-cost-distribution-process
+    [form]="costDistributionForm"
+    number="2"
+    [config]="{
+      data: {
+        threshold: thresholds,
+        nationalBiddingThreshold: nationalBiddingThreshold,
+        groupMethod: attributeGroupMethod?.value
+      },
+      settings: {
+        disabled: readOnly || formConfig.costDistributionSection.isDisabled
+      }
+    }"
+    [justification]="justificacion"
+    [supervisionMethod]="supervisionMethod"
+  >
+  </fi-cost-distribution-process>
+
+  <fi-process-outputs
+    (selectedComponent)="selectComponent($event)"
+    (addOutput)="addOutputFormGroup()"
+    [selectedOutputs$]="selectedOutputs$"
+    (outputsTotal)="calcTotal($event)"
+    [components$]="components$"
+    [componentsForm]="componentsForm"
+    [totalAssigned]="totalAssigned"
+    number="3"
+    [readOnly]="readOnly || formConfig.outputsSection.isDisabled"
+  >
+  </fi-process-outputs>
+
+  <fi-process-milestones
+    number="4"
+    [form]="milestonesForm"
+    [readOnly]="readOnly"
+    [mode]="formConfig.mode"
+    [milestoneRules]="applyMilestoneRules"
+    [status]="_allProcessData?.process?.status"
+    [formConfig]="formConfig.milestoneSection"
+    [supervisionMethod]="supervisionMethod"
+  ></fi-process-milestones>
+
+  <fi-sustainability
+    number="5"
+    [form]="sustainabilityForm"
+    [isPROCT_PFA]="isPROCT_PFA"
+  ></fi-sustainability>
+
+  <fi-process-additional-info
+    [adittionalInfo]="adittionalInfo"
+    [radioOption]="radioOptions"
+    number="6"
+    [goodsReferenceVisibility]="goodsReferenceVisibility"
+    [showBAFO]="showBAFO"
+    [showLots]="showLots"
+    [isPROCT_PFA]="isPROCT_PFA"
+  ></fi-process-additional-info>
+
+  <fi-process-comments
+    [commentsProcess]="commentsProcess"
+    [visibility]="commentVisibilities"
+    number="7"
+    [readonly]="disabledComments || isBiddingPlanInSync"
+    [formConfig]="formConfig.commentsSection"
+    [processStatus]="processStatus"
+  ></fi-process-comments>
+</div>

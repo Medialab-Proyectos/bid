@@ -1,0 +1,232 @@
+<div class="pr-dialog">
+  <!-- ========== step 1: which payments the new rate should touch ========== -->
+  <ng-container *ngIf="step === 'payments'">
+    <p class="pr-panel__lead">
+      {{ "PAYMENT_RECORD.EXCHANGE_RATE.PICK_INTRO" | translate }}
+    </p>
+
+    <div class="pr-toolbar pr-statement__toolbar pr-statement__toolbar--group">
+      <span
+        class="pr-step__counter"
+        [innerHTML]="
+          'PAYMENT_RECORD.STATEMENT.SELECTED_COUNT'
+            | translate : { selected: selectedCount, total: payments.length }
+        "
+      ></span>
+      <fi-filter
+        class="pr-statement__filter"
+        [minLength]="3"
+        [placeholder]="'PAYMENT_RECORD.ADVANCED_SEARCH' | translate"
+        (filterValue)="onSearch($event)"
+      ></fi-filter>
+    </div>
+
+    <fi-no-content
+      *ngIf="!loading && payments.length === 0"
+      [content]="'PAYMENT_RECORD.EXCHANGE_RATE.PICK_EMPTY' | translate"
+    ></fi-no-content>
+
+    <div class="pr-panel__scroll" *ngIf="filteredPayments.length > 0">
+      <table class="pr-rates pr-rates--wide">
+        <thead>
+          <tr>
+            <th scope="col" class="pr-rates__check">
+              <input
+                type="checkbox"
+                id="Chk_ExchangeRate_All"
+                [checked]="allSelected"
+                (change)="toggleAll()"
+                [attr.aria-label]="'PAYMENT_RECORD.ADD_PAYMENTS.SELECT_ALL' | translate"
+              />
+            </th>
+            <th scope="col">
+              {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.COMMITMENT" | translate }}
+            </th>
+            <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.ADD_PAYMENTS.COLUMNS.DATE" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.STATUS" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY" | translate }}</th>
+            <th scope="col" class="pr-grid__number">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT" | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let payment of filteredPayments; trackBy: trackPayment"
+            [class.pr-row--picked]="selection[payment.id]"
+          >
+            <td class="pr-rates__check">
+              <input
+                type="checkbox"
+                [attr.id]="'Chk_ExchangeRate_' + payment.id"
+                [(ngModel)]="selection[payment.id]"
+                [attr.aria-label]="payment.concept"
+              />
+            </td>
+            <td>{{ payment.commitmentNumber }}</td>
+            <td class="pr-cell--name" [title]="payment.concept">
+              {{ payment.concept }}
+            </td>
+            <td>{{ payment.paymentDate | dateIF }}</td>
+            <td>
+              <fi-status-label
+                [cssClass]="statusClass(payment.status)"
+                [text]="'PAYMENT_RECORD.STATUS.' + payment.status | translate"
+              ></fi-status-label>
+            </td>
+            <td>{{ payment.currency }}</td>
+            <td class="pr-grid__number">{{ payment.amount | ifNumber }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+
+  <!-- ========== step 2: a rate for every currency involved ========== -->
+  <ng-container *ngIf="step === 'rates'">
+    <p class="pr-panel__lead">
+      {{
+        "PAYMENT_RECORD.EXCHANGE_RATE.INTRO"
+          | translate : { count: selectedCount }
+      }}
+    </p>
+
+    <div class="pr-panel__scroll">
+      <table class="pr-rates pr-rates--rates">
+        <thead>
+          <tr>
+            <th scope="col">{{ "PAYMENT_RECORD.EXCHANGE_RATE.CURRENCY" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.EXCHANGE_RATE.RATE" | translate }}</th>
+            <th scope="col">{{ "PAYMENT_RECORD.EXCHANGE_RATE.EQUIVALENT" | translate }}</th>
+            <th scope="col" class="pr-rates__check"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rate of rates; let i = index">
+            <td>
+              <!--
+                Stacked, and the note keeps its line whether or not it has
+                text. Inline it wrapped around the arrow, and it appearing or
+                vanishing as the currency changed made the whole row jump.
+              -->
+              <div class="pr-rate-cell">
+                <kendo-dropdownlist
+                  class="c-dropdown-list"
+                  [data]="currenciesFor(rate)"
+                  [(ngModel)]="rate.currency"
+                  [attr.id]="'Ddl_ExchangeRate_Currency_' + i"
+                ></kendo-dropdownlist>
+                <span class="pr-rate-cell__note">
+                  <ng-container *ngIf="isSelectedCurrency(rate.currency)">
+                    {{ "PAYMENT_RECORD.EXCHANGE_RATE.IN_SELECTION" | translate }}
+                  </ng-container>
+                </span>
+              </div>
+            </td>
+            <td>
+              <kendo-numerictextbox
+                [format]="'n4'"
+                [min]="0"
+                [spinners]="false"
+                [(ngModel)]="rate.rate"
+                (valueChange)="onRateChange(rate)"
+                [attr.id]="'Num_ExchangeRate_Rate_' + i"
+              ></kendo-numerictextbox>
+            </td>
+            <td>
+              <kendo-numerictextbox
+                [format]="'n4'"
+                [readonly]="true"
+                [spinners]="false"
+                [(ngModel)]="rate.equivalentUsd"
+              ></kendo-numerictextbox>
+            </td>
+            <td class="pr-rates__check">
+              <button
+                type="button"
+                class="pr-dialog__link pr-dialog__danger"
+                [attr.id]="'Btn_ExchangeRate_Remove_' + i"
+                [attr.aria-label]="
+                  ('PAYMENT_RECORD.EXCHANGE_RATE.REMOVE' | translate) +
+                  ' ' +
+                  rate.currency
+                "
+                [title]="'PAYMENT_RECORD.EXCHANGE_RATE.REMOVE' | translate"
+                (click)="removeCurrency(i)"
+              >
+                <em class="fas fa-trash-alt"></em>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button
+      type="button"
+      class="pr-add-row"
+      id="Btn_ExchangeRate_AddCurrency"
+      [disabled]="!canAddCurrency"
+      (click)="addCurrency()"
+    >
+      <em class="fas fa-plus"></em>
+      {{ "PAYMENT_RECORD.EXCHANGE_RATE.ADD_CURRENCY" | translate }}
+    </button>
+
+    <fi-alert
+      type="warning"
+      [title]="
+        ('PAYMENT_RECORD.EXCHANGE_RATE.SCOPE_WARNING' | translate) +
+        ' ' +
+        ('PAYMENT_RECORD.EXCHANGE_RATE.SAVE_HINT' | translate)
+      "
+      [closable]="false"
+    ></fi-alert>
+
+    <p class="pr-dialog__note" *ngIf="lastUpdate">
+      {{ "PAYMENT_RECORD.EXCHANGE_RATE.LAST_UPDATE" | translate }}
+      {{ lastUpdate | dateIF }}
+    </p>
+  </ng-container>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <button
+    kendoButton
+    class="btn btn-neutral pr-modal__leading"
+    id="Btn_ExchangeRate_Cancel"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+  <button
+    *ngIf="step === 'rates'"
+    kendoButton
+    class="btn btn-neutral"
+    id="Btn_ExchangeRate_Back"
+    (click)="back()"
+  >
+    {{ "PAYMENT_RECORD.EXCHANGE_RATE.BACK" | translate }}
+  </button>
+  <button
+    *ngIf="step === 'payments'"
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_ExchangeRate_Next"
+    [disabled]="selectedCount === 0"
+    (click)="next()"
+  >
+    {{ "PAYMENT_RECORD.EXCHANGE_RATE.NEXT" | translate }}
+  </button>
+  <button
+    *ngIf="step === 'rates'"
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_ExchangeRate_Save"
+    [disabled]="saving || rates.length === 0"
+    (click)="save()"
+  >
+    {{ "PAYMENT_RECORD.EXCHANGE_RATE.SAVE" | translate }}
+  </button>
+</kendo-dialog-actions>

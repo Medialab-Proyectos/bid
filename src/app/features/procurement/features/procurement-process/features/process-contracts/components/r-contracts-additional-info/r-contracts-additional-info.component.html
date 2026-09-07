@@ -1,0 +1,373 @@
+<ng-container *ngIf="showGuarantees || showDamages || showBonus">
+  <fi-accordion-panel [collapsible]="false">
+    <ng-container title>
+      <b> {{ 'EX.R_CONTRACTS_ADDITIONAL_INFORMATION_LABEL' | translate }} </b>
+    </ng-container>
+    <ng-container body class="mb-2">
+      <div [formGroup]="form">
+        <ng-container *ngIf="showGuarantees">
+          <div class="section-container">
+            <sub-title class="mb-2">{{
+              'EX.R_CONTRACTS_WARRANTY_DEPOSIT_LABEL' | translate
+            }}</sub-title>
+            <div *ngIf="showAdvancePaymentError" class="alert-error mb-3">
+              <fi-r-contract-error
+                [title]="'EX.R_CONTRACTS_WARRANTY_DEPOSIT_VALIDATION_TITLE'"
+                [errors]="advancePaymentErrors"
+              ></fi-r-contract-error>
+            </div>
+            <div class="r-additional-info">
+              <div
+                formArrayName="guarantees"
+                class="r-additional-info__guarantee"
+              >
+                <div
+                  *ngFor="let guarantee of guarantees.controls; let i = index"
+                  [formGroupName]="i"
+                  class="additional-info__guarantee"
+                >
+                  <div class="guarantee">
+                    <mat-form-field class="w-100">
+                      <mat-label>
+                        {{
+                          'EX.R_CONTRACTS_WARRANTY_DEPOSIT_LABEL' | translate
+                        }}
+                      </mat-label>
+                      <mat-select formControlName="guaranteeType">
+                        <mat-option
+                          *ngFor="let cst of biddingContractSecurityTypes"
+                          [value]="cst.id"
+                        >
+                          {{ cst.name }}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error
+                        *ngIf="
+                          guarantee.get('guaranteeType')?.touched &&
+                          guarantee.get('guaranteeType')?.hasError('required')
+                        "
+                      >
+                        {{ 'BIDDER.REQUIRED' | translate }}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="currency">
+                    <mat-form-field>
+                      <mat-label>{{
+                        'EX.R_CONTRACTS_CURRENCY_TYPE_LABEL' | translate
+                      }}</mat-label>
+                      <mat-select formControlName="currency">
+                        <mat-option
+                          *ngFor="let c of currencies"
+                          [value]="c.currency"
+                        >
+                          {{ c.currency }}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error
+                        *ngIf="
+                          guarantee.get('currency')?.touched &&
+                          guarantee.get('currency')?.hasError('required')
+                        "
+                      >
+                        {{ 'BIDDER.REQUIRED' | translate }}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="amount">
+                    <fi-mat-numeric
+                      label="EX.R_CONTRACTS_AMOUNT_LABEL"
+                      min="0"
+                      [decimals]="getDecimalsForGuarantee(i)"
+                      formControlName="amount"
+                      placeholder="0,00"
+                    >
+                    </fi-mat-numeric>
+                    <mat-spinner
+                      *ngIf="isGuaranteeLoading(i)"
+                      diameter="20"
+                      class="field-spinner"
+                    ></mat-spinner>
+                  </div>
+
+                  <div class="usdEquivalentAmount">
+                    <fi-mat-numeric
+                      label="EX.R_CONTRACTS_TOTAL_EQUIVALENT_LABEL"
+                      min="0"
+                      [readonly]="true"
+                      [decimals]="getDecimalsForGuarantee(i)"
+                      placeholder="0,00"
+                      formControlName="usdEquivalentAmount"
+                    >
+                    </fi-mat-numeric>
+                  </div>
+
+                  <div class="additional-info__dates">
+                    <fi-mat-date
+                      [label]="'EX.R_CONTRACTS_DATE_OF_ISSUE_LABEL' | translate"
+                      formControlName="startDate"
+                      outputFormat="YYYY-MM-DD"
+                    >
+                    </fi-mat-date>
+
+                    <fi-mat-date
+                      [label]="
+                        'EX.R_CONTRACTS_COMPLETION_DATE_LABEL' | translate
+                      "
+                      formControlName="endDate"
+                      outputFormat="YYYY-MM-DD"
+                    >
+                    </fi-mat-date>
+                  </div>
+
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    type="button"
+                    (click)="removeGuarantee(i)"
+                    [disabled]="isGuaranteeLoading(i)"
+                    *ngIf="guarantees.length > 0"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                <div class="add-guarantee-button">
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    type="button"
+                    class="fi-flat-btn"
+                    (click)="addGuaranteeorFianzas()"
+                  >
+                    <mat-icon>add</mat-icon>
+                    {{
+                      'EX.R_CONTRACTS_ADD_ANOTHER_GUARANTEE_LABEL' | translate
+                    }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="showDamages">
+          <div class="section-container">
+            <sub-title class="mb-2">{{
+              'EX.R_CONTRACTS_SETTLEMENT_FOR_DAMAGES_PERJURY_LABEL' | translate
+            }}</sub-title>
+            <div formArrayName="damages">
+              <div
+                *ngFor="let liquidated of damages.controls; let i = index"
+                [formGroupName]="i"
+                class="liquidated-damage"
+              >
+                <div class="liquidated-damage__type">
+                  <mat-form-field class="w-full">
+                    <mat-label>{{
+                      'CONTRACT.ADDITIONAL_INFO.DAMAGES' | translate
+                    }}</mat-label>
+                    <mat-select formControlName="liquidatedDamageType">
+                      <mat-option
+                        *ngFor="let cpf of biddingContractLiquidatedDamageTypes"
+                        [value]="cpf.id"
+                      >
+                        {{ cpf.name }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error
+                      *ngIf="
+                        liquidated.get('liquidatedDamageType')?.touched &&
+                        liquidated
+                          .get('liquidatedDamageType')
+                          ?.hasError('required')
+                      "
+                    >
+                      {{ 'BIDDER.REQUIRED' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="liquidated-damage__percentage">
+                  <fi-mat-numeric
+                    label="CONTRACT.ADDITIONAL_INFO.PERCENTAGE"
+                    [decimals]="2"
+                    [min]="PERCENTAGE_DAMAGES_MINIMUM"
+                    [max]="PERCENTAGE_DAMAGES_MAXIMUM"
+                    formControlName="percentage"
+                    [suffix_icon]="'percent'"
+                  ></fi-mat-numeric>
+                </div>
+
+                <div class="liquidated-damage__frequency">
+                  <mat-form-field class="w-full">
+                    <mat-label>{{
+                      'EX.R_CONTRACTS_DAILY_OR_WEEKLY_PAYMENT_LABEL' | translate
+                    }}</mat-label>
+                    <mat-select formControlName="paymentFrequencyType">
+                      <mat-option
+                        *ngFor="let cpf of biddingContractBonusPaymentFrequency"
+                        [value]="cpf.id"
+                      >
+                        {{ cpf.name }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error
+                      *ngIf="
+                        liquidated.get('paymentFrequencyType')?.touched &&
+                        liquidated
+                          .get('paymentFrequencyType')
+                          ?.hasError('required')
+                      "
+                    >
+                      {{ 'BIDDER.REQUIRED' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="liquidated-damage__max">
+                  <fi-mat-numeric
+                    label="EX.R_CONTRACTS_MAXIMUM_PERCENTAGE_LABEL"
+                    [decimals]="2"
+                    [min]="MAXIMUM_PERCENTAGE_DAMAGES_MINIMUM"
+                    [max]="MAXIMUM_PERCENTAGE_DAMAGES_MAXIMUM"
+                    formControlName="maximumPercentage"
+                    [suffix_icon]="'percent'"
+                  ></fi-mat-numeric>
+                </div>
+
+                <button
+                  mat-icon-button
+                  color="primary"
+                  type="button"
+                  (click)="removeLiquidatedDamage()"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+
+              <div *ngIf="damages.length === 0" class="liquidated-damage__add">
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  type="button"
+                  (click)="addLiquidatedDamage()"
+                >
+                  <mat-icon>add</mat-icon>
+                  {{ 'CONTRACT.ADDITIONAL_INFO.ADD_DAMAGES' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="showBonus">
+          <div class="section-container">
+            <sub-title class="mb-2">{{
+              'EX.R_CONTRACTS_BONUS_LABEL' | translate
+            }}</sub-title>
+            <div formArrayName="bonus">
+              <div
+                *ngFor="let bonus of bonus.controls; let i = index"
+                [formGroupName]="i"
+                class="bonus"
+              >
+                <div class="bonus__type">
+                  <mat-form-field class="w-full">
+                    <mat-label>{{
+                      'CONTRACT.ADDITIONAL_INFO.BONUS' | translate
+                    }}</mat-label>
+                    <mat-select formControlName="liquidatedDamageType">
+                      <mat-option
+                        *ngFor="let cpf of biddingContractBonusTypes"
+                        [value]="cpf.id"
+                      >
+                        {{ cpf.name }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error
+                      *ngIf="
+                        bonus.get('liquidatedDamageType')?.touched &&
+                        bonus.get('liquidatedDamageType')?.hasError('required')
+                      "
+                    >
+                      {{ 'BIDDER.REQUIRED' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="bonus__percentage">
+                  <fi-mat-numeric
+                    label="CONTRACT.ADDITIONAL_INFO.PERCENTAGE"
+                    [min]="PERCENTAGE_BONUS_MINIMUM"
+                    [max]="PERCENTAGE_BONUS_MAXIMUM"
+                    [decimals]="2"
+                    formControlName="percentage"
+                    [suffix_icon]="'percent'"
+                  ></fi-mat-numeric>
+                </div>
+
+                <div class="bonus__frequency">
+                  <mat-form-field class="w-full">
+                    <mat-label>{{
+                      'EX.R_CONTRACTS_DAILY_OR_WEEKLY_PAYMENT_LABEL' | translate
+                    }}</mat-label>
+                    <mat-select formControlName="paymentFrequencyType">
+                      <mat-option
+                        *ngFor="let bpf of biddingContractBonusPaymentFrequency"
+                        [value]="bpf.id"
+                      >
+                        {{ bpf.name | translate }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error
+                      *ngIf="
+                        bonus.get('paymentFrequencyType')?.touched &&
+                        bonus.get('paymentFrequencyType')?.hasError('required')
+                      "
+                    >
+                      {{ 'BIDDER.REQUIRED' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="bonus__max">
+                  <fi-mat-numeric
+                    label="EX.R_CONTRACTS_MAXIMUM_PERCENTAGE_LABEL"
+                    [min]="MAXIMUM_PERCENTAGE_BONUS_MINIMUM"
+                    [max]="MAXIMUM_PERCENTAGE_BONUS_MAXIMUM"
+                    [decimals]="2"
+                    formControlName="maximumPercentage"
+                    [suffix_icon]="'percent'"
+                  ></fi-mat-numeric>
+                </div>
+
+                <button
+                  mat-icon-button
+                  color="primary"
+                  type="button"
+                  (click)="removeBonus()"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+
+              <div *ngIf="bonus.length === 0" class="bonus__add">
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  type="button"
+                  (click)="addBonus()"
+                >
+                  <mat-icon>add</mat-icon>
+                  {{ 'CONTRACT.ADDITIONAL_INFO.ADD_BONUS' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</ng-container>

@@ -1,0 +1,218 @@
+<div class="banner">
+  <span class="banner__title">{{
+    'EX.R_CONTRACTS.GENERAL_INFO.TITLE' | translate
+  }}</span>
+</div>
+
+<form class="contract-form" [formGroup]="form">
+  <mat-form-field class="full-width">
+    <mat-label>{{
+      'CONTRACT.GENERAL_INFO.CONTRACT_NAME' | translate
+    }}</mat-label>
+    <input
+      [maxlength]="GENERAL_INFORMATION_NAME_MAX_LENGHT"
+      matInput
+      formControlName="contractName"
+    />
+    <mat-error
+      fiErrorFocus
+      *ngIf="form.controls.contractName.hasError('required')"
+    >
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+    <p style="text-align: right">
+      {{ getContractNameLength() }} / {{ GENERAL_INFORMATION_NAME_MAX_LENGHT }}
+    </p>
+  </mat-form-field>
+
+  <mat-form-field class="full-width">
+    <mat-label>{{
+      'CONTRACT.GENERAL_INFO.CONTRACT_OBJECTIVE' | translate
+    }}</mat-label>
+    <textarea
+      [maxlength]="GENERAL_INFORMATION_OBJECTIVE"
+      matInput
+      formControlName="contractObjective"
+    ></textarea>
+    <mat-error
+      fiErrorFocus
+      *ngIf="form.controls.contractObjective.hasError('required')"
+    >
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+    <p style="text-align: right">
+      {{ getContractObjectiveLength() }} / {{ GENERAL_INFORMATION_OBJECTIVE }}
+    </p>
+  </mat-form-field>
+
+  <fi-mat-date
+    [label]="'CONTRACT.GENERAL_INFO.CONTRACT_SIGN_DATE' | translate"
+    [minDate]="SIGNATURE_MIN_DATE"
+    [maxDate]="maxDate"
+    formControlName="signatureDate"
+    outputFormat="YYYY-MM-DD"
+  ></fi-mat-date>
+
+  <fi-mat-date
+    [label]="'CONTRACT.GENERAL_INFO.START_DATE' | translate"
+    formControlName="startDate"
+    outputFormat="YYYY-MM-DD"
+  ></fi-mat-date>
+
+  <fi-mat-date
+    [label]="'R.CONTRACT.GENERAL_INFO.END_DATE' | translate"
+    formControlName="endDate"
+    outputFormat="YYYY-MM-DD"
+  ></fi-mat-date>
+
+  <mat-form-field>
+    <mat-label>{{
+      'CONTRACT.GENERAL_INFO.CONTROL_NUMBER' | translate
+    }}</mat-label>
+    <input
+      [maxlength]="GENERAL_INFORMATION_INTERNAL_NUMBER"
+      matInput
+      formControlName="internalControlNumber"
+    />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>{{
+      'CONTRACT.GENERAL_INFO.TYPE_OF_CONTRACT' | translate
+    }}</mat-label>
+    <mat-select formControlName="contractType">
+      <mat-option *ngFor="let ct of sortedContractTypes" [value]="ct.id">
+        {{ ct.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error
+      fiErrorFocus
+      *ngIf="form.controls.contractType.hasError('required')"
+    >
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+  </mat-form-field>
+
+  <div class="advance-payment">
+    <label id="contrato-anticipo-label">
+      {{ 'CONTRACT.GENERAL_INFO.ADVANCE_PAYMENT' | translate }}
+    </label>
+    <mat-radio-group
+      aria-labelledby="contrato-anticipo-label"
+      formControlName="hasAdvancePayment"
+      color="primary"
+    >
+      <mat-radio-button [value]="true">
+        {{ 'CONTRACT.GENERAL_INFO.YES' | translate }}
+      </mat-radio-button>
+      <mat-radio-button [value]="false">
+        {{ 'CONTRACT.GENERAL_INFO.NO' | translate }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <mat-form-field>
+    <mat-label>{{
+      'CONTRACT.GENERAL_INFO.CONFLICT_RESOLUTION_METHOD' | translate
+    }}</mat-label>
+    <mat-select formControlName="conflictResolutionMethod">
+      <mat-option
+        *ngFor="let crm of biddingContractConflictResolutionMethods"
+        [value]="crm.id"
+      >
+        {{ crm.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error
+      fiErrorFocus
+      *ngIf="form.controls.conflictResolutionMethod.hasError('required')"
+    >
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>{{
+      'CONTRACT.GENERAL_INFO.APPLICABLE_LAW' | translate
+    }}</mat-label>
+    <input
+      [maxlength]="GENERAL_INFORMATION_APPLICABLE_LAW"
+      matInput
+      formControlName="applicableLaw"
+    />
+    <mat-error
+      fiErrorFocus
+      *ngIf="form.controls.applicableLaw.hasError('required')"
+    >
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field *ngIf="isGoods">
+    <mat-label>{{
+      'CONTRACT.GENERAL_INFO.GOODS_SOURCE' | translate
+    }}</mat-label>
+    <mat-select formControlName="goodsSource" multiple>
+      <mat-option
+        *ngFor="let mc of sortedCountries"
+        [value]="getCountryCode(mc.code)"
+      >
+        {{ mc.translatedName | translate | titlecase }}
+      </mat-option>
+    </mat-select>
+    <mat-error fiErrorFocus *ngIf="form.get('goodsSource')?.errors?.required">
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+    <!-- TODO ADD TRANSLATION -->
+    <mat-error
+      fiErrorFocus
+      *ngIf="form.get('goodsSource')?.errors?.arrayLength !== null"
+    >
+      {{ 'R.CONTRACTS.VALIDATION.GENERAL_INFORMATION.MAX_SOURCES' | translate }}
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field *ngIf="contractTypeOther" class="full-width">
+    <mat-label>{{
+      'CONTRACT.GENERAL_INFO.JUSTIFICATION' | translate
+    }}</mat-label>
+    <input
+      [maxlength]="GENERAL_INFORMATION_JUSTIFICATION_MAX_LENGTH"
+      matInput
+      formControlName="justification"
+    />
+    <mat-error
+      fiErrorFocus
+      *ngIf="form?.controls?.justification.hasError('required')"
+    >
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+    <p style="text-align: right">
+      {{ getContractJustificationLength() }} /
+      {{ GENERAL_INFORMATION_JUSTIFICATION_MAX_LENGTH }}
+    </p>
+  </mat-form-field>
+
+  <mat-form-field *ngIf="conflictResolutionOther" class="full-width">
+    <mat-label>
+      {{ 'CONTRACT.GENERAL_INFO.CONFLICT_RESOLUTION_DESCRIPTION' | translate }}
+    </mat-label>
+    <input
+      [maxlength]="GENERAL_INFORMATION_CONFLICT_JUSTIFICATION_MAX_LENGT"
+      matInput
+      formControlName="conflictResolutionJustification"
+    />
+    <mat-error
+      fiErrorFocus
+      *ngIf="
+        form.controls.conflictResolutionJustification?.hasError('required')
+      "
+    >
+      {{ 'BIDDER.REQUIRED' | translate }}
+    </mat-error>
+    <p style="text-align: right">
+      {{ getContractConflictJustificationLength() }} /
+      {{ GENERAL_INFORMATION_CONFLICT_JUSTIFICATION_MAX_LENGT }}
+    </p>
+  </mat-form-field>
+</form>

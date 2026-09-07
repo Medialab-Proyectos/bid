@@ -1,0 +1,294 @@
+<div class="c-comments-filters__text">
+  <p>
+    <i
+      [ngClass]="showFilters ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"
+      (click)="filtersToggle()"
+    ></i>
+    {{ "PROCUREMENT.COMMENTS_TAB.FILTER.FILTER_LABEL" | translate }}
+  </p>
+</div>
+<div class="c-comments-filters__container" [hidden]="!showFilters">
+  <form [formGroup]="commentsFilterForm" class="">
+    <div>
+      {{ "PROCUREMENT.COMMENTS_TAB.FILTER.FILTER_LABEL" | translate }}
+    </div>
+    <div class="d-flex row align-items-center">
+      <!-- USER FILTER -->
+      <div class="d-flex col-2 justify-content-center align-items-center">
+        <div class="mr-1">
+          {{ "PROCUREMENT.COMMENTS_TAB.FILTER.BY_USER" | translate }}
+        </div>
+        <div>
+          <kendo-textbox
+            class="c-textbox"
+            formControlName="user"
+            ngDefaultControl
+            [placeholder]="
+              'PROCUREMENT.COMMENTS_TAB.FILTER.BY_USER_PLACE_HOLDER' | translate
+            "
+          ></kendo-textbox>
+          <div
+            class="o-fieldset__error input-error"
+            *ngIf="commentsFilterForm.get('user').errors"
+          >
+            {{ "COMMENTS_FILTER.VALIDATIONS.MIN_LENGTH" | translate }}
+          </div>
+        </div>
+      </div>
+      <!-- VISIBILITY FILTER -->
+      <div class="d-flex col-2 justify-content-center align-items-center">
+        <div class="mr-1">
+          {{ "PROCUREMENT.COMMENTS_TAB.FILTER.VISIBILITY_LABEL" | translate }}
+        </div>
+        <div>
+          <div class="d-flex">
+            <div class="mr-1 visiblity-filter__option-text">
+              {{
+                "PROCUREMENT.COMMENTS_TAB.FILTER.VISIBILITY.PRIVATE" | translate
+              }}
+            </div>
+            <div class="visiblity-filter__radio-button">
+              <input
+                type="radio"
+                [value]="commentVisibityEnum.PRIVATE"
+                formControlName="visibility"
+                kendoRadioButton
+              />
+            </div>
+          </div>
+          <div class="d-flex">
+            <div class="mr-1 visiblity-filter__option-text">
+              {{
+                "PROCUREMENT.COMMENTS_TAB.FILTER.VISIBILITY.PUBLIC" | translate
+              }}
+            </div>
+            <div class="visiblity-filter__radio-button">
+              <input
+                type="radio"
+                [value]="commentVisibityEnum.PUBLIC"
+                formControlName="visibility"
+                kendoRadioButton
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- DATE FILTER -->
+      <div class="d-flex col-2 justify-content-center align-items-center">
+        <div class="date-filter__label">
+          {{ "PROCUREMENT.COMMENTS_TAB.FILTER.DATE_RANGE" | translate }}
+        </div>
+        <div
+          formGroupName="dateRange"
+          class="d-flex flex-column date-filter__input-container"
+        >
+          <div class="my-2">
+            <kendo-datepicker
+              class="c-datepicker"
+              format="dd MMM yyyy"
+              [navigation]="false"
+              [placeholder]="
+                'PROCUREMENT.COMMENTS_TAB.FILTER.DATE_RANGE_PLACE_HOLDER'
+                  | translate
+              "
+              formControlName="initialDate"
+              ngDefaultControl
+              calendarType="classic"
+            >
+              <kendo-datepicker-messages
+                [today]="'COMMON.CALENDAR.TODAY' | translate"
+                [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+              ></kendo-datepicker-messages>
+            </kendo-datepicker>
+          </div>
+          <div class="my-2">
+            <kendo-datepicker
+              class="c-datepicker"
+              format="dd MMM yyyy"
+              [navigation]="false"
+              [placeholder]="
+                'PROCUREMENT.COMMENTS_TAB.FILTER.DATE_RANGE_PLACE_HOLDER'
+                  | translate
+              "
+              formControlName="endDate"
+              ngDefaultControl
+              calendarType="classic"
+            >
+              <kendo-datepicker-messages
+                [today]="'COMMON.CALENDAR.TODAY' | translate"
+                [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+              ></kendo-datepicker-messages>
+            </kendo-datepicker>
+          </div>
+        </div>
+      </div>
+      <!-- PROCESS FILTER -->
+      <div class="col-2">
+        <div class="d-flex align-items-center">
+          <div class="process-filter__label">
+            {{ "PROCUREMENT.COMMENTS_TAB.FILTER.BY_PROCESS_ID" | translate }}
+          </div>
+          <div>
+            <kendo-textbox
+              class="c-textbox"
+              formControlName="processId"
+              ngDefaultControl
+              [placeholder]="
+                'PROCUREMENT.COMMENTS_TAB.FILTER.BY_PROCESS_ID.PLACEHOLDER'
+                  | translate
+              "
+              (input)="onInput($event)"
+            ></kendo-textbox>
+            <div
+              class="o-fieldset__error input-error"
+              *ngIf="commentsFilterForm.get('processId').errors"
+            >
+              {{ "COMMENTS_FILTER.VALIDATIONS.MIN_LENGTH" | translate }}
+            </div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center">
+          <div class="process-filter__label">
+            {{ "PROCUREMENT.COMMENTS_TAB.FILTER.BY_PROCESS_NAME" | translate }}
+          </div>
+          <div>
+            <kendo-textbox
+              class="c-textbox"
+              formControlName="processName"
+              ngDefaultControl
+              [placeholder]="
+                'PROCUREMENT.COMMENTS_TAB.FILTER.BY_PROCESS_NAME.PLACEHOLDER'
+                  | translate
+              "
+            ></kendo-textbox>
+            <div
+              class="o-fieldset__error input-error"
+              *ngIf="commentsFilterForm.get('processName').errors"
+            >
+              {{ "COMMENTS_FILTER.VALIDATIONS.MIN_LENGTH" | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- MARKED FILTER -->
+      <div class="col-2 d-flex justify-content-center align-items-center">
+        <div class="marked-filter__label mr-1">
+          {{ "PROCUREMENT.COMMENTS_TAB.FILTER.MARKED" | translate }}
+        </div>
+        <input
+          class="marked-filter__input"
+          type="checkbox"
+          formControlName="marked"
+          kendoCheckBox
+        />
+      </div>
+      <!-- DROPDOWN SECTION -->
+      <div class="col-2">
+        <div *ngIf="!planView || groupedTab">
+          <kendo-label
+            class="fi-kendo-label"
+            [text]="
+              'PROCUREMENT.COMMENTS_TAB.FILTER.DROPDOWN_LABEL' | translate
+            "
+          >
+            <kendo-dropdownlist
+              [data]="listItems"
+              [textField]="'text'"
+              [valueField]="'value'"
+              [valuePrimitive]="true"
+              style="--placeholder: '{{
+                'COMMON.SELECT_AN_OPTION' | translate
+              }}'"
+              (valueChange)="valueChange($event)"
+              class="c-dropdown-list k-dropdown"
+              formControlName="dropdownSelection"
+            >
+              <ng-template kendoDropDownListValueTemplate let-item>
+                {{ item?.text | translate }}
+              </ng-template>
+              <ng-template kendoDropDownListItemTemplate let-item>
+                {{ item?.text | translate }}
+              </ng-template>
+            </kendo-dropdownlist>
+          </kendo-label>
+        </div>
+        <ng-template #versionTemplate>
+          <div *ngIf="!planView || groupedTab">
+            {{ "PROCUREMENT.COMMENTS_TAB.FILTER.VERSION_SWITCH" | translate }}
+            <input
+              type="checkbox"
+              formControlName="activeVersion"
+              kendoCheckBox
+            />
+          </div>
+        </ng-template>
+
+        <ng-template #buttonsTemplate>
+          <button
+            class="btn btn-online-brand mr-3 mt-2 dropdown-section__btn"
+            [disabled]="editingMode || !selectCommentsMode"
+            (click)="changeCommentsVisibility(commentVisibityEnum.PRIVATE)"
+          >
+            {{
+              "PROCUREMENT.COMMENTS_TAB.FILTER.COMMENTS_TO_PRIVATE_BTN"
+                | translate
+            }}
+          </button>
+          <button
+            class="btn btn-online-brand mt-2 dropdown-section__btn"
+            [disabled]="editingMode || !selectCommentsMode"
+            (click)="changeCommentsVisibility(commentVisibityEnum.PUBLIC)"
+          >
+            {{
+              "PROCUREMENT.COMMENTS_TAB.FILTER.COMMENTS_TO_PUBLIC_BTN"
+                | translate
+            }}
+          </button>
+          <button
+            *ngIf="activeView || groupedTab"
+            kendoButton
+            class="btn btn-online-brand mt-2 dropdown-section__btn"
+            (click)="selectComments()"
+            [disabled]="editingMode || !hasPermission"
+          >
+            {{ "PROCUREMENT.COMMENTS_TAB.FILTER.SELECT_COMMENT" | translate }}
+          </button>
+        </ng-template>
+
+        <div *ngIf="!activeView && !groupedTab">
+          <ng-container *ngTemplateOutlet="versionTemplate"></ng-container>
+        </div>
+
+        <div *ngIf="activeView">
+          <ng-container *ngTemplateOutlet="buttonsTemplate"></ng-container>
+        </div>
+
+        <div *ngIf="groupedTab">
+          <div class="mt-2">
+            <ng-container *ngTemplateOutlet="versionTemplate"></ng-container>
+          </div>
+          <div>
+            <ng-container *ngTemplateOutlet="buttonsTemplate"></ng-container>
+          </div>
+        </div>
+
+        <div></div>
+      </div>
+    </div>
+    <!-- BUTTONS -->
+    <div class="d-flex row">
+      <button
+        class="mt-2 mb-2 mr-2 ml-2 btn btn-online-brand"
+        (click)="applyFilter()"
+      >
+        {{ "PROCUREMENT.COMMENTS_TAB.FILTER.APPLY_FILTER_BTN" | translate }}
+      </button>
+      <button
+        class="mt-2 mb-2 mr-2 ml-2 btn btn-online-brand"
+        (click)="resetFilter()"
+      >
+        {{ "PROCUREMENT.COMMENTS_TAB.FILTER.RESET_FILTER_BTN" | translate }}
+      </button>
+    </div>
+  </form>
+</div>

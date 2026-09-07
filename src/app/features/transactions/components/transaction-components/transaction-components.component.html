@@ -1,0 +1,548 @@
+<ng-template #template let-anchor>
+  <span [innerHTML]="anchor.nativeElement.innerText"></span>
+</ng-template>
+
+<div
+  kendoTooltip
+  showOn="none"
+  [tooltipTemplate]="template"
+  (mouseover)="showTooltip($event)"
+>
+  <div
+    class="col-12 c-transactions-components pb-3"
+    data-testid="c-transaction-components"
+    [formGroup]="form"
+  >
+    <fi-accordion-panel [collapsible]="false">
+      <ng-container number *ngIf="number">{{ number }}</ng-container>
+      <ng-container title>{{
+        "TRANSACTION.COMPONENTS.TITLE" | translate
+      }}</ng-container>
+      <ng-container body>
+        <div
+          class="c-transactions-amount__container"
+          *ngIf="!isLoading; else skeletonTable"
+        >
+          <div class="c-transactions-amount__amounts-to-assign">
+            <div class="c-transactions-amount__amounts-to-assign--w20">
+              <p class="amount-box">
+                {{ "ANT_TRANSACTION.AMOUNTS.APPROVED_CURRENCY" | translate }}
+                <span class="data">{{ approvedCurrency }}</span>
+              </p>
+            </div>
+            <div>
+              <p class="amount-box">
+                {{ "TRANSACTION.COMPONENTS.AMOUNT_TO_ASSIGN_BID" | translate }}
+                <span class="data overflow has-ellipsis">{{
+                  form.get("amountsToAssign.distributeIbd").value | ifNumber
+                }}</span>
+              </p>
+            </div>
+            <div>
+              <p class="amount-box">
+                {{
+                  "TRANSACTION.COMPONENTS.AMOUNT_TO_ASSIGN_LOCAL_COUNTERPART"
+                    | translate
+                }}
+                <span class="data overflow has-ellipsis">{{
+                  form.get("amountsToAssign.distributeLocalCounterpart").value
+                    | ifNumber
+                }}</span>
+              </p>
+            </div>
+            <div>
+              <p class="amount-box">
+                {{
+                  "TRANSACTION.COMPONENTS.AMOUNT_TO_ASSIGN_CO_FINANCING"
+                    | translate
+                }}
+                <span class="data has-ellipsis">{{
+                  form.get("amountsToAssign.distributeCofinancing").value
+                    | ifNumber
+                }}</span>
+              </p>
+            </div>
+          </div>
+
+          <table
+            class="o-fi-table"
+            [attr.aria-describedby]="
+              'TRANSACTION.COMPONENTS.TABLE_DESCRIPTION' | translate
+            "
+          >
+            <thead>
+              <tr>
+                <th scope="col" colspan="3"></th>
+                <th class="fi-kendo-label--required" scope="col" colspan="6">
+                  {{
+                    "TRANSACTION.COMPONENTS.AMOUNT_TO_DISTRIBUTE" | translate
+                  }}
+                </th>
+                <th scope="col" colspan="6">
+                  {{
+                    "TRANSACTION.COMPONENTS.PROJECTED_AVAILABLE_AMOUNT"
+                      | translate
+                  }}
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" colspan="1" class="has-ellipsis">
+                  {{ "TRANSACTION.COMPONENTS.CODE" | translate }}
+                </th>
+                <th scope="col" colspan="2" class="has-ellipsis">
+                  {{ "TRANSACTION.COMPONENTS.COMPONENT" | translate }}
+                </th>
+
+                <th scope="col" colspan="2" class="has-ellipsis">
+                  {{ "TRANSACTION.COMPONENTS.BID" | translate }}
+                </th>
+                <th scope="col" colspan="2" class="has-ellipsis">
+                  {{ "TRANSACTION.COMPONENTS.LOCAL_COUNTERPART" | translate }}
+                </th>
+                <th scope="col" colspan="2" class="has-ellipsis">
+                  {{ "TRANSACTION.COMPONENTS.CO_FINANCING" | translate }}
+                </th>
+
+                <th scope="col" colspan="2" class="has-ellipsis">
+                  {{ "TRANSACTION.COMPONENTS.BID" | translate }}
+                </th>
+                <th scope="col" colspan="2" class="has-ellipsis">
+                  {{ "TRANSACTION.COMPONENTS.LOCAL_COUNTERPART" | translate }}
+                </th>
+                <th scope="col" colspan="2" class="has-ellipsis">
+                  {{ "TRANSACTION.COMPONENTS.CO_FINANCING" | translate }}
+                </th>
+              </tr>
+            </thead>
+
+            <tbody formArrayName="components">
+              <ng-container
+                *ngFor="let group of componentsArray.controls; let i = index"
+                [formGroupName]="i"
+              >
+                <tr>
+                  <td colspan="1">{{ group.get("code").value }}</td>
+                  <td colspan="2" class="has-ellipsis">
+                    {{ group.get("name").value }}
+                  </td>
+                  <ng-container
+                    *ngIf="
+                      group.get('readOnly').value === false;
+                      else readonlyColumns
+                    "
+                  >
+                    <td colspan="2">
+                      <kendo-numerictextbox
+                        [changeValueOnScroll]="false"
+                        [formControl]="
+                          group.get('amountsDistribute.distributeIbd')
+                        "
+                        data-testid="amountsDistribute.distributeIbd"
+                        class="c-numerictextbox k-numerictextbox"
+                        [spinners]="false"
+                        format="n2"
+                        [min]="0"
+                        [decimals]="2"
+                        [maxlength]="18"
+                        [autoCorrect]="true"
+                        [id]="'Txb_distributeIbd_' + i"
+                        (blur)="
+                          onBlur(
+                            'amountsDistribute.distributeIbd',
+                            group.get('amountsDistribute.distributeIbd').value,
+                            i
+                          )
+                        "
+                      >
+                      </kendo-numerictextbox>
+                    </td>
+                    <td colspan="2">
+                      <kendo-numerictextbox
+                        [autoCorrect]="true"
+                        [changeValueOnScroll]="false"
+                        [formControl]="
+                          group.get(
+                            'amountsDistribute.distributeLocalCounterpart'
+                          )
+                        "
+                        data-testid="amountsDistribute.distributeLocalCounterpart"
+                        class="c-numerictextbox k-numerictextbox"
+                        [spinners]="false"
+                        format="n2"
+                        [decimals]="2"
+                        [min]="0"
+                        [maxlength]="18"
+                        [readonly]="readonlyDPS || readonlyDPI"
+                        [ngClass]="
+                          readonlyDPS || readonlyDPI ? 'force-disabled' : ''
+                        "
+                        [id]="'Txb_distributeLocalCounterpart_' + i"
+                        (blur)="
+                          onBlur(
+                            'amountsDistribute.distributeLocalCounterpart',
+                            group.get(
+                              'amountsDistribute.distributeLocalCounterpart'
+                            ).value,
+                            i
+                          )
+                        "
+                      >
+                      </kendo-numerictextbox>
+                    </td>
+                    <td colspan="2">
+                      <kendo-numerictextbox
+                        [autoCorrect]="true"
+                        [changeValueOnScroll]="false"
+                        [formControl]="
+                          group.get('amountsDistribute.distributeCofinancing')
+                        "
+                        data-testid="amountsDistribute.distributeCofinancing"
+                        class="c-numerictextbox k-numerictextbox"
+                        [spinners]="false"
+                        format="n2"
+                        [decimals]="2"
+                        [min]="0"
+                        [maxlength]="18"
+                        [readonly]="readonly || readonlyDPS || readonlyDPI"
+                        [ngClass]="
+                          readonly || readonlyDPS || readonlyDPI
+                            ? 'force-disabled'
+                            : ''
+                        "
+                        [id]="'Txb_distributeCofinancing_' + i"
+                        (blur)="
+                          onBlur(
+                            'amountsDistribute.distributeCofinancing',
+                            group.get('amountsDistribute.distributeCofinancing')
+                              .value,
+                            i
+                          )
+                        "
+                      >
+                      </kendo-numerictextbox>
+                    </td>
+                  </ng-container>
+                  <ng-template #readonlyColumns>
+                    <td colspan="2" class="has-ellipsis">
+                      <ng-container
+                        *ngIf="
+                          group.get('amountsDistribute.distributeIbd').value >
+                            0;
+                          else noPrefix1
+                        "
+                      >
+                        {{
+                          group.get("amountsDistribute.distributeIbd").value
+                            | ifNumber
+                        }}
+                      </ng-container>
+                      <ng-template #noPrefix1>
+                        {{
+                          group.get("amountsDistribute.distributeIbd").value
+                            | ifNumber
+                        }}
+                      </ng-template>
+                    </td>
+                    <td colspan="2" class="has-ellipsis">
+                      <ng-container
+                        *ngIf="
+                          group.get(
+                            'amountsDistribute.distributeLocalCounterpart'
+                          ).value > 0;
+                          else noPrefix3
+                        "
+                      >
+                        {{
+                          group.get(
+                            "amountsDistribute.distributeLocalCounterpart"
+                          ).value | ifNumber
+                        }}
+                      </ng-container>
+                      <ng-template #noPrefix3>
+                        {{
+                          group.get(
+                            "amountsDistribute.distributeLocalCounterpart"
+                          ).value | ifNumber
+                        }}
+                      </ng-template>
+                    </td>
+                    <td colspan="2" class="has-ellipsis">
+                      <ng-container
+                        *ngIf="
+                          group.get('amountsDistribute.distributeCofinancing')
+                            .value > 0;
+                          else noPrefix2
+                        "
+                      >
+                        {{
+                          group.get("amountsDistribute.distributeCofinancing")
+                            .value | ifNumber
+                        }}
+                      </ng-container>
+                      <ng-template #noPrefix2>
+                        {{
+                          group.get("amountsDistribute.distributeCofinancing")
+                            .value | ifNumber
+                        }}
+                      </ng-template>
+                    </td>
+                  </ng-template>
+                  <td colspan="2" class="has-ellipsis">
+                    <ng-container
+                      *ngIf="
+                        group.get('amountsProjectedAvailable.distributeIbd')
+                          .value > 0;
+                        else noPrefix4
+                      "
+                    >
+                      {{
+                        group.get("amountsProjectedAvailable.distributeIbd")
+                          .value | ifNumber
+                      }}
+                    </ng-container>
+                    <ng-template #noPrefix4>
+                      {{
+                        group.get("amountsProjectedAvailable.distributeIbd")
+                          .value | ifNumber
+                      }}
+                    </ng-template>
+                  </td>
+                  <td colspan="2" class="has-ellipsis">
+                    <ng-container
+                      *ngIf="
+                        group.get(
+                          'amountsProjectedAvailable.distributeLocalCounterpart'
+                        ).value > 0;
+                        else noPrefix5
+                      "
+                    >
+                      {{
+                        group.get(
+                          "amountsProjectedAvailable.distributeLocalCounterpart"
+                        ).value | ifNumber
+                      }}
+                    </ng-container>
+                    <ng-template #noPrefix5>
+                      {{
+                        group.get(
+                          "amountsProjectedAvailable.distributeLocalCounterpart"
+                        ).value | ifNumber
+                      }}
+                    </ng-template>
+                  </td>
+                  <td colspan="2" class="has-ellipsis">
+                    <ng-container
+                      *ngIf="
+                        group.get(
+                          'amountsProjectedAvailable.distributeCofinancing'
+                        ).value > 0;
+                        else noPrefix6
+                      "
+                    >
+                      {{
+                        group.get(
+                          "amountsProjectedAvailable.distributeCofinancing"
+                        ).value | ifNumber
+                      }}
+                    </ng-container>
+                    <ng-template #noPrefix6>
+                      {{
+                        group.get(
+                          "amountsProjectedAvailable.distributeCofinancing"
+                        ).value | ifNumber
+                      }}
+                    </ng-template>
+                  </td>
+                </tr>
+                <tr
+                  class="error-row"
+                  *ngIf="
+                    componentsArray.controls[i]?.errors?.amountToDistribute
+                  "
+                >
+                  <td colspan="15">
+                    <fi-alert
+                      type="warning"
+                      [title]="
+                        'TRANSACTION.COMPONENTS.COMPONENT_AMOUNT_TO_ASSIGN_ERROR'
+                          | translate
+                      "
+                      [closable]="false"
+                    >
+                    </fi-alert>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+
+            <tfoot>
+              <tr class="row-separator"></tr>
+              <tr>
+                <td colspan="1"></td>
+
+                <td colspan="2">
+                  {{ "TRANSACTION.COMPONENTS.TOTAL" | translate }}
+                </td>
+                <td colspan="2" class="has-ellipsis">
+                  <ng-container
+                    *ngIf="
+                      totalsGroup.get('amountsDistribute.distributeIbd')
+                        .value !== 0;
+                      else noPrefixT1
+                    "
+                  >
+                    {{
+                      totalsGroup.get("amountsDistribute.distributeIbd").value
+                        | ifNumber
+                    }}
+                  </ng-container>
+                  <ng-template #noPrefixT1>
+                    {{
+                      totalsGroup.get("amountsDistribute.distributeIbd").value
+                        | ifNumber
+                    }}
+                  </ng-template>
+                </td>
+                <td colspan="2" class="has-ellipsis">
+                  <ng-container
+                    *ngIf="
+                      totalsGroup.get(
+                        'amountsDistribute.distributeLocalCounterpart'
+                      ).value !== 0;
+                      else noPrefixT2
+                    "
+                  >
+                    {{
+                      totalsGroup.get(
+                        "amountsDistribute.distributeLocalCounterpart"
+                      ).value | ifNumber
+                    }}
+                  </ng-container>
+                  <ng-template #noPrefixT2>
+                    {{
+                      totalsGroup.get(
+                        "amountsDistribute.distributeLocalCounterpart"
+                      ).value | ifNumber
+                    }}
+                  </ng-template>
+                </td>
+                <td colspan="2" class="has-ellipsis">
+                  <ng-container
+                    *ngIf="
+                      totalsGroup.get('amountsDistribute.distributeCofinancing')
+                        .value !== 0;
+                      else noPrefixT3
+                    "
+                  >
+                    {{
+                      totalsGroup.get("amountsDistribute.distributeCofinancing")
+                        .value | ifNumber
+                    }}
+                  </ng-container>
+                  <ng-template #noPrefixT3>
+                    {{
+                      totalsGroup.get("amountsDistribute.distributeCofinancing")
+                        .value | ifNumber
+                    }}
+                  </ng-template>
+                </td>
+                <td colspan="2" class="has-ellipsis">
+                  <ng-container
+                    *ngIf="
+                      totalsGroup.get('amountsProjectedAvailable.distributeIbd')
+                        .value !== 0;
+                      else noPrefixT4
+                    "
+                  >
+                    {{
+                      totalsGroup.get("amountsProjectedAvailable.distributeIbd")
+                        .value | ifNumber
+                    }}
+                  </ng-container>
+                  <ng-template #noPrefixT4>
+                    {{
+                      totalsGroup.get("amountsProjectedAvailable.distributeIbd")
+                        .value | ifNumber
+                    }}
+                  </ng-template>
+                </td>
+                <td colspan="2" class="has-ellipsis">
+                  <ng-container
+                    *ngIf="
+                      totalsGroup.get(
+                        'amountsProjectedAvailable.distributeLocalCounterpart'
+                      ).value !== 0;
+                      else noPrefixT5
+                    "
+                  >
+                    {{
+                      totalsGroup.get(
+                        "amountsProjectedAvailable.distributeLocalCounterpart"
+                      ).value | ifNumber
+                    }}
+                  </ng-container>
+                  <ng-template #noPrefixT5>
+                    {{
+                      totalsGroup.get(
+                        "amountsProjectedAvailable.distributeLocalCounterpart"
+                      ).value | ifNumber
+                    }}
+                  </ng-template>
+                </td>
+                <td colspan="2" class="has-ellipsis">
+                  <ng-container
+                    *ngIf="
+                      totalsGroup.get(
+                        'amountsProjectedAvailable.distributeCofinancing'
+                      ).value !== 0;
+                      else noPrefixT6
+                    "
+                  >
+                    {{
+                      totalsGroup.get(
+                        "amountsProjectedAvailable.distributeCofinancing"
+                      ).value | ifNumber
+                    }}
+                  </ng-container>
+                  <ng-template #noPrefixT6>
+                    {{
+                      totalsGroup.get(
+                        "amountsProjectedAvailable.distributeCofinancing"
+                      ).value | ifNumber
+                    }}
+                  </ng-template>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <ng-container
+            *ngIf="form.invalid && form.errors && (form.dirty || form.touched)"
+          >
+            <fi-alert
+              type="warning"
+              *ngIf="
+                form.errors.totalsAmountToDistributeHigher ||
+                form.errors.totalsAmountToDistributeHigherLower
+              "
+              [title]="'TRANSACTION.COMPONENTS.REMAINING_BALANCE' | translate"
+              [closable]="false"
+            >
+            </fi-alert>
+          </ng-container>
+        </div>
+      </ng-container>
+    </fi-accordion-panel>
+  </div>
+</div>
+
+<ng-template #skeletonTable>
+  <kendo-skeleton
+    shape="rectangle"
+    animation="pulse"
+    width="100%"
+    height="200px"
+    class="k-skeleton-pulse k-skeleton-rectangle k-skeleton mt-3"
+    data-testid="skeleton"
+  ></kendo-skeleton>
+</ng-template>

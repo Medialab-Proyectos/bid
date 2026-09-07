@@ -1,0 +1,138 @@
+<ng-container *ngIf="showFees">
+  <fi-accordion-panel [collapsible]="false">
+    <ng-container title>
+      <b>{{ 'R.CONTRACT.FEES.TITLE' | translate }}</b>
+    </ng-container>
+
+    <ng-container body>
+      <!-- Título - solo si hay elementos -->
+      <div class="fees-summary-header mt-4" *ngIf="feesArray.length > 0">
+        <h3>{{ 'R.CONTRACT.FEES.PROFESSIONAL_FEES' | translate }}</h3>
+      </div>
+
+      <!-- Error Component -->
+      <fi-r-contract-error
+        [title]="'R.CONTRACT.VALIDATION.FEES.TITLE'"
+        [errors]="validationErrors()"
+      ></fi-r-contract-error>
+
+      <form [formGroup]="form">
+        <div formArrayName="fees" class="fees-table">
+          <!-- Rows -->
+          <div
+            *ngFor="let fee of feesArray.controls; let i = index"
+            [formGroupName]="i"
+            class="fee-row"
+          >
+            <!-- Concepto -->
+            <div class="col-concept">
+              <mat-form-field appearance="outline">
+                <mat-label>{{
+                  'R.CONTRACT.FEES.CONCEPT' | translate
+                }}</mat-label>
+                <input
+                  formControlName="concept"
+                  type="text"
+                  matInput
+                  [placeholder]="
+                    'R.CONTRACT.FEES.CONCEPT_PLACEHOLDER' | translate
+                  "
+                />
+                <mat-error *ngIf="fee.get('concept')?.hasError('required')">
+                  {{ 'BIDDER.REQUIRED' | translate }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Horas -->
+            <div class="col-hours">
+              <fi-mat-numeric
+                [label]="'R.CONTRACT.FEES.HOURS' | translate"
+                formControlName="hours"
+                min="0"
+                [decimals]="2"
+              />
+            </div>
+
+            <!-- Currency -->
+            <div class="col-currency">
+              <mat-form-field appearance="outline">
+                <mat-label>{{
+                  'R.CONTRACT.FEES.CURRENCY' | translate
+                }}</mat-label>
+                <mat-select formControlName="currency">
+                  <mat-option
+                    *ngFor="let currency of allCurrencies$ | async"
+                    [value]="currency.currency"
+                  >
+                    {{ currency.currency }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="fee.get('currency')?.hasError('required')">
+                  {{ 'BIDDER.REQUIRED' | translate }}
+                </mat-error>
+                <mat-error
+                  *ngIf="fee.get('currency')?.hasError('invalidCurrency')"
+                >
+                  {{
+                    'R.CONTRACT.VALIDATION.LOTS.INVALID_CURRENCY' | translate
+                  }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Subtotal (editable) -->
+            <div class="col-subtotal">
+              <fi-mat-numeric
+                [label]="'R.CONTRACT.FEES.AMOUNT' | translate"
+                min="0"
+                [decimals]="2"
+                formControlName="subtotal"
+              />
+            </div>
+
+            <!-- Costo unitario (calculado - readonly) -->
+            <div class="col-unit-cost">
+              <fi-mat-numeric
+                [label]="'R.CONTRACT.FEES.UNIT_COST' | translate"
+                min="0"
+                [readonly]="true"
+                [decimals]="2"
+                [placeholder]="
+                  'R.CONTRACT.FEES.UNIT_COST_PLACEHOLDER' | translate
+                "
+                formControlName="usdEquivalent"
+              />
+            </div>
+
+            <!-- Actions -->
+            <div class="col-actions">
+              <button
+                (click)="removeFee(i)"
+                mat-icon-button
+                color="primary"
+                type="button"
+                class="fi-flat-btn"
+                [attr.aria-label]="'R.CONTRACT.FEES.DELETE_FEE' | translate"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Add button -->
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        class="mb-3 fi-flat-btn"
+        (click)="addFee()"
+      >
+        <mat-icon>add</mat-icon>
+        {{ 'R.CONTRACT.FEES.ADD_FEES' | translate }}
+      </button>
+    </ng-container>
+  </fi-accordion-panel>
+</ng-container>

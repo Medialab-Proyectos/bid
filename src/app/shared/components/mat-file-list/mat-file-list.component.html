@@ -1,0 +1,83 @@
+<div class="files-list__header">
+  <div>{{ 'PROCESS_DOC.FILES_LIST.FILE' | translate }}</div>
+  <div>{{ 'PROCESS_DOC.FILES_LIST.DOCUMENT_TYPE' | translate }}</div>
+  <div>{{ 'PROCESS_DOC.FILES_LIST.DESCRIPTION' | translate }}</div>
+  <div></div>
+</div>
+<div class="files-list__body" *ngIf="files.length > 0; else noContentTemplate">
+  <div *ngFor="let file of files; let i = index" class="files-list__row">
+    <ng-container *ngIf="!file.id; else uploadedTemplate">
+      {{ file.file.name }}
+    </ng-container>
+    <ng-template #uploadedTemplate>
+      <div class="file_name_uploaded" [matTooltip]="file.name">
+        {{ file.name }}
+      </div>
+    </ng-template>
+    <div>
+      <mat-form-field class="w-100">
+        <mat-label>{{
+          'PROCESS_DOC.FILES_LIST.DOCUMENT_TYPE' | translate
+        }}</mat-label>
+        <mat-select
+          [ngModel]="file.groupCode"
+          (ngModelChange)="onGroupChange($event, file)"
+        >
+          <mat-option *ngFor="let group of groupEnum" [value]="group.id">
+            {{ group.name | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field class="w-100">
+        <mat-label>{{
+          'PROCESS_DOC.FILES_LIST.DESCRIPTION' | translate
+        }}</mat-label>
+        <textarea
+          [(ngModel)]="file.description"
+          matInput
+          cdkTextareaAutosize
+          cdkAutosizeMinRows="2"
+          cdkAutosizeMaxRows="10"
+        ></textarea>
+        <div
+          *ngIf="file.id !== null && file.description !== file.newDescription"
+          class="textarea-actions"
+        >
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="updateFileDescription(file)"
+          >
+            <mat-icon>save</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="file.description = file.newDescription"
+          >
+            <mat-icon>undo</mat-icon>
+          </button>
+        </div>
+      </mat-form-field>
+    </div>
+    <div>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="deleteContractFile(file)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #noContentTemplate>
+  <div class="c-no-content">
+    <div class="c-no-content--wrapper">
+      <p>{{ 'WORKFLOW.DOCUMENTS.NO_DOCUMENTS' | translate }}</p>
+    </div>
+  </div>
+</ng-template>

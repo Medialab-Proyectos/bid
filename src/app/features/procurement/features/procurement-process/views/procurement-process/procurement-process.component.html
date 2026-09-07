@@ -1,0 +1,218 @@
+<ng-template #template let-anchor>
+  <span [innerHTML]="anchor.nativeElement.innerText"></span>
+</ng-template>
+
+<div *ngIf="showHeader" class="row" role="qa-process-header">
+  <div class="col-12">
+    <div class="card-process">
+      <!-- header -->
+      <div
+        [ngClass]="
+          mobileView ? 'card-process__header--mobile' : 'card-process__header'
+        "
+      >
+        <div class="row">
+          <div class="col-12 col-md-6 d-flex">
+            <div class="project-header__icon">
+              <div class="icon-header_project">
+                <em class="fas fa-briefcase"></em>
+              </div>
+            </div>
+            <div class="pl-3 row">
+              <div class="col-12 card-process__header--title">
+                <span>{{ "PROCUREMENT.PROCESS.PROYECT" | translate }}</span> >
+                <span>{{
+                  "PROCUREMENT.PROCESS.PROCUREMENT_PROCESS" | translate
+                }}</span>
+              </div>
+              <div class="col-12 card-process__header--subtitle">
+                <div
+                  *ngIf="!isEnumLoading && !isContractLoading; else skeleton"
+                >
+                  <span> {{ contract?.contract }} </span>
+                  <span>&nbsp;>&nbsp;</span>
+                  <span style="white-space: nowrap">{{
+                    processDetails?.code
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- data header -->
+
+      <div *ngIf="expandedHeader" class="pl-3 pb-3 pr-3">
+        <div
+          kendoTooltip
+          showOn="none"
+          [tooltipTemplate]="template"
+          (mouseover)="showTooltip($event)"
+        >
+          <div class="row px-3 pt-3">
+            <div class="col-12 col-md-2">
+              <div class="card-process__data-tag">
+                {{ "PROCUREMENT.PROCESS.TOTAL_AMOUNT" | translate }}
+              </div>
+              <div
+                class="card-process__data no-wrap"
+                *ngIf="
+                  !isEnumLoading &&
+                    !isSelectedProcessLoading &&
+                    !isContractLoading;
+                  else skeleton
+                "
+              >
+                $ {{ projectAmount | ifNumber }}
+              </div>
+            </div>
+            <div class="col-12 col-md-2">
+              <div class="card-process__data-tag">
+                {{ "PROCUREMENT.PROCESS.ACTUAL_AMOUNT" | translate }}
+              </div>
+              <div
+                class="card-process__data no-wrap"
+                *ngIf="
+                  !isEnumLoading &&
+                    !isSelectedProcessLoading &&
+                    !isContractLoading;
+                  else skeleton
+                "
+              >
+                {{
+                  realAmount === null
+                    ? "-"
+                    : "$" + (realAmount | number : "1.2-2")
+                }}
+              </div>
+            </div>
+
+            <div class="col-12 col-md-2">
+              <div class="card-process__data-tag">
+                {{ "PROCUREMENT.PROCESS.CATEGORY" | translate }}
+              </div>
+              <div
+                class="card-process__data"
+                *ngIf="
+                  !isEnumLoading && !isSelectedProcessLoading;
+                  else skeleton
+                "
+              >
+                {{
+                  category
+                    | translateEnum
+                      : enum.biddingProcessProcurementProcessCategories
+                }}
+              </div>
+            </div>
+            <div class="col-12 col-md-2">
+              <div class="card-process__data-tag">
+                {{ "PROCUREMENT.PROCESS.BIDDING_METHOD" | translate }}
+              </div>
+
+              <div
+                class="card-process__data no-wrap"
+                *ngIf="
+                  !isEnumLoading && !isSelectedProcessLoading;
+                  else skeleton
+                "
+              >
+                {{
+                  procurementMethod
+                    | translateEnum
+                      : enum.biddingProcessProcurementProcessProcurementMethods
+                }}
+              </div>
+            </div>
+            <div class="col-12 col-md-2">
+              <div class="card-process__data-tag">
+                {{ "PROCUREMENT.PROCESS.MONITORING_METHOD" | translate }}
+              </div>
+
+              <div
+                class="card-process__data"
+                *ngIf="
+                  !isEnumLoading && !isSelectedProcessLoading;
+                  else skeleton
+                "
+              >
+                {{
+                  supervisionMethod
+                    | translateEnum
+                      : enum.biddingProcessProcurementProcessSupervisionMethods
+                }}
+              </div>
+            </div>
+            <div class="col-12 col-md-2">
+              <div class="card-process__data-tag">
+                {{ "PROCUREMENT.STATUS" | translate }}
+              </div>
+              <div
+                class="card-process__data no-wrap"
+                *ngIf="
+                  !isEnumLoading &&
+                    !isSelectedProcessLoading &&
+                    !isHeaderLoading;
+                  else skeleton
+                "
+              >
+                {{
+                  processStatus
+                    | translateEnum
+                      : enum.biddingProcessProcurementProcessStatuses
+                }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- collapse btn -->
+      <div class="pb-3 pl-4 col-12 sf700">
+        <button
+          kendoButton
+          *fiDisplayByPermissions="seeGeneralInfoButtonPermission"
+          class="general-information-toggle"
+          id="Btn_Toggle_information"
+          [icon]="
+            expandedInformation ? 'arrow-chevron-up' : 'arrow-chevron-down'
+          "
+          (click)="toggleInformationGeneral()"
+        >
+          {{ "PROCUREMENT.PROCESS.SHOW_GENERAL_INFO" | translate }}
+        </button>
+      </div>
+      <div class="pb-3" *ngIf="expandedInformation">
+        <fi-process-header
+          [biddingProcessId]="biddingProcessId"
+        ></fi-process-header>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-container *ngIf="displayTabMenu">
+  <ng-container *ngIf="!isContractLoading; else spinner">
+    <div *ngIf="showHeader" class="process-header-card">
+      <div class="col-12 mb-0">
+        <fi-tab-menu></fi-tab-menu>
+      </div>
+    </div>
+    <router-outlet></router-outlet>
+  </ng-container>
+</ng-container>
+
+<ng-template #skeleton>
+  <kendo-skeleton
+    shape="text"
+    animation="pulse"
+    width="100%"
+    class="k-skeleton-pulse k-skeleton-text k-skeleton"
+    data-testid="skeleton"
+  ></kendo-skeleton>
+</ng-template>
+
+<ng-template #spinner>
+  <div class="py-5 text-center">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

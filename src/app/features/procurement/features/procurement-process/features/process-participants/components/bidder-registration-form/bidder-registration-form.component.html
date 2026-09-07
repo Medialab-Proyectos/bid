@@ -1,0 +1,284 @@
+<ng-container>
+  <div [formGroup]="bidderForm">
+    <div class="row pb-md-3">
+      <div class="col-12 col-md-4">
+        <div class="pl-md-3">
+          <kendo-label
+            class="fi-kendo-label"
+            text="{{ 'BIDDER.NAME' | translate }}"
+            [for]="name"
+            [ngClass]="!isReadOnly && 'fi-kendo-label--required'"
+          >
+            <kendo-textbox
+              #name
+              class="c-textbox"
+              formControlName="name"
+              ngDefaultControl
+              [fiDisableControl]="isReadOnly"
+              [id]="id ? 'Txb_name_' + id : 'Txb_name'"
+            >
+            </kendo-textbox>
+          </kendo-label>
+          <div
+            *ngIf="
+              bidderForm.controls.name.errors &&
+              (bidderForm.controls.name.dirty ||
+                bidderForm.controls.name.touched)
+            "
+          >
+            <div class="o-input-error">
+              {{ requiredErrorMessage | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <kendo-label
+          class="fi-kendo-label"
+          text="{{ 'BIDDER.TYPE' | translate }}"
+          [for]="type"
+          [ngClass]="!isReadOnly && 'fi-kendo-label--required'"
+        >
+          <kendo-dropdownlist
+            #type
+            class="c-dropdown-list k-dropdown"
+            formControlName="type"
+            [fiDropdownFormControl]
+            ngDefaultControl
+            [id]="id ? 'Down_Type_' + id : 'Down_Type'"
+            [data]="typeList"
+            textField="name"
+            valueField="id"
+            [valuePrimitive]="true"
+            [fiDisableControl]="isReadOnly"
+            (valueChange)="bidderTypeChange($event)"
+          >
+            <ng-template kendoDropDownListValueTemplate let-item>
+              {{ item?.name | translate }}
+            </ng-template>
+            <ng-template kendoDropDownListItemTemplate let-item>
+              {{ item?.name | translate }}
+            </ng-template>
+          </kendo-dropdownlist>
+        </kendo-label>
+        <div
+          *ngIf="
+            bidderForm.controls.type.errors &&
+            (bidderForm.controls.type.dirty || bidderForm.controls.type.touched)
+          "
+        >
+          <div class="o-input-error">
+            {{ requiredErrorMessage | translate }}
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="pr-md-3">
+          <kendo-label
+            class="fi-kendo-label"
+            text="{{ 'BIDDER.NATIONALITY' | translate }}"
+            [for]="nationality"
+            [ngClass]="!isReadOnly && 'fi-kendo-label--required'"
+          >
+            <em
+              [title]="'BIDDER.BIDDERS_NATIONALITY_TOOLTIP' | translate"
+              kendoTooltip
+              class="pl-2 fas fa-question-circle"
+            ></em>
+            <kendo-dropdownlist
+              #nationality
+              [fiDropdownFormControl]
+              class="c-dropdown-list k-dropdown"
+              formControlName="nationality"
+              ngDefaultControl
+              [id]="id ? 'Down_Nationality_' + id : 'Down_Nationality'"
+              [data]="allUnfilterCountries"
+              textField="name"
+              valueField="id"
+              [valuePrimitive]="true"
+              [fiDisableControl]="isReadOnly"
+              (valueChange)="valueChangeCountry($event)"
+            >
+              <ng-template kendoDropDownListValueTemplate let-item>
+                {{ item?.name | titlecase }}
+              </ng-template>
+              <ng-template kendoDropDownListItemTemplate let-item>
+                {{ item?.name | titlecase }}
+              </ng-template>
+            </kendo-dropdownlist>
+          </kendo-label>
+          <div
+            *ngIf="
+              bidderForm.controls.nationality.errors &&
+              (bidderForm.controls.nationality.dirty ||
+                bidderForm.controls.nationality.touched)
+            "
+          >
+            <div class="o-input-error">
+              {{ requiredErrorMessage | translate }}
+            </div>
+          </div>
+          <div
+            class="pt-3"
+            *ngIf="!!bidderNationality && !isMemberSelectedCountry"
+          >
+            <fi-alert
+              [type]="'warning'"
+              [title]="'BIDDER.BIDDERS_NATIONALITY_WARNING_MEMBER' | translate"
+              [closable]="!isReadOnly"
+              (openChange)="resetCountrySelection()"
+            >
+            </fi-alert>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="row pb-md-3"
+      [ngStyle]="hideAditionalFields && { display: 'none' }"
+    >
+      <div class="col-12 col-md-4">
+        <div class="pl-md-3">
+          <kendo-label
+            class="fi-kendo-label"
+            text="{{ 'BIDDER.LEGAL_REPRESENTATIVE' | translate }}"
+            [for]="legalRepresentative"
+          >
+            <kendo-textbox
+              #legalRepresentative
+              class="c-textbox"
+              formControlName="legalRepresentative"
+              ngDefaultControl
+              [id]="
+                id ? 'Txb_LegalRepresentative_' + id : 'Txb_LegalRepresentative'
+              "
+              [fiDisableControl]="isReadOnly"
+            ></kendo-textbox>
+          </kendo-label>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <kendo-label
+          class="fi-kendo-label"
+          text="{{ 'BIDDER.ECONOMIC_SECTOR' | translate }}"
+          [for]="economicSector"
+        >
+          <kendo-dropdownlist
+            #economicSector
+            class="c-dropdown-list k-dropdown"
+            formControlName="economicSector"
+            ngDefaultControl
+            [fiDropdownFormControl]
+            [data]="economicSectorList"
+            textField="name"
+            valueField="id"
+            [valuePrimitive]="true"
+            [id]="id ? 'Down_EconomicSector_' + id : 'Down_EconomicSector'"
+            [fiDisableControl]="isReadOnly"
+          >
+            <ng-template kendoDropDownListValueTemplate let-item>
+              {{ item?.name | translate }}
+            </ng-template>
+            <ng-template kendoDropDownListItemTemplate let-item>
+              {{ item?.name | translate }}
+            </ng-template>
+          </kendo-dropdownlist>
+        </kendo-label>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="pr-md-3">
+          <kendo-label
+            class="fi-kendo-label"
+            text="{{ 'BIDDER.BENEFICIARY_OWNER' | translate }}"
+            [for]="beneficiaryOwner"
+          >
+            <em
+              [title]="'BIDDER.BENEFICIARY_OWNER_TOOLTIP' | translate"
+              kendoTooltip
+              class="pl-2 fas fa-question-circle"
+            ></em>
+            <kendo-textbox
+              #beneficiaryOwner
+              class="c-textbox"
+              formControlName="beneficiaryOwner"
+              ngDefaultControl
+              [id]="id ? 'Txb_beneficiaryOwner_' + id : 'Txb_beneficiaryOwner'"
+              [fiDisableControl]="isReadOnly"
+            ></kendo-textbox>
+          </kendo-label>
+        </div>
+      </div>
+    </div>
+    <div class="row pb-md-3">
+      <div class="col-12 col-md-4">
+        <div class="pl-md-3">
+          <kendo-label
+            class="fi-kendo-label"
+            text="{{ 'BIDDER.ADDRESS' | translate }}"
+            [for]="address"
+          >
+            <kendo-textbox
+              #address
+              class="c-textbox"
+              formControlName="address"
+              ngDefaultControl
+              [id]="id ? 'Txb_Address_' + id : 'Txb_Address'"
+              [fiDisableControl]="isReadOnly"
+            ></kendo-textbox>
+          </kendo-label>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <kendo-label
+          class="fi-kendo-label"
+          text="{{ 'BIDDER.ZIP_CODE' | translate }}"
+          [for]="zipCode"
+        >
+          <kendo-textbox
+            #zipCode
+            class="c-textbox"
+            formControlName="zipCode"
+            ngDefaultControl
+            [id]="id ? 'Txb_ZipCode_' + id : 'Txb_ZipCode'"
+            [fiDisableControl]="isReadOnly"
+          ></kendo-textbox>
+        </kendo-label>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="pr-md-3">
+          <kendo-label
+            class="fi-kendo-label"
+            text="{{ 'BIDDER.HOME_COUNTRY' | translate }}"
+            [for]="location"
+          >
+            <em
+              [title]="'BIDDER.HOME_COUNTRY_TOOLTIP' | translate"
+              kendoTooltip
+              class="pl-2 fas fa-question-circle"
+            ></em>
+            <kendo-dropdownlist
+              #location
+              class="c-dropdown-list k-dropdown"
+              formControlName="location"
+              [fiDropdownFormControl]
+              ngDefaultControl
+              [data]="allUnfilterCountries"
+              textField="name"
+              valueField="code"
+              [valuePrimitive]="true"
+              [id]="id ? 'Down_Location_' + id : 'Down_Location'"
+              [fiDisableControl]="isReadOnly"
+            >
+              <ng-template kendoDropDownListValueTemplate let-item>
+                {{ item?.name | titlecase }}
+              </ng-template>
+              <ng-template kendoDropDownListItemTemplate let-item>
+                {{ item?.name | titlecase }}
+              </ng-template>
+            </kendo-dropdownlist>
+          </kendo-label>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

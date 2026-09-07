@@ -1,0 +1,46 @@
+<div *ngIf="!showReadOnly; else completeView">
+  <fi-finished-docs-contracts
+    *ngIf="showFinishedDocs"
+    [mode]="mode"
+    [files]="bankResponseDocs"
+    [noDocumentsMessage]="noDocumentsMessage"
+  ></fi-finished-docs-contracts>
+  <fi-docs-list-contract
+    [mandatoryDocs]="getMandatoryGroups()"
+    [optionalDocs]="getOptionalGroups()"
+    [permissions]="viewPermissions"
+    [mode]="mode"
+  >
+  </fi-docs-list-contract>
+
+  <fi-files-list-contract
+    *ngIf="!isUploading; else showSpinner"
+    [mode]="mode"
+    [showReadOnly]="showReadOnly"
+    (deleteFile)="deleteFileAction($event)"
+    (editFile)="editFileAction($event)"
+    [deletePermission]="deletePermissions"
+    [editPermission]="editPermissions"
+    [groupEnum]="groupEnumAux"
+    [files]="allDocuments"
+    [groupsList]="groupsList"
+  ></fi-files-list-contract>
+  <fi-mat-file-selector
+    (valueChange)="handlerFilesChanged($event)"
+    [permission]="editPermissions"
+  ></fi-mat-file-selector>
+</div>
+
+<ng-template #completeView>
+  <fi-finished-docs-contracts
+    [mode]="mode"
+    [files]="allDocuments"
+    [noDocumentsMessage]="noDocumentsMessage"
+  ></fi-finished-docs-contracts>
+</ng-template>
+
+<ng-template #showSpinner>
+  <div class="text-center py-5">
+    <fi-loader></fi-loader>
+  </div>
+</ng-template>

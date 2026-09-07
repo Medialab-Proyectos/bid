@@ -1,0 +1,153 @@
+<div class="rich-text-editor-container" [class.disabled]="disabled">
+  <div class="toolbar">
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('bold')"
+      matTooltip="Negrita"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_bold</mat-icon>
+    </button>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('italic')"
+      matTooltip="Cursiva"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_italic</mat-icon>
+    </button>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('underline')"
+      matTooltip="Subrayado"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_underlined</mat-icon>
+    </button>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('strikeThrough')"
+      matTooltip="Tachado"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_strikethrough</mat-icon>
+    </button>
+    <span class="separator"></span>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('justifyLeft')"
+      matTooltip="Alinear a la izquierda"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_align_left</mat-icon>
+    </button>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('justifyCenter')"
+      matTooltip="Centrar"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_align_center</mat-icon>
+    </button>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('justifyRight')"
+      matTooltip="Alinear a la derecha"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_align_right</mat-icon>
+    </button>
+    <span class="separator"></span>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('insertUnorderedList')"
+      matTooltip="Lista con viñetas"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_list_bulleted</mat-icon>
+    </button>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('insertOrderedList')"
+      matTooltip="Lista numerada"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_list_numbered</mat-icon>
+    </button>
+    <span class="separator"></span>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="insertLink()"
+      matTooltip="Insertar enlace"
+      [disabled]="disabled"
+    >
+      <mat-icon>insert_link</mat-icon>
+    </button>
+    <button
+      type="button"
+      mat-icon-button
+      (click)="formatText('removeFormat')"
+      matTooltip="Limpiar formato"
+      [disabled]="disabled"
+    >
+      <mat-icon>format_clear</mat-icon>
+    </button>
+  </div>
+
+  <div
+    #editorDiv
+    class="editor-content"
+    [class.invalid]="
+      (isRequired && isEmpty() && isTouched) || charCountExceeded
+    "
+    [class.disabled]="disabled"
+    [class.empty]="isEmpty()"
+    [attr.data-placeholder]="placeholder"
+    [contentEditable]="!disabled"
+    [attr.aria-required]="isRequired"
+    (input)="onContentChange($event)"
+    (blur)="markAsTouched()"
+    (focus)="handleFocus()"
+  ></div>
+
+  <div class="footer">
+    <!-- Contador de caracteres -->
+    <div class="char-counter" *ngIf="showCharCount">
+      <span [class.exceeded]="charCountExceeded">{{ charCount }}</span>
+      <span> / {{ maxLength }}</span>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div
+      class="error-message"
+      *ngIf="isRequired && isEmpty() && richTextControl.touched"
+    >
+      {{ "FORMS.VALIDATIONS.IS_REQUIRED" | translate }}
+    </div>
+
+    <!-- Mensaje de error por límite excedido -->
+    <div class="error-message" *ngIf="charCountExceeded">
+      {{ "FORMS.VALIDATIONS.MAX_LENGTH" | translate }}
+    </div>
+  </div>
+
+  <mat-form-field appearance="fill" class="hidden-textarea">
+    <textarea
+      matInput
+      #hiddenTextarea
+      [placeholder]="placeholder"
+      [formControl]="richTextControl"
+      hidden
+    ></textarea>
+  </mat-form-field>
+</div>

@@ -1,0 +1,635 @@
+<div class="container-fluid pr-page">
+  <div class="pr-card">
+    <div class="pr-card__head">
+      <div class="pr-card__identity">
+        <span class="pr-card__icon"><em class="fas fa-file-invoice-dollar"></em></span>
+        <h2 class="pr-card__title">
+          {{ "PAYMENT_RECORD.STATEMENT.TITLE" | translate }}
+        </h2>
+      </div>
+    </div>
+
+    <div class="pr-tabstrip" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="pr-tabstrip__tab"
+        id="Tab_Statement_Current"
+        [class.pr-tabstrip__tab--active]="tab === 'current'"
+        [attr.aria-selected]="tab === 'current'"
+        (click)="tab = 'current'"
+      >
+        {{ "PAYMENT_RECORD.STATEMENT.TAB_CURRENT" | translate }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="pr-tabstrip__tab"
+        id="Tab_Statement_Previous"
+        [class.pr-tabstrip__tab--active]="tab === 'previous'"
+        [attr.aria-selected]="tab === 'previous'"
+        (click)="tab = 'previous'"
+      >
+        {{ "PAYMENT_RECORD.STATEMENT.TAB_PREVIOUS" | translate }}
+        <span class="pr-tabstrip__count" *ngIf="previous.length">
+          {{ previous.length }}
+        </span>
+      </button>
+    </div>
+
+    <!-- ================= ACTUAL ================= -->
+    <ng-container *ngIf="tab === 'current'">
+      <fi-alert
+        *ngIf="generated"
+        type="success"
+        [title]="
+          ('PAYMENT_RECORD.STATEMENT.GENERATED' | translate) +
+          ' ' +
+          generated.transactionNumber
+        "
+        [closable]="true"
+      ></fi-alert>
+
+      <!-- ---------- step 1: which transaction ---------- -->
+      <div class="pr-step">
+        <span class="pr-step__number">1</span>
+        <h3 class="pr-step__title">
+          {{ "PAYMENT_RECORD.STATEMENT.STEP_TYPE" | translate }}
+        </h3>
+      </div>
+
+      <div class="pr-step__body">
+        <p class="pr-panel__lead">
+          {{ "PAYMENT_RECORD.STATEMENT.STEP_TYPE_HELP" | translate }}
+        </p>
+
+        <div class="pr-dialog__row">
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label pr-dialog__required">
+              {{ "PAYMENT_RECORD.STATEMENT.TYPE" | translate }}
+            </span>
+            <kendo-dropdownlist
+              class="c-dropdown-list"
+              id="Ddl_Statement_Type"
+              [data]="statementTypes"
+              [defaultItem]="null"
+              [itemDisabled]="itemDisabled"
+              [(ngModel)]="transactionType"
+              (valueChange)="onTypeChange()"
+            >
+              <ng-template kendoDropDownListValueTemplate let-dataItem>
+                <span *ngIf="dataItem; else typePlaceholder">
+                  {{ "PAYMENT_RECORD.STATEMENT.TYPES." + dataItem | translate }}
+                </span>
+                <ng-template #typePlaceholder>
+                  <span class="pr-dropdown-placeholder">
+                    {{ "PAYMENT_RECORD.STATEMENT.TYPE_PLACEHOLDER" | translate }}
+                  </span>
+                </ng-template>
+              </ng-template>
+              <ng-template kendoDropDownListItemTemplate let-dataItem>
+                {{ "PAYMENT_RECORD.STATEMENT.TYPES." + dataItem | translate }}
+                <span class="pr-dialog__help" *ngIf="isUnavailable(dataItem)">
+                  — {{ "PAYMENT_RECORD.STATEMENT.TYPE_BLOCKED" | translate }}
+                </span>
+              </ng-template>
+            </kendo-dropdownlist>
+            <span class="pr-dialog__help" *ngIf="transactionType">
+              {{
+                "PAYMENT_RECORD.STATEMENT.TYPE_HELP." + transactionType
+                  | translate
+              }}
+            </span>
+          </div>
+        </div>
+
+        <fi-alert
+          *ngIf="transactionType && isUnavailable(transactionType)"
+          type="warning"
+          [title]="'PAYMENT_RECORD.STATEMENT.TYPE_BLOCKED_REASON' | translate"
+          [closable]="false"
+        ></fi-alert>
+
+        <!-- date range, for the types that sweep what was already paid -->
+        <ng-container
+          *ngIf="transactionType && !picksPayments && !isUnavailable(transactionType)"
+        >
+          <div class="pr-dialog__row pr-dialog__row--dates">
+            <div class="pr-dialog__field">
+              <span class="pr-dialog__label pr-dialog__required">
+                {{ "PAYMENT_RECORD.STATEMENT.DATE_FROM" | translate }}
+              </span>
+              <kendo-datepicker
+                class="c-datepicker"
+                format="dd/MM/yyyy"
+                [placeholder]="'PAYMENT_RECORD.STATEMENT.DATE_PLACEHOLDER' | translate"
+                id="Dtp_Statement_From"
+                [(ngModel)]="dateFrom"
+              ></kendo-datepicker>
+            </div>
+            <div class="pr-dialog__field">
+              <span class="pr-dialog__label pr-dialog__required">
+                {{ "PAYMENT_RECORD.STATEMENT.DATE_TO" | translate }}
+              </span>
+              <kendo-datepicker
+                class="c-datepicker"
+                format="dd/MM/yyyy"
+                [placeholder]="'PAYMENT_RECORD.STATEMENT.DATE_PLACEHOLDER' | translate"
+                id="Dtp_Statement_To"
+                [(ngModel)]="dateTo"
+              ></kendo-datepicker>
+            </div>
+            <div class="pr-dialog__field pr-statement__search">
+              <!--
+                Invisible, but occupying the same box a real label would --
+                its two siblings both have one, and matching its height here
+                is what actually lines the button up with the date inputs
+                next to it, rather than guessing a pixel offset that only
+                happens to work for one font size.
+              -->
+              <span class="pr-dialog__label" aria-hidden="true">&nbsp;</span>
+              <button
+                kendoButton
+                class="btn btn-brand"
+                id="Btn_Statement_Search"
+                iconClass="fas fa-file-invoice"
+                [disabled]="!canSearch || loading"
+                (click)="search()"
+              >
+                {{ "PAYMENT_RECORD.STATEMENT.SEARCH" | translate }}
+              </button>
+            </div>
+          </div>
+          <p class="pr-dialog__help">
+            {{ "PAYMENT_RECORD.STATEMENT.RANGE_HELP" | translate }}
+          </p>
+        </ng-container>
+
+        <!-- direct payment: nothing has been paid, so they are picked -->
+        <ng-container *ngIf="transactionType && picksPayments">
+          <button
+            kendoButton
+            class="btn btn-brand pr-statement__pick-button"
+            id="Btn_Statement_PickPayments"
+            iconClass="fas fa-plus"
+            (click)="pickPayments()"
+          >
+            {{ "PAYMENT_RECORD.STATEMENT.PICK_PAYMENTS" | translate }}
+          </button>
+        </ng-container>
+
+        <!--
+          `fi-alert`'s own markup and classes, not the component itself --
+          its title/subtitle only take plain text, with nowhere to put a
+          real, routable link. This renders identically to a real
+          `type="info"` alert while keeping the link a real link.
+        -->
+        <div class="c-alert c-alert--info" *ngIf="transactionType">
+          <div class="c-alert__body">
+            <div class="c-alert__icon">
+              <em class="fas fa-info-circle"></em>
+            </div>
+            <div class="c-alert__title">
+              {{ "PAYMENT_RECORD.STATEMENT.HINT_PREFIX" | translate }}
+              <a
+                href="javascript:void(0)"
+                class="pr-link"
+                id="Lnk_Statement_ToRecord"
+                (click)="cancel()"
+                [routerLink]="['../']"
+              >
+                {{ "PAYMENT_RECORD.STATEMENT.HINT_LINK" | translate }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- step 2: the amounts ---------- -->
+      <ng-container *ngIf="draft">
+        <div class="pr-step">
+          <span class="pr-step__number">2</span>
+          <h3 class="pr-step__title">
+            {{
+              (picksPayments
+                ? "PAYMENT_RECORD.STATEMENT.STEP_PAYMENTS"
+                : "PAYMENT_RECORD.STATEMENT.STEP_AMOUNTS"
+              ) | translate
+            }}
+          </h3>
+        </div>
+
+        <div class="pr-step__body">
+          <p class="pr-panel__lead">
+            {{
+              (picksPayments
+                ? "PAYMENT_RECORD.STATEMENT.STEP_PAYMENTS_HELP"
+                : "PAYMENT_RECORD.STATEMENT.STEP_AMOUNTS_HELP"
+              ) | translate
+            }}
+          </p>
+
+          <!--
+            One banner, not two stacked notices: when both apply, "how to
+            read the amounts" and "how to fix one" are both short enough to
+            read as a single continuation rather than needing a box each.
+          -->
+          <fi-alert
+            type="info"
+            [title]="
+              ('PAYMENT_RECORD.STATEMENT.CURRENCY_NOTE'
+                | translate : { currency: draft.approvalCurrency }) +
+                (picksPayments
+                  ? ' ' + ('PAYMENT_RECORD.STATEMENT.EDIT_HINT' | translate)
+                  : '')
+            "
+            [closable]="false"
+          ></fi-alert>
+
+          <!--
+            Above the table, not buried in the action bar at the bottom --
+            downloading is something to check the numbers with while reading
+            the table, not a step that only makes sense once the agency is
+            done deciding what to send.
+          -->
+          <div class="pr-statement__top-actions">
+            <button
+              kendoButton
+              class="btn btn-neutral"
+              id="Btn_Statement_Download"
+              iconClass="fas fa-file-download"
+              [disabled]="draft.paymentsSelected === 0"
+              (click)="downloadStatement()"
+            >
+              {{ "PAYMENT_RECORD.STATEMENT.DOWNLOAD" | translate }}
+            </button>
+          </div>
+
+          <fi-no-content
+            *ngIf="!hasRows && !picksPayments"
+            [content]="'PAYMENT_RECORD.STATEMENT.EMPTY' | translate"
+          ></fi-no-content>
+
+          <!-- amounts by component -->
+          <div class="pr-panel__scroll" *ngIf="hasRows && !picksPayments">
+            <table class="pr-rates pr-statement__table">
+              <!--
+                A two-level header: "A justificar" and "Disponible" each span
+                three source columns underneath them. `scope="col"` alone only
+                covers a single header level, so every cell below carries an
+                explicit `headers` reference to both its group and its column,
+                the way a screen reader needs it spelled out.
+              -->
+              <thead>
+                <tr>
+                  <th id="th-stmt-idx" scope="col" rowspan="2" class="pr-statement__index">
+                    <span class="sr-only">{{ "PAYMENT_RECORD.STATEMENT.COLUMNS.ROW_NUMBER" | translate }}</span>
+                  </th>
+                  <th id="th-stmt-component" scope="col" rowspan="2">
+                    {{ "PAYMENT_RECORD.COLUMNS.COMPONENT" | translate }}
+                  </th>
+                  <th id="th-stmt-tojustify" scope="colgroup" colspan="3" class="pr-statement__group-head">
+                    {{ "PAYMENT_RECORD.STATEMENT.TO_JUSTIFY" | translate }}
+                  </th>
+                  <th id="th-stmt-available" scope="colgroup" colspan="3" class="pr-statement__group-head">
+                    {{ "PAYMENT_RECORD.STATEMENT.AVAILABLE" | translate }}
+                  </th>
+                  <th id="th-stmt-payments" scope="col" rowspan="2" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.PAYMENTS" | translate }}
+                  </th>
+                </tr>
+                <tr>
+                  <th id="th-stmt-tj-idb" scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.SOURCE_IDB" | translate }}
+                  </th>
+                  <th id="th-stmt-tj-local" scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.SOURCE_LOCAL" | translate }}
+                  </th>
+                  <th id="th-stmt-tj-cofin" scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.SOURCE_COFIN" | translate }}
+                  </th>
+                  <th id="th-stmt-av-idb" scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.SOURCE_IDB" | translate }}
+                  </th>
+                  <th id="th-stmt-av-local" scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.SOURCE_LOCAL" | translate }}
+                  </th>
+                  <th id="th-stmt-av-cofin" scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.SOURCE_COFIN" | translate }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let row of componentRows; trackBy: trackRow"
+                  [class.pr-statement__row--special]="!isOpenable(row)"
+                >
+                  <td headers="th-stmt-idx" class="pr-statement__index">{{ row.rowNumber }}</td>
+                  <td headers="th-stmt-component">
+                    <a
+                      *ngIf="isOpenable(row)"
+                      href="javascript:void(0)"
+                      class="pr-link"
+                      [attr.id]="'Lnk_Statement_Component_' + row.componentCode"
+                      (click)="openComponent(row)"
+                    >
+                      {{ rowLabel(row) }}
+                    </a>
+                    <span *ngIf="!isOpenable(row)">{{ rowLabel(row) }}</span>
+                  </td>
+                  <td headers="th-stmt-tojustify th-stmt-tj-idb" class="pr-grid__number">{{ row.toJustify.idb | ifNumber }}</td>
+                  <td headers="th-stmt-tojustify th-stmt-tj-local" class="pr-grid__number">
+                    {{ row.toJustify.localContribution | ifNumber }}
+                  </td>
+                  <td headers="th-stmt-tojustify th-stmt-tj-cofin" class="pr-grid__number">
+                    {{ row.toJustify.cofinancing | ifNumber }}
+                  </td>
+                  <td
+                    headers="th-stmt-available th-stmt-av-idb"
+                    class="pr-grid__number"
+                    [class.pr-amount--over]="row.availableBalance.idb < 0"
+                  >
+                    <em
+                      *ngIf="row.availableBalance.idb < 0"
+                      class="fas fa-exclamation-triangle pr-amount__over-icon"
+                      [attr.aria-label]="'PAYMENT_RECORD.STATEMENT.OVER_BUDGET' | translate"
+                      [title]="'PAYMENT_RECORD.STATEMENT.OVER_BUDGET' | translate"
+                    ></em>
+                    {{ row.availableBalance.idb | ifNumber }}
+                  </td>
+                  <td
+                    headers="th-stmt-available th-stmt-av-local"
+                    class="pr-grid__number"
+                    [class.pr-amount--over]="row.availableBalance.localContribution < 0"
+                  >
+                    <em
+                      *ngIf="row.availableBalance.localContribution < 0"
+                      class="fas fa-exclamation-triangle pr-amount__over-icon"
+                      [attr.aria-label]="'PAYMENT_RECORD.STATEMENT.OVER_BUDGET' | translate"
+                      [title]="'PAYMENT_RECORD.STATEMENT.OVER_BUDGET' | translate"
+                    ></em>
+                    {{ row.availableBalance.localContribution | ifNumber }}
+                  </td>
+                  <td
+                    headers="th-stmt-available th-stmt-av-cofin"
+                    class="pr-grid__number"
+                    [class.pr-amount--over]="row.availableBalance.cofinancing < 0"
+                  >
+                    <em
+                      *ngIf="row.availableBalance.cofinancing < 0"
+                      class="fas fa-exclamation-triangle pr-amount__over-icon"
+                      [attr.aria-label]="'PAYMENT_RECORD.STATEMENT.OVER_BUDGET' | translate"
+                      [title]="'PAYMENT_RECORD.STATEMENT.OVER_BUDGET' | translate"
+                    ></em>
+                    {{ row.availableBalance.cofinancing | ifNumber }}
+                  </td>
+                  <td headers="th-stmt-payments" class="pr-grid__number">
+                    <span *ngIf="isOpenable(row)">
+                      {{ row.paymentsSelected }} / {{ row.paymentsTotal }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td headers="th-stmt-idx"></td>
+                  <td headers="th-stmt-component">{{ "PAYMENT_RECORD.STATEMENT.TOTAL" | translate }}</td>
+                  <td headers="th-stmt-tojustify th-stmt-tj-idb" class="pr-grid__number">
+                    {{ draft.totals.toJustify.idb | ifNumber }}
+                  </td>
+                  <td headers="th-stmt-tojustify th-stmt-tj-local" class="pr-grid__number">
+                    {{ draft.totals.toJustify.localContribution | ifNumber }}
+                  </td>
+                  <td headers="th-stmt-tojustify th-stmt-tj-cofin" class="pr-grid__number">
+                    {{ draft.totals.toJustify.cofinancing | ifNumber }}
+                  </td>
+                  <td headers="th-stmt-available th-stmt-av-idb" class="pr-grid__number">
+                    {{ draft.totals.availableBalance.idb | ifNumber }}
+                  </td>
+                  <td headers="th-stmt-available th-stmt-av-local" class="pr-grid__number">
+                    {{ draft.totals.availableBalance.localContribution | ifNumber }}
+                  </td>
+                  <td headers="th-stmt-available th-stmt-av-cofin" class="pr-grid__number">
+                    {{ draft.totals.availableBalance.cofinancing | ifNumber }}
+                  </td>
+                  <td headers="th-stmt-payments" class="pr-grid__number">{{ draft.paymentsSelected }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- direct payment: the picked payments, one by one -->
+          <div class="pr-panel__scroll" *ngIf="picksPayments && draft.payments">
+            <table class="pr-rates pr-rates--wide pr-statement__payments-table">
+              <thead>
+                <tr>
+                  <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.ID" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.STATUS" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.COLUMNS.COMPONENT" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.DATE" | translate }}</th>
+                  <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY" | translate }}</th>
+                  <th scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT" | translate }}
+                  </th>
+                  <th scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.DETAIL.COLUMNS.RATE" | translate }}
+                  </th>
+                  <th scope="col" class="pr-grid__number">
+                    {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.EQUIVALENT" | translate }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let payment of draft.payments; trackBy: trackPayment"
+                >
+                  <td>
+                    <a
+                      href="javascript:void(0)"
+                      class="pr-link"
+                      [attr.id]="'Lnk_Statement_Payment_' + payment.id"
+                      (click)="openPayment(payment)"
+                    >
+                      {{ payment.id }}
+                    </a>
+                  </td>
+                  <td>
+                    <fi-status-label
+                      [cssClass]="paymentStatusClass(payment.status)"
+                      [text]="'PAYMENT_RECORD.STATUS.' + payment.status | translate"
+                      [title]="
+                        'PAYMENT_RECORD.STATUS_HELP.' + payment.status | translate
+                      "
+                    ></fi-status-label>
+                  </td>
+                  <td class="pr-cell--name" [title]="payment.componentName">
+                    {{ payment.componentName }}
+                  </td>
+                  <td class="pr-cell--name" [title]="payment | paymentConcept">
+                    {{ payment | paymentConcept }}
+                  </td>
+                  <td>{{ payment.paymentDate | dateIF }}</td>
+                  <td>{{ payment.currency }}</td>
+                  <td class="pr-grid__number">{{ payment.amount | ifNumber }}</td>
+                  <td class="pr-grid__number">{{ payment.exchangeRate | ifNumber : 4 }}</td>
+                  <td class="pr-grid__number">
+                    {{ payment.equivalentAmount | ifNumber }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!--
+            Two lines, not one row per currency: the amount only means
+            something next to the currency it is in, so those stay grouped
+            on one line; the equivalent is already in the loan's approval
+            currency, so unlike the amounts it can be added across groups
+            into a single figure instead of repeating a row for each one.
+          -->
+          <!--
+            The currency lives in the label now, not repeated after every
+            number -- one bare amount per row, one row per currency the
+            picked payments are actually in (almost always just one).
+          -->
+          <div class="pr-totals" *ngIf="picksPayments && paymentTotals.length > 0">
+            <div class="pr-totals__row" *ngFor="let total of paymentTotals">
+              <span class="pr-totals__label">
+                {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.TOTAL_AMOUNT" | translate }}
+                ({{ total.currency }})
+              </span>
+              <span class="pr-totals__value">{{ total.amount | ifNumber }}</span>
+            </div>
+            <div class="pr-totals__row pr-totals__row--highlight">
+              <span class="pr-totals__label">
+                {{ "PAYMENT_RECORD.STATEMENT.EQUIVALENT_TOTAL_LABEL" | translate }}
+                ({{ draft.approvalCurrency }})
+              </span>
+              <span class="pr-totals__value">{{ paymentEquivalentTotal | ifNumber }}</span>
+            </div>
+          </div>
+
+          <fi-alert
+            *ngIf="needsAccount"
+            type="info"
+            [title]="
+              (picksPayments
+                ? 'PAYMENT_RECORD.STATEMENT.ACCOUNT_THIRD_PARTY'
+                : 'PAYMENT_RECORD.STATEMENT.ACCOUNT_AGENCY'
+              ) | translate
+            "
+            [closable]="false"
+          ></fi-alert>
+
+          <div class="pr-statement__audit" *ngIf="draft.lastUpdatedOn">
+            {{
+              "PAYMENT_RECORD.STATEMENT.LAST_UPDATE"
+                | translate
+                  : {
+                      date: (draft.lastUpdatedOn | dateIF),
+                      user: draft.lastUpdatedBy
+                    }
+            }}
+          </div>
+
+          <div class="pr-toolbar pr-statement__actions-row">
+            <p class="pr-toolbar__hint">
+              {{ "PAYMENT_RECORD.AUDIT_NOTE" | translate }}
+            </p>
+            <div class="pr-toolbar__actions">
+              <button
+                kendoButton
+                class="btn btn-neutral btn-no-stroke"
+                id="Btn_Statement_Cancel"
+                (click)="cancel()"
+              >
+                {{ "PROCUREMENT.CANCEL" | translate }}
+              </button>
+              <button
+                kendoButton
+                class="btn btn-neutral"
+                id="Btn_Statement_Save"
+                [disabled]="saving"
+                (click)="saveDraft()"
+              >
+                {{ "PAYMENT_RECORD.STATEMENT.SAVE" | translate }}
+              </button>
+              <button
+                kendoButton
+                class="btn btn-brand"
+                id="Btn_Statement_Generate"
+                [disabled]="generating || !canGenerate"
+                (click)="generate()"
+              >
+                {{ "PAYMENT_RECORD.STATEMENT.GENERATE" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <!-- ================= ANTERIORES ================= -->
+    <ng-container *ngIf="tab === 'previous'">
+      <div class="pr-step__body">
+        <fi-no-content
+          *ngIf="previous.length === 0"
+          [content]="'PAYMENT_RECORD.STATEMENT.PREVIOUS_EMPTY' | translate"
+        ></fi-no-content>
+
+        <div class="pr-panel__scroll" *ngIf="previous.length > 0">
+          <table class="pr-rates pr-statement__previous">
+            <thead>
+              <tr>
+                <th scope="col">{{ "PAYMENT_RECORD.STATEMENT.COLUMNS.TRANSACTION" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.STATEMENT.TYPE" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.STATEMENT.COLUMNS.CREATED" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.STATEMENT.COLUMNS.VALUE_DATE" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.STATEMENT.COLUMNS.CREATED_BY" | translate }}</th>
+                <th scope="col" class="pr-grid__number">
+                  {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.PAYMENTS" | translate }}
+                </th>
+                <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CURRENCY" | translate }}</th>
+                <th scope="col" class="pr-grid__number">
+                  {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.TOTAL_AMOUNT" | translate }}
+                </th>
+                <th scope="col" class="pr-grid__number">
+                  {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.APPROVAL_CURRENCY_AMOUNT" | translate }}
+                </th>
+                <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.STATUS" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let statement of previous">
+                <td>{{ statement.transactionNumber }}</td>
+                <td>
+                  {{
+                    "PAYMENT_RECORD.STATEMENT.TYPES." + statement.transactionType
+                      | translate
+                  }}
+                </td>
+                <td>{{ statement.createdOn | dateIF }}</td>
+                <td>{{ statement.valueDate ? (statement.valueDate | dateIF) : "—" }}</td>
+                <td>{{ statement.createdBy }}</td>
+                <td class="pr-grid__number">{{ statement.paymentsIncluded }}</td>
+                <td>{{ statement.currency }}</td>
+                <td class="pr-grid__number">{{ statement.totalAmount | ifNumber }}</td>
+                <td class="pr-grid__number">{{ statement.equivalentAmount | ifNumber }}</td>
+                <td>
+                  <fi-status-label
+                    [cssClass]="statusClass(statement.status)"
+                    [text]="
+                      'PAYMENT_RECORD.STATEMENT.STATUS.' + statement.status
+                        | translate
+                    "
+                  ></fi-status-label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

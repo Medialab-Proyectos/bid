@@ -1,0 +1,502 @@
+<form [formGroup]="form">
+  <div class="row">
+    <!-- Tooltip -->
+    <div class="col-6">
+      <button
+        #btnTooltip
+        kendoTooltip
+        kendoButton
+        class="btn btn-brand"
+        showOn="none"
+        title="Sit nulla est ex deserunt exercitation anim occaecat. Nostrud ullamco deserunt aute id dee doo da fauxet la gigman roo."
+      >
+        Tooltip
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Radios -->
+    <div class="col-5">
+      <div class="d-inline-block ml-4 text-center">
+        <p>Default</p>
+        <input type="radio" kendoRadioButton />
+      </div>
+
+      <div class="d-inline-block ml-4 text-center">
+        <p>Pressed</p>
+        <input type="radio" kendoRadioButton />
+      </div>
+
+      <div class="d-inline-block ml-4 text-center">
+        <p>Checked</p>
+        <input type="radio" kendoRadioButton checked />
+      </div>
+
+      <div class="d-inline-block ml-4 text-center">
+        <p>Checked disabled</p>
+        <input type="radio" kendoRadioButton checked disabled />
+      </div>
+
+      <div class="d-inline-block ml-4 text-center">
+        <p>Disabled</p>
+        <input type="radio" kendoRadioButton disabled />
+      </div>
+    </div>
+
+    <!-- Radios required -->
+    <div class="col-7">
+      <div class="d-inline-block ml-4">
+        <p>Default</p>
+        <kendo-label class="fi-kendo-label d-block mb-2" text="Text">
+        </kendo-label>
+
+        <input
+          type="radio"
+          #radioRequiredDefaultYes
+          kendoRadioButton
+          [value]="true"
+          formControlName="radioRequiredDefault"
+        />
+        <kendo-label
+          [for]="radioRequiredDefaultYes"
+          class="fi-kendo-label"
+          text="Sí"
+        >
+        </kendo-label>
+
+        <input
+          type="radio"
+          #radioRequiredDefaultNo
+          kendoRadioButton
+          [value]="false"
+          formControlName="radioRequiredDefault"
+        />
+        <kendo-label
+          [for]="radioRequiredDefaultNo"
+          class="fi-kendo-label"
+          text="No"
+        >
+        </kendo-label>
+      </div>
+
+      <div class="d-inline-block ml-4">
+        <p>Pressed</p>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required d-block mb-2"
+          text="Text"
+        >
+        </kendo-label>
+        <input
+          type="radio"
+          #radioRequiredPressedYes
+          kendoRadioButton
+          [value]="true"
+          formControlName="radioRequiredPressed"
+        />
+        <kendo-label
+          [for]="radioRequiredPressedYes"
+          class="fi-kendo-label"
+          text="Sí"
+        >
+        </kendo-label>
+
+        <input
+          type="radio"
+          #radioRequiredPressedNo
+          kendoRadioButton
+          [value]="false"
+          formControlName="radioRequiredPressed"
+        />
+        <kendo-label
+          [for]="radioRequiredPressedNo"
+          class="fi-kendo-label"
+          text="No"
+        >
+        </kendo-label>
+      </div>
+
+      <div class="d-inline-block ml-4">
+        <p>Checked</p>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required d-block mb-2"
+          text="Text"
+        >
+        </kendo-label>
+        <input
+          type="radio"
+          #radioRequiredCheckedYes
+          kendoRadioButton
+          [value]="true"
+          formControlName="radioRequiredChecked"
+        /><kendo-label
+          [for]="radioRequiredCheckedYes"
+          class="fi-kendo-label"
+          text="Sí"
+        >
+        </kendo-label>
+
+        <input
+          type="radio"
+          #radioRequiredCheckedNo
+          kendoRadioButton
+          [value]="false"
+          formControlName="radioRequiredChecked"
+        /><kendo-label
+          [for]="radioRequiredCheckedNo"
+          class="fi-kendo-label"
+          text="No"
+        >
+        </kendo-label>
+      </div>
+
+      <div class="d-inline-block ml-4">
+        <p>Error</p>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required d-block mb-2"
+          text="Text"
+        >
+        </kendo-label>
+        <input
+          type="radio"
+          #radioRequiredCheckedErrorYes
+          kendoRadioButton
+          [value]="true"
+          formControlName="radioRequiredCheckedError"
+        />
+        <kendo-label
+          [for]="radioRequiredCheckedErrorYes"
+          class="fi-kendo-label"
+          text="Sí"
+        >
+        </kendo-label>
+
+        <input
+          type="radio"
+          #radioRequiredCheckedErrorNo
+          kendoRadioButton
+          [value]="false"
+          formControlName="radioRequiredCheckedError"
+        />
+        <kendo-label
+          [for]="radioRequiredCheckedErrorNo"
+          class="fi-kendo-label"
+          text="No"
+        >
+        </kendo-label>
+
+        <fi-form-error-msg
+          class="d-block"
+          [control]="form.controls.radioRequiredCheckedError"
+          [key]="'COMMON.REQUIRED_FIELD'"
+        ></fi-form-error-msg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="row">
+    <div class="col-12 btns-row">
+      <div>
+        <button kendoButton class="btn btn-brand">Button Brand</button>
+        <button kendoButton class="btn btn-brand">Button Brand</button>
+        <button kendoButton class="btn btn-brand">Button Brand</button>
+        <button kendoButton [disabled]="true" class="btn btn-brand">
+          Button Brand
+        </button>
+      </div>
+      <div>
+        <button kendoButton class="btn btn-online-brand">
+          Outline Button Brand
+        </button>
+        <button kendoButton class="btn btn-online-brand">
+          Outline Button Brand
+        </button>
+        <button kendoButton class="btn btn-online-brand">
+          Outline Button Brand
+        </button>
+        <button kendoButton [disabled]="true" class="btn btn-online-brand">
+          Outline Button Brand
+        </button>
+      </div>
+      <div>
+        <button kendoButton class="btn btn-neutral">Button Neutral</button>
+        <button kendoButton class="btn btn-neutral">Button Neutral</button>
+        <button kendoButton class="btn btn-neutral">Button Neutral</button>
+        <button kendoButton [disabled]="true" class="btn btn-neutral">
+          Button Neutral
+        </button>
+      </div>
+      <div>
+        <button kendoButton class="btn btn-destructive">Button Neutral</button>
+        <button kendoButton class="btn btn-destructive">Button Neutral</button>
+        <button kendoButton class="btn btn-destructive">Button Neutral</button>
+        <button kendoButton [disabled]="true" class="btn btn-destructive">
+          Button Neutral
+        </button>
+      </div>
+      <div>
+        <button kendoButton class="btn btn-base">Button Neutral</button>
+        <button kendoButton class="btn btn-base">Button Neutral</button>
+        <button kendoButton class="btn btn-base">Button Neutral</button>
+        <button kendoButton [disabled]="true" class="btn btn-base">
+          Button Neutral
+        </button>
+      </div>
+      <div>
+        <button kendoButton class="btn btn-neutral" icon="plus">
+          Button Neutral
+        </button>
+        <button kendoButton class="btn btn-neutral" icon="plus">
+          Button Neutral
+        </button>
+        <button kendoButton class="btn btn-neutral" icon="plus">
+          Button Neutral
+        </button>
+        <button
+          kendoButton
+          [disabled]="true"
+          class="btn btn-neutral"
+          icon="plus"
+        >
+          Button Neutral
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row py-5">
+    <div class="col-6">
+      <div>
+        <kendo-label
+          class="fi-kendo-label"
+          text="{{ 'PROCUREMENT.PROCESS_NAME' | translate }}"
+        >
+          <kendo-textbox
+            class="c-textbox k-textbox"
+            formControlName="inputTextEnabled"
+            ngDefaultControl
+            [placeholder]="'PROCUREMENT.PROCESS.ENTER_PROCESS_NAME' | translate"
+          ></kendo-textbox>
+        </kendo-label>
+      </div>
+      <div>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required"
+          text="{{ 'PROCUREMENT.PROCESS_NAME' | translate }}"
+        >
+          <kendo-textbox
+            class="c-textbox k-textbox"
+            formControlName="inputTextDisabled"
+            ngDefaultControl
+            [placeholder]="'PROCUREMENT.PROCESS.ENTER_PROCESS_NAME' | translate"
+          ></kendo-textbox>
+        </kendo-label>
+      </div>
+      <div>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required"
+          text="{{ 'PROCUREMENT.PROCESS_NAME' | translate }}"
+        >
+          <kendo-textbox
+            class="c-textbox k-textbox"
+            formControlName="inputTextRequired"
+            ngDefaultControl
+            [placeholder]="'PROCUREMENT.PROCESS.ENTER_PROCESS_NAME' | translate"
+          ></kendo-textbox>
+          <fi-form-error-msg
+            [control]="form.controls.inputTextRequired"
+            [key]="'CONTRACT.GENERAL_INFO.CONTRACT_NAME_REQUIRED'"
+          ></fi-form-error-msg>
+        </kendo-label>
+      </div>
+    </div>
+    <div class="col-6">
+      <div>
+        <kendo-label
+          class="fi-kendo-label"
+          text="{{ 'PROCUREMENT.CATEGORY' | translate }}"
+        >
+          <kendo-dropdownlist
+            [data]="listItems"
+            [textField]="'text'"
+            [valueField]="'value'"
+            [valuePrimitive]="true"
+            [fiDropdownModelControl]
+            class="c-dropdown-list k-dropdown"
+            formControlName="dropwdownTextEnabled"
+          >
+          </kendo-dropdownlist>
+        </kendo-label>
+      </div>
+      <div>
+        <kendo-label
+          class="fi-kendo-label"
+          text="{{ 'PROCUREMENT.CATEGORY' | translate }}"
+        >
+          <kendo-dropdownlist
+            [data]="listItems"
+            [textField]="'text'"
+            [valueField]="'value'"
+            [valuePrimitive]="true"
+            style="--placeholder: '{{ 'COMMON.SELECT_AN_OPTION' | translate }}'"
+            class="c-dropdown-list k-dropdown"
+            formControlName="dropwdownTextDisabled"
+          >
+          </kendo-dropdownlist>
+        </kendo-label>
+      </div>
+      <div>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required"
+          text="{{ 'PROCUREMENT.CATEGORY' | translate }}"
+        >
+          <kendo-dropdownlist
+            [data]="listItems"
+            [textField]="'text'"
+            [valueField]="'value'"
+            [valuePrimitive]="true"
+            style="--placeholder: '{{ 'COMMON.SELECT_AN_OPTION' | translate }}'"
+            class="c-dropdown-list k-dropdown"
+            formControlName="dropwdownTextRequired"
+          >
+          </kendo-dropdownlist>
+          <fi-form-error-msg
+            [control]="form.controls.dropwdownTextRequired"
+            [key]="'CONTRACT.GENERAL_INFO.CONTRACT_NAME_REQUIRED'"
+          ></fi-form-error-msg>
+        </kendo-label>
+      </div>
+    </div>
+  </div>
+  <div class="row py-5">
+    <div class="col-6">
+      <div>
+        <kendo-label
+          class="fi-kendo-label"
+          text="{{ 'CONTRACT.COST_DISTRIBUTION.IADB_AMOUNT' | translate }}"
+        >
+          <kendo-numerictextbox
+            [spinners]="false"
+            formControlName="inputNumericTextEnabled"
+            [decimals]="2"
+            class="c-numerictextbox k-numerictextbox"
+            placeholder="0.00"
+            [min]="0"
+            [maxlength]="18"
+          ></kendo-numerictextbox
+        ></kendo-label>
+      </div>
+      <div>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required"
+          text="{{ 'CONTRACT.COST_DISTRIBUTION.IADB_AMOUNT' | translate }}"
+        >
+          <kendo-numerictextbox
+            [spinners]="false"
+            formControlName="inputNumericTextDisabled"
+            [decimals]="2"
+            class="c-numerictextbox k-numerictextbox"
+            placeholder="0.00"
+            [min]="0"
+            [maxlength]="18"
+          ></kendo-numerictextbox
+        ></kendo-label>
+      </div>
+      <div>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required"
+          text="{{ 'CONTRACT.COST_DISTRIBUTION.IADB_AMOUNT' | translate }}"
+        >
+          <kendo-numerictextbox
+            [spinners]="false"
+            formControlName="inputNumericTextRequired"
+            [decimals]="2"
+            class="c-numerictextbox k-numerictextbox"
+            placeholder="0.00"
+            [min]="0"
+            [maxlength]="18"
+          ></kendo-numerictextbox>
+          <fi-form-error-msg
+            [control]="form.controls.inputNumericTextRequired"
+            [key]="'CONTRACT.GENERAL_INFO.CONTRACT_NAME_REQUIRED'"
+          ></fi-form-error-msg>
+        </kendo-label>
+      </div>
+    </div>
+    <div class="col-6">
+      <div>
+        <kendo-label class="fi-kendo-label" text="IADB Percentage">
+          <kendo-numerictextbox
+            [spinners]="false"
+            formControlName="inputNumericPercentageEnabled"
+            [decimals]="2"
+            class="c-numerictextbox k-numerictextbox k-percentage"
+            placeholder="0.00"
+            [min]="0"
+            [maxlength]="18"
+            [changeValueOnScroll]="false"
+          ></kendo-numerictextbox
+        ></kendo-label>
+      </div>
+      <div>
+        <kendo-label class="fi-kendo-label" text="IADB Percentage">
+          <kendo-numerictextbox
+            [spinners]="false"
+            formControlName="inputNumericPercentageDisabled"
+            [decimals]="2"
+            class="c-numerictextbox k-numerictextbox k-percentage"
+            placeholder="0.00"
+            [min]="0"
+            [maxlength]="18"
+          ></kendo-numerictextbox
+        ></kendo-label>
+      </div>
+      <div>
+        <kendo-label
+          class="fi-kendo-label fi-kendo-label--required"
+          text="IADB Percentage"
+        >
+          <kendo-numerictextbox
+            [spinners]="false"
+            formControlName="inputNumericPercentageRequired"
+            [decimals]="2"
+            class="c-numerictextbox k-numerictextbox k-percentage"
+            placeholder="0.00"
+            [min]="0"
+            [maxlength]="18"
+          ></kendo-numerictextbox>
+          <fi-form-error-msg
+            [control]="form.controls.inputNumericPercentageRequired"
+            [key]="'CONTRACT.GENERAL_INFO.CONTRACT_NAME_REQUIRED'"
+          ></fi-form-error-msg>
+        </kendo-label>
+      </div>
+    </div>
+  </div>
+  <div class="row py-5">
+    <div class="col-6">
+      <fi-input-currency
+        labelText="Label"
+        [currencies]="currencies"
+        formControlName="inputCurrencyRequired"
+      ></fi-input-currency>
+    </div>
+    <div class="col-6">
+      <fi-input-numeric formControlName="inputNumeric"></fi-input-numeric>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-6">
+      <fi-profile-card
+        [userInfo]="{
+          name: 'Nikolas',
+          email: 'matamalas@iadb.org',
+          initials: 'MS',
+          roles: [{ name: 'admin' }, { name: 'executor' }]
+        }"
+      ></fi-profile-card>
+    </div>
+  </div>
+</form>
+<fi-status-label></fi-status-label>

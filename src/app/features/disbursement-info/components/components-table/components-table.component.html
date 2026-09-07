@@ -1,0 +1,546 @@
+<div class="disbursement-table">
+  <div class="disbursement-title">
+    {{ "DISBURSEMENT.COMPONENT.TITTLE" | translate }}
+  </div>
+  <div class="disbursement-container">
+    <table
+      class="o-fi-table"
+      [attr.aria-describedby]="
+        'TRANSACTION.COMPONENTS.TABLE_DESCRIPTION' | translate
+      "
+    >
+      <thead class="disbursement-table-headers">
+        <tr>
+          <th colspan="2"></th>
+          <th colspan="6">
+            {{ "DISBURSEMENT.COMPONENTS.CURRENT_IDB" | translate }}
+          </th>
+          <th colspan="6">
+            {{ "DISBURSEMENT.COMPONENTS.DISBUSRSEMENT_AMOUNT" | translate }}
+          </th>
+          <th colspan="6">
+            {{ "DISBURSEMENT.COMPONENTS.AVAILABLE_AMOUNT" | translate }}
+          </th>
+          <th colspan="6">
+            {{
+              "DISBURSEMENT.COMPONENTS.PROJECTED_AVAILABLE_AMOUNT" | translate
+            }}
+          </th>
+        </tr>
+        <tr>
+          <th colspan="1" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.CODE" | translate }}
+          </th>
+          <th colspan="1" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.COMPONENT" | translate }}
+          </th>
+
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.BID" | translate }}
+          </th>
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.LOCAL_COUNTERPART" | translate }}
+          </th>
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.CO_FINANCING" | translate }}
+          </th>
+
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.BID" | translate }}
+          </th>
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.LOCAL_COUNTERPART" | translate }}
+          </th>
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.CO_FINANCING" | translate }}
+          </th>
+
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.BID" | translate }}
+          </th>
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.LOCAL_COUNTERPART" | translate }}
+          </th>
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.CO_FINANCING" | translate }}
+          </th>
+
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.BID" | translate }}
+          </th>
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.LOCAL_COUNTERPART" | translate }}
+          </th>
+          <th colspan="2" class="has-ellipsis">
+            {{ "TRANSACTION.COMPONENTS.CO_FINANCING" | translate }}
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <ng-container
+          *ngFor="
+            let component of disbursementBalances?.components;
+            let i = index
+          "
+        >
+          <tr>
+            <td colspan="1" class="text-center">{{ component.code }}</td>
+            <td colspan="1" class="has-ellipsis text-center">
+              {{ component.name }}
+            </td>
+
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountsDistribute.distributeIbd > 0;
+                  else noPrefix1
+                "
+              >
+                {{ component.amountsDistribute.distributeIbd | ifNumber }}
+              </ng-container>
+              <ng-template #noPrefix1>
+                {{ component.amountsDistribute.distributeIbd | ifNumber }}
+              </ng-template>
+            </td>
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountsDistribute.distributeLocalCounterpart > 0;
+                  else noPrefix3
+                "
+              >
+                {{
+                  component.amountsDistribute.distributeLocalCounterpart
+                    | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix3>
+                {{
+                  component.amountsDistribute.distributeLocalCounterpart
+                    | ifNumber
+                }}
+              </ng-template>
+            </td>
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountsDistribute.distributeCofinancing > 0;
+                  else noPrefix2
+                "
+              >
+                {{
+                  component.amountsDistribute.distributeCofinancing | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix2>
+                {{
+                  component.amountsDistribute.distributeCofinancing | ifNumber
+                }}
+              </ng-template>
+            </td>
+
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountsProjectedAvailable.distributeIbd > 0;
+                  else noPrefix4
+                "
+              >
+                {{
+                  component.amountsProjectedAvailable.distributeIbd | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix4>
+                {{
+                  component.amountsProjectedAvailable.distributeIbd | ifNumber
+                }}
+              </ng-template>
+            </td>
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountsProjectedAvailable
+                    .distributeLocalCounterpart > 0;
+                  else noPrefix5
+                "
+              >
+                {{
+                  component.amountsProjectedAvailable.distributeLocalCounterpart
+                    | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix5>
+                {{
+                  component.amountsProjectedAvailable.distributeLocalCounterpart
+                    | ifNumber
+                }}
+              </ng-template>
+            </td>
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountsProjectedAvailable.distributeCofinancing > 0;
+                  else noPrefix6
+                "
+              >
+                {{
+                  component.amountsProjectedAvailable.distributeCofinancing
+                    | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix6>
+                {{
+                  component.amountsProjectedAvailable.distributeCofinancing
+                    | ifNumber
+                }}
+              </ng-template>
+            </td>
+            <!-- amountCurrent -->
+
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountCurrent.distributeIbd > 0;
+                  else noPrefix7
+                "
+              >
+                {{ component.amountCurrent.distributeIbd | ifNumber }}
+              </ng-container>
+              <ng-template #noPrefix7>
+                {{ component.amountCurrent.distributeIbd | ifNumber }}
+              </ng-template>
+            </td>
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountCurrent.distributeLocalCounterpart > 0;
+                  else noPrefix8
+                "
+              >
+                {{
+                  component.amountCurrent.distributeLocalCounterpart | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix8>
+                {{
+                  component.amountCurrent.distributeLocalCounterpart | ifNumber
+                }}
+              </ng-template>
+            </td>
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.amountCurrent.distributeCofinancing > 0;
+                  else noPrefix9
+                "
+              >
+                {{ component.amountCurrent.distributeCofinancing | ifNumber }}
+              </ng-container>
+              <ng-template #noPrefix9>
+                {{ component.amountCurrent.distributeCofinancing | ifNumber }}
+              </ng-template>
+            </td>
+
+            <!-- projectedAvailableBalance -->
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.projectedAvailableBalance.distributeIbd > 0;
+                  else noPrefix10
+                "
+              >
+                {{
+                  component.projectedAvailableBalance.distributeIbd | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix10>
+                {{
+                  component.projectedAvailableBalance.distributeIbd | ifNumber
+                }}
+              </ng-template>
+            </td>
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.projectedAvailableBalance
+                    .distributeLocalCounterpart > 0;
+                  else noPrefix11
+                "
+              >
+                {{
+                  component.projectedAvailableBalance.distributeLocalCounterpart
+                    | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix11>
+                {{
+                  component.projectedAvailableBalance.distributeLocalCounterpart
+                    | ifNumber
+                }}
+              </ng-template>
+            </td>
+            <td colspan="2" class="has-ellipsis">
+              <ng-container
+                *ngIf="
+                  component.projectedAvailableBalance.distributeCofinancing > 0;
+                  else noPrefix12
+                "
+              >
+                {{
+                  component.projectedAvailableBalance.distributeCofinancing
+                    | ifNumber
+                }}
+              </ng-container>
+              <ng-template #noPrefix12>
+                {{
+                  component.projectedAvailableBalance.distributeCofinancing
+                    | ifNumber
+                }}
+              </ng-template>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+
+      <tfoot>
+        <tr class="row-separator"></tr>
+        <tr>
+          <td colspan="1"></td>
+          <td colspan="1">
+            {{ "DISBURSEMENT.COMPONENTS.TOTAL" | translate }}
+          </td>
+          <!-- CURRENT IDB TOTAL COL -->
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountCurrentIdb !== 0;
+                else noPrefixT1
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountCurrentIdb | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT1>
+              {{
+                disbursementBalances?.componentsTotalAmountCurrentIdb | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountCurrentLc !== 0;
+                else noPrefixT2
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountCurrentLc | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT2>
+              {{
+                disbursementBalances?.componentsTotalAmountCurrentLc | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountCurrentCf !== 0;
+                else noPrefixT3
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountCurrentCf | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT3>
+              {{
+                disbursementBalances?.componentsTotalAmountCurrentCf | ifNumber
+              }}
+            </ng-template>
+          </td>
+
+          <!--DISBURSED AMOUNT TOTAL COL -->
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountDisbursedIdb !== 0;
+                else noPrefixT4
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountDisbursedIdb
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT4>
+              {{
+                disbursementBalances?.componentsTotalAmountDisbursedIdb
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountDisbursedLc !== 0;
+                else noPrefixT5
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountDisbursedLc
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT5>
+              {{
+                disbursementBalances?.componentsTotalAmountDisbursedLc
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountDisbursedCf !== 0;
+                else noPrefixT6
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountDisbursedCf
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT6>
+              {{
+                disbursementBalances?.componentsTotalAmountDisbursedCf
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+
+          <!--AVAILABLE BALANCE TOTAL COL -->
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountAvailableIdb !== 0;
+                else noPrefixT6
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountAvailableIdb
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT6>
+              {{
+                disbursementBalances?.componentsTotalAmountAvailableIdb
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountAvailableLc !== 0;
+                else noPrefixT6
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountAvailableLc
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT6>
+              {{
+                disbursementBalances?.componentsTotalAmountAvailableLc
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountAvailableCf !== 0;
+                else noPrefixT6
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountAvailableCf
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT6>
+              {{
+                disbursementBalances?.componentsTotalAmountAvailableCf
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+
+          <!--PROJECTED AVAILABLE BALANCE TOTAL COL -->
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountProjectedIdb !== 0;
+                else noPrefixT6
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountProjectedIdb
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT6>
+              {{
+                disbursementBalances?.componentsTotalAmountProjectedIdb
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountProjectedLc !== 0;
+                else noPrefixT6
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountProjectedLc
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT6>
+              {{
+                disbursementBalances?.componentsTotalAmountProjectedLc
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+          <td colspan="2" class="has-ellipsis">
+            <ng-container
+              *ngIf="
+                disbursementBalances?.componentsTotalAmountProjectedCf !== 0;
+                else noPrefixT6
+              "
+            >
+              {{
+                disbursementBalances?.componentsTotalAmountProjectedCf
+                  | ifNumber
+              }}
+            </ng-container>
+            <ng-template #noPrefixT6>
+              {{
+                disbursementBalances?.componentsTotalAmountProjectedCf
+                  | ifNumber
+              }}
+            </ng-template>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+<div class="c-bonus">
+  <div
+    class="row"
+    data-testid="bonusRow"
+    *ngFor="let group of form.controls; index as i"
+    [formGroup]="group"
+  >
+    <div class="col-12 col-md-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{
+          "CONTRACT.ADDITIONAL_INFO.BONUS" | translate
+        }}</mat-label>
+        <mat-select
+          #bonusType
+          formControlName="bonusType"
+          data-testid="bonusType"
+          id="Down_Bonus_type"
+        >
+          <mat-option
+            *ngFor="let bonus of baseConfig.data.bonusTypes"
+            [value]="bonus.id"
+          >
+            {{ bonus.name | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <fi-mat-numeric
+        [label]="'CONTRACT.ADDITIONAL_INFO.PERCENTAGE' | translate"
+        [step]="0.1"
+        [max]="1"
+        [decimals]="2"
+        [min]="0"
+        [maxlength]="18"
+        #bonusPercentage
+        formControlName="bonusPercentage"
+        data-testid="bonusPercentage"
+        [placeholder]="'COMMON.ENTER_PERCENTAGE' | translate"
+        id="Txb_Bonus_percentage"
+      ></fi-mat-numeric>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <mat-form-field class="w-100">
+        <mat-label>
+          {{ "CONTRACT.ADDITIONAL_INFO.DAILY_WEEKLY_PAYMENT" | translate }}
+        </mat-label>
+        <mat-select
+          #bonusPaymentFrequency
+          formControlName="bonusPaymentFrequency"
+          data-testid="bonusPaymentFrequency"
+          id="Down_Bonus_payments_frecuency"
+        >
+          <mat-option
+            *ngFor="let paymentFrequency of baseConfig.data.frequencies"
+            [value]="paymentFrequency.id"
+          >
+            {{ paymentFrequency.name | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 col-md-3 d-flex flex-row">
+      <div class="flex-grow-1">
+        <fi-mat-numeric
+          [label]="'CONTRACT.ADDITIONAL_INFO.MAXIMUM_PERCENTAGE' | translate"
+          [step]="0.1"
+          [max]="10"
+          [decimals]="2"
+          [min]="0"
+          [maxlength]="18"
+          #bonusMaxPercentage
+          formControlName="bonusMaxPercentage"
+          [placeholder]="'COMMON.ENTER_PERCENTAGE' | translate"
+          id="Txb_Bonus_max_percentage"
+        ></fi-mat-numeric>
+      </div>
+      <ng-container *ngIf="baseConfig.settings.mode !== ModeEnum.READ">
+        <button
+          mat-icon-button
+          color="primary"
+          type="button"
+          data-testid="deleteBonusButton"
+          id="Btn_Delete_bonus"
+          *fiDisplayByPermissions="removeBonusPermission"
+          (click)="deleteBonus(i)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </ng-container>
+    </div>
+  </div>
+  <div
+    class="row actions mb-0"
+    *ngIf="
+      baseConfig.settings.mode !== ModeEnum.READ && form.controls.length === 0
+    "
+  >
+    <div class="col-12">
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        data-testid="addBonusButton"
+        id="Btn_Add_bonus"
+        *fiDisplayByPermissions="addBonusPermission"
+        (click)="addBonus()"
+      >
+        <mat-icon slot="start">add</mat-icon>
+        {{ "CONTRACT.ADDITIONAL_INFO.ADD_BONUS" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

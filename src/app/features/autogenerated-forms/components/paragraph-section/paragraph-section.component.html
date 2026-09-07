@@ -1,0 +1,37 @@
+<div class="w-100">
+  <p class="my-4">
+    <ng-container *ngFor="let item of texts">
+      <ng-container [ngSwitch]="item?.type">
+        <span *ngSwitchCase="paragraphTypeEnums.BOLD" class="sf700">
+          {{ item.key | translate }}
+        </span>
+        <span
+          *ngSwitchCase="paragraphTypeEnums.ITALIC"
+          style="font-style: italic"
+        >
+          {{ item.key | translate }}
+        </span>
+        <a *ngSwitchCase="paragraphTypeEnums.LINK" [href]="item?.url">
+          {{ item.key | translate }}
+        </a>
+        <span *ngSwitchCase="paragraphTypeEnums.DATE" class="sf700">
+          {{ item.key | dateIF }}
+        </span>
+        <span *ngSwitchCase="paragraphTypeEnums.DATE_END" class="sf700">
+          {{ item.key | dateIF }}.
+        </span>
+        <span *ngSwitchCase="paragraphTypeEnums.TOOLTIP">
+          {{ item.key | translate }}
+          <mat-icon
+            [matTooltip]="item?.tooltip | translate"
+            style="transform: scale(0.6)"
+            >help</mat-icon
+          >
+        </span>
+        <span *ngSwitchDefault>
+          {{ item.key | translate }}
+        </span>
+      </ng-container>
+    </ng-container>
+  </p>
+</div>

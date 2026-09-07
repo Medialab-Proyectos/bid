@@ -1,0 +1,69 @@
+<div class="c-sustainability">
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>
+      <div class="d-flex">
+        {{ "PROCUREMENT.SUSTAINABILITY.TITLE" | translate }}
+        <div class=" pl-2" kendoTooltip tooltip>
+          <em
+            class="fas fa-info-circle"
+            [title]= "isPROCT_PFA ?
+            ('PROCUREMENT.SUSTAINABILITY_TOOLTIP_100_FUNDED_AGENCY' | translate):
+            ('PROCUREMENT.SUSTAINABILITY_TOOLTIP' | translate)"
+          ></em>
+        </div>
+      </div
+    ></ng-container>
+
+    <ng-container body>
+      <div [formGroup]="form" class="px-md-3 row mb-3 c-sustainability__body">
+        <div class="col-12">
+          <kendo-label
+            class="fi-kendo-label"
+            [for]="sustainability"
+            text="{{
+              'PROCUREMENT.SUSTAINABILITY.SUSTAINABILITY_LABEL' | translate
+            }}"
+          >
+          </kendo-label>
+          <kendo-dropdownlist
+            [data]="sustainabilitiesData$ | async"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [valuePrimitive]="true"
+            [fiDropdownFormControl]
+            #sustainability
+            class="c-dropdown-list k-dropdown bg-white"
+            formControlName="sustainability"
+            id="Down_sustainability"
+          >
+            <ng-template kendoDropDownListValueTemplate let-item>
+              {{ item?.name | translate }}
+            </ng-template>
+            <ng-template kendoDropDownListItemTemplate let-item>
+              {{ item?.name | translate }}
+            </ng-template>
+          </kendo-dropdownlist>
+        </div>
+        <div class="col-12 pt-3">
+          <kendo-label
+            class="fi-kendo-label"
+            [for]="sustainabilityDescription"
+            text="{{
+              'PROCUREMENT.SUSTAINABILITY.SUSTAINABILITY_DESCRIPTION_LABEL'
+                | translate
+            }}"
+          >
+          </kendo-label>
+          <kendo-textbox
+            #sustainabilityDescription
+            class="c-textbox"
+            formControlName="sustainabilityDescription"
+            ngDefaultControl
+            id="Txb_Sustainability_Description"
+          ></kendo-textbox>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

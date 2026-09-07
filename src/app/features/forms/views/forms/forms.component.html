@@ -1,0 +1,61 @@
+<kendo-drawer-container>
+  <kendo-drawer
+    [mode]="'push'"
+    class="nav-padding-top-outsize drawwer project-sidebar"
+    #kendoDrawerHeaderTemplate
+    [ngClass]="mobileView ? 'd-none' : ''"
+    [(expanded)]="expanded"
+    style="flex-basis: 270px"
+    ><ng-template kendoDrawerHeaderTemplate>
+      <div class="c-category-menu">
+        <div class="row">
+          <div class="col-12">
+            <div class="c-category-menu__filter">
+              <kendo-textbox
+                #filterInput
+                [clearButton]="true"
+                [placeholder]="
+                  'SHARED.HEADERS.PROJECT_SIDEBAR.SEARCH' | translate
+                "
+                id="Txt_Sidebar_search"
+                class="c-textbox"
+              >
+                <ng-template kendoTextBoxPrefixTemplate>
+                  <span class="k-icon k-i-search"></span>
+                </ng-template>
+              </kendo-textbox>
+            </div>
+          </div>
+        </div>
+        <kendo-treeview
+          [nodes]="[]"
+          textField="text"
+          childrenField="items"
+          kendoTreeViewExpandable
+          kendoTreeViewSelectable
+          kendoTreeViewHierarchyBinding
+          [expandedKeys]="expandedKeys"
+          (nodeClick)="eventclickNode($event)"
+        >
+          <ng-template kendoTreeViewNodeTemplate let-node>
+            <div
+              class="c-category-menu__item"
+              [ngClass]="[node.items ? 'withChilds' : 'withNoChilds']"
+            >
+              <em
+                *ngIf="node?.icon"
+                class="pr-2"
+                [ngClass]="[node.icon]"
+                style="color: #a1aab4"
+              ></em>
+              <span class="c-category-menu__item-title">{{ node.text }}</span>
+            </div>
+          </ng-template>
+        </kendo-treeview>
+      </div>
+    </ng-template>
+  </kendo-drawer>
+  <kendo-drawer-content [ngClass]="mobileView ? 'mobile_padding' : null">
+    <div class="c-forms"><router-outlet></router-outlet></div>
+  </kendo-drawer-content>
+</kendo-drawer-container>

@@ -1,0 +1,285 @@
+<div class="c-procurement-process-data">
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "PROCUREMENT.PROCUREMENT_PROCESS" | translate
+    }}</ng-container>
+    <ng-container body>
+      <div [formGroup]="processForm">
+        <div class="row pb-0 pb-md-3">
+          <div class="col-12 col-md-8">
+            <div class="pl-md-3">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                [for]="name"
+                text="{{ 'PROCUREMENT.PROCESS_NAME' | translate }}"
+              >
+                <kendo-textbox
+                  #name
+                  [maxlength]="maxlengthProcessName"
+                  class="c-textbox"
+                  formControlName="name"
+                  ngDefaultControl
+                  [placeholder]="
+                    'PROCUREMENT.PROCESS.ENTER_PROCESS_NAME' | translate
+                  "
+                  id="Txb_Name"
+                ></kendo-textbox>
+              </kendo-label>
+              <div
+                *ngIf="
+                  processForm.controls.name.errors &&
+                  (processForm.controls.name.dirty ||
+                    processForm.controls.name.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "PROCUREMENT.REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="pr-md-3">
+              <kendo-label
+                class="fi-kendo-label"
+                [for]="manualId"
+                text="{{ 'PROCUREMENT.MANUAL_ID' | translate }}"
+              >
+                <kendo-textbox
+                  #manualId
+                  class="c-textbox"
+                  formControlName="manualId"
+                  [placeholder]="'PROCUREMENT.PROCESS.ENTER_OWN_ID' | translate"
+                  ngDefaultControl
+                  [maxlength]="40"
+                  id="Txb_Own_id"
+                ></kendo-textbox>
+              </kendo-label>
+            </div>
+          </div>
+        </div>
+        <div class="row pb-0 pb-md-3">
+          <div class="col-12 col-md-8">
+            <div class="pl-md-3">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                [for]="description"
+                text="{{ 'PROCUREMENT.DESCRIPTION' | translate }}"
+              >
+                <kendo-textbox
+                  #description
+                  class="c-textbox"
+                  formControlName="description"
+                  ngDefaultControl
+                  [placeholder]="
+                    'PROCUREMENT.PROCESS.ENTER_PROCESS_DESCRIPTION' | translate
+                  "
+                  id="Txb_Description"
+                ></kendo-textbox>
+              </kendo-label>
+              <div
+                *ngIf="
+                  processForm.controls.description.errors &&
+                  (processForm.controls.description.dirty ||
+                    processForm.controls.description.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "PROCUREMENT.REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="pr-md-3">
+              <kendo-label
+                class="fi-kendo-label"
+                [for]="subExecutor"
+                text="{{ 'PROCUREMENT.SUB_EXECUTOR' | translate }}"
+              >
+                <kendo-textbox
+                  #subExecutor
+                  class="c-textbox"
+                  formControlName="subExecutor"
+                  ngDefaultControl
+                  [placeholder]="
+                    'PROCUREMENT.PROCESS.ENTER_SUB_EXECUTOR' | translate
+                  "
+                  id="Txb_Sub_executor"
+                ></kendo-textbox>
+              </kendo-label>
+            </div>
+          </div>
+        </div>
+        <div class="row pb-0 pb-md-3">
+          <div class="col-12 col-md-4">
+            <div class="pl-md-3">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                [for]="category"
+                text="{{ 'PROCUREMENT.CATEGORY' | translate }}"
+              >
+                <kendo-dropdownlist
+                  id="Down_Category"
+                  [data]="categories$ | async"
+                  [textField]="'value'"
+                  [valueField]="'value'"
+                  [valuePrimitive]="true"
+                  #category
+                  [fiDropdownFormControl]
+                  (valueChange)="valueChange($event, 'category')"
+                  class="c-dropdown-list k-dropdown"
+                  formControlName="category"
+                  id="Down_Category"
+                >
+                  <ng-template kendoDropDownListValueTemplate let-item>
+                    {{ addPrefix(item?.value, "category") | translate }}
+                  </ng-template>
+                  <ng-template kendoDropDownListItemTemplate let-item>
+                    {{ addPrefix(item?.value, "category") | translate }}
+                  </ng-template>
+                </kendo-dropdownlist>
+              </kendo-label>
+              <div
+                *ngIf="
+                  processForm.controls.category.errors &&
+                  (processForm.controls.category.dirty ||
+                    processForm.controls.category.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "PROCUREMENT.REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <kendo-label
+              class="fi-kendo-label fi-kendo-label--required"
+              [for]="procurementMethod"
+              text="{{ 'PROCUREMENT.ACQUISITION_METHOD' | translate }}"
+            >
+              <kendo-dropdownlist
+                [data]="procurementMethods$ | async"
+                [textField]="'value'"
+                [valueField]="'value'"
+                [valuePrimitive]="true"
+                #procurementMethod
+                [fiDropdownFormControl]
+                class="c-dropdown-list k-dropdown qa-procurementCreate-component bg-white"
+                formControlName="procurementMethod"
+                (valueChange)="valueChange($event, 'procurementMethod')"
+                id="Down_Method"
+              >
+                <ng-template kendoDropDownListValueTemplate let-item>
+                  {{ addPrefix(item?.value, "adquisitonMethod") | translate }}
+                </ng-template>
+                <ng-template kendoDropDownListItemTemplate let-item>
+                  {{ addPrefix(item?.value, "adquisitonMethod") | translate }}
+                </ng-template>
+              </kendo-dropdownlist>
+            </kendo-label>
+            <div
+              *ngIf="
+                processForm.controls.procurementMethod.errors &&
+                (processForm.controls.procurementMethod.dirty ||
+                  processForm.controls.procurementMethod.touched)
+              "
+              class="k-tooltip-validation"
+            >
+              <div class="o-input-error">
+                {{ "PROCUREMENT.REQUIRED" | translate }}
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="pr-md-3">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required d-block"
+                text="{{ 'PROCUREMENT.MONITORING_METHOD' | translate }}"
+              >
+                <kendo-dropdownlist
+                  [data]="supervisionMethods$ | async"
+                  [textField]="'value'"
+                  [valueField]="'value'"
+                  [valuePrimitive]="true"
+                  class="c-dropdown-list k-dropdown bg-white"
+                  [fiDropdownFormControl]
+                  id="Down_Supervision_type"
+                  formControlName="supervisionType"
+                  (valueChange)="valueChange($event, 'threshold')"
+                >
+                  <ng-template kendoDropDownListValueTemplate let-item>
+                    {{ addPrefix(item?.value, "") | translate }}
+                  </ng-template>
+                  <ng-template kendoDropDownListItemTemplate let-item>
+                    {{ addPrefix(item?.value, "") | translate }}
+                  </ng-template>
+                </kendo-dropdownlist>
+              </kendo-label>
+              <div
+                *ngIf="
+                  processForm.controls.supervisionType.errors &&
+                  (processForm.controls.supervisionType.dirty ||
+                    processForm.controls.supervisionType.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "PROCUREMENT.REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row pb-0 pb-md-3" *ngIf="justificationVisibility">
+          <div class="col-12">
+            <div class="px-md-3">
+              <kendo-label
+                class="fi-kendo-label fi-kendo-label--required"
+                [for]="justification"
+                text="{{ 'PROCUREMENT.JUSTIFICATION' | translate }}"
+              >
+                <kendo-textbox
+                  #justification
+                  class="c-textbox"
+                  formControlName="justification"
+                  ngDefaultControl
+                  id="Txb_Justification"
+                  [placeholder]="
+                    'PROCUREMENT.PROCESS.ENTER_PROCESS_DESCRIPTION' | translate
+                  "
+                ></kendo-textbox>
+              </kendo-label>
+              <div
+                *ngIf="
+                  processForm.controls.justification.errors &&
+                  (processForm.controls.justification.dirty ||
+                    processForm.controls.justification.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "PROCUREMENT.REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="visibleWarningMessage">
+          <fi-alert
+            type="warning"
+            title="{{ _warningMessage | translate }}"
+            [closable]="true"
+          >
+          </fi-alert>
+        </ng-container>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

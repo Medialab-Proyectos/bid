@@ -1,0 +1,23 @@
+<div class="c-multiselect d-block">
+  <div class="d-block w-100 mb-1">
+    <kendo-label
+      class="c-multiselect__label fi-kendo-label--required"
+      text="{{ text | translate }}"
+    >
+    </kendo-label>
+  </div>
+  <div class="d-block w-100">
+    <kendo-multiselect
+      [data]="data"
+      [valuePrimitive]="true"
+      [ngModel]="value"
+      (ngModelChange)="onChange($event)"
+      (blur)="onTouched()"
+      textField="name"
+      valueField="id"
+      [disabled]="disabled"
+      (closed)="closed()"
+    >
+    </kendo-multiselect>
+  </div>
+</div>

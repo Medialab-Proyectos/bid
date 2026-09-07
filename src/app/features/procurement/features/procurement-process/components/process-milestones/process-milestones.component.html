@@ -1,0 +1,224 @@
+<div class="c-process-milestones">
+  <fi-accordion-panel [open]="true" [collapsible]="false">
+    <ng-container number *ngIf="number">{{ number }}</ng-container>
+    <ng-container title>{{
+      "PROCUREMENT.PROCESS_MILESTONES" | translate
+    }}</ng-container>
+    <ng-container body *ngIf="milestoneCollection.controls.length > 0">
+      <div [formGroup]="form">
+        <div class="milestone-header">
+          <div class="milestone-header__header">
+            <div class="column col-md-3">
+              {{ "PROCUREMENT.PROCESS.MILESTONE" | translate }}
+            </div>
+            <div class="column col-md-3">
+              {{ "PROCUREMENT.PROCESS.ESTIMATED_DATE" | translate }}
+            </div>
+            <div class="column col-md-3">
+              {{ "PROCUREMENT.PROCESS.RE_ESTIMATED_DATE" | translate }}
+            </div>
+            <div class="column col-md-3">
+              {{ "PROCUREMENT.PROCESS.ACTUAL_DATE" | translate }}
+            </div>
+          </div>
+        </div>
+        <div
+          class="pt-1"
+          formArrayName="milestoneCollection"
+          [ngClass]="mobileView ? 'milestoneCollectionContainer' : null"
+        >
+          <div
+            role="section-milestones"
+            class="pb-3 pt-3 c-process-milestones__milestone-container"
+            [ngClass]="mobileView ? 'itemMilestone' : null"
+            *ngFor="
+              let item of milestoneCollection.controls;
+              let milestonesIndex = index
+            "
+            [formGroupName]="milestonesIndex"
+          >
+            <div
+              class="col-12 col-md-3 headerMilestone"
+              attr.id="expandMilestone{{ milestonesIndex }}"
+            >
+              <kendo-label
+                *ngIf="mobileView"
+                class="fi-kendo-label col-5 col-md-12 pr-0 pl-md-0"
+                text="{{ 'PROCUREMENT.Milestone' | translate }}"
+              ></kendo-label>
+              <fi-title-description
+                class="title-description d-flex align-items-center"
+                [title]="milestoneCollection.value[milestonesIndex]?.name"
+                [description]="
+                  milestoneCollection.value[milestonesIndex]?.tooltip
+                "
+              >
+              </fi-title-description>
+            </div>
+            <div class="col-12 col-md-3">
+              <div *ngIf="mobileView" class="d-flex align-items-center">
+                <span class="red">* </span>
+                <kendo-label
+                  class="fi-kendo-label"
+                  text="{{ 'PROCUREMENT.ESTIMATED_DATE' | translate }}"
+                ></kendo-label>
+              </div>
+              <div class="">
+                <kendo-datepicker
+                  #initialEstimationDate
+                  role="estimatedDate"
+                  class="c-datepicker"
+                  format="dd MMM yyyy"
+                  [navigation]="false"
+                  [style.width]="'100%'"
+                  (valueChange)="onChangeMilestoneDate(milestonesIndex)"
+                  [placeholder]="'COMMON.ENTER_DATE' | translate"
+                  id="Cal_Milestone_estimated_date"
+                  formControlName="initialEstimationDate"
+                  ngDefaultControl
+                  calendarType="classic"
+                  [fiDisableControl]="
+                    readOnly || formConfig.isEstimatedDateDisabled
+                  "
+                >
+                  <kendo-datepicker-messages
+                    [today]="'COMMON.CALENDAR.TODAY' | translate"
+                    [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+                  ></kendo-datepicker-messages>
+                </kendo-datepicker>
+              </div>
+              <div
+                *ngIf="
+                  milestoneCollection.controls[milestonesIndex].controls
+                    .initialEstimationDate.errors &&
+                  (milestoneCollection.controls[milestonesIndex].controls
+                    .initialEstimationDate.dirty ||
+                    milestoneCollection.controls[milestonesIndex].controls
+                      .initialEstimationDate.touched)
+                "
+                class="k-tooltip-validation"
+              >
+                <div class="o-input-error">
+                  {{ "PROCUREMENT.REQUIRED" | translate }}
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-3">
+              <div
+                *ngIf="
+                  !formConfig.isReEstimatedDateVisible &&
+                  !milestoneCollection.controls[milestonesIndex].controls
+                    .reEstimateDate.value
+                "
+                class="c-process-milestones__empty-date"
+              ></div>
+              <div
+                *ngIf="
+                  formConfig.isReEstimatedDateVisible ||
+                  milestoneCollection.controls[milestonesIndex].controls
+                    .reEstimateDate.value
+                "
+              >
+                <kendo-label
+                  *ngIf="mobileView"
+                  class="fi-kendo-label col-5 col-md-12 pr-0 pl-md-0 d-flex align-items-center"
+                  text="{{ 'PROCUREMENT.RE_ESTIMATED_DATE' | translate }}"
+                ></kendo-label>
+                <kendo-datepicker
+                  #estimate
+                  format="dd MMM yyyy"
+                  [navigation]="false"
+                  [style.width]="'100%'"
+                  [disabled]="true"
+                  [placeholder]="'COMMON.ENTER_DATE' | translate"
+                  id="Cal_Milestone_re_estimated_date"
+                  class="c-datepicker col-7 col-md-12 pr-0 pl-0 pr-0"
+                  ngDefaultControl
+                  formControlName="reEstimateDate"
+                  calendarType="classic"
+                  [fiDisableControl]="
+                    readOnly ||
+                    !formConfig.isReEstimatedDateDisabled ||
+                    formConfig.disabledRestimatedDates[milestonesIndex]
+                  "
+                >
+                  <kendo-datepicker-messages
+                    [today]="'COMMON.CALENDAR.TODAY' | translate"
+                    [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+                  ></kendo-datepicker-messages>
+                </kendo-datepicker>
+              </div>
+            </div>
+            <div class="col-12 col-md-3">
+              <div
+                *ngIf="
+                  !formConfig.isActualDateVisible &&
+                  !milestoneCollection.controls[milestonesIndex].controls
+                    .actualDate.value
+                "
+                class="c-process-milestones__empty-date"
+              ></div>
+              <div
+                *ngIf="
+                  formConfig.isActualDateVisible ||
+                  milestoneCollection.controls[milestonesIndex].controls
+                    .actualDate.value
+                "
+              >
+                <kendo-label
+                  *ngIf="mobileView"
+                  class="fi-kendo-label col-5 col-md-12 pr-0 pl-md-0 d-flex align-items-center"
+                  text="{{ 'PROCUREMENT.ACTUAL_DATE' | translate }}"
+                ></kendo-label>
+                <kendo-datepicker
+                  #actual
+                  format="dd MMM yyyy"
+                  [navigation]="false"
+                  [style.width]="'100%'"
+                  [placeholder]="'COMMON.ENTER_DATE' | translate"
+                  id="Cal_Milestone_actual_date"
+                  class="c-datepicker col-7 col-md-12 pr-0 pl-0 pr-0"
+                  ngDefaultControl
+                  formControlName="actualDate"
+                  calendarType="classic"
+                  [fiDisableControl]="true"
+                >
+                  <kendo-datepicker-messages
+                    [today]="'COMMON.CALENDAR.TODAY' | translate"
+                    [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+                  ></kendo-datepicker-messages>
+                </kendo-datepicker>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="visibilityMilestonesWarning" class="pt-3">
+            <fi-alert
+              [type]="'warning'"
+              [title]="
+                'PROCUREMENT.PROCESS.MILESTONES_DATES_MUST_BE_SEQUENTIAL'
+                  | translate
+              "
+            >
+            </fi-alert>
+          </div>
+          <div
+            *ngIf="
+              formConfig.isEstimatedDateVisible &&
+              (mode == CREATE || (mode == UPDATE && status == DRAFT))
+            "
+            class="pt-3"
+          >
+            <fi-alert
+              [type]="'warning'"
+              [title]="
+                'PROCUREMENT.PROCESS.MILESTONES_DATES_CANNOT_LOWER_TODAY'
+                  | translate
+              "
+            >
+            </fi-alert>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </fi-accordion-panel>
+</div>

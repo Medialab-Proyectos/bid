@@ -1,0 +1,503 @@
+<form [formGroup]="dynamicForm">
+  <!-- CASO TEXBOX, TEXTAREA, DROPDONWLIST, NUMERICTEXTBOX, RADIO BUTTON -->
+  <div
+    *ngIf="
+      component.type === types.TEXTBOX ||
+      component.type === types.TEXTAREA ||
+      component.type === types.DROPDONWLIST ||
+      component.type === types.RADIOBUTTON ||
+      component.type === types.INPUTNUMERIC ||
+      component.type === types.INPUTCURRENCY ||
+      component.type === types.DATEPICKER ||
+      component.type === types.UPLOAD_DOCUMENT ||
+      component.type === types.DATETIMEPICKER ||
+      component.type === types.EVALUATED_BIDDERS ||
+      component.type === types.RICHTEXT ||
+      component.type === types.TIMEPICKER
+    "
+  >
+    <kendo-label
+      *ngIf="
+        component.kendoLabel !== null &&
+        component.kendoLabel.text !== '' &&
+        component.kendoLabel.text !== ' '
+      "
+      class="fi-kendo-label"
+      [ngClass]="{
+        'fi-kendo-label--required': handleRequiredField(component) === true
+      }"
+      [for]="component.kendoLabel.for"
+      [text]="component.kendoLabel.text | translate"
+    ></kendo-label>
+
+    <div *ngIf="component.showRequired === '1'" class="div-ghost">
+      <kendo-label
+        class="fi-kendo-label"
+        [ngClass]="{
+          'fi-kendo-label--required':
+            handleRequiredField(component) === true &&
+            component.showRequired !== '1'
+        }"
+      >
+      </kendo-label>
+    </div>
+
+    <ng-container *ngIf="component.type === types.TEXTBOX">
+      <kendo-textbox
+        placeholder="{{ component.placeHolder | translate }}"
+        [id]="component.id"
+        [data-testid]="component.dataTestId"
+        [formControlName]="component.formControlName"
+        [value]="component.value"
+        class="c-textbox k-textbox"
+        [showErrorIcon]="'initial'"
+        [maxlength]="maxlength"
+        (valueChange)="onValueChangeTextBox($event, component.type)"
+      >
+        <ng-template kendoTextBoxSuffixTemplate>
+          <span class="counter">{{ counter }}</span>
+        </ng-template>
+      </kendo-textbox>
+    </ng-container>
+
+    <ng-container *ngIf="component.type === types.TEXTAREA">
+      <textarea
+        [id]="component.id"
+        [data-testid]="component.dataTestId"
+        [formControlName]="component.formControlName"
+        class="c-textbox k-textbox c-text-area c-textarea-form"
+        [showErrorIcon]="'initial'"
+        [maxlength]="maxlengthTextArea"
+        [readonly]="readonlyRichText"
+        style="height: 200px"
+      ></textarea>
+
+      <fi-form-errors-msg
+        *ngIf="component.validators.length > 0"
+        [control]="dynamicForm.get(component.formControlName)"
+        [keys]="component.validators"
+      ></fi-form-errors-msg>
+
+      <p class="o-fieldset-description" *ngIf="component.textAreaOptions">
+        {{ component.textAreaOptions.description | translate }}
+      </p>
+    </ng-container>
+
+    <ng-container *ngIf="component.type === types.DROPDONWLIST">
+      <kendo-dropdownlist
+        [data]="data"
+        [filterable]="component.filterable"
+        textField="text"
+        valueField="value"
+        [valuePrimitive]="true"
+        [formControlName]="component.formControlName"
+        (filterChange)="handleFilter($event)"
+        [data-testid]="component.dataTestId"
+        class="c-dropdown-list k-dropdown"
+        place
+        style="--placeholder: '{{ 'COMMON.SELECT_AN_OPTION' | translate }}'"
+        [id]="component.id"
+        [defaultItem]="getDefaultItem()"
+      >
+        <ng-template kendoDropDownListValueTemplate let-item>
+          {{ item?.text | translate }}
+        </ng-template>
+        <ng-template kendoDropDownListItemTemplate let-item>
+          {{ item?.text | translate }}
+        </ng-template>
+      </kendo-dropdownlist>
+      <ng-container *ngFor="let dropItem of component.dropdownOptions">
+        <div
+          *ngIf="
+            dynamicForm.get(component.formControlName).value === dropItem.value
+          "
+        >
+          <p
+            [innerHTML]="
+              handleTextSanitization(dropItem.description | translate)
+            "
+          ></p>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="component.type === types.RADIOBUTTON">
+      <div class="row">
+        <div class="col-12">
+          <ul class="k-radio-list">
+            <ng-container *ngFor="let radio of component.radioButtonList">
+              <li class="k-radio-item">
+                <input
+                  type="radio"
+                  [value]="radio.value"
+                  [formControlName]="component.formControlName"
+                  [id]="radio.idRadioButton"
+                  kendoRadioButton
+                />
+                <label class="k-radio-label">{{
+                  radio.label | translate
+                }}</label>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <ng-container *ngFor="let radio of component.radioButtonList">
+          <div
+            class="col-4"
+            *ngIf="
+              radio.description !== null && radio.description !== undefined
+            "
+          >
+            <p>{{ radio.description | translate }}</p>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="component.type === types.INPUTNUMERIC">
+      <kendo-numerictextbox
+        [spinners]="false"
+        [formControlName]="component.formControlName"
+        [decimals]="component.inputNumericOptions.decimals"
+        [format]="component.inputNumericOptions.format"
+        class="c-cost-distribution c-numerictextbox k-numerictextbox"
+        placeholder="{{ component.placeHolder | translate }}"
+        [min]="component.inputNumericOptions.min"
+        [max]="component.inputNumericOptions.max"
+        [changeValueOnScroll]="false"
+        [autoCorrect]="false"
+        [maxlength]="18"
+      ></kendo-numerictextbox>
+    </ng-container>
+
+    <ng-container *ngIf="component.type === types.INPUTCURRENCY">
+      <div class="c-cost-distribution">
+        <kendo-numerictextbox
+          [spinners]="false"
+          [formControlName]="component.formControlName"
+          [decimals]="2"
+          class="c-numerictextbox k-numerictextbox"
+          [placeholder]="component.placeHolder"
+          [min]="0"
+          [maxlength]="18"
+          [autoCorrect]="true"
+        ></kendo-numerictextbox>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="component.type === types.DATEPICKER">
+      <kendo-datepicker
+        [id]="component.id"
+        [data-testid]="component.dataTestId"
+        [formControlName]="component.formControlName"
+        class="c-datepicker datepicker-fix k-textbox"
+        [calendarType]="component.datePickerOptions.calendarType"
+        [format]="component.datePickerOptions.format"
+        [min]="dateMin"
+        [max]="dateMax"
+      >
+        <kendo-datepicker-messages
+          [today]="'COMMON.CALENDAR.TODAY' | translate"
+          [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+        ></kendo-datepicker-messages>
+      </kendo-datepicker>
+    </ng-container>
+
+    <ng-container *ngIf="component.type === types.DATETIMEPICKER">
+      <kendo-datetimepicker
+        [id]="component.id"
+        [formControlName]="component.formControlName"
+        class="c-datepicker datepicker-fix k-textbox"
+        [calendarType]="component.datePickerOptions.calendarType"
+        [format]="component.datePickerOptions.format"
+        (valueChange)="onValueChange($event, component)"
+        [min]="dateMin"
+        [max]="dateMax"
+        [(value)]="hourDefault"
+      >
+        <kendo-datepicker-messages
+          [today]="'COMMON.CALENDAR.TODAY' | translate"
+          [toggle]="'COMMON.CALENDAR.TOGGLE' | translate"
+        ></kendo-datepicker-messages>
+      </kendo-datetimepicker>
+    </ng-container>
+
+    <ng-container *ngIf="component.type === types.UPLOAD_DOCUMENT">
+      <fi-documents></fi-documents>
+    </ng-container>
+  </div>
+
+  <!-- CASO CHECKBOX -->
+  <div *ngIf="component.type === types.CHECKBOX">
+    <div>
+      <input
+        type="checkbox"
+        kendoCheckBox
+        class="mr-2"
+        [formControlName]="component.formControlName"
+      />
+      <kendo-label
+        *ngIf="component.kendoLabel !== null"
+        class="fi-kendo-label"
+        [for]="component.kendoLabel.for"
+        [text]="component.kendoLabel.text | translate"
+      ></kendo-label>
+    </div>
+  </div>
+
+  <!-- CASO INPUTPHONE -->
+  <div *ngIf="component.type === types.INPUTPHONE">
+    <kendo-label
+      *ngIf="component.kendoLabel !== null"
+      class="fi-kendo-label fi-kendo-label--required"
+      [for]="component.kendoLabel.for"
+      [text]="component.kendoLabel.text | translate"
+    ></kendo-label>
+    <div class="phone-input">
+      <fi-input-phone
+        [ngClass]="{
+          'phone-input__input phone-input-border':
+            dynamicForm.get(component.formControlName).errors &&
+            dynamicForm.get(component.formControlName).touched,
+          'phone-input__input':
+            !dynamicForm.get(component.formControlName).errors &&
+            !dynamicForm.get(component.formControlName).touched
+        }"
+        [name]="component?.formControlName"
+        [formControlName]="component?.formControlName"
+        [disabled]="dynamicForm.get(component.formControlName).disabled"
+        [value]="dynamicForm.get(component.formControlName).value"
+        [gridData]="gridData"
+      ></fi-input-phone>
+      <div
+        *ngIf="
+          dynamicForm.get(component.formControlName).errors &&
+          dynamicForm.get(component.formControlName).touched
+        "
+        class="k-tooltip-validation"
+      >
+        <div
+          class="o-fieldset__error"
+          *ngIf="
+            dynamicForm.get(component.formControlName).errors?.required ===
+              true;
+            else length
+          "
+        >
+          {{ "FORMS.VALIDATIONS.IS_REQUIRED" | translate }}
+        </div>
+
+        <ng-template #length>
+          <div
+            class="o-fieldset__error"
+            *ngIf="
+              dynamicForm.get(component.formControlName).errors
+                .invalidLength === true
+            "
+          >
+            {{ "FORMS.VALIDATIONS.PHONE_LENGTH" | translate }}
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASO LIST -->
+  <div *ngIf="component.type === types.EVALUATED_BIDDERS">
+    <kendo-listview
+      class="k-listview"
+      [data]="component.evaluatedBiddersList"
+      [formControlName]="component.formControlName"
+    >
+      <ng-template kendoListViewItemTemplate let-dataItem>
+        <div class="row" style="margin: auto">
+          <div class="col-sd-2">
+            <label>{{ "Participant Name: " }}</label>
+          </div>
+          <div class="col-md-2">
+            <label>{{ dataItem.name | translate }}</label>
+          </div>
+          <div>
+            <label>{{ " Participant's Nationality: " }} </label>
+          </div>
+          <div class="col-md-2">
+            <label>{{ dataItem.offererNationality | translate }}</label>
+          </div>
+        </div>
+        <hr />
+        <div class="row" style="margin: auto">
+          <div clas="col-sd-2">
+            <label>{{ " Participant Score: " }} </label>
+          </div>
+          <div class="col-md-2">
+            <label>{{ dataItem.score | translate }}</label>
+          </div>
+          <div>
+            <label>{{ " Initial offer price: " }} </label>
+          </div>
+          <div class="col-md-2">
+            <label>{{ dataItem.initialPrice | translate }}</label>
+          </div>
+        </div>
+        <hr />
+        <div class="row" style="margin: auto">
+          <div clas="col-sd-2">
+            <label>{{ "Final offer price: " }} </label>
+          </div>
+          <div class="col-md-2">
+            <label>{{ dataItem.finalPrice | translate }}</label>
+          </div>
+        </div>
+        <hr />
+        <div class="row" style="margin: auto">
+          <div class="col-sd-2" style="padding: 7px">
+            <label>Opening Price: </label>
+          </div>
+          <div class="col-md-2">
+            <input
+              type="text"
+              style="vertical-align: center"
+              class="k-textbox"
+              name="ProductName"
+              required="required"
+              value="1.000.000"
+              validationMessage="required"
+              [(ngModel)]="dataItem.ProductName"
+              #productName="ngModel"
+            />
+          </div>
+          <div class="col-sd-2" style="padding: 7px">
+            <label>Evaluated Price: </label>
+          </div>
+          <div class="col-sd-2">
+            <input
+              type="text"
+              style="vertical-align: center"
+              class="k-textbox"
+              name="ProductName"
+              required="required"
+              value=""
+              validationMessage="required"
+              [(ngModel)]="dataItem.ProductName"
+              #productName="ngModel"
+            />
+          </div>
+        </div>
+        <br />
+        <hr color="#157AD4" />
+      </ng-template>
+    </kendo-listview>
+  </div>
+
+  <!-- CASO RICHTEXT -->
+  <ng-container *ngIf="component.type === types.RICHTEXT">
+    <kendo-editor
+      [id]="component.id"
+      class="c-process-coments__editor k-editor c-editor"
+      [formControlName]="component.formControlName"
+      [pasteCleanupSettings]="pasteCleanupSettings"
+      [readonly]="readonlyRichText"
+    >
+      <kendo-toolbar
+        [style.height.px]="60"
+        class="k-toolbar-editor"
+        (click)="clickCheckOpenInNewTab($event)"
+      >
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button kendoEditorBoldButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorItalicButton></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorUnderlineButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorIndentButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorOutdentButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorInsertUnorderedListButton>
+          </kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorInsertOrderedListButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorCreateLinkButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorUnlinkButton></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button
+            kendoEditorAddColumnBeforeButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorAddColumnAfterButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorAddRowBeforeButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorAddRowAfterButton
+          ></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button
+            kendoEditorDeleteColumnButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorDeleteRowButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorDeleteTableButton
+          ></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button
+            kendoEditorMergeCellsButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorSplitCellButton
+          ></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+      </kendo-toolbar>
+
+      <kendo-editor-messages
+        [bold]="'COMMON.EDITOR_BOLD' | translate"
+        [italic]="'COMMON.EDITOR_ITALIC' | translate"
+        [underline]="'COMMON.EDITOR_UNDERLINE' | translate"
+        [indent]="'COMMON.EDITOR_INDENT' | translate"
+        [outdent]="'COMMON.EDITOR_OUTDENT' | translate"
+        [insertUnorderedList]="'COMMON.EDITOR_INSERT_UL' | translate"
+        [insertOrderedList]="'COMMON.EDITOR_INSERT_OL' | translate"
+        [linkOpenInNewWindow]="'COMMON.EDITOR_INSERT_LINK' | translate"
+        [linkText]="'COMMON.EDITOR_LINK_TEXT' | translate"
+        [linkTitle]="'COMMON.EDITOR_LINK_TITLE' | translate"
+        [linkWebAddress]="'COMMON.EDITOR_LINK_WEB_ADDRESS' | translate"
+        [dialogCancel]="'COMMON.EDITOR_DIALOG_CANCEL' | translate"
+        [dialogInsert]="'COMMON.EDITOR_DIALOG_INSERT' | translate"
+        [createLink]="'COMMON_CREATE_LINK' | translate"
+      ></kendo-editor-messages>
+    </kendo-editor>
+  </ng-container>
+
+  <ng-container *ngIf="component.type === types.TIMEPICKER">
+    <div>
+      <kendo-timepicker
+        [id]="component.id"
+        [formControlName]="component.formControlName"
+        format="HH:mm"
+        [(value)]="hourDefault"
+        class="c-textbox k-textbox c-component-timepiker"
+      ></kendo-timepicker>
+    </div>
+  </ng-container>
+
+  <fi-form-errors-msg
+    *ngIf="
+      component.errorMsg !== null &&
+      component.type !== types.TEXTAREA &&
+      component.type !== types.INPUTPHONE &&
+      dynamicForm.get(component.formControlName) !== null
+    "
+    [control]="dynamicForm.get(component.formControlName)"
+    [keys]="component.validators"
+  ></fi-form-errors-msg>
+</form>

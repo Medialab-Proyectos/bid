@@ -1,0 +1,116 @@
+<div class="c-add-comment">
+  <fi-avatar></fi-avatar>
+  <form [formGroup]="formGroup">
+    <fieldset>
+      <ng-container *ngIf="displayVisibility">
+        <div>
+          <legend>
+            {{ "PROCUREMENT.PROCESS.COMMENT_FOR_EXECUTING_AGENCY" | translate }}
+          </legend>
+          <input
+            type="radio"
+            value="0"
+            formControlName="visibility"
+            kendoRadioButton
+            id="Rbn_Visibility_public"
+            #public
+          />
+          <kendo-label
+            [for]="public"
+            [text]="'ENUM.COMMENT.VISIBILITY.PUBLIC' | translate"
+          >
+          </kendo-label>
+
+          <input
+            type="radio"
+            value="1"
+            formControlName="visibility"
+            kendoRadioButton
+            id="Rbn_Visibility_private"
+            #private
+          />
+          <kendo-label
+            [for]="private"
+            [text]="'ENUM.COMMENT.VISIBILITY.PRIVATE' | translate"
+          ></kendo-label>
+          <div
+            *ngIf="
+              formGroup.controls.visibility.errors &&
+              (formGroup.controls.visibility.dirty ||
+                formGroup.controls.visibility.touched)
+            "
+          >
+            <div class="o-input-error">
+              {{ "PROCUREMENT_COMMENT.VISIBILITY_REQUIRED" | translate }}
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div
+        [class]="
+          displayVisibility
+            ? 'c-add-comment__text-area'
+            : 'c-add-comment__text-area-no-radio'
+        "
+      >
+        <kendo-editor
+          [iframe]="false"
+          class="c-process-coments__editor"
+          formControlName="text"
+          ngDefaultControl
+          [placeholder]="
+            'PROCUREMENT.WORKFLOWS.PLACEHOLDER.ADD_COMMENT' | translate
+          "
+        >
+          <kendo-toolbar>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button
+                kendoEditorBoldButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button
+                kendoEditorItalicButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button
+                kendoEditorUnderlineButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button
+                kendoEditorIndentButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button
+                kendoEditorOutdentButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorInsertUnorderedListButton>
+              </kendo-toolbar-button>
+              <kendo-toolbar-button
+                kendoEditorInsertOrderedListButton
+              ></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+          </kendo-toolbar>
+
+          <kendo-editor-messages
+            [bold]="'COMMON.EDITOR_BOLD' | translate"
+            [italic]="'COMMON.EDITOR_ITALIC' | translate"
+            [underline]="'COMMON.EDITOR_UNDERLINE' | translate"
+            [indent]="'COMMON.EDITOR_INDENT' | translate"
+            [outdent]="'COMMON.EDITOR_OUTDENT' | translate"
+            [insertUnorderedList]="'COMMON.EDITOR_INSERT_UL' | translate"
+            [insertOrderedList]="'COMMON.EDITOR_INSERT_OL' | translate"
+          >
+          </kendo-editor-messages>
+        </kendo-editor>
+
+        <div
+          *ngIf="
+            formGroup.controls.text.errors &&
+            (formGroup.controls.text.dirty || formGroup.controls.text.touched)
+          "
+        >
+          <div class="o-input-error">
+            {{ "PROCUREMENT_COMMENT.REQUIRED" | translate }}
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</div>

@@ -183,7 +183,7 @@ function shell(title, body) {
     '<meta name="robots" content="noindex, nofollow">',
     '<title>' + title + '</title>',
     '<style>',
-    ':root{color-scheme:light dark;--bg:#f6f8fb;--card:#fff;--fg:#10233d;--muted:#5b6b83;',
+    ':root{color-scheme:light dark;--bg:#fff;--card:#fff;--fg:#10233d;--muted:#5b6b83;',
     '--border:#d3dae6;--field:#fff;--accent:#007eb6;--accent-fg:#fff;',
     '--danger-bg:#fdeaea;--danger-fg:#a1231d;--danger-border:#f0bab6}',
     '@media (prefers-color-scheme:dark){:root{--bg:#0e1622;--card:#16202e;--fg:#e8eef7;',

@@ -388,6 +388,12 @@ export interface ManualPaymentRequest extends BudgetAllocation {
   amount: number;
   exchangeRate: number;
   reimbursable: boolean;
+  /** How the payment splits across the loan's own funding sources -- entered
+   *  by hand here because nothing upstream can infer it from the amount
+   *  alone, unlike the ceiling check, which is purely per currency. */
+  idbFinancingAmount: number;
+  localFinancingAmount: number;
+  cofinancingAmount: number;
 }
 
 /** One line of an accumulated report: how much went to a component. */
@@ -605,6 +611,12 @@ export interface ExecutorSituation {
   approvalCurrency: string;
   /** Reported, free, and ready to enter a statement. */
   readyToJustify: SituationFigure;
+  /**
+   * Reported and free of blockers, but already picked into a statement of
+   * expenditures someone is still building -- not free to enter another one,
+   * so it is excluded from `readyToJustify` instead of counted in both.
+   */
+  inProgress: SituationFigure;
   /** Carried by a statement the Bank has not ruled on. */
   awaitingBank: SituationFigure;
   /** Reported but held back by something the agency can fix. */

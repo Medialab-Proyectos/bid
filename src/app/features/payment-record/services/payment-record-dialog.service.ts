@@ -133,7 +133,8 @@ export class PaymentRecordDialogService {
     payment: CommitmentPayment,
     position: number,
     total: number,
-    manage = false
+    manage = false,
+    contractCurrency = ''
   ): Observable<boolean> {
     const dialog = this.dialogService.open({
       title: this.translate.instant('PAYMENT_RECORD.UPDATE_PAYMENT.TITLE'),
@@ -150,6 +151,7 @@ export class PaymentRecordDialogService {
     instance.total = total;
     instance.allowDelete = manage;
     instance.showReimbursable = manage;
+    instance.contractCurrency = contractCurrency;
 
     return this.confirmed(dialog.result);
   }

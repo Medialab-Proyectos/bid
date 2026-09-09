@@ -71,16 +71,69 @@ export class PaymentRecordApiService {
           projectBucketId
         ).pipe(catchError(() => of([] as PreviousStatement[])));
 
+        // No draft in progress is the ordinary case, not an error worth
+        // failing the rest of the position over -- the back end answers it
+        // as a 404, so an empty set is what "nothing to exclude" looks like.
+        const draftPaymentIds$ = this.getCurrentStatementDraft(
+          projectBucketId
+        ).pipe(
+          switchMap((draft) => this.draftPaymentIds(projectBucketId, draft)),
+          catchError(() => of(new Set<string>()))
+        );
+
         return forkJoin({
           details: details$,
           payments: payments$,
           previousStatements: previousStatements$,
+          draftPaymentIds: draftPaymentIds$,
         }).pipe(
-          map(({ details, payments, previousStatements }) =>
-            buildExecutorSituation(summary, details, payments, previousStatements)
+          map(({ details, payments, previousStatements, draftPaymentIds }) =>
+            buildExecutorSituation(
+              summary,
+              details,
+              payments,
+              previousStatements,
+              draftPaymentIds
+            )
           )
         );
       })
+    );
+  }
+
+  /**
+   * Every payment id a statement draft already holds, whichever shape it
+   * takes: picked by hand for a direct payment (`draft.payments` already has
+   * them), or grouped by component for the rest -- where the draft itself
+   * only carries a count per row, and the actual ids only come out once each
+   * component is opened, so this opens all of them.
+   */
+  private draftPaymentIds(
+    projectBucketId: string,
+    draft: StatementDraft
+  ): Observable<Set<string>> {
+    if (draft?.payments?.length) {
+      return of(new Set(draft.payments.map((payment) => payment.id)));
+    }
+
+    const rows = draft?.rows ?? [];
+    if (!rows.length) {
+      return of(new Set<string>());
+    }
+
+    return forkJoin(
+      rows.map((row) =>
+        this.getStatementComponent(projectBucketId, row.componentCode)
+      )
+    ).pipe(
+      map((components) => {
+        const ids = new Set<string>();
+        components.forEach((component) =>
+          component.selectedPaymentIds?.forEach((id) => ids.add(id))
+        );
+        return ids;
+      }),
+      catchError(() => of(new Set<string>()))
     );
   }
 

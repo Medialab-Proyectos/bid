@@ -128,7 +128,10 @@ export function buildExecutorSituation(
   summary: PaymentRecordSummary,
   details: CommitmentDetail[],
   paymentResponses: CommitmentPaymentsResponse[],
-  previousStatements: PreviousStatement[]
+  previousStatements: PreviousStatement[],
+  /** Every payment already picked into the statement of expenditures someone
+   *  is still building, if there is one in progress. */
+  draftPaymentIds: Set<string> = new Set()
 ): ExecutorSituation {
   const approvalCurrency = summary.approvalCurrency;
   const commitmentNumberById = new Map<string, string>(
@@ -143,13 +146,25 @@ export function buildExecutorSituation(
   );
 
   // ---- ready to justify ---------------------------------------------
-  const readyPayments = allPayments.filter(
+  // Free of blockers is not the same as free to claim: a payment already
+  // sitting in a statement someone is still building is spoken for, even
+  // though nothing here marks it as such the way "awaiting the Bank" does
+  // once that statement is actually sent.
+  const freePayments = allPayments.filter(
     (p) => p.status === PaymentRecordStatus.PAID && !blockerReasonFor(p)
   );
+  const readyPayments = freePayments.filter((p) => !draftPaymentIds.has(p.id));
+  const inProgressPayments = freePayments.filter((p) => draftPaymentIds.has(p.id));
+
   const readyToJustify = {
     amount: sum(readyPayments, (p) => p.equivalentAmount),
     payments: readyPayments.length,
     oldestDate: oldest(readyPayments.map((p) => p.paymentDate)),
+  };
+
+  const inProgress = {
+    amount: sum(inProgressPayments, (p) => p.equivalentAmount),
+    payments: inProgressPayments.length,
   };
 
   // ---- awaiting the Bank ----------------------------------------------
@@ -246,6 +261,7 @@ export function buildExecutorSituation(
   return {
     approvalCurrency,
     readyToJustify,
+    inProgress,
     awaitingBank,
     blocked,
     blockers,

@@ -122,6 +122,7 @@
           [data]="currencies"
           [disabled]="readOnly"
           [(ngModel)]="form.currency"
+          (valueChange)="onCurrencyChange()"
           id="Ddl_UpdatePayment_Currency"
         ></kendo-dropdownlist>
       </div>
@@ -149,7 +150,7 @@
         <kendo-numerictextbox
           [format]="'n4'"
           [min]="0"
-          [readonly]="readOnly"
+          [readonly]="readOnly || rateLocked"
           [spinners]="false"
           [(ngModel)]="form.exchangeRate"
           (valueChange)="recalculateEquivalent()"
@@ -169,6 +170,63 @@
           id="Num_UpdatePayment_Equivalent"
         ></kendo-numerictextbox>
       </div>
+    </div>
+
+    <fi-alert
+      *ngIf="!readOnly && !rateLocked"
+      type="warning"
+      [title]="'PAYMENT_RECORD.MANUAL.RATE_WARNING' | translate"
+      [closable]="false"
+    ></fi-alert>
+
+    <!--
+      Its own highlighted card, not a plain checkbox lost between fields --
+      the one place on this screen that offers to close a payment out
+      deserves to read as its own moment, not a quiet option. Green because
+      that is the same color the "Pagado" badge already uses for this exact
+      status, so the connection reads before either label is even parsed.
+
+      Still its own checkbox rather than a second button: not every visit to
+      a scheduled payment is the one that closes it out. Saving other edits
+      and leaving it Programado is just as valid, so this only asks for the
+      real data above when it is ticked -- it never blocks "Guardar" on its
+      own.
+    -->
+    <div class="pr-mark-paid" *ngIf="isScheduled && !readOnly">
+      <div class="pr-mark-paid__head">
+        <em class="fas fa-circle-check" aria-hidden="true"></em>
+        <span class="pr-mark-paid__title">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.MARK_PAID_TITLE" | translate }}
+        </span>
+      </div>
+
+      <label class="pr-radio pr-mark-paid__check" for="Chk_UpdatePayment_MarkPaid">
+        <input
+          type="checkbox"
+          id="Chk_UpdatePayment_MarkPaid"
+          [(ngModel)]="markAsPaid"
+        />
+        {{ "PAYMENT_RECORD.UPDATE_PAYMENT.MARK_PAID" | translate }}
+      </label>
+
+      <!--
+        What checking it is about to do, said before the user finds out from
+        a blocked button three fields down -- and what it changed "Guardar"
+        into, once checked, so the button itself is never a surprise.
+      -->
+      <p class="pr-mark-paid__help" *ngIf="!markAsPaid">
+        {{ "PAYMENT_RECORD.UPDATE_PAYMENT.MARK_PAID_HELP" | translate }}
+      </p>
+      <p class="pr-mark-paid__help" [class.pr-mark-paid__help--blocked]="!canMarkPaid" *ngIf="markAsPaid">
+        {{
+          canMarkPaid
+            ? ("PAYMENT_RECORD.UPDATE_PAYMENT.MARK_PAID_CONFIRM" | translate)
+            : (
+                "PAYMENT_RECORD.ADD_PAYMENTS.BLOCKED_MANUAL"
+                  | translate : { fields: missingFieldNames }
+              )
+        }}
+      </p>
     </div>
   </fieldset>
 
@@ -319,9 +377,14 @@
     kendoButton
     class="btn btn-brand"
     id="Btn_UpdatePayment_Confirm"
-    [disabled]="saving"
+    [disabled]="saving || (markAsPaid && !canMarkPaid)"
     (click)="confirm()"
   >
-    {{ "PAYMENT_RECORD.UPDATE_PAYMENT.CONFIRM" | translate }}
+    {{
+      (markAsPaid
+        ? "PAYMENT_RECORD.UPDATE_PAYMENT.CONFIRM_AND_MARK_PAID"
+        : "PAYMENT_RECORD.UPDATE_PAYMENT.CONFIRM"
+      ) | translate
+    }}
   </button>
 </kendo-dialog-actions>

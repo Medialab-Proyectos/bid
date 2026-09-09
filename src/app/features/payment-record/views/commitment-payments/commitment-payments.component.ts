@@ -211,7 +211,13 @@ export class CommitmentPaymentsComponent implements OnInit, OnDestroy {
   openPayment(payment: CommitmentPayment): void {
     const position = this.payments.findIndex((p) => p.id === payment.id) + 1;
     const sub = this.dialogs
-      .openUpdatePayment(payment, position, this.payments.length, true)
+      .openUpdatePayment(
+        payment,
+        position,
+        this.payments.length,
+        true,
+        this.commitment?.approvalCurrency
+      )
       .subscribe(() => this.reload());
     this.subscriptions.add(sub);
   }

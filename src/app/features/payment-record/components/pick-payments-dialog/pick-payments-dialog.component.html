@@ -224,6 +224,48 @@
 
       <fieldset class="pr-fieldset">
         <legend class="pr-fieldset__legend">
+          {{ "PAYMENT_RECORD.MANUAL.GROUP_IDENTITY" | translate }}
+        </legend>
+
+        <div class="pr-dialog__row pr-dialog__row--2col">
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label pr-dialog__required">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}
+            </span>
+            <kendo-textbox
+              class="c-textbox"
+              id="Txt_PickManual_Concept"
+              [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.CONCEPT_PLACEHOLDER' | translate"
+              [(ngModel)]="manual.concept"
+            ></kendo-textbox>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.MANUAL.CONCEPT_HELP" | translate }}
+            </span>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER" | translate }}
+            </span>
+            <kendo-textbox
+              class="c-textbox"
+              id="Txt_PickManual_Voucher"
+              [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.VOUCHER_PLACEHOLDER' | translate"
+              [(ngModel)]="manual.accountingVoucher"
+            ></kendo-textbox>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.MANUAL.VOUCHER_HELP" | translate }}
+            </span>
+          </div>
+        </div>
+      </fieldset>
+
+      <!--
+        Component, product and how the amount splits across funding sources
+        stay together, right before Fecha e importe -- what the payment is
+        charged against, decided before what it actually cost.
+      -->
+      <fieldset class="pr-fieldset">
+        <legend class="pr-fieldset__legend">
           {{ "PAYMENT_RECORD.MANUAL.GROUP_ALLOCATION" | translate }}
           <span class="pr-fieldset__help">
             {{ "PAYMENT_RECORD.MANUAL.GROUP_ALLOCATION_HELP" | translate }}
@@ -273,43 +315,100 @@
             </span>
           </div>
         </div>
-      </fieldset>
 
-      <fieldset class="pr-fieldset">
-        <legend class="pr-fieldset__legend">
-          {{ "PAYMENT_RECORD.MANUAL.GROUP_IDENTITY" | translate }}
-        </legend>
-
-        <div class="pr-dialog__row pr-dialog__row--2col">
+        <div class="pr-dialog__row pr-dialog__row--3col">
           <div class="pr-dialog__field">
-            <span class="pr-dialog__label pr-dialog__required">
-              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.IDB_FINANCING" | translate }}
             </span>
-            <kendo-textbox
-              class="c-textbox"
-              id="Txt_PickManual_Concept"
-              [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.CONCEPT_PLACEHOLDER' | translate"
-              [(ngModel)]="manual.concept"
-            ></kendo-textbox>
+            <!--
+              autoCorrect clamps the typed value to [min,max] live, as the
+              user types, instead of only on blur -- this is what actually
+              stops an absurd value from ever rendering in scientific
+              notation (4.44E+22), not just [max] on its own. The helper
+              text below explains the ceiling so a corrected value doesn't
+              look like it changed for no reason.
+            -->
+            <kendo-numerictextbox
+              id="Num_PickManual_IdbFinancing"
+              [format]="'n2'"
+              [min]="0"
+              [max]="availableIn(manual.currency)"
+              [autoCorrect]="true"
+              [spinners]="false"
+              [(ngModel)]="manual.idbFinancingAmount"
+            ></kendo-numerictextbox>
             <span class="pr-dialog__help">
-              {{ "PAYMENT_RECORD.MANUAL.CONCEPT_HELP" | translate }}
+              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
+              {{ availableIn(manual.currency) | ifNumber }}
+              {{ manual.currency }}
             </span>
           </div>
           <div class="pr-dialog__field">
             <span class="pr-dialog__label">
-              {{ "PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER" | translate }}
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.LOCAL_FINANCING" | translate }}
             </span>
-            <kendo-textbox
-              class="c-textbox"
-              id="Txt_PickManual_Voucher"
-              [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.VOUCHER_PLACEHOLDER' | translate"
-              [(ngModel)]="manual.accountingVoucher"
-            ></kendo-textbox>
+            <kendo-numerictextbox
+              id="Num_PickManual_LocalFinancing"
+              [format]="'n2'"
+              [min]="0"
+              [max]="availableIn(manual.currency)"
+              [autoCorrect]="true"
+              [spinners]="false"
+              [(ngModel)]="manual.localFinancingAmount"
+            ></kendo-numerictextbox>
             <span class="pr-dialog__help">
-              {{ "PAYMENT_RECORD.MANUAL.VOUCHER_HELP" | translate }}
+              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
+              {{ availableIn(manual.currency) | ifNumber }}
+              {{ manual.currency }}
+            </span>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.COFINANCING" | translate }}
+            </span>
+            <kendo-numerictextbox
+              id="Num_PickManual_Cofinancing"
+              [format]="'n2'"
+              [min]="0"
+              [max]="availableIn(manual.currency)"
+              [autoCorrect]="true"
+              [spinners]="false"
+              [(ngModel)]="manual.cofinancingAmount"
+            ></kendo-numerictextbox>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
+              {{ availableIn(manual.currency) | ifNumber }}
+              {{ manual.currency }}
             </span>
           </div>
         </div>
+
+        <!--
+          The "X de Y" comparison only makes sense once the payment amount
+          (entered further below, in GROUP_AMOUNT) is actually set --
+          before that, comparing against a coerced 0 read as a confusing
+          "de 0.00", so we show a neutral prompt instead.
+        -->
+        <span
+          *ngIf="(manual.amount || 0) > 0; else fundingTotalPending"
+          class="pr-ceiling"
+          [class.pr-ceiling--over]="manualFundingTotal !== manual.amount"
+        >
+          {{
+            "PAYMENT_RECORD.MANUAL.FUNDING_TOTAL"
+              | translate
+                : {
+                    total: (manualFundingTotal | ifNumber : 2),
+                    amount: (manual.amount | ifNumber : 2)
+                  }
+          }}
+        </span>
+        <ng-template #fundingTotalPending>
+          <span class="pr-dialog__help">
+            {{ "PAYMENT_RECORD.MANUAL.FUNDING_TOTAL_PENDING" | translate }}
+          </span>
+        </ng-template>
       </fieldset>
 
       <fieldset class="pr-fieldset">
@@ -342,6 +441,7 @@
               id="Ddl_PickManual_Currency"
               [data]="currencies"
               [(ngModel)]="manual.currency"
+              (valueChange)="onManualCurrencyChange()"
             ></kendo-dropdownlist>
             <span class="pr-dialog__help">
               {{ "PAYMENT_RECORD.MANUAL.CURRENCY_HELP" | translate }}
@@ -356,6 +456,7 @@
               [format]="'n2'"
               [min]="0"
               [max]="availableIn(manual.currency)"
+              [autoCorrect]="true"
               [spinners]="false"
               [placeholder]="'PAYMENT_RECORD.MANUAL.AMOUNT_PLACEHOLDER' | translate"
               [(ngModel)]="manual.amount"
@@ -377,15 +478,23 @@
               id="Num_PickManual_Rate"
               [format]="'n4'"
               [min]="0"
+              [readonly]="manualRateLocked"
               [spinners]="false"
               [(ngModel)]="manual.exchangeRate"
             ></kendo-numerictextbox>
           </div>
         </div>
 
+        <fi-alert
+          *ngIf="!manualRateLocked"
+          type="warning"
+          [title]="'PAYMENT_RECORD.MANUAL.RATE_WARNING' | translate"
+          [closable]="false"
+        ></fi-alert>
+
         <p class="pr-equivalent">
           {{ "PAYMENT_RECORD.MANUAL.EQUIVALENT" | translate }}
-          <strong>{{ manualEquivalent | ifNumber }} {{ manual.currency }}</strong>
+          <strong>{{ manualEquivalent | ifNumber }} {{ contractCurrency }}</strong>
         </p>
       </fieldset>
     </ng-container>

@@ -69,6 +69,18 @@
                 : { days: daysWaiting(situation.readyToJustify.oldestDate) }
           }}
         </span>
+        <!--
+          Free of blockers is not the same as free to claim -- these already
+          moved into a statement someone is still building, so they no longer
+          count above. Said here instead of just vanishing, so the total
+          dropping is never a mystery.
+        -->
+        <span class="pr-position__note" *ngIf="situation.inProgress.payments > 0">
+          {{
+            "PAYMENT_RECORD.SITUATION.IN_PROGRESS_NOTE"
+              | translate : { count: situation.inProgress.payments }
+          }}
+        </span>
         <button
           kendoButton
           class="btn btn-brand pr-position__action"

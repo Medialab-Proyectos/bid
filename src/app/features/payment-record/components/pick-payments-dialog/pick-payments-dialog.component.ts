@@ -122,6 +122,9 @@ export class PickPaymentsDialogComponent
 
   // ---- manual entry
   readonly today = new Date();
+  /** Currency the selected commitment's contract is signed in; every manual
+   *  amount converts into it. */
+  contractCurrency = '';
   manual: ManualPaymentRequest = {
     componentCode: '',
     componentName: '',
@@ -134,6 +137,9 @@ export class PickPaymentsDialogComponent
     amount: null,
     exchangeRate: 1,
     reimbursable: false,
+    idbFinancingAmount: null,
+    localFinancingAmount: null,
+    cofinancingAmount: null,
   };
   manualDate: Date;
 
@@ -320,7 +326,11 @@ export class PickPaymentsDialogComponent
     this.api.getCurrencyCeilings(this.selectedCommitmentId).subscribe({
       next: (ceilings) => {
         this.ceilings = ceilings;
-        this.manual.currency = ceilings[0]?.currency ?? '';
+        // A payment may only be reported in a currency of the contract; the
+        // first one it lists doubles as what the exchange rate converts into.
+        this.contractCurrency = ceilings[0]?.currency ?? '';
+        this.manual.currency = this.contractCurrency;
+        this.onManualCurrencyChange();
       },
       error: () => {
         this.ceilings = [];
@@ -390,8 +400,37 @@ export class PickPaymentsDialogComponent
     return rate > 0 ? (this.manual.amount || 0) / rate : 0;
   }
 
+  /**
+   * No conversion to ask for when the payment is already in the contract's
+   * own currency -- the rate can only ever be 1, so the field locks instead
+   * of leaving a number there that looks editable but never actually does
+   * anything.
+   */
+  get manualRateLocked(): boolean {
+    return Boolean(this.contractCurrency) && this.manual.currency === this.contractCurrency;
+  }
+
+  onManualCurrencyChange(): void {
+    if (this.manualRateLocked) {
+      this.manual.exchangeRate = 1;
+    }
+  }
+
   get manualExceedsCeiling(): boolean {
     return (this.manual.amount || 0) > this.availableIn(this.manual.currency);
+  }
+
+  /**
+   * How BID, contrapartida and cofinanciamiento add up so far -- shown next
+   * to the payment amount, not enforced against it: a split that does not
+   * match yet while the agency is still typing is normal, not an error.
+   */
+  get manualFundingTotal(): number {
+    return (
+      (this.manual.idbFinancingAmount || 0) +
+      (this.manual.localFinancingAmount || 0) +
+      (this.manual.cofinancingAmount || 0)
+    );
   }
 
   get manualIsComplete(): boolean {

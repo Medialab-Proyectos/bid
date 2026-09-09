@@ -510,6 +510,23 @@
             </div>
           </div>
 
+          <!--
+            DPS is the only type that picks payments by hand instead of
+            sweeping a date range (picksPayments), because the Bank is the
+            one paying the third party: nothing has actually been paid yet,
+            so the rate/equivalent amount above is necessarily a guess.
+            Finance only knows the real rate once they process the
+            transaction at its value date, so this is informational, not a
+            validation error -- same non-blocking spirit as the exchange
+            rate warning already shown on manual payment entry.
+          -->
+          <fi-alert
+            *ngIf="picksPayments"
+            type="info"
+            [title]="'PAYMENT_RECORD.STATEMENT.DPS_RATE_NOTICE' | translate"
+            [closable]="false"
+          ></fi-alert>
+
           <fi-alert
             *ngIf="needsAccount"
             type="info"
@@ -615,7 +632,20 @@
                 <td class="pr-grid__number">{{ statement.paymentsIncluded }}</td>
                 <td>{{ statement.currency }}</td>
                 <td class="pr-grid__number">{{ statement.totalAmount | ifNumber }}</td>
-                <td class="pr-grid__number">{{ statement.equivalentAmount | ifNumber }}</td>
+                <td class="pr-grid__number">
+                  {{ statement.equivalentAmount | ifNumber }}
+                  <!--
+                    DPS only: no value date yet means Finance has not
+                    processed the transaction, so this equivalent amount is
+                    still the agency's estimate, not the effective rate.
+                  -->
+                  <span
+                    *ngIf="statement.transactionType === 'DPS' && !statement.valueDate"
+                    class="pr-equivalent__note"
+                  >
+                    {{ "PAYMENT_RECORD.STATEMENT.EQUIVALENT_ESTIMATED" | translate }}
+                  </span>
+                </td>
                 <td>
                   <fi-status-label
                     [cssClass]="statusClass(statement.status)"

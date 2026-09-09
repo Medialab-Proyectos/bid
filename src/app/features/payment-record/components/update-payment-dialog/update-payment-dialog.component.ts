@@ -37,6 +37,10 @@ export class UpdatePaymentDialogComponent
   total = 1;
   allowDelete = false;
   showReimbursable = false;
+  /** Currency the equivalent amount converts into. Empty when the opener
+   *  does not know it (e.g. a schedule row that could belong to any
+   *  commitment) -- the rate then stays editable either way. */
+  contractCurrency = '';
 
   form: CommitmentPayment;
   /** The Kendo date picker works with Date, the API with an ISO string. */
@@ -91,6 +95,7 @@ export class UpdatePaymentDialogComponent
     this.paymentDate = this.form.paymentDate
       ? new Date(this.form.paymentDate)
       : null;
+    this.onCurrencyChange();
   }
 
   /**
@@ -110,6 +115,72 @@ export class UpdatePaymentDialogComponent
   recalculateEquivalent(): void {
     const rate = this.form.exchangeRate || 0;
     this.form.equivalentAmount = rate > 0 ? (this.form.amount || 0) / rate : 0;
+  }
+
+  /**
+   * No conversion to ask for when the payment is already in the contract's
+   * own currency -- the rate can only ever be 1, so the field locks instead
+   * of leaving a number there that looks editable but never actually does
+   * anything.
+   */
+  get rateLocked(): boolean {
+    return Boolean(this.contractCurrency) && this.form?.currency === this.contractCurrency;
+  }
+
+  onCurrencyChange(): void {
+    if (this.rateLocked) {
+      this.form.exchangeRate = 1;
+    }
+    this.recalculateEquivalent();
+  }
+
+  /**
+   * A scheduled payment only ever held estimates -- the planned rate came
+   * from the contract's signing date, not the day the payment actually went
+   * out. Marking one paid is the moment those estimates become real, so
+   * checking this asks for them explicitly instead of letting a still-planned
+   * amount pass for what was actually reported.
+   *
+   * It is its own checkbox rather than a second button: not every visit to a
+   * scheduled payment is the one that closes it out. Editing something and
+   * leaving it Programado for later is just as valid a save, so ticking this
+   * is what turns "guardar" into "guardar y marcar como pagado" -- it never
+   * gates the save on its own.
+   */
+  markAsPaid = false;
+
+  get isScheduled(): boolean {
+    return this.form?.status === PaymentRecordStatus.SCHEDULED;
+  }
+
+  get missingToMarkPaid(): string[] {
+    if (!this.markAsPaid) {
+      return [];
+    }
+    const missing: string[] = [];
+    if (!this.form.accountingVoucher) {
+      missing.push('PAYMENT_RECORD.UPDATE_PAYMENT.VOUCHER');
+    }
+    if (!this.form.concept) {
+      missing.push('PAYMENT_RECORD.UPDATE_PAYMENT.CONCEPT');
+    }
+    if (!this.paymentDate) {
+      missing.push('PAYMENT_RECORD.UPDATE_PAYMENT.PAYMENT_DATE');
+    }
+    if (!(this.form.exchangeRate > 0)) {
+      missing.push('PAYMENT_RECORD.UPDATE_PAYMENT.EXCHANGE_RATE');
+    }
+    return missing;
+  }
+
+  get missingFieldNames(): string {
+    return this.missingToMarkPaid
+      .map((key) => this.translate.instant(key).toLocaleLowerCase())
+      .join(', ');
+  }
+
+  get canMarkPaid(): boolean {
+    return this.missingToMarkPaid.length === 0;
   }
 
   onReimbursableChange(): void {

@@ -115,6 +115,7 @@ export class ExecutorSituationComponent implements OnInit, OnDestroy {
     return {
       approvalCurrency: situation?.approvalCurrency ?? '',
       readyToJustify: situation?.readyToJustify ?? emptyFigure(),
+      inProgress: situation?.inProgress ?? emptyFigure(),
       awaitingBank: situation?.awaitingBank ?? emptyFigure(),
       blocked: situation?.blocked ?? emptyFigure(),
       blockers: situation?.blockers ?? [],

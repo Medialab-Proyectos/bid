@@ -64,7 +64,7 @@ $nunito-sans: (
 $salesforce-sans: (
   "300": $ns-path-font + "salesforce-sans/SalesforceSans-Light.ttf",
   "400": $ns-path-font + "salesforce-sans/SalesforceSans-Regular.ttf",
-  "600": $ns-path-font + "salesforce-sans/SalesforceSans-SemiBold.ttf",
+  "600": $ns-path-font + "salesforce-sans/SalesforceSans-Semibold.ttf",
   "700": $ns-path-font + "salesforce-sans/SalesforceSans-Bold.ttf",
 );
 @each $weight, $path in $salesforce-sans {

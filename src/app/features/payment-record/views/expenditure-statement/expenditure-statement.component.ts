@@ -265,7 +265,13 @@ export class ExpenditureStatementComponent implements OnInit, OnDestroy {
     const position =
       this.draft.payments.findIndex((p) => p.id === payment.id) + 1;
     const sub = this.dialogs
-      .openUpdatePayment(payment, position, this.draft.payments.length)
+      .openUpdatePayment(
+        payment,
+        position,
+        this.draft.payments.length,
+        false,
+        this.draft?.approvalCurrency
+      )
       .subscribe((changed) => {
         if (changed) {
           this.setPayments(this.draft.payments.map((p) => p.id));

@@ -962,9 +962,13 @@ export function addDemoManualPayment(commitmentId: string, body: unknown) {
     status: 'PAID',
     country: commitment ? commitment.country : 'CO',
     beneficiaryName: commitment ? commitment.beneficiaryName : 'Demo User',
-    idbFinancingAmount: amount,
-    localFinancingAmount: 0,
-    cofinancingAmount: 0,
+    // Falls back to the old assumption (100% BID) only when the form left
+    // the split out entirely -- once it is filled in, that is what actually
+    // gets saved instead of a number nobody typed.
+    idbFinancingAmount:
+      input.idbFinancingAmount != null ? Number(input.idbFinancingAmount) : amount,
+    localFinancingAmount: Number(input.localFinancingAmount) || 0,
+    cofinancingAmount: Number(input.cofinancingAmount) || 0,
     reimbursable: Boolean(input.reimbursable),
     reimbursementAmount: 0,
   });

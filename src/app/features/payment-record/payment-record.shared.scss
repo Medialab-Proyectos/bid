@@ -613,6 +613,49 @@ $pr-control-height: 40px;
   margin: 0;
 }
 
+// The one action on this screen that closes a scheduled payment out --
+// green because that is the same color the "Pagado" badge it leads to
+// already uses, so the two read as the same idea before either label is
+// even parsed.
+.pr-mark-paid {
+  background: $pr-success-tint;
+  border: 1px solid rgba(46, 125, 50, 0.28);
+  border-radius: 4px;
+  margin-top: 4px;
+  padding: 14px 16px;
+
+  &__head {
+    align-items: center;
+    color: $pr-success;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+
+    .fas {
+      font-size: 16px;
+    }
+  }
+
+  &__title {
+    font-size: $pr-text-md;
+    font-weight: 700;
+  }
+
+  &__check {
+    font-weight: 600;
+  }
+
+  &__help {
+    color: $pr-label;
+    font-size: $pr-text-sm;
+    margin: 8px 0 0;
+  }
+
+  &__help--blocked {
+    color: $pr-warning;
+  }
+}
+
 .pr-dialog__row--end {
   justify-content: flex-end;
 }

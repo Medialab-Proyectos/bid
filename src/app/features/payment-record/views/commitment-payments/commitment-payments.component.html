@@ -45,7 +45,15 @@
           of reach.
         -->
         <span class="pr-toolbar__group">
+          <!--
+            Oculto por pedido de negocio: "Ajustar tasa de cambio" ya no se
+            ofrece desde esta pantalla (mismo criterio aplicado en Reporte
+            de Pagos Efectuados). El diálogo y la lógica siguen intactos
+            (openExchangeRates() sigue disponible) por si se reubica en
+            otro módulo (p. ej. Cronograma de pagos) más adelante.
+          -->
           <button
+            *ngIf="false"
             kendoButton
             class="btn btn-neutral"
             id="Btn_PaymentRecord_DetailExchangeRate"

@@ -6,6 +6,7 @@ import { ExchangeRateDialogComponent } from '../components/exchange-rate-dialog/
 import { AddPaymentsDialogComponent } from '../components/add-payments-dialog/add-payments-dialog.component';
 import { UpdatePaymentDialogComponent } from '../components/update-payment-dialog/update-payment-dialog.component';
 import { ImportedPaymentsDialogComponent } from '../components/imported-payments-dialog/imported-payments-dialog.component';
+import { ImportLoanPaymentsDialogComponent } from '../components/import-loan-payments-dialog/import-loan-payments-dialog.component';
 import { PaymentMechanismDialogComponent } from '../components/payment-mechanism-dialog/payment-mechanism-dialog.component';
 import { PickPaymentsDialogComponent } from '../components/pick-payments-dialog/pick-payments-dialog.component';
 import { PickCommitmentDialogComponent } from '../components/pick-commitment-dialog/pick-commitment-dialog.component';
@@ -84,15 +85,44 @@ export class PaymentRecordDialogService {
       switchMap((outcome) => {
         const result = outcome as DialogOutcome;
         if (result?.imported) {
-          return this.openImportedPayments(commitmentId, result.imported);
+          return this.openImportedPayments({ commitmentId }, result.imported);
         }
         return result?.saved ? [true] : EMPTY;
       })
     );
   }
 
+  /**
+   * "Importar pagos" on the report list: the loan-wide sibling of the file
+   * step inside "Añadir pagos", reached without picking a commitment first
+   * -- a row of the file decides which commitment it belongs to, not the
+   * dialog. Same two-step shape (upload, then review) as the per-commitment
+   * import, just scoped to the whole project instead of one commitment.
+   */
+  openImportLoanPayments(projectBucketId: string): Observable<boolean> {
+    const dialog = this.dialogService.open({
+      title: this.translate.instant('PAYMENT_RECORD.LIST.IMPORT_BTN'),
+      content: ImportLoanPaymentsDialogComponent,
+      cssClass: 'pr-modal',
+      width: 1040,
+    });
+
+    const instance = dialog.content.instance as ImportLoanPaymentsDialogComponent;
+    instance.projectBucketId = projectBucketId;
+
+    return dialog.result.pipe(
+      switchMap((outcome) => {
+        const result = outcome as DialogOutcome;
+        if (result?.imported) {
+          return this.openImportedPayments({ projectBucketId }, result.imported);
+        }
+        return EMPTY;
+      })
+    );
+  }
+
   private openImportedPayments(
-    commitmentId: string,
+    scope: { commitmentId?: string; projectBucketId?: string },
     imported: ImportValidationResult
   ): Observable<boolean> {
     const dialog = this.dialogService.open({
@@ -103,7 +133,8 @@ export class PaymentRecordDialogService {
     });
 
     const instance = dialog.content.instance as ImportedPaymentsDialogComponent;
-    instance.commitmentId = commitmentId;
+    instance.commitmentId = scope.commitmentId ?? '';
+    instance.projectBucketId = scope.projectBucketId ?? '';
     instance.result = imported;
 
     return this.confirmed(dialog.result);

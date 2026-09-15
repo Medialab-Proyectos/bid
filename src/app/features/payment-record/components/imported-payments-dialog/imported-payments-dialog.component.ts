@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogContentBase, DialogRef } from '@progress/kendo-angular-dialog';
+import { map } from 'rxjs/operators';
 import {
   ImportValidationResult,
   ImportedPaymentRow,
@@ -19,7 +20,12 @@ export class ImportedPaymentsDialogComponent
   extends DialogContentBase
   implements OnInit
 {
+  /** Set when opened from "Añadir pagos" (one commitment's own import). */
   commitmentId: string;
+  /** Set instead when opened from the loan-wide "Importar pagos" on the
+   *  report list -- rows can belong to any commitment of the project, so
+   *  confirming saves against the loan rather than one commitment. */
+  projectBucketId: string;
   result: ImportValidationResult;
 
   rows: ImportedPaymentRow[] = [];
@@ -88,16 +94,26 @@ export class ImportedPaymentsDialogComponent
     }
 
     this.saving = true;
-    this.api
-      .confirmImportedPayments(this.commitmentId, rowNumbers)
-      .subscribe({
-        next: () => {
-          this.saving = false;
-          this.dialog.close({ saved: true });
-        },
-        error: () => {
-          this.saving = false;
-        },
-      });
+    // Different response shapes (one commitment's payments/totals vs. a
+    // bare success flag) -- neither is read here, so both collapse to the
+    // same `void` before subscribing, rather than leaving `request` typed
+    // as a union neither overload of `subscribe` matches.
+    const request = this.projectBucketId
+      ? this.api
+          .confirmLoanImportedPayments(this.projectBucketId, rowNumbers)
+          .pipe(map(() => undefined))
+      : this.api
+          .confirmImportedPayments(this.commitmentId, rowNumbers)
+          .pipe(map(() => undefined));
+
+    request.subscribe({
+      next: () => {
+        this.saving = false;
+        this.dialog.close({ saved: true });
+      },
+      error: () => {
+        this.saving = false;
+      },
+    });
   }
 }

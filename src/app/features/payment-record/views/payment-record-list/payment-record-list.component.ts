@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, filter, forkJoin, switchMap, take } from 'rxjs';
+import { Subscription, filter, switchMap, take } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { ProjectStoreService } from '@core/services/store-services';
 import { VisibilityService } from '@core/services/view';
+import { NotificationGlobalService } from '@fiduciary-interface/app/shared/services/notification-global.service';
 import { TransactionHeaderBalances } from '@fiduciary-interface/app/features/transactions/models';
 import { FiTransactionsApiService } from '@fiduciary-interface/app/features/transactions/services/fi-transactions-api/fi-transactions-api.service';
 import {
@@ -37,7 +39,9 @@ export class PaymentRecordListComponent implements OnInit, OnDestroy {
     private readonly transactionsApi: FiTransactionsApiService,
     private readonly dialogs: PaymentRecordDialogService,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly translate: TranslateService,
+    private readonly notificationSvc: NotificationGlobalService
   ) {}
 
   ngOnInit(): void {
@@ -142,31 +146,20 @@ export class PaymentRecordListComponent implements OnInit, OnDestroy {
 
   /**
    * The list has no commitment of its own -- it shows every commitment of the
-   * loan -- so importing a file has to start by picking the one it belongs
-   * to. Once chosen, this reuses the same file-import dialog the commitment
-   * detail page opens, prefilled with that commitment's components and
-   * currency.
+   * loan -- so this is the loan-wide import: template and upload straight
+   * away, no "which commitment?" step first. A row of the file decides which
+   * commitment it belongs to, the same way "Añadir pagos" decides it inside
+   * one commitment.
    */
   importCommitmentPayments(): void {
     const sub = this.dialogs
-      .openPickCommitment(this.commitments)
-      .pipe(
-        switchMap((commitmentId) =>
-          forkJoin({
-            components: this.paymentRecordApi.getComponents(this.projectBucketId),
-            commitment: this.paymentRecordApi.getCommitment(commitmentId),
-          }).pipe(
-            switchMap(({ components, commitment }) =>
-              this.dialogs.openAddPayments(
-                commitmentId,
-                components,
-                commitment?.approvalCurrency
-              )
-            )
-          )
-        )
-      )
-      .subscribe(() => this.reloadSummary());
+      .openImportLoanPayments(this.projectBucketId)
+      .subscribe(() => {
+        this.notificationSvc.showSuccess(
+          this.translate.instant('PAYMENT_RECORD.ADD_PAYMENTS.SAVE_SUCCESS')
+        );
+        this.reloadSummary();
+      });
     this.subscriptions.add(sub);
   }
 

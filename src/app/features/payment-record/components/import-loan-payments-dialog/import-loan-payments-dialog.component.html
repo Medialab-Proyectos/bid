@@ -1,0 +1,250 @@
+<div class="pr-dialog">
+  <div class="pr-panel">
+    <!--
+      Same explanation-left/action-right row and three-step layout as
+      "Añadir pagos" -> Import from a file -- this is that same step, just
+      reached without picking a commitment first, since the template and
+      the rows it produces are not tied to one.
+    -->
+    <div class="pr-panel__lead-row">
+      <p class="pr-panel__lead">
+        {{ "PAYMENT_RECORD.IMPORT.INTRO_LOAN" | translate }}
+      </p>
+      <button
+        type="button"
+        class="pr-steps__action"
+        id="Btn_ImportLoan_Template"
+        (click)="downloadTemplate()"
+      >
+        <em class="fas fa-download"></em>
+        {{ "PAYMENT_RECORD.IMPORT.TEMPLATE" | translate }}
+      </button>
+    </div>
+
+    <ol class="pr-steps">
+      <li class="pr-steps__item">
+        <span class="pr-steps__text">
+          {{ "PAYMENT_RECORD.IMPORT.STEP_1" | translate }}
+        </span>
+      </li>
+      <li class="pr-steps__item">
+        <span class="pr-steps__text">
+          {{ "PAYMENT_RECORD.IMPORT.STEP_2" | translate }}
+        </span>
+      </li>
+      <li class="pr-steps__item">
+        <span class="pr-steps__text">
+          {{ "PAYMENT_RECORD.IMPORT.STEP_3" | translate }}
+        </span>
+      </li>
+    </ol>
+
+    <div class="pr-import__rules">
+      <p class="pr-import__rules-title">
+        {{ "PAYMENT_RECORD.IMPORT.RULES_TITLE" | translate }}
+      </p>
+      <ul>
+        <li>
+          {{
+            "PAYMENT_RECORD.IMPORT.RULE_FORMAT"
+              | translate : { formats: acceptedFormats, size: maxFileSizeMb }
+          }}
+        </li>
+        <li>{{ "PAYMENT_RECORD.IMPORT.RULE_COLUMNS" | translate }}</li>
+        <li>{{ "PAYMENT_RECORD.IMPORT.RULE_REQUIRED" | translate }}</li>
+        <li>{{ "PAYMENT_RECORD.IMPORT.RULE_DUPLICATES" | translate }}</li>
+        <!--
+          The one rule that does not apply to the per-commitment import:
+          here a row's "Compromiso" column is what decides which commitment
+          it lands on, so it has to match one that actually exists.
+        -->
+        <li>{{ "PAYMENT_RECORD.IMPORT.RULE_COMMITMENT_COLUMN" | translate }}</li>
+      </ul>
+    </div>
+
+    <div class="pr-import__dropzone" *ngIf="uploading">
+      <div class="pr-import__bar"><span></span></div>
+      <p>{{ "PAYMENT_RECORD.IMPORT.LOADING" | translate }}</p>
+    </div>
+
+    <div *ngIf="!uploading && !importResult">
+      <kendo-fileselect
+        id="File_ImportLoan_Payments"
+        [multiple]="false"
+        [restrictions]="fileRestrictions"
+        (select)="onFileSelected($event)"
+      >
+        <kendo-fileselect-messages
+          [select]="'PAYMENT_RECORD.IMPORT.PICK_FILE' | translate"
+          [dropFilesHere]="'PAYMENT_RECORD.IMPORT.DROP_HERE' | translate"
+          [remove]="'PAYMENT_RECORD.IMPORT.REMOVE_FILE' | translate"
+          [invalidFileExtension]="'PAYMENT_RECORD.IMPORT.BAD_FORMAT' | translate"
+          [invalidMaxFileSize]="'PAYMENT_RECORD.IMPORT.TOO_BIG' | translate"
+        ></kendo-fileselect-messages>
+      </kendo-fileselect>
+    </div>
+
+    <ng-container *ngIf="importResult">
+      <div
+        class="pr-import__file"
+        [class.pr-import__file--error]="hasImportErrors"
+      >
+        <em
+          class="fas"
+          [ngClass]="hasImportErrors ? 'fa-exclamation-circle' : 'fa-check-circle'"
+        ></em>
+        <span class="pr-import__file-name">{{ importResult.fileName }}</span>
+        <span class="pr-import__file-meta">
+          {{ importResult.rowCount }}
+          {{ "PAYMENT_RECORD.IMPORT.ROWS" | translate }}
+        </span>
+        <button
+          type="button"
+          class="pr-dialog__link"
+          id="Btn_ImportLoan_Replace"
+          (click)="retryUpload()"
+        >
+          {{ "PAYMENT_RECORD.IMPORT.REPLACE" | translate }}
+        </button>
+      </div>
+
+      <div class="pr-import__banner pr-import__banner--warning" *ngIf="importResult.duplicateRows.length > 0">
+        <p class="pr-import__banner-title">
+          <em class="fas fa-exclamation-triangle"></em>
+          {{ "PAYMENT_RECORD.IMPORT.WARNING_TITLE" | translate }}
+        </p>
+        <p class="pr-import__banner-desc">
+          {{ "PAYMENT_RECORD.IMPORT.DUPLICATES_FOUND" | translate }}
+          {{ importResult.duplicateRows.length }}
+          {{ "PAYMENT_RECORD.IMPORT.DUPLICATE_ROWS" | translate }}
+        </p>
+        <div class="pr-import__banner-chips">
+          <span
+            class="pr-import__chip pr-import__chip--warning"
+            *ngFor="let row of importResult.duplicateRows"
+          >
+            {{ "PAYMENT_RECORD.IMPORT.ROW_CHIP" | translate : { row: row } }}
+          </span>
+        </div>
+      </div>
+
+      <div class="pr-import__banner pr-import__banner--danger" *ngIf="importResult.errors.length > 0">
+        <a
+          href="javascript:void(0)"
+          class="pr-import__banner-report"
+          id="Lnk_ImportLoan_DownloadErrors"
+          (click)="downloadErrorReport()"
+        >
+          <em class="fas fa-download"></em>
+          {{ "PAYMENT_RECORD.IMPORT.DOWNLOAD_REPORT" | translate }}
+        </a>
+        <p class="pr-import__banner-title">
+          <em class="fas fa-ban"></em>
+          {{ "PAYMENT_RECORD.IMPORT.BLOCKING_TITLE" | translate }}
+        </p>
+        <p class="pr-import__banner-desc">
+          <ng-container *ngFor="let error of importResult.errors; let last = last">
+            {{ error.message | translate }} ({{ error.rows.length }}
+            {{ "PAYMENT_RECORD.IMPORT.ROWS" | translate }})<span *ngIf="!last"> · </span>
+          </ng-container>
+        </p>
+        <div class="pr-import__banner-chips">
+          <span
+            class="pr-import__chip pr-import__chip--danger"
+            *ngFor="let row of blockingRowNumbers"
+          >
+            {{ "PAYMENT_RECORD.IMPORT.ROW_CHIP" | translate : { row: row } }}
+          </span>
+        </div>
+      </div>
+
+      <div *ngFor="let error of importResult.errors" class="pr-import__error">
+        <div class="pr-panel__scroll">
+          <table class="pr-rates pr-rates--wide">
+            <thead>
+              <tr>
+                <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.ROW" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.COMMITMENT" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.CONCEPT" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.IMPORT.COLUMNS.RECEIVER" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.VOUCHER" | translate }}</th>
+                <th scope="col">{{ "PAYMENT_RECORD.DETAIL.COLUMNS.DATE" | translate }}</th>
+                <th scope="col" class="pr-grid__number">
+                  {{ "PAYMENT_RECORD.STATEMENT.COLUMNS.EQUIVALENT" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of error.rows">
+                <td>{{ row.rowNumber }}</td>
+                <td>{{ row.commitmentNumber }}</td>
+                <td class="pr-cell--name" [title]="row.concept">{{ row.concept }}</td>
+                <td>{{ row.beneficiaryName }}</td>
+                <td>{{ row.accountingVoucher }}</td>
+                <td>{{ row.paymentDate }}</td>
+                <td class="pr-grid__number">
+                  {{ row.equivalentAmount | ifNumber }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="pr-dialog__note" *ngIf="hasImportErrors">
+        {{ "PAYMENT_RECORD.IMPORT.FIX_AND_RETRY" | translate }}
+      </p>
+    </ng-container>
+  </div>
+
+  <p class="pr-dialog__note">
+    {{ "PAYMENT_RECORD.AUDIT_NOTE" | translate }}
+  </p>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <p
+    class="pr-modal__hint"
+    [class.pr-modal__hint--ready]="blockingReason === ''"
+    id="Lbl_ImportLoan_Hint"
+  >
+    <em
+      class="fas"
+      [ngClass]="blockingReason === '' ? 'fa-check-circle' : 'fa-info-circle'"
+    ></em>
+    <span>
+      {{
+        (blockingReason || "PAYMENT_RECORD.ADD_PAYMENTS.READY_FILE")
+          | translate : { rows: importResult?.rowCount }
+      }}
+    </span>
+  </p>
+
+  <button
+    kendoButton
+    class="btn btn-neutral"
+    id="Btn_ImportLoan_Cancel"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+  <button
+    *ngIf="hasImportErrors"
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_ImportLoan_Retry"
+    (click)="retryUpload()"
+  >
+    {{ "PAYMENT_RECORD.IMPORT.RETRY" | translate }}
+  </button>
+  <button
+    *ngIf="!hasImportErrors"
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_ImportLoan_Continue"
+    [disabled]="saving || blockingReason !== ''"
+    (click)="confirm()"
+  >
+    {{ "PAYMENT_RECORD.ADD_PAYMENTS.CONTINUE" | translate }}
+  </button>
+</kendo-dialog-actions>

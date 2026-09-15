@@ -149,6 +149,9 @@ export class AddPaymentsDialogComponent
       componentCode: component.code,
       componentName: component.name,
       amount: null,
+      idbFinancingAmount: null,
+      localFinancingAmount: null,
+      cofinancingAmount: null,
     }));
 
     this.api.getCurrencyCeilings(this.commitmentId).subscribe({
@@ -244,9 +247,22 @@ export class AddPaymentsDialogComponent
     );
   }
 
+  /**
+   * A component's accumulated amount is entered as three funding sources,
+   * not typed directly -- this is what actually feeds `line.amount`, the
+   * ceiling check and the grand total below.
+   */
+  lineTotal(line: AccumulatedComponentAmount): number {
+    return (
+      (line.idbFinancingAmount || 0) +
+      (line.localFinancingAmount || 0) +
+      (line.cofinancingAmount || 0)
+    );
+  }
+
   get accumulatedTotal(): number {
     return this.accumulatedLines.reduce(
-      (total, line) => total + (line.amount || 0),
+      (total, line) => total + this.lineTotal(line),
       0
     );
   }
@@ -607,7 +623,9 @@ export class AddPaymentsDialogComponent
       .addAccumulatedPayment(this.commitmentId, {
         cutOffDate: this.accumulatedDate.toISOString(),
         currency: this.accumulatedCurrency,
-        components: this.accumulatedLines.filter((line) => line.amount > 0),
+        components: this.accumulatedLines
+          .map((line) => ({ ...line, amount: this.lineTotal(line) }))
+          .filter((line) => line.amount > 0),
       })
       .subscribe({
         next: () => {

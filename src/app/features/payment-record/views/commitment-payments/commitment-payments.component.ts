@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, filter, take } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { ProjectStoreService } from '@core/services/store-services';
 import { VisibilityService } from '@core/services/view';
+import { NotificationGlobalService } from '@fiduciary-interface/app/shared/services/notification-global.service';
 import {
   BlockingReason,
   CommitmentDetail,
@@ -49,7 +51,9 @@ export class CommitmentPaymentsComponent implements OnInit, OnDestroy {
     private readonly api: PaymentRecordApiService,
     private readonly dialogs: PaymentRecordDialogService,
     private readonly projectStore: ProjectStoreService,
-    private readonly visibilitySvc: VisibilityService
+    private readonly visibilitySvc: VisibilityService,
+    private readonly translate: TranslateService,
+    private readonly notificationSvc: NotificationGlobalService
   ) {}
 
   ngOnInit(): void {
@@ -190,7 +194,12 @@ export class CommitmentPaymentsComponent implements OnInit, OnDestroy {
         this.components,
         this.commitment?.approvalCurrency
       )
-      .subscribe(() => this.reload());
+      .subscribe(() => {
+        this.notificationSvc.showSuccess(
+          this.translate.instant('PAYMENT_RECORD.ADD_PAYMENTS.SAVE_SUCCESS')
+        );
+        this.reload();
+      });
     this.subscriptions.add(sub);
   }
 

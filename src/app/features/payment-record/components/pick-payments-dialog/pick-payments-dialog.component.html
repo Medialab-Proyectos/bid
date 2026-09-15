@@ -260,9 +260,10 @@
       </fieldset>
 
       <!--
-        Component, product and how the amount splits across funding sources
-        stay together, right before Fecha e importe -- what the payment is
-        charged against, decided before what it actually cost.
+        Component/product only -- what the payment is charged against.
+        Comes right after Identificación del pago and before Fecha e
+        importe, per the walkthrough: allocation, then the total, then how
+        that total splits across funding sources at the very end.
       -->
       <fieldset class="pr-fieldset">
         <legend class="pr-fieldset__legend">
@@ -315,100 +316,6 @@
             </span>
           </div>
         </div>
-
-        <div class="pr-dialog__row pr-dialog__row--3col">
-          <div class="pr-dialog__field">
-            <span class="pr-dialog__label">
-              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.IDB_FINANCING" | translate }}
-            </span>
-            <!--
-              autoCorrect clamps the typed value to [min,max] live, as the
-              user types, instead of only on blur -- this is what actually
-              stops an absurd value from ever rendering in scientific
-              notation (4.44E+22), not just [max] on its own. The helper
-              text below explains the ceiling so a corrected value doesn't
-              look like it changed for no reason.
-            -->
-            <kendo-numerictextbox
-              id="Num_PickManual_IdbFinancing"
-              [format]="'n2'"
-              [min]="0"
-              [max]="availableIn(manual.currency)"
-              [autoCorrect]="true"
-              [spinners]="false"
-              [(ngModel)]="manual.idbFinancingAmount"
-            ></kendo-numerictextbox>
-            <span class="pr-dialog__help">
-              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
-              {{ availableIn(manual.currency) | ifNumber }}
-              {{ manual.currency }}
-            </span>
-          </div>
-          <div class="pr-dialog__field">
-            <span class="pr-dialog__label">
-              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.LOCAL_FINANCING" | translate }}
-            </span>
-            <kendo-numerictextbox
-              id="Num_PickManual_LocalFinancing"
-              [format]="'n2'"
-              [min]="0"
-              [max]="availableIn(manual.currency)"
-              [autoCorrect]="true"
-              [spinners]="false"
-              [(ngModel)]="manual.localFinancingAmount"
-            ></kendo-numerictextbox>
-            <span class="pr-dialog__help">
-              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
-              {{ availableIn(manual.currency) | ifNumber }}
-              {{ manual.currency }}
-            </span>
-          </div>
-          <div class="pr-dialog__field">
-            <span class="pr-dialog__label">
-              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.COFINANCING" | translate }}
-            </span>
-            <kendo-numerictextbox
-              id="Num_PickManual_Cofinancing"
-              [format]="'n2'"
-              [min]="0"
-              [max]="availableIn(manual.currency)"
-              [autoCorrect]="true"
-              [spinners]="false"
-              [(ngModel)]="manual.cofinancingAmount"
-            ></kendo-numerictextbox>
-            <span class="pr-dialog__help">
-              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
-              {{ availableIn(manual.currency) | ifNumber }}
-              {{ manual.currency }}
-            </span>
-          </div>
-        </div>
-
-        <!--
-          The "X de Y" comparison only makes sense once the payment amount
-          (entered further below, in GROUP_AMOUNT) is actually set --
-          before that, comparing against a coerced 0 read as a confusing
-          "de 0.00", so we show a neutral prompt instead.
-        -->
-        <span
-          *ngIf="(manual.amount || 0) > 0; else fundingTotalPending"
-          class="pr-ceiling"
-          [class.pr-ceiling--over]="manualFundingTotal !== manual.amount"
-        >
-          {{
-            "PAYMENT_RECORD.MANUAL.FUNDING_TOTAL"
-              | translate
-                : {
-                    total: (manualFundingTotal | ifNumber : 2),
-                    amount: (manual.amount | ifNumber : 2)
-                  }
-          }}
-        </span>
-        <ng-template #fundingTotalPending>
-          <span class="pr-dialog__help">
-            {{ "PAYMENT_RECORD.MANUAL.FUNDING_TOTAL_PENDING" | translate }}
-          </span>
-        </ng-template>
       </fieldset>
 
       <fieldset class="pr-fieldset">
@@ -491,12 +398,126 @@
           [title]="'PAYMENT_RECORD.MANUAL.RATE_WARNING' | translate"
           [closable]="false"
         ></fi-alert>
-
-        <p class="pr-equivalent">
-          {{ "PAYMENT_RECORD.MANUAL.EQUIVALENT" | translate }}
-          <strong>{{ manualEquivalent | ifNumber }} {{ contractCurrency }}</strong>
-        </p>
       </fieldset>
+
+      <!--
+        How the total splits across the loan's funding sources -- last,
+        because it only makes sense once the total above is known. Same
+        fields as before, just moved to the bottom of the form per the
+        walkthrough.
+      -->
+      <fieldset class="pr-fieldset">
+        <legend class="pr-fieldset__legend">
+          {{ "PAYMENT_RECORD.MANUAL.GROUP_FUNDING" | translate }}
+          <span class="pr-fieldset__help">
+            {{ "PAYMENT_RECORD.MANUAL.GROUP_FUNDING_HELP" | translate }}
+          </span>
+        </legend>
+
+        <div class="pr-dialog__row pr-dialog__row--3col">
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.IDB_FINANCING" | translate }}
+            </span>
+            <!--
+              autoCorrect clamps the typed value to [min,max] live, as the
+              user types, instead of only on blur -- this is what actually
+              stops an absurd value from ever rendering in scientific
+              notation (4.44E+22), not just [max] on its own. The helper
+              text below explains the ceiling so a corrected value doesn't
+              look like it changed for no reason.
+            -->
+            <kendo-numerictextbox
+              id="Num_PickManual_IdbFinancing"
+              [format]="'n2'"
+              [min]="0"
+              [max]="availableIn(manual.currency)"
+              [autoCorrect]="true"
+              [spinners]="false"
+              [(ngModel)]="manual.idbFinancingAmount"
+            ></kendo-numerictextbox>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
+              {{ availableIn(manual.currency) | ifNumber }}
+              {{ manual.currency }}
+            </span>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.LOCAL_FINANCING" | translate }}
+            </span>
+            <kendo-numerictextbox
+              id="Num_PickManual_LocalFinancing"
+              [format]="'n2'"
+              [min]="0"
+              [max]="availableIn(manual.currency)"
+              [autoCorrect]="true"
+              [spinners]="false"
+              [(ngModel)]="manual.localFinancingAmount"
+            ></kendo-numerictextbox>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
+              {{ availableIn(manual.currency) | ifNumber }}
+              {{ manual.currency }}
+            </span>
+          </div>
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.COFINANCING" | translate }}
+            </span>
+            <kendo-numerictextbox
+              id="Num_PickManual_Cofinancing"
+              [format]="'n2'"
+              [min]="0"
+              [max]="availableIn(manual.currency)"
+              [autoCorrect]="true"
+              [spinners]="false"
+              [(ngModel)]="manual.cofinancingAmount"
+            ></kendo-numerictextbox>
+            <span class="pr-dialog__help">
+              {{ "PAYMENT_RECORD.CEILING.AVAILABLE" | translate }}
+              {{ availableIn(manual.currency) | ifNumber }}
+              {{ manual.currency }}
+            </span>
+          </div>
+        </div>
+
+        <!--
+          Informational, not enforced. The "X de Y" comparison only makes
+          sense once the payment amount above is actually set -- before
+          that, comparing against a coerced 0 read as a confusing
+          "de 0.00", so we show a neutral prompt instead.
+        -->
+        <span
+          *ngIf="(manual.amount || 0) > 0; else fundingTotalPending"
+          class="pr-ceiling"
+          [class.pr-ceiling--over]="manualFundingTotal !== manual.amount"
+        >
+          {{
+            "PAYMENT_RECORD.MANUAL.FUNDING_TOTAL"
+              | translate
+                : {
+                    total: (manualFundingTotal | ifNumber : 2),
+                    amount: (manual.amount | ifNumber : 2)
+                  }
+          }}
+        </span>
+        <ng-template #fundingTotalPending>
+          <span class="pr-dialog__help">
+            {{ "PAYMENT_RECORD.MANUAL.FUNDING_TOTAL_PENDING" | translate }}
+          </span>
+        </ng-template>
+      </fieldset>
+
+      <!--
+        Last on the form, not next to the rate: it reads as the form's
+        closing summary -- what the payment comes out to once everything
+        above it, funding split included, is filled in.
+      -->
+      <p class="pr-equivalent">
+        {{ "PAYMENT_RECORD.MANUAL.EQUIVALENT" | translate }}
+        <strong>{{ manualEquivalent | ifNumber }} {{ contractCurrency }}</strong>
+      </p>
     </ng-container>
 
     <!-- ========== import a file ========== -->

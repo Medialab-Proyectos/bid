@@ -24,6 +24,7 @@ import { ExchangeRateDialogComponent } from './components/exchange-rate-dialog/e
 import { AddPaymentsDialogComponent } from './components/add-payments-dialog/add-payments-dialog.component';
 import { UpdatePaymentDialogComponent } from './components/update-payment-dialog/update-payment-dialog.component';
 import { ImportedPaymentsDialogComponent } from './components/imported-payments-dialog/imported-payments-dialog.component';
+import { ImportLoanPaymentsDialogComponent } from './components/import-loan-payments-dialog/import-loan-payments-dialog.component';
 import { PaymentMechanismDialogComponent } from './components/payment-mechanism-dialog/payment-mechanism-dialog.component';
 import { PickPaymentsDialogComponent } from './components/pick-payments-dialog/pick-payments-dialog.component';
 import { PickCommitmentDialogComponent } from './components/pick-commitment-dialog/pick-commitment-dialog.component';
@@ -44,6 +45,7 @@ import { PaymentRecordDialogService } from './services/payment-record-dialog.ser
     AddPaymentsDialogComponent,
     UpdatePaymentDialogComponent,
     ImportedPaymentsDialogComponent,
+    ImportLoanPaymentsDialogComponent,
     PaymentMechanismDialogComponent,
     PickPaymentsDialogComponent,
     PickCommitmentDialogComponent,

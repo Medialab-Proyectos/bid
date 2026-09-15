@@ -9,13 +9,14 @@ import { PaymentConfirmService } from '../../services/payment-confirm.service';
 /**
  * "Actualiza pago": turns a scheduled payment into a reported one.
  *
- * The equivalent amount is always derived from amount x rate, never typed, so
- * the figure the Bank reads back can be reconciled with the two inputs above it.
+ * The equivalent amount is always derived, never typed directly: it is the
+ * sum of the three funding sources below it (BID, aporte local,
+ * cofinanciamiento), which are themselves already in the contract's
+ * currency -- not amount x rate, which only converts the payment's own
+ * currency and says nothing about how that total is funded.
  *
- * Identity (receptor, país) and the funding split (BID, aporte local,
- * cofinanciamiento) are set elsewhere in the flow -- this dialog reports what
- * was actually paid, not who it went to or how it is funded, so those show as
- * read-only values rather than editable fields.
+ * Identity (receptor, país) is set elsewhere in the flow -- this dialog
+ * reports what was actually paid and how it is funded, not who it went to.
  *
  * Deleting a payment and declaring it reimbursable are only meaningful when
  * this dialog is managing the commitment's own ledger directly (opened from
@@ -107,14 +108,18 @@ export class UpdatePaymentDialogComponent
   }
 
   /**
-   * The rate is units of the payment's own currency per one dollar (e.g.
-   * 4000 COP = 1 USD), the same convention the contract's own exchange-rate
-   * table uses -- so converting to the contract currency divides by it,
-   * never multiplies.
+   * The equivalent amount is not its own independent conversion -- it is
+   * the sum of the three funding sources below, which already carry the
+   * payment's value in the contract's currency. `amount` and `exchangeRate`
+   * still matter (they are what the payment was actually made in, and feed
+   * the "mark as paid" completeness check), but they no longer compute this
+   * field on their own.
    */
   recalculateEquivalent(): void {
-    const rate = this.form.exchangeRate || 0;
-    this.form.equivalentAmount = rate > 0 ? (this.form.amount || 0) / rate : 0;
+    this.form.equivalentAmount =
+      (this.form.idbFinancingAmount || 0) +
+      (this.form.localFinancingAmount || 0) +
+      (this.form.cofinancingAmount || 0);
   }
 
   /**

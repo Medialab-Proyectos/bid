@@ -824,6 +824,194 @@ export function confirmDemoImportedPayments(
   return paymentsResponse(commitmentId);
 }
 
+/**
+ * Loan-wide counterparts of the three functions above: "Importar pagos" on
+ * the report list has no single commitment of its own -- it shows every
+ * commitment of the loan -- so its template carries its own "Compromiso"
+ * column instead of assuming one, and a row can belong to any commitment of
+ * the project. Same three-step shape (template, upload, confirm), just
+ * scoped to `projectBucketId` instead of one commitment.
+ */
+
+/** `GET .../{projectBucketId}/payments/import/template`. */
+export function buildDemoLoanImportTemplate(projectBucketId: string) {
+  const commitments = commitmentsOf(projectBucketId) ?? [];
+  const first = commitments[0];
+  const columns = [
+    TEMPLATE_COLUMNS[0],
+    'Compromiso',
+    ...TEMPLATE_COLUMNS.slice(1),
+  ];
+  const example = [
+    '1',
+    first ? first.commitmentNumber : '',
+    PROJECT_COMPONENTS[0].code,
+    PROJECT_COMPONENTS[0].products[0].code,
+    '',
+    '',
+    '',
+    'USD',
+    '',
+    '',
+    '',
+    '',
+  ];
+  const lines = [columns.join(';'), example.join(';'), ''];
+
+  return new Blob([lines.join(String.fromCharCode(10))], {
+    type: 'text/csv;charset=utf-8',
+  });
+}
+
+/** Rows the demo pretends to have read out of a loan-wide spreadsheet,
+ *  spread across every commitment of the project instead of just one. */
+function buildImportedRowsForLoan(projectBucketId: string) {
+  const commitments = commitmentsOf(projectBucketId) ?? [];
+  const rowsPerCommitment = 6;
+  const rows: ReturnType<typeof buildImportedRows>[number][] = [];
+  let rowNumber = 0;
+
+  commitments.forEach((commitment) => {
+    const slot = commitment.originalAmounts?.[0] ?? {
+      currency: 'USD',
+      amount: 400000,
+    };
+    for (let i = 0; i < rowsPerCommitment; i++) {
+      rowNumber += 1;
+      const amount = Math.round((slot.amount / 4000) * 100) / 100;
+      rows.push({
+        rowNumber,
+        country: commitment.country,
+        commitmentNumber: commitment.id,
+        ...allocationFor(rowNumber),
+        concept: `Networking ${String(rowNumber + 11).padStart(2, '0')}`,
+        beneficiaryName: commitment.beneficiaryName,
+        accountingVoucher: String(900000000 + rowNumber * 137),
+        paymentDate: daysAgo(300 - (rowNumber % 60) * 3),
+        currency: slot.currency,
+        amount,
+        equivalentAmount: amount,
+      });
+    }
+  });
+
+  return rows;
+}
+
+/** Loan-scoped attempts/rows, keyed by `projectBucketId` instead of by
+ *  commitment -- same two-attempt story as the single-commitment version. */
+const loanImportAttempts = new Set<string>();
+const importedRowsByProject = new Map<
+  string,
+  ReturnType<typeof buildImportedRowsForLoan>
+>();
+
+/** `POST .../{projectBucketId}/payments/import`. */
+export function importDemoLoanPayments(projectBucketId: string) {
+  const commitments = commitmentsOf(projectBucketId) ?? [];
+  const firstAttempt = !loanImportAttempts.has(projectBucketId);
+  loanImportAttempts.add(projectBucketId);
+
+  const base = {
+    fileName: 'pagos.xlsx',
+    rowCount: rowsPerLoanImport(commitments.length),
+    executingAgency: commitments[0]?.beneficiaryName ?? 'Executing agency',
+    loanContractNumber: commitments[0]?.commitmentNumber ?? '',
+    importedOn: new Date().toISOString(),
+  };
+
+  if (firstAttempt) {
+    // One failing row per commitment, each blamed on a different commitment
+    // so the review reads as a real cross-commitment file, not one contract
+    // repeated -- same blocking reasons the single-commitment path uses.
+    const failing = commitments.map((commitment, index) => ({
+      rowNumber: index + 1,
+      commitmentNumber: commitment.id,
+      concept: index === 1 ? '' : 'Lorem ipsum dolor sit amet',
+      beneficiaryName: index === 0 ? '' : commitment.beneficiaryName,
+      accountingVoucher: index === 2 ? '' : String(12345670 + index),
+      paymentDate: index === 3 ? '21 Set 20221' : '21 Set 2022',
+      equivalentAmount: index === 1 ? 0 : 953000126.21,
+    }));
+
+    return {
+      ...base,
+      duplicateRows: commitments.length > 1 ? [commitments.length + 2] : [],
+      errors: [
+        {
+          code: 'MISSING_DATA',
+          message: 'PAYMENT_RECORD.IMPORT.ERRORS.MISSING_DATA',
+          rows: failing,
+        },
+      ],
+      rows: [],
+    };
+  }
+
+  const rows = buildImportedRowsForLoan(projectBucketId);
+  importedRowsByProject.set(projectBucketId, rows);
+
+  return { ...base, duplicateRows: [], errors: [], rows };
+}
+
+function rowsPerLoanImport(commitmentCount: number): number {
+  return Math.max(commitmentCount, 1) * 6;
+}
+
+/** `POST .../{projectBucketId}/payments/import/confirm`. */
+export function confirmDemoLoanImportedPayments(
+  projectBucketId: string,
+  body: unknown
+) {
+  const request = (body ?? {}) as { rowNumbers?: number[] };
+  const wanted = new Set(request.rowNumbers ?? []);
+  const imported = importedRowsByProject.get(projectBucketId) ?? [];
+
+  // Each row already carries which commitment it belongs to -- group by
+  // that instead of assuming one, and append to each commitment's own
+  // ledger (`paymentsOf` is keyed by commitment, not by loan).
+  const byCommitment = new Map<string, typeof imported>();
+  imported
+    .filter((row) => wanted.has(row.rowNumber))
+    .forEach((row) => {
+      const bucket = byCommitment.get(row.commitmentNumber) ?? [];
+      bucket.push(row);
+      byCommitment.set(row.commitmentNumber, bucket);
+    });
+
+  byCommitment.forEach((rows, commitmentId) => {
+    const payments = paymentsOf(commitmentId);
+    rows.forEach((row, index) => {
+      const position = payments.length + index + 1;
+      payments.push({
+        id: `${commitmentId}-I${String(position).padStart(3, '0')}`,
+        commitmentId,
+        componentCode: row.componentCode,
+        componentName: row.componentName,
+        productCode: row.productCode,
+        productName: row.productName,
+        concept: row.concept,
+        accountingVoucher: row.accountingVoucher,
+        paymentDate: row.paymentDate,
+        currency: row.currency,
+        amount: row.amount,
+        exchangeRate: 1,
+        equivalentAmount: row.equivalentAmount,
+        status: 'PAID',
+        country: row.country,
+        beneficiaryName: row.beneficiaryName,
+        idbFinancingAmount: row.amount,
+        localFinancingAmount: 0,
+        cofinancingAmount: 0,
+        reimbursable: false,
+        reimbursementAmount: 0,
+      });
+    });
+  });
+
+  return { success: true };
+}
+
 /** `GET .../commitments/{id}/funding-totals`. */
 export function buildDemoFundingTotals(commitmentId: string) {
   const payments = paymentsOf(commitmentId);
@@ -991,6 +1179,9 @@ export function addDemoAccumulatedPayment(commitmentId: string, body: unknown) {
       componentCode?: string;
       componentName?: string;
       amount?: number;
+      idbFinancingAmount?: number;
+      localFinancingAmount?: number;
+      cofinancingAmount?: number;
     }>;
   };
 
@@ -1030,9 +1221,13 @@ export function addDemoAccumulatedPayment(commitmentId: string, body: unknown) {
       status: 'ACCUMULATED',
       country: commitment ? commitment.country : 'CO',
       beneficiaryName: commitment ? commitment.beneficiaryName : 'Demo User',
-      idbFinancingAmount: amount,
-      localFinancingAmount: 0,
-      cofinancingAmount: 0,
+      // Falls back to the old assumption (100% BID) only when a line
+      // somehow arrives without its split -- once the form sends one, that
+      // is what actually gets saved instead of a number nobody typed.
+      idbFinancingAmount:
+        line.idbFinancingAmount != null ? Number(line.idbFinancingAmount) : amount,
+      localFinancingAmount: Number(line.localFinancingAmount) || 0,
+      cofinancingAmount: Number(line.cofinancingAmount) || 0,
       accumulated: true,
       reimbursable: false,
       reimbursementAmount: 0,

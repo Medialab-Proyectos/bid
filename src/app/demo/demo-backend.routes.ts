@@ -44,9 +44,12 @@ import {
   addDemoAccumulatedPayment,
   addDemoManualPayment,
   buildDemoCurrencyCeilings,
+  buildDemoLoanImportTemplate,
   confirmDemoImportedPayments,
+  confirmDemoLoanImportedPayments,
   deleteDemoPayment,
   generateDemoStatement,
+  importDemoLoanPayments,
   importDemoPayments,
   saveDemoPaymentMechanism,
   saveDemoExchangeRates,
@@ -322,6 +325,35 @@ const routes: DemoRoute[] = [
     method: 'GET',
     pattern: /^\/api\/v3\/payment-records\/([^/]+)\/commitments$/,
     handler: (context) => buildDemoPaymentRecordSummary(context.params[0]),
+  },
+  // Loan-wide import: "Importar pagos" on the report list, no single
+  // commitment of its own. Declared before the commitment-scoped import
+  // routes below only for readability -- the segment counts differ
+  // (`{projectBucketId}/payments/import...` vs.
+  // `commitments/{id}/payments/import...`), so neither pattern can match
+  // the other's URL regardless of order.
+  {
+    method: 'GET',
+    pattern:
+      /^\/api\/v3\/payment-records\/([^/]+)\/payments\/import\/template$/,
+    handler: (context) =>
+      buildDemoLoanImportTemplate(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/v3\/payment-records\/([^/]+)\/payments\/import$/,
+    handler: (context) =>
+      importDemoLoanPayments(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'POST',
+    pattern:
+      /^\/api\/v3\/payment-records\/([^/]+)\/payments\/import\/confirm$/,
+    handler: (context) =>
+      confirmDemoLoanImportedPayments(
+        decodeURIComponent(context.params[0]),
+        context.request.body
+      ),
   },
   {
     method: 'GET',

@@ -273,6 +273,45 @@ export class PaymentRecordApiService {
     );
   }
 
+  /**
+   * Loan-wide equivalents of the three above: the report list has no single
+   * commitment of its own (it shows every commitment of the loan), so a
+   * file uploaded from there can carry rows for several of them at once --
+   * the template includes its own "Compromiso" column instead of assuming
+   * one. Same shapes, just scoped to the project bucket instead of one
+   * commitment.
+   */
+  downloadLoanImportTemplate(projectBucketId: string): Observable<Blob> {
+    return this.http.get(
+      `${this.basePath}/${projectBucketId}/payments/import/template`,
+      { responseType: 'blob' }
+    );
+  }
+
+  importLoanPayments(
+    projectBucketId: string,
+    file: File
+  ): Observable<ImportValidationResult> {
+    const body = new FormData();
+    body.append('file', file, file.name);
+
+    return this.http.post<ImportValidationResult>(
+      `${this.basePath}/${projectBucketId}/payments/import`,
+      body,
+      { context: new HttpContext().set(REQUEST_IS_ENCODED, false) }
+    );
+  }
+
+  confirmLoanImportedPayments(
+    projectBucketId: string,
+    rowNumbers: number[]
+  ): Observable<{ success: boolean }> {
+    return this.http.post<{ success: boolean }>(
+      `${this.basePath}/${projectBucketId}/payments/import/confirm`,
+      { rowNumbers }
+    );
+  }
+
   /** Amounts already reported on the commitment, by source of funds. */
   getFundingTotals(
     commitmentId: string

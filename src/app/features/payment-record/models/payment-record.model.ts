@@ -400,7 +400,11 @@ export interface ManualPaymentRequest extends BudgetAllocation {
 export interface AccumulatedComponentAmount {
   componentCode: string;
   componentName: string;
+  /** Sum of the three funding sources below, in `AccumulatedPaymentRequest.currency`. */
   amount: number;
+  idbFinancingAmount: number;
+  localFinancingAmount: number;
+  cofinancingAmount: number;
 }
 
 /**

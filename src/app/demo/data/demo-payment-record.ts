@@ -260,15 +260,32 @@ function seedPayments(id: string): DemoPayment[] {
     const alreadyJustified = position <= 2;
     const reported = position <= 5;
 
+    // "Tu situación" -> "Reported but stuck" only ever has something to show
+    // if a seeded payment actually reproduces one of its blockers -- a
+    // commitment reported normally never does, which is exactly the "there's
+    // nothing to look at" gap this fixes. Positions 4 and 5 are both already
+    // PAID (the only status the blocker check even looks at), so trading one
+    // field away from each turns them into two real, differently-reasoned
+    // examples instead of a screen nobody can ever demo.
+    const stuckOnComponent = position === 4;
+    const stuckOnVoucher = position === 5;
+
+    const allocation = stuckOnComponent
+      ? { componentCode: '', componentName: '', productCode: '', productName: '' }
+      : allocationFor(position);
+
     return {
       // Unique across the loan, and shaped the way the design shows it:
       // the commitment plus the payment. Repeating `I001` under every
       // commitment made two different payments share one identity.
       id: `${id}-I${String(position).padStart(3, '0')}`,
       commitmentId: id,
-      ...allocationFor(position),
+      ...allocation,
       concept: `Networking ${String(position).padStart(2, '0')}`,
-      accountingVoucher: reported ? `2023${String(position).padStart(3, '0')}` : '',
+      accountingVoucher:
+        reported && !stuckOnVoucher
+          ? `2023${String(position).padStart(3, '0')}`
+          : '',
       paymentDate: daysAgo(420 - position * 30),
       currency,
       amount,

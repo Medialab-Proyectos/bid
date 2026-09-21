@@ -140,6 +140,17 @@ export class CommitmentPaymentsComponent implements OnInit, OnDestroy {
           (payment) => blockerReasonFor(payment) === this.blockedReason
         )
       : this.payments;
+
+    // The filter can only ever narrow to what was still broken when the
+    // agency arrived. If payments are loaded and none match any more --
+    // the fix just saved was the last one -- there is nothing left to call
+    // out, so the banner clears itself instead of announcing "0 payments
+    // with this problem."
+    if (this.blockedReason && scoped.length === 0 && this.payments.length > 0) {
+      this.showAllPayments();
+      return;
+    }
+
     this.blockedCount = this.blockedReason ? scoped.length : 0;
 
     if (!this.searchTerm) {

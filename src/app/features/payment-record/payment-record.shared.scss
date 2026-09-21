@@ -2599,7 +2599,10 @@ $pr-control-height: 40px;
   flex-wrap: wrap;
   gap: 12px 20px;
   justify-content: space-between;
-  margin: 0 24px 16px;
+  // Same 16px rhythm `.pr-grid` already gets under the toolbar when this
+  // banner is absent -- without it, the banner sat flush against the
+  // buttons above (the toolbar carries no bottom padding of its own).
+  margin: 16px 24px;
   padding: 14px 18px;
 
   &__body {

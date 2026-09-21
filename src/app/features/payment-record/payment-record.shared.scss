@@ -1952,6 +1952,16 @@ $pr-control-height: 40px;
     border-width: 1px;
     box-shadow: inset 0 0 0 1px #d72e2d;
   }
+
+  // Same red signal, but on load rather than waiting for a touch/blur: this
+  // one calls out the exact field a "Reported but stuck" blocker sent the
+  // agency here to fix, which needs to read as a problem the moment the
+  // dialog opens, not after they happen to click into it.
+  .c-dropdown-list.pr-field--flagged,
+  .c-textbox.pr-field--flagged {
+    border-width: 1px;
+    box-shadow: inset 0 0 0 1px #d72e2d;
+  }
 }
 
 // The capsule is a second way into the payment, alongside its id: the whole

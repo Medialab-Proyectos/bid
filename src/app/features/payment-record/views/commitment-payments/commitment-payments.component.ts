@@ -225,7 +225,9 @@ export class CommitmentPaymentsComponent implements OnInit, OnDestroy {
         position,
         this.payments.length,
         true,
-        this.commitment?.approvalCurrency
+        this.commitment?.approvalCurrency,
+        this.components,
+        this.blockedReason
       )
       .subscribe(() => this.reload());
     this.subscriptions.add(sub);

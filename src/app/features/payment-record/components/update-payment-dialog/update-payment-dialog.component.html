@@ -91,6 +91,7 @@
         </span>
         <kendo-textbox
           class="c-textbox"
+          [class.pr-field--flagged]="voucherFlagged"
           [readonly]="readOnly"
           [placeholder]="'PAYMENT_RECORD.UPDATE_PAYMENT.VOUCHER_PLACEHOLDER' | translate"
           [(ngModel)]="form.accountingVoucher"
@@ -98,14 +99,23 @@
         ></kendo-textbox>
       </div>
     </div>
+
+    <fi-alert
+      *ngIf="voucherFlagged"
+      type="warning"
+      [title]="'PAYMENT_RECORD.SITUATION.BLOCKER.NO_VOUCHER' | translate"
+      [subtitle]="'PAYMENT_RECORD.SITUATION.FIX.NO_VOUCHER' | translate"
+      [closable]="false"
+    ></fi-alert>
   </fieldset>
 
   <!--
-    Component/product, read-only: which budget line the expense is charged
-    to is decided when the payment is created (Añadir pagos), not here --
-    this dialog reports what was paid and how it is funded, not what it is
-    charged against. Same legend and column labels as "Imputación
-    presupuestaria" in Añadir pagos, in the same position (right after
+    Component/product: decided once when the payment is created (Añadir
+    pagos), and normally left alone here. But a payment that already exists
+    without one has no "add" step to go back to -- editable here is the only
+    way to fix it, so it stays the same dropdown pair "Añadir pagos" uses
+    rather than a value nobody can change. Same legend and column labels as
+    "Imputación presupuestaria" there, in the same position (right after
     identification, before Fecha e importe), so both dialogs read as one
     consistent flow.
   -->
@@ -119,28 +129,53 @@
 
     <div class="pr-dialog__row pr-dialog__row--2col">
       <div class="pr-dialog__field">
-        <span class="pr-dialog__label">
+        <span class="pr-dialog__label" [class.pr-dialog__required]="!readOnly">
           {{ "PAYMENT_RECORD.COLUMNS.COMPONENT" | translate }}
         </span>
-        <kendo-textbox
-          class="c-textbox"
-          [readonly]="true"
-          [(ngModel)]="form.componentName"
-          id="Txt_UpdatePayment_Component"
-        ></kendo-textbox>
+        <kendo-dropdownlist
+          class="c-dropdown-list"
+          [class.pr-field--flagged]="componentFlagged"
+          id="Ddl_UpdatePayment_Component"
+          textField="name"
+          valueField="code"
+          [valuePrimitive]="true"
+          [defaultItem]="componentPlaceholder"
+          [data]="components"
+          [disabled]="readOnly"
+          [(ngModel)]="form.componentCode"
+          (valueChange)="onComponentChange()"
+        ></kendo-dropdownlist>
       </div>
       <div class="pr-dialog__field">
         <span class="pr-dialog__label">
           {{ "PAYMENT_RECORD.COLUMNS.PRODUCT" | translate }}
         </span>
-        <kendo-textbox
-          class="c-textbox"
-          [readonly]="true"
-          [(ngModel)]="form.productName"
-          id="Txt_UpdatePayment_Product"
-        ></kendo-textbox>
+        <!--
+          Disabled until a component is picked, same as "Añadir pagos": the
+          product list only resolves once `form.componentCode` is set.
+        -->
+        <kendo-dropdownlist
+          class="c-dropdown-list"
+          id="Ddl_UpdatePayment_Product"
+          textField="name"
+          valueField="code"
+          [valuePrimitive]="true"
+          [defaultItem]="productPlaceholder"
+          [data]="availableProducts"
+          [disabled]="readOnly || availableProducts.length === 0"
+          [(ngModel)]="form.productCode"
+          (valueChange)="onProductChange()"
+        ></kendo-dropdownlist>
       </div>
     </div>
+
+    <fi-alert
+      *ngIf="componentFlagged"
+      type="warning"
+      [title]="'PAYMENT_RECORD.SITUATION.BLOCKER.NO_COMPONENT' | translate"
+      [subtitle]="'PAYMENT_RECORD.SITUATION.FIX.NO_COMPONENT' | translate"
+      [closable]="false"
+    ></fi-alert>
   </fieldset>
 
   <fieldset class="pr-fieldset">

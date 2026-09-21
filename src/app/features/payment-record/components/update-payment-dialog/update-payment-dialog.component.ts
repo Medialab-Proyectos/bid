@@ -2,7 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { DialogContentBase, DialogRef } from '@progress/kendo-angular-dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { NotificationGlobalService } from '@fiduciary-interface/app/shared/services/notification-global.service';
-import { CommitmentPayment, PaymentRecordStatus } from '../../models/payment-record.model';
+import {
+  BlockingReason,
+  CommitmentPayment,
+  PaymentRecordStatus,
+  ProjectComponent,
+} from '../../models/payment-record.model';
 import { PaymentRecordApiService } from '../../services/payment-record-api.service';
 import { PaymentConfirmService } from '../../services/payment-confirm.service';
 
@@ -42,6 +47,17 @@ export class UpdatePaymentDialogComponent
    *  does not know it (e.g. a schedule row that could belong to any
    *  commitment) -- the rate then stays editable either way. */
   contractCurrency = '';
+
+  /** For the Component/Product pickers below -- same list "Añadir pagos" uses. */
+  components: ProjectComponent[] = [];
+
+  /**
+   * Set only when this dialog was opened from a blocker on "Tu situación":
+   * the exact reason the agency was sent here for. Drives which field gets
+   * called out below, so landing here from "Ir a resolver" doesn't leave the
+   * agency staring at an ordinary-looking form with no sign of what to do.
+   */
+  blockedReason: BlockingReason | null = null;
 
   form: CommitmentPayment;
   /** The Kendo date picker works with Date, the API with an ISO string. */
@@ -137,6 +153,69 @@ export class UpdatePaymentDialogComponent
       this.form.exchangeRate = 1;
     }
     this.recalculateEquivalent();
+  }
+
+  /**
+   * Which component this payment is charged to was originally decided once,
+   * in "Añadir pagos", and never touched again here. But a payment that
+   * already exists without one has no "add" step to go back to -- fixing it
+   * here is the only way, so the field opens editable, the same dropdown
+   * "Añadir pagos" uses, instead of a value nobody can change.
+   */
+  get availableProducts(): Array<{ code: string; name: string }> {
+    return (
+      this.components.find((item) => item.code === this.form?.componentCode)
+        ?.products ?? []
+    );
+  }
+
+  onComponentChange(): void {
+    const component = this.components.find(
+      (item) => item.code === this.form.componentCode
+    );
+    this.form.componentName = component ? component.name : '';
+    this.form.productCode = '';
+    this.form.productName = '';
+  }
+
+  onProductChange(): void {
+    const product = this.availableProducts.find(
+      (item) => item.code === this.form.productCode
+    );
+    this.form.productName = product ? product.name : '';
+  }
+
+  get componentPlaceholder(): { code: string; name: string } {
+    return {
+      code: '',
+      name: this.translate.instant('PAYMENT_RECORD.MANUAL.COMPONENT_PLACEHOLDER'),
+    };
+  }
+
+  get productPlaceholder(): { code: string; name: string } {
+    return {
+      code: '',
+      name: this.translate.instant('PAYMENT_RECORD.MANUAL.PRODUCT_PLACEHOLDER'),
+    };
+  }
+
+  /**
+   * Clears itself the moment the field it is calling out gets a value --
+   * same as any other validation state here, so picking a component is what
+   * makes the warning go away, not just closing the dialog and hoping.
+   */
+  get componentFlagged(): boolean {
+    return (
+      this.blockedReason === BlockingReason.NO_COMPONENT &&
+      !this.form?.componentCode
+    );
+  }
+
+  get voucherFlagged(): boolean {
+    return (
+      this.blockedReason === BlockingReason.NO_VOUCHER &&
+      !this.form?.accountingVoucher
+    );
   }
 
   /**

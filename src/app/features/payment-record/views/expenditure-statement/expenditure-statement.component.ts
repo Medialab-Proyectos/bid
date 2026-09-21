@@ -270,7 +270,8 @@ export class ExpenditureStatementComponent implements OnInit, OnDestroy {
         position,
         this.draft.payments.length,
         false,
-        this.draft?.approvalCurrency
+        this.draft?.approvalCurrency,
+        this.components
       )
       .subscribe((changed) => {
         if (changed) {

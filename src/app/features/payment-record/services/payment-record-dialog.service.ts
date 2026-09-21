@@ -11,6 +11,7 @@ import { PaymentMechanismDialogComponent } from '../components/payment-mechanism
 import { PickPaymentsDialogComponent } from '../components/pick-payments-dialog/pick-payments-dialog.component';
 import { PickCommitmentDialogComponent } from '../components/pick-commitment-dialog/pick-commitment-dialog.component';
 import {
+  BlockingReason,
   Commitment,
   CommitmentPayment,
   ImportValidationResult,
@@ -165,7 +166,9 @@ export class PaymentRecordDialogService {
     position: number,
     total: number,
     manage = false,
-    contractCurrency = ''
+    contractCurrency = '',
+    components: ProjectComponent[] = [],
+    blockedReason: BlockingReason | null = null
   ): Observable<boolean> {
     const dialog = this.dialogService.open({
       title: this.translate.instant('PAYMENT_RECORD.UPDATE_PAYMENT.TITLE'),
@@ -183,6 +186,8 @@ export class PaymentRecordDialogService {
     instance.allowDelete = manage;
     instance.showReimbursable = manage;
     instance.contractCurrency = contractCurrency;
+    instance.components = components;
+    instance.blockedReason = blockedReason;
 
     return this.confirmed(dialog.result);
   }

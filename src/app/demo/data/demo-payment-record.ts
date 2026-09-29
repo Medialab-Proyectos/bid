@@ -253,7 +253,11 @@ function seedPayments(id: string): DemoPayment[] {
     const slot = contracted[index % contracted.length];
     const currency = slot.currency;
     const amount = Math.round((slot.amount / 40) * 100) / 100;
-    const rate = currency === 'USD' ? 1 : 0.0003;
+    // Units of the payment's own currency per 1 of the contract's -- same
+    // convention "Añadir pagos"/"Actualizar pago" use (equivalent = amount
+    // / rate), so a seeded payment converts the same way a manually entered
+    // one does instead of silently using the opposite convention.
+    const rate = currency === 'USD' ? 1 : 4000;
 
     // The first two are history: already reported and already justified to the
     // Bank, so the statement screen has something it must refuse to reuse.
@@ -290,7 +294,7 @@ function seedPayments(id: string): DemoPayment[] {
       currency,
       amount,
       exchangeRate: rate,
-      equivalentAmount: Math.round(amount * rate * 100) / 100,
+      equivalentAmount: Math.round((amount / rate) * 100) / 100,
       status: alreadyJustified ? 'JUSTIFIED' : reported ? 'PAID' : 'SCHEDULED',
       country,
       beneficiaryName: beneficiary,
@@ -298,15 +302,17 @@ function seedPayments(id: string): DemoPayment[] {
       // something to show in each column. Every third payment carries local
       // contribution and every fifth carries cofinancing, which is roughly how
       // a real portfolio looks.
-      idbFinancingAmount: Math.round(amount * rate * 0.85 * 100) / 100,
+      idbFinancingAmount: Math.round(((amount / rate) * 0.85) * 100) / 100,
       localFinancingAmount:
-        position % 3 === 0 ? Math.round(amount * rate * 0.1 * 100) / 100 : 0,
+        position % 3 === 0 ? Math.round(((amount / rate) * 0.1) * 100) / 100 : 0,
       cofinancingAmount:
-        position % 5 === 0 ? Math.round(amount * rate * 0.05 * 100) / 100 : 0,
+        position % 5 === 0 ? Math.round(((amount / rate) * 0.05) * 100) / 100 : 0,
       // Half of them travel as reimbursement, so both statement branches have
-      // candidates to show.
+      // candidates to show. The amount is the BID share above, same rule
+      // Actualizar pago now enforces -- never its own independent number.
       reimbursable: position % 2 === 0,
-      reimbursementAmount: 0,
+      reimbursementAmount:
+        position % 2 === 0 ? Math.round(((amount / rate) * 0.85) * 100) / 100 : 0,
       statementTransactionNumber: alreadyJustified ? 'ODTR-100900' : undefined,
     };
   });
@@ -1149,6 +1155,13 @@ export function addDemoManualPayment(commitmentId: string, body: unknown) {
   const commitment = findCommitment(commitmentId);
   const rate = Number(input.exchangeRate) || 1;
   const position = payments.length + 1;
+  // Falls back to the old assumption (100% BID) only when the form left
+  // the split out entirely -- once it is filled in, that is what actually
+  // gets saved instead of a number nobody typed.
+  const idbFinancingAmount =
+    input.idbFinancingAmount != null ? Number(input.idbFinancingAmount) : amount;
+  const localFinancingAmount = Number(input.localFinancingAmount) || 0;
+  const cofinancingAmount = Number(input.cofinancingAmount) || 0;
 
   payments.push({
     id: `${commitmentId}-I${String(position).padStart(3, '0')}`,
@@ -1163,19 +1176,20 @@ export function addDemoManualPayment(commitmentId: string, body: unknown) {
     currency,
     amount,
     exchangeRate: rate,
-    equivalentAmount: Math.round(amount * rate * 100) / 100,
+    // The sum of the three shares below, already converted -- not its own
+    // amount x rate: that assumes the opposite convention (contract-currency
+    // units per 1 of the payment's own) from the one this same payload's
+    // Equivalent fields were computed with.
+    equivalentAmount:
+      Math.round((idbFinancingAmount + localFinancingAmount + cofinancingAmount) * 100) / 100,
     status: 'PAID',
     country: commitment ? commitment.country : 'CO',
     beneficiaryName: commitment ? commitment.beneficiaryName : 'Demo User',
-    // Falls back to the old assumption (100% BID) only when the form left
-    // the split out entirely -- once it is filled in, that is what actually
-    // gets saved instead of a number nobody typed.
-    idbFinancingAmount:
-      input.idbFinancingAmount != null ? Number(input.idbFinancingAmount) : amount,
-    localFinancingAmount: Number(input.localFinancingAmount) || 0,
-    cofinancingAmount: Number(input.cofinancingAmount) || 0,
+    idbFinancingAmount,
+    localFinancingAmount,
+    cofinancingAmount,
     reimbursable: Boolean(input.reimbursable),
-    reimbursementAmount: 0,
+    reimbursementAmount: Number(input.reimbursementAmount) || 0,
   });
 
   return paymentsResponse(commitmentId);

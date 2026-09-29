@@ -118,6 +118,7 @@ export class AddPaymentsDialogComponent
     amount: null,
     exchangeRate: 1,
     reimbursable: false,
+    reimbursementAmount: 0,
     idbFinancingAmount: null,
     localFinancingAmount: null,
     cofinancingAmount: null,
@@ -551,6 +552,27 @@ export class AddPaymentsDialogComponent
       rate > 0
         ? Math.round(((this.manualCofinancingAmount || 0) / rate) * 100) / 100
         : 0;
+    this.syncManualReimbursementAmount();
+  }
+
+  /**
+   * What the Bank reimburses is exactly the BID share of this payment,
+   * already in the contract's currency -- the same "Equivalent IDB
+   * financing amount" above, never its own number to type and never out of
+   * sync with the split that feeds it.
+   */
+  private syncManualReimbursementAmount(): void {
+    if (this.manual.reimbursable) {
+      this.manual.reimbursementAmount = this.manual.idbFinancingAmount || 0;
+    }
+  }
+
+  onManualReimbursableChange(): void {
+    if (this.manual.reimbursable) {
+      this.syncManualReimbursementAmount();
+    } else {
+      this.manual.reimbursementAmount = 0;
+    }
   }
 
   get manualExceedsCeiling(): boolean {

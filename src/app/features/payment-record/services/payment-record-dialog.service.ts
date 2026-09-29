@@ -168,7 +168,8 @@ export class PaymentRecordDialogService {
     manage = false,
     contractCurrency = '',
     components: ProjectComponent[] = [],
-    blockedReason: BlockingReason | null = null
+    blockedReason: BlockingReason | null = null,
+    isDirectPayment = false
   ): Observable<boolean> {
     const dialog = this.dialogService.open({
       title: this.translate.instant('PAYMENT_RECORD.UPDATE_PAYMENT.TITLE'),
@@ -188,6 +189,7 @@ export class PaymentRecordDialogService {
     instance.contractCurrency = contractCurrency;
     instance.components = components;
     instance.blockedReason = blockedReason;
+    instance.isDirectPayment = isDirectPayment;
 
     return this.confirmed(dialog.result);
   }

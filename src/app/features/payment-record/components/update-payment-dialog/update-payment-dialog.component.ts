@@ -59,6 +59,14 @@ export class UpdatePaymentDialogComponent
    */
   blockedReason: BlockingReason | null = null;
 
+  /**
+   * Only true from "Estado de gastos" -> DPS (the only transaction type
+   * that opens a payment one by one from a statement): the Bank has not
+   * paid the third party yet, so there is nothing to mark as paid, and the
+   * rate is an estimate, not a real one, until that payment happens.
+   */
+  isDirectPayment = false;
+
   form: CommitmentPayment;
   /** The Kendo date picker works with Date, the API with an ISO string. */
   paymentDate: Date;
@@ -192,6 +200,19 @@ export class UpdatePaymentDialogComponent
       (this.form.idbFinancingAmount || 0) +
       (this.form.localFinancingAmount || 0) +
       (this.form.cofinancingAmount || 0);
+    this.syncReimbursementAmount();
+  }
+
+  /**
+   * What the Bank reimburses is exactly the BID share of this payment,
+   * already in the contract's currency -- the same "Equivalent IDB
+   * financing amount" shown above, never its own number to type and never
+   * out of sync with the split that feeds it.
+   */
+  private syncReimbursementAmount(): void {
+    if (this.form.reimbursable) {
+      this.form.reimbursementAmount = this.form.idbFinancingAmount || 0;
+    }
   }
 
   /**
@@ -324,7 +345,9 @@ export class UpdatePaymentDialogComponent
   }
 
   onReimbursableChange(): void {
-    if (!this.form.reimbursable) {
+    if (this.form.reimbursable) {
+      this.syncReimbursementAmount();
+    } else {
       this.form.reimbursementAmount = 0;
     }
   }

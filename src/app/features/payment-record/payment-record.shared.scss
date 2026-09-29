@@ -726,6 +726,23 @@ $pr-control-height: 40px;
   @include pr-dialog-row-aligned-labels;
 }
 
+// "Fecha e importe"'s three rows (Fecha/Moneda, BID/aporte local/
+// cofinanciamiento, Monto/Tasa) need their *first two* columns to land on
+// the same edges even though the middle row has a third (Cofinanciamiento)
+// the other two don't. `--3col`'s own 340px cap doesn't reach that width
+// here: three of them plus two gaps add up to more than the dialog has
+// room for, so the row compresses below 340px while the two-column rows
+// above and below it -- with room to spare -- stay at the full cap, and
+// the columns drift out of alignment by that same handful of pixels.
+// Sizing every row's columns as a fraction of the width three columns
+// actually have to share -- instead of each row deciding its own width
+// independently -- keeps all three at the same size regardless of how
+// many columns a given row fills.
+.pr-dialog__row--amount-cols {
+  grid-template-columns: repeat(3, calc((100% - 40px) / 3));
+  @include pr-dialog-row-aligned-labels;
+}
+
 .pr-statement {
   &__search {
     align-self: end;

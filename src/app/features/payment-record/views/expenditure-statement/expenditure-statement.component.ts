@@ -260,7 +260,12 @@ export class ExpenditureStatementComponent implements OnInit, OnDestroy {
     this.subscriptions.add(sub);
   }
 
-  /** A picked payment is still just a payment -- the same dialog opens it. */
+  /**
+   * A picked payment is still just a payment -- the same dialog opens it.
+   * Always a direct payment (DPS is the only type this table ever renders
+   * for): the Bank has not paid the third party yet, so there is no "mark
+   * as paid" to offer and no real rate yet either, only an estimate.
+   */
   openPayment(payment: CommitmentPayment): void {
     const position =
       this.draft.payments.findIndex((p) => p.id === payment.id) + 1;
@@ -271,7 +276,9 @@ export class ExpenditureStatementComponent implements OnInit, OnDestroy {
         this.draft.payments.length,
         false,
         this.draft?.approvalCurrency,
-        this.components
+        this.components,
+        null,
+        true
       )
       .subscribe((changed) => {
         if (changed) {

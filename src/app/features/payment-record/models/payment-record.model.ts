@@ -388,6 +388,10 @@ export interface ManualPaymentRequest extends BudgetAllocation {
   amount: number;
   exchangeRate: number;
   reimbursable: boolean;
+  /** The Bank's IDB share of this payment, in the contract's currency --
+   *  never entered directly, always the same value as `idbFinancingAmount`
+   *  once converted. Only meaningful when `reimbursable` is true. */
+  reimbursementAmount: number;
   /** How the payment splits across the loan's own funding sources -- entered
    *  by hand here because nothing upstream can infer it from the amount
    *  alone, unlike the ceiling check, which is purely per currency. */

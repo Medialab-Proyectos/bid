@@ -137,6 +137,7 @@ export class PickPaymentsDialogComponent
     amount: null,
     exchangeRate: 1,
     reimbursable: false,
+    reimbursementAmount: 0,
     idbFinancingAmount: null,
     localFinancingAmount: null,
     cofinancingAmount: null,
@@ -289,6 +290,11 @@ export class PickPaymentsDialogComponent
    * top of this one -- checking or fixing a detail here should not mean
    * losing the source, the search term and everything already ticked to back
    * out and re-open this dialog from scratch.
+   *
+   * This picker only ever exists for a direct payment (DPS is its one
+   * caller): the Bank has not paid the third party yet, so same as opening
+   * a payment from the DPS draft table, there is no "mark as paid" to offer
+   * and the rate is only an estimate.
    */
   openPayment(payment: SelectablePayment): void {
     const position = this.payments.findIndex((p) => p.id === payment.id) + 1;
@@ -304,6 +310,9 @@ export class PickPaymentsDialogComponent
     instance.payment = payment;
     instance.position = position;
     instance.total = this.payments.length;
+    instance.contractCurrency = this.contractCurrency;
+    instance.components = this.components;
+    instance.isDirectPayment = true;
 
     dialog.result.subscribe((outcome: { saved?: boolean }) => {
       if (outcome?.saved) {

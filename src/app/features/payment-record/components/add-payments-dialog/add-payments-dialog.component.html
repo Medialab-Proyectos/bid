@@ -475,7 +475,7 @@
           lines up on the same column edges instead of each drifting to its
           own width.
         -->
-        <div class="pr-dialog__row pr-dialog__row--2col">
+        <div class="pr-dialog__row pr-dialog__row--amount-cols">
           <div class="pr-dialog__field">
             <span class="pr-dialog__label pr-dialog__required">
               {{ "PAYMENT_RECORD.DETAIL.COLUMNS.DATE" | translate }}
@@ -508,7 +508,7 @@
           </div>
         </div>
 
-        <div class="pr-dialog__row pr-dialog__row--3col">
+        <div class="pr-dialog__row pr-dialog__row--amount-cols">
           <div class="pr-dialog__field">
             <span class="pr-dialog__label">
               {{ "PAYMENT_RECORD.ADD_PAYMENTS.COLUMNS.IDB_AMOUNT" | translate }}
@@ -582,7 +582,7 @@
           </div>
         </div>
 
-        <div class="pr-dialog__row pr-dialog__row--2col">
+        <div class="pr-dialog__row pr-dialog__row--amount-cols">
           <div class="pr-dialog__field">
             <span class="pr-dialog__label">
               {{ "PAYMENT_RECORD.DETAIL.COLUMNS.AMOUNT" | translate }}
@@ -686,6 +686,65 @@
           {{ manualEquivalent | ifNumber }} {{ contractCurrency }}
         </strong>
       </p>
+
+      <!--
+        Same question "Actualizar pago" asks once a payment is already on
+        the ledger -- asked here too so a payment entered by hand starts
+        with an answer instead of leaving it unset until someone opens it
+        again to fix it.
+      -->
+      <fieldset class="pr-fieldset">
+        <legend class="pr-fieldset__legend">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.GROUP_MECHANISM" | translate }}
+        </legend>
+
+        <p class="pr-dialog__help pr-dialog__help--block">
+          {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSABLE_HELP" | translate }}
+        </p>
+
+        <div class="pr-dialog__row pr-dialog__row--column">
+          <span class="pr-dialog__label">
+            {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSABLE_QUESTION" | translate }}
+          </span>
+          <div class="pr-radio-group">
+            <label class="pr-radio">
+              <input
+                type="radio"
+                name="manualReimbursable"
+                id="Rad_Manual_ReimbursableNo"
+                [value]="false"
+                [(ngModel)]="manual.reimbursable"
+                (change)="onManualReimbursableChange()"
+              />
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSABLE_NO" | translate }}
+            </label>
+            <label class="pr-radio">
+              <input
+                type="radio"
+                name="manualReimbursable"
+                id="Rad_Manual_ReimbursableYes"
+                [value]="true"
+                [(ngModel)]="manual.reimbursable"
+                (change)="onManualReimbursableChange()"
+              />
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSABLE_YES" | translate }}
+            </label>
+          </div>
+        </div>
+
+        <div class="pr-dialog__row" *ngIf="manual.reimbursable">
+          <div class="pr-dialog__field">
+            <span class="pr-dialog__label">
+              {{ "PAYMENT_RECORD.UPDATE_PAYMENT.REIMBURSEMENT_AMOUNT" | translate }}
+            </span>
+            <!-- Text, not a field: it's the Equivalent IDB financing amount
+                 above, never its own number to type. -->
+            <span class="pr-dialog__static-value" id="Num_Manual_Reimbursement">
+              {{ manual.reimbursementAmount | ifNumber }} {{ contractCurrency }}
+            </span>
+          </div>
+        </div>
+      </fieldset>
     </ng-container>
 
     <!-- ========== accumulated financial progress ========== -->

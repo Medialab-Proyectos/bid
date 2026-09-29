@@ -143,6 +143,16 @@ export class PickPaymentsDialogComponent
     cofinancingAmount: null,
   };
   manualDate: Date;
+  /**
+   * What the agency actually types: how the payment splits by funding
+   * source, in the payment's own currency. `manual.amount` and the three
+   * "Equivalent ..." fields on `manual` are never typed into any more --
+   * `recalculateManualAmounts()` derives all four from these three plus
+   * the rate, every time one of them changes.
+   */
+  manualIdbAmount: number = null;
+  manualLocalAmount: number = null;
+  manualCofinancingAmount: number = null;
 
   // ---- file import
   readonly acceptedFormats = ACCEPTED_EXTENSIONS.join(', ');
@@ -399,14 +409,17 @@ export class PickPaymentsDialogComponent
   }
 
   /**
-   * The rate is units of the payment's own currency per one dollar (e.g.
-   * 4000 COP = 1 USD) -- the same convention "Ajustar tasa de cambio" uses,
-   * where the equivalent column is `1 / rate` -- so converting to the
-   * contract currency divides by it, never multiplies.
+   * The payment converted into the currency of the contract -- just the sum
+   * of the three Equivalent fields below, which already carry the
+   * conversion. Same shape as "Añadir pagos"/"Actualizar pago": never typed
+   * into, always the total of the parts above it.
    */
   get manualEquivalent(): number {
-    const rate = this.manual.exchangeRate || 0;
-    return rate > 0 ? (this.manual.amount || 0) / rate : 0;
+    return (
+      (this.manual.idbFinancingAmount || 0) +
+      (this.manual.localFinancingAmount || 0) +
+      (this.manual.cofinancingAmount || 0)
+    );
   }
 
   /**
@@ -423,23 +436,35 @@ export class PickPaymentsDialogComponent
     if (this.manualRateLocked) {
       this.manual.exchangeRate = 1;
     }
+    this.recalculateManualAmounts();
+  }
+
+  /**
+   * `manual.amount` and the three "Equivalent ..." fields are derived, never
+   * typed into: the total is BID + aporte local + cofinanciamiento (in the
+   * payment's own currency), and each Equivalent is that same source
+   * converted with the rate -- same "units of the payment's own currency
+   * per 1 of the contract's" convention `manualEquivalent` already
+   * documented, so this divides by the rate, never multiplies.
+   */
+  recalculateManualAmounts(): void {
+    const rate = this.manual.exchangeRate || 0;
+    this.manual.amount =
+      (this.manualIdbAmount || 0) +
+      (this.manualLocalAmount || 0) +
+      (this.manualCofinancingAmount || 0);
+    this.manual.idbFinancingAmount =
+      rate > 0 ? Math.round(((this.manualIdbAmount || 0) / rate) * 100) / 100 : 0;
+    this.manual.localFinancingAmount =
+      rate > 0 ? Math.round(((this.manualLocalAmount || 0) / rate) * 100) / 100 : 0;
+    this.manual.cofinancingAmount =
+      rate > 0
+        ? Math.round(((this.manualCofinancingAmount || 0) / rate) * 100) / 100
+        : 0;
   }
 
   get manualExceedsCeiling(): boolean {
     return (this.manual.amount || 0) > this.availableIn(this.manual.currency);
-  }
-
-  /**
-   * How BID, contrapartida and cofinanciamiento add up so far -- shown next
-   * to the payment amount, not enforced against it: a split that does not
-   * match yet while the agency is still typing is normal, not an error.
-   */
-  get manualFundingTotal(): number {
-    return (
-      (this.manual.idbFinancingAmount || 0) +
-      (this.manual.localFinancingAmount || 0) +
-      (this.manual.cofinancingAmount || 0)
-    );
   }
 
   get manualIsComplete(): boolean {

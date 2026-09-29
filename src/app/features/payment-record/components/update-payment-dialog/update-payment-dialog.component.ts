@@ -62,6 +62,15 @@ export class UpdatePaymentDialogComponent
   form: CommitmentPayment;
   /** The Kendo date picker works with Date, the API with an ISO string. */
   paymentDate: Date;
+  /**
+   * What the payment actually splits into, in its own currency -- the same
+   * three fields "Añadir pagos" asks for. Never saved on their own (only
+   * their contract-currency equivalents are), so `initRawSplit()`
+   * reconstructs them once, on open, from the payment already loaded.
+   */
+  rawIdbAmount: number = null;
+  rawLocalAmount: number = null;
+  rawCofinancingAmount: number = null;
   readonly currencies = ['USD', 'COP', 'EUR', 'BRL', 'MXN', 'PEN'];
   // The Bank's 26 borrowing member countries. Kept local rather than pulled
   // from the app-wide master-data store (which this module reaches for
@@ -112,6 +121,7 @@ export class UpdatePaymentDialogComponent
     this.paymentDate = this.form.paymentDate
       ? new Date(this.form.paymentDate)
       : null;
+    this.initRawSplit();
     this.onCurrencyChange();
   }
 
@@ -124,14 +134,60 @@ export class UpdatePaymentDialogComponent
   }
 
   /**
-   * The equivalent amount is not its own independent conversion -- it is
-   * the sum of the three funding sources below, which already carry the
-   * payment's value in the contract's currency. `amount` and `exchangeRate`
-   * still matter (they are what the payment was actually made in, and feed
-   * the "mark as paid" completeness check), but they no longer compute this
-   * field on their own.
+   * The three raw amounts (BID, aporte local, cofinanciamiento, in the
+   * payment's own currency) were never saved on their own -- only their
+   * contract-currency equivalents were. Reconstructed here from those
+   * equivalents' *proportions*, scaled back up so they sum to exactly
+   * `form.amount` -- the one number that must never silently change just
+   * from opening this dialog. Falls back to 100% BID when the payment never
+   * had a split at all, same as "Añadir pagos" does for a new one.
    */
-  recalculateEquivalent(): void {
+  private initRawSplit(): void {
+    const amount = this.form.amount || 0;
+    const totalEquivalent =
+      (this.form.idbFinancingAmount || 0) +
+      (this.form.localFinancingAmount || 0) +
+      (this.form.cofinancingAmount || 0);
+
+    if (totalEquivalent > 0) {
+      this.rawIdbAmount =
+        Math.round(((amount * (this.form.idbFinancingAmount || 0)) / totalEquivalent) * 100) /
+        100;
+      this.rawLocalAmount =
+        Math.round(((amount * (this.form.localFinancingAmount || 0)) / totalEquivalent) * 100) /
+        100;
+    } else {
+      this.rawIdbAmount = amount;
+      this.rawLocalAmount = 0;
+    }
+    // The remainder, not its own proportion: rounding the three shares
+    // independently could land a cent off `amount`, and that total is the
+    // one thing here that has to reconcile exactly. `|| 0` folds the
+    // occasional `-0` (amount and the other two shares landing a
+    // floating-point hair apart) back to a normal zero -- otherwise it
+    // displays as "-0.00".
+    this.rawCofinancingAmount =
+      Math.round((amount - this.rawIdbAmount - this.rawLocalAmount) * 100) / 100 || 0;
+  }
+
+  /**
+   * `form.amount` and the three "Equivalent ..." fields are derived, never
+   * typed into: the total is BID + aporte local + cofinanciamiento (in the
+   * payment's own currency), and each Equivalent is that same source
+   * converted with the rate below -- the same "units of {{payment}} per 1
+   * {{contract}}" convention "Añadir pagos" uses, so this divides by the
+   * rate, never multiplies.
+   */
+  recalculateAmounts(): void {
+    const rate = this.form.exchangeRate || 0;
+    this.form.amount =
+      (this.rawIdbAmount || 0) + (this.rawLocalAmount || 0) + (this.rawCofinancingAmount || 0);
+    this.form.idbFinancingAmount =
+      rate > 0 ? Math.round(((this.rawIdbAmount || 0) / rate) * 100) / 100 : 0;
+    this.form.localFinancingAmount =
+      rate > 0 ? Math.round(((this.rawLocalAmount || 0) / rate) * 100) / 100 : 0;
+    this.form.cofinancingAmount =
+      rate > 0 ? Math.round(((this.rawCofinancingAmount || 0) / rate) * 100) / 100 : 0;
     this.form.equivalentAmount =
       (this.form.idbFinancingAmount || 0) +
       (this.form.localFinancingAmount || 0) +
@@ -152,7 +208,7 @@ export class UpdatePaymentDialogComponent
     if (this.rateLocked) {
       this.form.exchangeRate = 1;
     }
-    this.recalculateEquivalent();
+    this.recalculateAmounts();
   }
 
   /**

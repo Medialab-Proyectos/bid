@@ -453,6 +453,24 @@ $pr-control-height: 40px;
     content: " *";
   }
 
+  // A value the agency cannot type into, sitting in the same field grid as
+  // ones it can. Bare text (no fill, no border) left it floating loose
+  // against the boxed inputs around it -- same height and radius as those
+  // controls, but a light fill instead of white, is what actually reads as
+  // "this slot is filled in, not empty and not clickable" at a glance,
+  // without a border pretending it opens for editing.
+  &__static-value {
+    align-items: center;
+    background: #f6f8fb;
+    border-radius: 4px;
+    color: $pr-value;
+    display: flex;
+    font-size: $pr-text-md;
+    font-weight: 600;
+    min-height: $pr-control-height;
+    padding: 0 12px;
+  }
+
   &__link {
     background: none;
     border: 0;

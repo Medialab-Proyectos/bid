@@ -123,11 +123,26 @@ export class AddPaymentsDialogComponent
     cofinancingAmount: null,
   };
   manualDate: Date;
+  /**
+   * What the agency actually typed: how the payment splits by funding
+   * source, in the payment's own currency. `manual.amount` and the three
+   * "Equivalent ..." fields on `manual` are never typed into any more --
+   * `recalculateManualAmounts()` derives all four from these three plus
+   * the rate, every time one of them changes.
+   */
+  manualIdbAmount: number = null;
+  manualLocalAmount: number = null;
+  manualCofinancingAmount: number = null;
 
   // ---- accumulated report
   accumulatedDate: Date;
   accumulatedCurrency = '';
   accumulatedLines: AccumulatedComponentAmount[] = [];
+  /** Converts the accumulated total into the contract's currency, same
+   *  "units of {{payment}} per 1 {{contract}}" convention as Fecha e
+   *  importe -- purely informational here, since an accumulated report
+   *  never travels in a statement on its own. */
+  accumulatedRate: number = 1;
 
   // ---- file import
   showTemplateHint = true;
@@ -163,6 +178,7 @@ export class AddPaymentsDialogComponent
         this.accumulatedCurrency = first;
         this.contractCurrency = this.contractCurrency || first;
         this.onManualCurrencyChange();
+        this.onAccumulatedCurrencyChange();
       },
       error: () => {
         this.ceilings = [];
@@ -265,6 +281,52 @@ export class AddPaymentsDialogComponent
       (total, line) => total + this.lineTotal(line),
       0
     );
+  }
+
+  /** One subtotal per funding source, for the row at the foot of the table --
+   *  same shape as `accumulatedTotal`, just not summed across all three. */
+  get accumulatedIdbTotal(): number {
+    return this.accumulatedLines.reduce(
+      (total, line) => total + (line.idbFinancingAmount || 0),
+      0
+    );
+  }
+
+  get accumulatedLocalTotal(): number {
+    return this.accumulatedLines.reduce(
+      (total, line) => total + (line.localFinancingAmount || 0),
+      0
+    );
+  }
+
+  get accumulatedCofinancingTotal(): number {
+    return this.accumulatedLines.reduce(
+      (total, line) => total + (line.cofinancingAmount || 0),
+      0
+    );
+  }
+
+  /**
+   * No conversion to ask for when the accumulated report is already in the
+   * contract's own currency -- same lock "Fecha e importe" uses.
+   */
+  get accumulatedRateLocked(): boolean {
+    return (
+      Boolean(this.contractCurrency) && this.accumulatedCurrency === this.contractCurrency
+    );
+  }
+
+  onAccumulatedCurrencyChange(): void {
+    if (this.accumulatedRateLocked) {
+      this.accumulatedRate = 1;
+    }
+  }
+
+  /** `accumulatedTotal`, converted with `accumulatedRate` -- informational
+   *  only, the same "units of {{payment}} per 1 {{contract}}" convention
+   *  "Fecha e importe" uses, so this divides, never multiplies. */
+  get accumulatedEquivalent(): number {
+    return this.accumulatedRate > 0 ? this.accumulatedTotal / this.accumulatedRate : 0;
   }
 
   get accumulatedIsComplete(): boolean {
@@ -437,15 +499,17 @@ export class AddPaymentsDialogComponent
   }
 
   /**
-   * The payment converted into the currency of the contract. The rate is
-   * units of the payment's own currency per one dollar (e.g. 4000 COP = 1
-   * USD) -- the same convention "Ajustar tasa de cambio" uses, where the
-   * equivalent column is `1 / rate` -- so this divides by it, never
-   * multiplies.
+   * The payment converted into the currency of the contract -- just the sum
+   * of the three Equivalent fields below, which already carry the
+   * conversion. Same shape as update-payment-dialog's own Equivalent field:
+   * never typed into, always the total of the parts above it.
    */
   get manualEquivalent(): number {
-    const rate = this.manual.exchangeRate || 0;
-    return rate > 0 ? (this.manual.amount || 0) / rate : 0;
+    return (
+      (this.manual.idbFinancingAmount || 0) +
+      (this.manual.localFinancingAmount || 0) +
+      (this.manual.cofinancingAmount || 0)
+    );
   }
 
   /**
@@ -462,23 +526,35 @@ export class AddPaymentsDialogComponent
     if (this.manualRateLocked) {
       this.manual.exchangeRate = 1;
     }
+    this.recalculateManualAmounts();
+  }
+
+  /**
+   * `manual.amount` and the three "Equivalent ..." fields are derived, never
+   * typed into: the total is BID + aporte local + cofinanciamiento (in the
+   * payment's own currency), and each Equivalent is that same source
+   * converted with the rate below -- the same "units of {{payment}} per 1
+   * {{contract}}" convention `manualEquivalent` already documented, so this
+   * divides by the rate too, never multiplies.
+   */
+  recalculateManualAmounts(): void {
+    const rate = this.manual.exchangeRate || 0;
+    this.manual.amount =
+      (this.manualIdbAmount || 0) +
+      (this.manualLocalAmount || 0) +
+      (this.manualCofinancingAmount || 0);
+    this.manual.idbFinancingAmount =
+      rate > 0 ? Math.round(((this.manualIdbAmount || 0) / rate) * 100) / 100 : 0;
+    this.manual.localFinancingAmount =
+      rate > 0 ? Math.round(((this.manualLocalAmount || 0) / rate) * 100) / 100 : 0;
+    this.manual.cofinancingAmount =
+      rate > 0
+        ? Math.round(((this.manualCofinancingAmount || 0) / rate) * 100) / 100
+        : 0;
   }
 
   get manualExceedsCeiling(): boolean {
     return (this.manual.amount || 0) > this.availableIn(this.manual.currency);
-  }
-
-  /**
-   * How BID, contrapartida and cofinanciamiento add up so far -- shown next
-   * to the payment amount, not enforced against it: a split that does not
-   * match yet while the agency is still typing is normal, not an error.
-   */
-  get manualFundingTotal(): number {
-    return (
-      (this.manual.idbFinancingAmount || 0) +
-      (this.manual.localFinancingAmount || 0) +
-      (this.manual.cofinancingAmount || 0)
-    );
   }
 
   get accumulatedExceedsCeiling(): boolean {

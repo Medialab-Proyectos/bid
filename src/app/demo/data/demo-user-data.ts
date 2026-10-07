@@ -120,7 +120,7 @@ export const DEMO_SIDEBAR: MenuItem[] = [
       {
         index: '5.1',
         text: 'SIDEBAR.FINANCIAL_PLAN',
-        routeTo: INERT,
+        routeTo: '/project/:code/:contract/financial-plan',
       },
       {
         index: '5.2',

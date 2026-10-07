@@ -1,0 +1,40 @@
+<div class="fp-body">
+  <fi-no-content
+    *ngIf="!loading && plans.length === 0"
+    [content]="'FINANCIAL_PLAN.PREVIOUS.EMPTY' | translate"
+  ></fi-no-content>
+
+  <div class="fp-scroll" *ngIf="plans.length > 0">
+    <table class="fp-table fp-table--list">
+      <thead>
+        <tr>
+          <th scope="col">{{ "FINANCIAL_PLAN.PREVIOUS.COLUMNS.ID" | translate }}</th>
+          <th scope="col">{{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}</th>
+          <th scope="col">{{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}</th>
+          <th scope="col">{{ "FINANCIAL_PLAN.PREVIOUS.COLUMNS.ADVANCE_AMOUNT" | translate }}</th>
+          <th scope="col">{{ "FINANCIAL_PLAN.PREVIOUS.COLUMNS.VALUE_DATE" | translate }}</th>
+          <th scope="col">{{ "FINANCIAL_PLAN.PREVIOUS.COLUMNS.STATUS" | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let plan of plans; trackBy: trackPlan">
+          <td>
+            <button
+              type="button"
+              class="fp-table__component"
+              [attr.id]="'Lnk_PreviousPlan_' + plan.id"
+              (click)="openPlan(plan)"
+            >
+              {{ plan.id }}
+            </button>
+          </td>
+          <td>{{ plan.period.startDate | dateIF }}</td>
+          <td>{{ plan.period.endDate | dateIF }}</td>
+          <td>{{ advanceTotal(plan) | ifNumber }}</td>
+          <td>{{ plan.confirmedOn | dateIF }}</td>
+          <td>{{ statusLabel(plan) | translate }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

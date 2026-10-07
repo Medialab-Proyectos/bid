@@ -1,0 +1,14 @@
+<div class="fp-dialog-body">
+  <p class="fp-confirm-plan__message">
+    {{ messageKey | translate }}
+  </p>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <button type="button" class="fp-dialog__link" id="Btn_ConfirmPlan_No" (click)="cancel()">
+    {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.MODAL_NO" | translate }}
+  </button>
+  <button kendoButton class="btn btn-brand" id="Btn_ConfirmPlan_Yes" (click)="confirm()">
+    {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.MODAL_YES" | translate }}
+  </button>
+</kendo-dialog-actions>

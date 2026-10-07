@@ -1,0 +1,303 @@
+<div class="fp-page">
+  <div class="fp-card">
+    <div class="fp-card__head">
+      <div class="fp-card__identity">
+        <span class="fp-card__icon"><em class="fas fa-chart-line"></em></span>
+        <h2 class="fp-card__title">
+          {{ "FINANCIAL_PLAN.TITLE" | translate }}
+        </h2>
+      </div>
+    </div>
+
+    <div class="fp-tabstrip" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="fp-tabstrip__tab"
+        [class.fp-tabstrip__tab--active]="tab === 'active'"
+        id="Tab_FinancialPlan_Active"
+        [attr.aria-selected]="tab === 'active'"
+        (click)="tab = 'active'"
+      >
+        {{ "FINANCIAL_PLAN.TABS.ACTIVE" | translate }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="fp-tabstrip__tab"
+        [class.fp-tabstrip__tab--active]="tab === 'simulation'"
+        id="Tab_FinancialPlan_Simulation"
+        [attr.aria-selected]="tab === 'simulation'"
+        (click)="tab = 'simulation'"
+      >
+        {{ "FINANCIAL_PLAN.TABS.SIMULATION" | translate }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="fp-tabstrip__tab"
+        [class.fp-tabstrip__tab--active]="tab === 'previous'"
+        id="Tab_FinancialPlan_Previous"
+        [attr.aria-selected]="tab === 'previous'"
+        (click)="tab = 'previous'"
+      >
+        {{ "FINANCIAL_PLAN.TABS.PREVIOUS" | translate }}
+      </button>
+    </div>
+
+    <fi-simulation-stepper
+      *ngIf="tab === 'simulation'"
+      [projectBucketId]="projectBucketId"
+      (exit)="exitSimulation()"
+    ></fi-simulation-stepper>
+
+    <fi-previous-plans
+      *ngIf="tab === 'previous'"
+      [projectBucketId]="projectBucketId"
+    ></fi-previous-plans>
+
+    <ng-container *ngIf="plan && tab === 'active'">
+      <div class="fp-body">
+        <ng-container *ngIf="!editingAni">
+          <fi-alert
+            type="success"
+            [title]="'FINANCIAL_PLAN.ACTIVE.APPROVED_BANNER' | translate"
+            [closable]="true"
+          ></fi-alert>
+
+          <p class="fp-lead">
+            {{ "FINANCIAL_PLAN.ACTIVE.LEAD" | translate }}
+          </p>
+        </ng-container>
+
+        <ng-container *ngIf="editingAni">
+          <h3 class="fp-section-title">
+            {{ "FINANCIAL_PLAN.ACTIVE.ANI.SECTION_TITLE" | translate }}
+          </h3>
+          <p class="fp-lead">
+            {{ "FINANCIAL_PLAN.ACTIVE.ANI.INSTRUCTIONS" | translate }}
+          </p>
+        </ng-container>
+
+        <h3 class="fp-section-title">
+          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
+        </h3>
+        <div class="fp-period">
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+            </span>
+            <span class="fp-period__value">{{ plan.period.startDate | dateIF }}</span>
+          </div>
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+            </span>
+            <span class="fp-period__value">{{ plan.period.endDate | dateIF }}</span>
+          </div>
+        </div>
+
+        <div class="fp-notice-row">
+          <em class="fas fa-info-circle"></em>
+          {{
+            "FINANCIAL_PLAN.ACTIVE.CURRENCY_NOTE"
+              | translate : { currency: plan.approvalCurrency }
+          }}
+        </div>
+
+        <div class="fp-actions">
+          <button
+            kendoButton
+            class="btn btn-neutral"
+            id="Btn_ActivePlan_Download"
+            iconClass="fas fa-file-download"
+            (click)="downloadPlan()"
+          >
+            {{ "FINANCIAL_PLAN.ACTIVE.DOWNLOAD" | translate }}
+          </button>
+
+          <div class="fp-actions__group" *ngIf="!editingAni">
+            <button
+              kendoButton
+              class="btn btn-neutral"
+              id="Btn_ActivePlan_Simulate"
+              (click)="startSimulation()"
+            >
+              {{ "FINANCIAL_PLAN.ACTIVE.SIMULATE_NEW" | translate }}
+            </button>
+            <button
+              kendoButton
+              class="btn btn-brand"
+              id="Btn_ActivePlan_RequestAni"
+              (click)="startAni()"
+            >
+              {{ "FINANCIAL_PLAN.ACTIVE.REQUEST_ANI" | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div class="fp-scroll">
+          <table class="fp-table">
+            <thead>
+              <tr>
+                <th scope="col">{{ "FINANCIAL_PLAN.ACTIVE.COLUMNS.MONTHS" | translate }}</th>
+                <th scope="col" *ngFor="let month of plan.months">{{ month.label }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  {{ "FINANCIAL_PLAN.ACTIVE.ROWS.OPENING_BALANCE" | translate }}
+                  <em
+                    kendoTooltip
+                    [showOn]="'click'"
+                    class="fas fa-info-circle fp-info-icon"
+                    [title]="'FINANCIAL_PLAN.SIMULATION.OPENING_BALANCE_TOOLTIP' | translate"
+                  ></em>
+                </td>
+                <td *ngFor="let value of plan.openingBalance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+              </tr>
+
+              <tr class="fp-table__section">
+                <td [attr.colspan]="plan.months.length + 1">
+                  {{ "FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSES_BY_COMPONENT" | translate }}
+                </td>
+              </tr>
+              <tr *ngFor="let component of plan.components">
+                <td>
+                  <button
+                    type="button"
+                    class="fp-table__component"
+                    [attr.id]="'Lnk_ActivePlan_Component_' + component.componentCode"
+                    (click)="openComponent(component.componentCode, component.componentName)"
+                  >
+                    {{ component.componentName }}
+                  </button>
+                  <em
+                    kendoTooltip
+                    [showOn]="'click'"
+                    class="fas fa-info-circle fp-info-icon"
+                    [title]="'FINANCIAL_PLAN.SIMULATION.COMPONENT_TOOLTIP' | translate"
+                  ></em>
+                </td>
+                <td *ngFor="let value of component.monthlyAmounts">{{ value | ifNumber }}</td>
+              </tr>
+              <tr class="fp-table__subtotal">
+                <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSE_SUBTOTAL" | translate }}</td>
+                <td *ngFor="let value of plan.expenseSubtotal; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+              </tr>
+              <tr class="fp-table__subtotal">
+                <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_EXPENSES" | translate }}</td>
+                <td *ngFor="let value of plan.balanceAfterExpenses; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+              </tr>
+
+              <tr class="fp-table__section">
+                <td [attr.colspan]="plan.months.length + 1">
+                  {{ "FINANCIAL_PLAN.ACTIVE.ROWS.LOAN_INCOME" | translate }}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  {{ "FINANCIAL_PLAN.ACTIVE.ROWS.ADVANCE_AMOUNT" | translate }}
+                  <em
+                    kendoTooltip
+                    [showOn]="'click'"
+                    class="fas fa-info-circle fp-info-icon"
+                    [title]="'FINANCIAL_PLAN.SIMULATION.ADVANCE_TOOLTIP' | translate"
+                  ></em>
+                </td>
+                <td *ngFor="let value of plan.advanceAmount; let i = index; trackBy: trackByIndex">
+                  <kendo-numerictextbox
+                    *ngIf="editingAni && advanceEditable(i); else advanceStatic"
+                    class="fp-table__input"
+                    [format]="'n0'"
+                    [min]="0"
+                    [spinners]="false"
+                    [placeholder]="'0.00'"
+                    [(ngModel)]="draft.advanceAmount[i]"
+                    [attr.id]="'Num_ActivePlan_Advance_' + i"
+                  ></kendo-numerictextbox>
+                  <ng-template #advanceStatic>
+                    <span [class.fp-table__muted]="!value">{{ value | ifNumber }}</span>
+                  </ng-template>
+                </td>
+              </tr>
+              <tr class="fp-table__subtotal">
+                <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_ADVANCE" | translate }}</td>
+                <td *ngFor="let value of plan.balanceAfterAdvance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+              </tr>
+              <tr class="fp-table__caption">
+                <td [attr.colspan]="plan.months.length + 1">
+                  {{ "FINANCIAL_PLAN.ACTIVE.ROWS.OTHER_INCOME" | translate }}
+                </td>
+              </tr>
+              <tr>
+                <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.REIMBURSEMENTS" | translate }}</td>
+                <td *ngFor="let value of plan.reimbursements; let i = index; trackBy: trackByIndex">
+                  <kendo-numerictextbox
+                    *ngIf="editingAni && !value; else reimbursementStatic"
+                    class="fp-table__input"
+                    [format]="'n0'"
+                    [min]="0"
+                    [spinners]="false"
+                    [placeholder]="'0.00'"
+                    [(ngModel)]="draft.reimbursements[i]"
+                    [attr.id]="'Num_ActivePlan_Reimbursement_' + i"
+                  ></kendo-numerictextbox>
+                  <ng-template #reimbursementStatic>
+                    <span [class.fp-table__muted]="!value">{{ value | ifNumber }}</span>
+                  </ng-template>
+                </td>
+              </tr>
+              <tr>
+                <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.DIRECT_PAYMENTS" | translate }}</td>
+                <td *ngFor="let value of plan.directPayments; let i = index; trackBy: trackByIndex">
+                  <kendo-numerictextbox
+                    *ngIf="editingAni && !value; else directPaymentStatic"
+                    class="fp-table__input"
+                    [format]="'n0'"
+                    [min]="0"
+                    [spinners]="false"
+                    [placeholder]="'0.00'"
+                    [(ngModel)]="draft.directPayments[i]"
+                    [attr.id]="'Num_ActivePlan_DirectPayment_' + i"
+                  ></kendo-numerictextbox>
+                  <ng-template #directPaymentStatic>
+                    <span [class.fp-table__muted]="!value">{{ value | ifNumber }}</span>
+                  </ng-template>
+                </td>
+              </tr>
+
+              <tr class="fp-table__total">
+                <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.FINAL_BALANCE" | translate }}</td>
+                <td *ngFor="let value of plan.finalBalance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="fp-actions fp-actions--bottom" *ngIf="editingAni">
+          <div class="fp-actions__group">
+            <button
+              kendoButton
+              class="btn btn-neutral btn-no-stroke"
+              id="Btn_ActivePlan_CancelAni"
+              (click)="cancelAni()"
+            >
+              {{ "PROCUREMENT.CANCEL" | translate }}
+            </button>
+            <button
+              kendoButton
+              class="btn btn-brand"
+              id="Btn_ActivePlan_ConfirmAni"
+              [disabled]="aniDelta <= 0"
+              (click)="confirmAni()"
+            >
+              {{ "FINANCIAL_PLAN.ACTIVE.CONFIRM_ANI" | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

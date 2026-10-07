@@ -1,0 +1,119 @@
+<div class="fp-dialog-body" *ngIf="plan">
+  <h3 class="fp-section-title">
+    {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
+  </h3>
+  <div class="fp-period">
+    <div class="fp-period__box">
+      <span class="fp-period__label">
+        {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+      </span>
+      <span class="fp-period__value">{{ plan.period.startDate | dateIF }}</span>
+    </div>
+    <div class="fp-period__box">
+      <span class="fp-period__label">
+        {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+      </span>
+      <span class="fp-period__value">{{ plan.period.endDate | dateIF }}</span>
+    </div>
+  </div>
+
+  <div class="fp-actions">
+    <div class="fp-notice-row">
+      <em class="fas fa-info-circle"></em>
+      {{
+        "FINANCIAL_PLAN.ACTIVE.CURRENCY_NOTE"
+          | translate : { currency: plan.approvalCurrency }
+      }}
+    </div>
+    <div class="fp-actions__group">
+      <button
+        kendoButton
+        class="btn btn-neutral"
+        id="Btn_PreviousPlanDetail_Download"
+        iconClass="fas fa-file-download"
+        (click)="downloadPlan()"
+      >
+        {{ "FINANCIAL_PLAN.ACTIVE.DOWNLOAD" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="fp-scroll">
+    <table class="fp-table">
+      <thead>
+        <tr>
+          <th scope="col">{{ "FINANCIAL_PLAN.ACTIVE.COLUMNS.MONTHS" | translate }}</th>
+          <th scope="col" *ngFor="let month of plan.months">{{ month.label }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.OPENING_BALANCE" | translate }}</td>
+          <td *ngFor="let value of plan.openingBalance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+        </tr>
+
+        <tr class="fp-table__section">
+          <td [attr.colspan]="plan.months.length + 1">
+            {{ "FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSES_BY_COMPONENT" | translate }}
+          </td>
+        </tr>
+        <tr *ngFor="let component of plan.components">
+          <td>{{ component.componentName }}</td>
+          <td *ngFor="let value of component.monthlyAmounts">{{ value | ifNumber }}</td>
+        </tr>
+        <tr class="fp-table__subtotal">
+          <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSE_SUBTOTAL" | translate }}</td>
+          <td *ngFor="let value of plan.expenseSubtotal; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+        </tr>
+        <tr class="fp-table__subtotal">
+          <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_EXPENSES" | translate }}</td>
+          <td *ngFor="let value of plan.balanceAfterExpenses; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+        </tr>
+
+        <tr class="fp-table__section">
+          <td [attr.colspan]="plan.months.length + 1">
+            {{ "FINANCIAL_PLAN.ACTIVE.ROWS.LOAN_INCOME" | translate }}
+          </td>
+        </tr>
+        <tr>
+          <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.ADVANCE_AMOUNT" | translate }}</td>
+          <td *ngFor="let value of plan.advanceAmount; trackBy: trackByIndex">
+            <span [class.fp-table__muted]="!value">{{ value | ifNumber }}</span>
+          </td>
+        </tr>
+        <tr class="fp-table__subtotal">
+          <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_ADVANCE" | translate }}</td>
+          <td *ngFor="let value of plan.balanceAfterAdvance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+        </tr>
+        <tr class="fp-table__caption">
+          <td [attr.colspan]="plan.months.length + 1">
+            {{ "FINANCIAL_PLAN.ACTIVE.ROWS.OTHER_INCOME" | translate }}
+          </td>
+        </tr>
+        <tr>
+          <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.REIMBURSEMENTS" | translate }}</td>
+          <td *ngFor="let value of plan.reimbursements; trackBy: trackByIndex">
+            <span [class.fp-table__muted]="!value">{{ value | ifNumber }}</span>
+          </td>
+        </tr>
+        <tr>
+          <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.DIRECT_PAYMENTS" | translate }}</td>
+          <td *ngFor="let value of plan.directPayments; trackBy: trackByIndex">
+            <span [class.fp-table__muted]="!value">{{ value | ifNumber }}</span>
+          </td>
+        </tr>
+
+        <tr class="fp-table__total">
+          <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.FINAL_BALANCE" | translate }}</td>
+          <td *ngFor="let value of plan.finalBalance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<kendo-dialog-actions layout="end">
+  <button kendoButton class="btn btn-brand" id="Btn_PreviousPlanDetail_Close" (click)="close()">
+    {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.CLOSE" | translate }}
+  </button>
+</kendo-dialog-actions>

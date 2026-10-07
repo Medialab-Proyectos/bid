@@ -56,6 +56,23 @@ import {
   updateDemoPayment,
 } from './data/demo-payment-record';
 import {
+  buildDemoActiveFinancialPlan,
+  buildDemoFinancialPlanComponent,
+  buildDemoFinancialPlanComponentOptions,
+  buildDemoFinancialPlanDraft,
+  buildDemoFinancialPlanJustification,
+  buildDemoFinancialPlanPotentialProcesses,
+  buildDemoFinancialPlanSimulation,
+  buildDemoPreviousFinancialPlans,
+  confirmDemoFinancialPlanSimulation,
+  requestDemoAni,
+  saveDemoFinancialPlanComponentSelection,
+  saveDemoFinancialPlanEstimatedDisbursement,
+  saveDemoFinancialPlanExchangeRates,
+  saveDemoFinancialPlanDraftInformation,
+  saveDemoFinancialPlanPotentialProcessSelection,
+} from './data/demo-financial-plan';
+import {
   buildDemoAvailableNumbers,
   buildDemoBalances,
   buildDemoBeneficiaries,
@@ -627,6 +644,129 @@ const routes: DemoRoute[] = [
     method: 'POST',
     pattern: /^\/api\/workflow\/getAllWorkflowActive$/,
     handler: () => buildDemoActiveWorkflows(),
+  },
+
+  // ------------------------------------------------------------ financial plan
+  {
+    method: 'GET',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/active$/,
+    handler: (context) =>
+      buildDemoActiveFinancialPlan(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/previous$/,
+    handler: (context) =>
+      buildDemoPreviousFinancialPlans(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/ani$/,
+    handler: (context) =>
+      requestDemoAni(
+        decodeURIComponent(context.params[0]),
+        context.request.body as never
+      ),
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/components\/([^/]+)$/,
+    handler: (context) =>
+      buildDemoFinancialPlanComponent(
+        decodeURIComponent(context.params[0]),
+        decodeURIComponent(context.params[1])
+      ),
+  },
+  {
+    method: 'PUT',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/components\/([^/]+)$/,
+    handler: (context) =>
+      saveDemoFinancialPlanComponentSelection(
+        decodeURIComponent(context.params[0]),
+        decodeURIComponent(context.params[1]),
+        context.request.body as never
+      ),
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/draft$/,
+    handler: (context) =>
+      buildDemoFinancialPlanDraft(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'PUT',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/draft\/information$/,
+    handler: (context) => {
+      const body = context.request.body as {
+        period: { startDate: string; endDate: string };
+        exchangeRates: { currency: string; rateToUsd: number }[];
+      };
+      return saveDemoFinancialPlanDraftInformation(
+        decodeURIComponent(context.params[0]),
+        body.period,
+        body.exchangeRates
+      );
+    },
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/simulation$/,
+    handler: (context) =>
+      buildDemoFinancialPlanSimulation(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'PUT',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/draft\/exchange-rates$/,
+    handler: (context) =>
+      saveDemoFinancialPlanExchangeRates(
+        decodeURIComponent(context.params[0]),
+        (context.request.body as { exchangeRates: { currency: string; rateToUsd: number }[] })
+          .exchangeRates
+      ),
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/components$/,
+    handler: (context) =>
+      buildDemoFinancialPlanComponentOptions(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/potential-processes$/,
+    handler: (context) =>
+      buildDemoFinancialPlanPotentialProcesses(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'PUT',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/potential-processes\/selection$/,
+    handler: (context) =>
+      saveDemoFinancialPlanPotentialProcessSelection(
+        decodeURIComponent(context.params[0]),
+        (context.request.body as { codes: string[] }).codes
+      ),
+  },
+  {
+    method: 'PUT',
+    pattern:
+      /^\/api\/v3\/financial-plans\/([^/]+)\/potential-processes\/([^/]+)\/estimated-disbursement$/,
+    handler: (context) =>
+      saveDemoFinancialPlanEstimatedDisbursement(
+        decodeURIComponent(context.params[0]),
+        decodeURIComponent(context.params[1]),
+        context.request.body as never
+      ),
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/simulation\/justification$/,
+    handler: (context) =>
+      buildDemoFinancialPlanJustification(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/simulation\/confirm$/,
+    handler: (context) =>
+      confirmDemoFinancialPlanSimulation(decodeURIComponent(context.params[0])),
   },
 
   // ----------------------------------------------------------------- common

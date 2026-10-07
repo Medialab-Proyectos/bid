@@ -1,0 +1,84 @@
+<div class="fp-dialog-body">
+  <p class="fp-lead">
+    <span class="fp-dialog__required-mark">*</span>
+    <strong>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.REQUIRED" | translate }}</strong>
+    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.HELP" | translate }}
+  </p>
+
+  <p class="fp-section-title" style="border-bottom: 0">
+    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.MODE" | translate }}
+  </p>
+
+  <table class="fp-table fp-table--rates">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">
+          {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.COLUMNS.CURRENCY" | translate }}
+        </th>
+        <th scope="col">
+          {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.COLUMNS.RATE" | translate }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let rate of rates">
+        <td>
+          <input
+            type="checkbox"
+            [checked]="isSelected(rate.currency)"
+            (change)="toggle(rate.currency)"
+            [attr.id]="'Chk_AdjustRate_' + rate.currency"
+          />
+        </td>
+        <td>{{ rate.currency }}</td>
+        <td>
+          <kendo-numerictextbox
+            class="fp-table__input"
+            [format]="'n5'"
+            [min]="0"
+            [spinners]="false"
+            [placeholder]="'0.00'"
+            [disabled]="!isSelected(rate.currency)"
+            [(ngModel)]="rate.rateToUsd"
+            [attr.id]="'Num_AdjustRate_' + rate.currency"
+          ></kendo-numerictextbox>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="fp-dialog__note" *ngIf="lastUpdatedOn">
+    {{
+      "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.LAST_UPDATED"
+        | translate : { date: (lastUpdatedOn | dateIF) }
+    }}
+  </p>
+
+  <fi-alert
+    type="warning"
+    [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.IMPACT_NOTE' | translate"
+    [closable]="false"
+  ></fi-alert>
+</div>
+
+<kendo-dialog-actions layout="normal">
+  <button
+    kendoButton
+    class="btn btn-neutral btn-no-stroke"
+    id="Btn_AdjustRate_Cancel"
+    [disabled]="saving"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+  <button
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_AdjustRate_Save"
+    [disabled]="!canSave || saving"
+    (click)="save()"
+  >
+    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.SAVE" | translate }}
+  </button>
+</kendo-dialog-actions>

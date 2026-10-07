@@ -1,0 +1,973 @@
+// Styles of the financial plan module. Scoped per component by Angular, same
+// as payment-record.shared.scss -- nothing here leaks into the global design
+// system, and nothing of payment-record's own "pr-" classes is reused here on
+// purpose: different feature, its own stylesheet, so a reader grepping "fp-"
+// or "pr-" never has to wonder which module a class belongs to.
+$fp-border: #e0e0e0;
+$fp-label: #58595b;
+$fp-value: #1a1a1a;
+$fp-brand: #007eb6;
+$fp-success: #2e7d32;
+$fp-success-tint: #eef7ee;
+
+$fp-text-xs: 13px;
+$fp-text-sm: 14px;
+$fp-text-md: 15px;
+$fp-text-lg: 16px;
+$fp-text-xl: 18px;
+
+$fp-control-height: 40px;
+
+.fp-page {
+  padding: 24px 0 48px;
+}
+
+.fp-card {
+  background: #fff;
+  border: 1px solid $fp-border;
+  border-radius: 4px;
+  margin-bottom: 24px;
+
+  &__head {
+    align-items: center;
+    border-bottom: 1px solid #d8dde6;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 24px;
+  }
+
+  &__identity {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+  }
+
+  &__icon {
+    align-items: center;
+    background: #2fbfce;
+    border-radius: 4px;
+    color: #fff;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    width: 32px;
+
+    .fas {
+      font-size: 22px;
+    }
+  }
+
+  &__title {
+    color: $fp-value;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.fp-tabstrip {
+  border-bottom: 1px solid $fp-border;
+  display: flex;
+  gap: 24px;
+  padding: 0 24px;
+
+  &__tab {
+    background: none;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    color: $fp-label;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: $fp-text-md;
+    padding: 16px 4px;
+    transition: color 0.12s ease, border-color 0.12s ease;
+
+    &:hover {
+      color: $fp-value;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $fp-brand;
+      outline-offset: -4px;
+    }
+
+    &--active {
+      border-bottom-color: $fp-brand;
+      color: $fp-value;
+      font-weight: 500;
+    }
+
+    &:disabled {
+      color: #b3b3b3;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.fp-body {
+  padding: 20px 24px 24px;
+
+  // The banner's own component carries no spacing of its own, so without
+  // this the lead paragraph right under it reads as part of the same block
+  // instead of the page's own next line.
+  fi-alert {
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+.fp-lead {
+  color: $fp-label;
+  font-size: $fp-text-md;
+  margin: 0 0 20px;
+}
+
+// A flowing paragraph reads as one more thing to parse, not as "do this,
+// then this" -- "Ajustar Plan Financiero" spans two screens with its own
+// per-process detour in the middle, exactly the kind of flow a numbered
+// list keeps legible where a paragraph buried the actual steps.
+.fp-steps {
+  color: $fp-label;
+  font-size: $fp-text-md;
+  margin: 0 0 20px;
+  padding-left: 20px;
+
+  li {
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Sits above the process-summary box, not inside the dialog's own title bar
+// -- the title bar has no template binding (it's set imperatively via the
+// live Dialog instance, see `setTitle` in the component), so a value that
+// changes every "Siguiente" click belongs in the body instead.
+.fp-sequence-indicator {
+  color: $fp-brand;
+  font-size: $fp-text-sm;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.fp-section-title {
+  color: $fp-value;
+  font-size: $fp-text-lg;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.fp-period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  &__box {
+    border: 1px solid $fp-border;
+    border-radius: 4px;
+    min-width: 178px;
+    padding: 10px 16px;
+  }
+
+  &__label {
+    color: $fp-label;
+    display: block;
+    font-size: $fp-text-md;
+  }
+
+  &__value {
+    color: $fp-value;
+    font-size: $fp-text-md;
+    font-weight: 700;
+  }
+}
+
+// A plain text line in the body's own grey read as just another sentence,
+// easy to skim past -- the one thing on this screen that changes how every
+// number below it should be read deserves to register before the eye
+// reaches the table, not blend into the paragraph above it. Same amber
+// notice-chip treatment payment-record's own `.pr-notice` already uses for
+// the same job (see payment-record.shared.scss).
+.fp-notice-row {
+  align-items: center;
+  background: #fdf6e6;
+  border-radius: 4px;
+  color: #7a5400;
+  display: inline-flex;
+  font-size: $fp-text-md;
+  font-weight: 600;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+
+  .fas {
+    color: #e68a00;
+    font-size: $fp-text-lg;
+  }
+}
+
+// Download sits with the table it downloads, on the opposite side from the
+// primary actions, not stranded under the table of its own -- checking the
+// numbers against a copy is something to reach for while reading the table,
+// not a step left for after Simulate/Solicitar ANI, and the module's own
+// statement screen already puts a download action here for the same reason
+// (see `pr-statement__top-actions` in payment-record.shared.scss).
+.fp-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  &__group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    // Keeps the primary actions pinned to the right even when they wrap onto
+    // their own line under a long "Simular nuevo Plan Financiero" label.
+    margin-left: auto;
+  }
+}
+
+// Cancelar/Confirmar ANI: once editing starts, these belong under the table
+// the agency is actually editing, not above it where the eye has already
+// moved past by the time there is anything to confirm.
+.fp-actions--bottom {
+  margin-bottom: 0;
+  margin-top: 28px;
+}
+
+.fp-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.fp-table {
+  border-collapse: collapse;
+  min-width: 56rem;
+  width: 100%;
+
+  th,
+  td {
+    font-size: $fp-text-xs;
+    padding: 10px 12px;
+    text-align: right;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  thead th {
+    background: #f5f5f5;
+    color: $fp-label;
+    font-weight: 700;
+  }
+
+  thead th:first-child,
+  tbody td:first-child {
+    text-align: left;
+  }
+
+  // Excludes the total row on purpose: Angular's per-component view
+  // encapsulation appends its own attribute selector to *every* compound
+  // segment of a rule, so a 3-segment selector like this one ends up more
+  // specific than a 2-segment override lower in this file regardless of
+  // which comes later in the cascade or how many classes it names. Scoping
+  // the grey label color out of `&__total` here, instead of trying to
+  // out-specificity it afterwards, is what actually lets that row's own
+  // white color win.
+  tbody tr:not(.fp-table__total) td:first-child {
+    color: $fp-label;
+    font-weight: 700;
+  }
+
+  &__section td {
+    background: #dbedf8;
+    color: $fp-label;
+    font-size: $fp-text-md;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  &__component {
+    background: none;
+    border: 0;
+    color: $fp-brand;
+    cursor: pointer;
+    font-size: $fp-text-xs;
+    font-weight: 700;
+    padding: 0;
+    text-align: left;
+    text-decoration: underline;
+    white-space: normal;
+  }
+
+  &__subtotal td {
+    background: #f4fdff;
+    font-weight: 700;
+  }
+
+  &__caption td {
+    color: $fp-label;
+    font-size: $fp-text-xs;
+    font-weight: 700;
+    padding-top: 16px;
+    text-align: left;
+  }
+
+  &__total td {
+    background: #5e90a8;
+    color: #fff;
+    font-size: $fp-text-sm;
+    font-weight: 700;
+  }
+
+  &__input {
+    text-align: right;
+    width: 110px;
+  }
+
+  &__muted {
+    color: #9a9a9a;
+  }
+}
+
+.fp-table tbody tr:nth-child(even):not(.fp-table__section):not(.fp-table__subtotal):not(.fp-table__total) {
+  background: #fafbfc;
+}
+
+// The component-detail dialog's own header: Kendo's `title` option only ever
+// takes plain text, with no way to carry the Figma reference's icon next to
+// it or left-align it the way every other header in this module is, so the
+// dialog opens with no native title text and builds this one instead. It
+// bleeds past the dialog's own 20/28px content padding with negative margins
+// so it reads as a real title bar flush with the dialog's edges, the same
+// job `.fp-card__head` does on the page itself.
+.fp-dialog-head {
+  align-items: center;
+  border-bottom: 1px solid $fp-border;
+  display: flex;
+  gap: 10px;
+  margin: -20px -28px 20px;
+  padding: 16px 28px;
+
+  &__icon {
+    align-items: center;
+    background: #2fbfce;
+    border-radius: 4px;
+    color: #fff;
+    display: flex;
+    flex: 0 0 auto;
+    height: 32px;
+    justify-content: center;
+    width: 32px;
+
+    .fas {
+      font-size: 18px;
+    }
+  }
+
+  &__title {
+    color: $fp-value;
+    font-size: $fp-text-lg;
+    font-weight: 700;
+    margin: 0;
+    text-align: left;
+  }
+}
+
+// No padding of its own: every dialog of this module gets its 20/28/24 body
+// padding from the single global `.k-dialog-content` rule under `.fp-modal`
+// (see `_component__financial-plan.scss`), the same way `.pr-dialog` never
+// repeats payment-record's own version of that padding either. Adding it
+// again here would double it against that global rule.
+.fp-dialog-body {
+  // `fi-alert` has no `:host { display: block }` of its own, so it defaults
+  // to inline -- a vertical margin on an inline element is simply ignored by
+  // the browser, which is why this had no visible effect without it. Same
+  // fix `.pr-dialog fi-alert` already needed in payment-record.shared.scss.
+  fi-alert {
+    display: block;
+    margin-bottom: 24px;
+  }
+}
+
+.fp-dialog-section {
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  // Same underline `.pr-fieldset__legend` gives a section title in every
+  // payment-record dialog -- without it, a section title inside a modal
+  // reads as another paragraph instead of the start of its own block, since
+  // a modal has none of the page's own card/tab chrome around it to do that
+  // separating job instead.
+  > .fp-section-title {
+    border-bottom: 1px solid $fp-border;
+    padding-bottom: 8px;
+  }
+}
+
+.fp-expand {
+  background: none;
+  border: 0;
+  color: $fp-label;
+  cursor: pointer;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid $fp-brand;
+  }
+}
+
+// Checkbox, expand chevron and id packed as a tight unit -- without this
+// they fall back to plain inline flow, where the newline and indentation
+// between each tag in the template renders as real whitespace, reading as a
+// gap between the checkbox and the chevron much wider than the 6px any of
+// them actually set.
+.fp-row-lead {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.fp-page {
+  line-height: 1.5;
+
+  kendo-numerictextbox {
+    font-size: $fp-text-sm;
+    min-height: $fp-control-height;
+  }
+
+  :focus-visible {
+    outline: 2px solid $fp-brand;
+    outline-offset: 2px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Editable form fields ("Simulación" step 1, so far). Same row/field/label
+// shape payment-record's own `.pr-dialog__row`/`.pr-dialog__field` give its
+// forms -- a grid instead of flex so a lone field doesn't stretch across the
+// whole width, named "fp-" rather than reused directly for the same reason
+// every other class in this file is its own: a different module, its own
+// stylesheet.
+.fp-dialog__row {
+  align-items: start;
+  display: grid;
+  gap: 16px 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-bottom: 20px;
+
+  &--2col {
+    grid-template-columns: repeat(2, minmax(0, 340px));
+  }
+}
+
+.fp-dialog__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  > .c-datepicker,
+  > kendo-numerictextbox {
+    max-width: 340px;
+    width: 100%;
+  }
+}
+
+.fp-dialog__label {
+  color: $fp-label;
+  font-size: $fp-text-sm;
+}
+
+// A plain text action next to a real button ("Ajustar tasa de cambio" next
+// to "Ajustar Plan Financiero", "Salir" next to "Regresar"/"Continuar") --
+// reads as a link because it is one, not a button standing in for one.
+.fp-dialog__link {
+  background: none;
+  border: 0;
+  color: $fp-brand;
+  cursor: pointer;
+  font-size: $fp-text-sm;
+  // The app's own global `button, .k-button, .btn` reset sets a 144px
+  // min-width meant for a real button -- harmless for the `btn-*` pair this
+  // usually sits next to, but it leaves a wide empty box around a two-word
+  // (sometimes two-letter) link, same fix `.pr-dialog__link` already needed
+  // in payment-record.shared.scss.
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+  text-decoration: underline;
+
+  .fas {
+    margin-right: 4px;
+    text-decoration: none;
+  }
+}
+
+// The small info glyph next to a row label or a component link that opens a
+// tooltip on hover/focus, not a click -- a separate affordance from the
+// link itself, the same way the Figma reference keeps them apart.
+// Grey here would read as disabled -- this module's own grey family
+// (#9a9a9a/#6b6b6b/#b3b3b3) is already what every disabled button and muted
+// static value uses, so a grey icon reads as inert even though it isn't.
+// Brand blue is what the rest of the module already uses for "this is
+// informational/interactive", not grey.
+.fp-info-icon {
+  color: $fp-brand;
+  cursor: help;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.fp-dialog__required::after {
+  color: #d32f2f;
+  content: " *";
+}
+
+.fp-dialog__required-mark {
+  color: #d32f2f;
+}
+
+.fp-dialog__note {
+  color: $fp-label;
+  font-size: $fp-text-sm;
+  margin: 12px 0 0;
+}
+
+// A standing warning about the scope of what "Guardar" is about to change --
+// lives in the body, next to what it is warning about, not in the action
+// bar, where it read as a caption for the Cancelar/Guardar buttons instead
+// of context for the table above it.
+// A compact two-column table (currency, rate) -- the cash-flow table's own
+// 56rem minimum exists for its six-plus month columns and would force this
+// one to stretch far past the handful of currencies it actually lists.
+// A short, simple table (checkbox, currency, rate) -- the cash-flow table's
+// own 56rem minimum exists for its six-plus month columns and would force
+// this one into unnecessary horizontal scroll; this one instead fills
+// whatever width the dialog actually gives it, at a size comfortable to
+// read rather than the dense cash-flow table's own compact 13px.
+.fp-table--rates {
+  font-size: $fp-text-sm;
+  min-width: 0;
+  width: 100%;
+
+  th:first-child,
+  td:first-child {
+    width: 48px;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 200px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The "Simulación" stepper: Información / Simulación / Confirmar, each
+// reachable once the one before it is done, never ahead of where the draft
+// actually is.
+// ---------------------------------------------------------------------------
+.fp-stepper {
+  align-items: center;
+  border-bottom: 1px solid $fp-border;
+  display: flex;
+  padding: 20px 24px 24px;
+
+  &__item {
+    align-items: center;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $fp-brand;
+      outline-offset: 2px;
+    }
+  }
+
+  // A ring with a dot at rest, filled solid with a check once done -- the
+  // Figma reference's own "Progress indicator" component, not a numbered
+  // step counter.
+  &__circle {
+    align-items: center;
+    background: #fff;
+    border: 2px solid #c7c7c7;
+    border-radius: 50%;
+    color: #9a9a9a;
+    display: flex;
+    flex: 0 0 auto;
+    font-size: 10px;
+    height: 20px;
+    justify-content: center;
+    width: 20px;
+  }
+
+  &__dot {
+    background: currentColor;
+    border-radius: 50%;
+    height: 8px;
+    width: 8px;
+  }
+
+  &__label {
+    color: #9a9a9a;
+    font-size: $fp-text-sm;
+    white-space: nowrap;
+  }
+
+  &__item--active &__circle {
+    border-color: $fp-brand;
+    color: $fp-brand;
+  }
+
+  &__item--active &__label {
+    color: $fp-brand;
+    font-weight: 700;
+  }
+
+  &__item--done &__circle {
+    background: $fp-brand;
+    border-color: $fp-brand;
+    color: #fff;
+  }
+
+  &__item--done &__label {
+    color: $fp-value;
+  }
+
+  &__line {
+    background: $fp-border;
+    flex: 1 1 32px;
+    height: 1px;
+    margin: 0 12px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// "Ajustar Plan Financiero": the picker that pulls a process the preliminary
+// plan left out into the simulation being built.
+// ---------------------------------------------------------------------------
+
+.fp-process-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  &__summary {
+    color: $fp-label;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: $fp-text-sm;
+    gap: 20px;
+
+    strong {
+      color: $fp-value;
+    }
+  }
+}
+
+// The cash-flow table's own 56rem minimum and uniform right alignment suit a
+// grid of nothing but month columns -- this one is mostly text (name,
+// beneficiary, status), so it earns its own modifier instead of fighting
+// `.fp-table`'s own defaults cell by cell.
+.fp-table--processes {
+  min-width: 72rem;
+
+  th,
+  td {
+    text-align: left;
+    white-space: normal;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: center;
+    width: 32px;
+  }
+}
+
+.fp-grid__number,
+.fp-grid__number.fp-table__muted {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+// ---------------------------------------------------------------------------
+// "Monto estimado a desembolsar": the BID/aporte local/cofinanciamiento
+// breakdown for one process, repeatable per component it touches, plus how
+// each component's own BID amount spreads across the plan's months.
+// ---------------------------------------------------------------------------
+
+.fp-estimated-amount {
+  &__section-title {
+    font-size: $fp-text-sm;
+    font-weight: 700;
+    margin: 20px 0 12px;
+  }
+
+  &__card {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 3px;
+    margin-bottom: 16px;
+    padding: 16px;
+  }
+
+  &__row {
+    align-items: flex-end;
+    display: flex;
+    gap: 16px;
+
+    & + & {
+      margin-top: 16px;
+    }
+
+    // The component picker is the one field meant to grow and absorb the
+    // row's spare space -- the three amount fields next to it only need
+    // room for a number, not an equal split of whatever is left over, which
+    // is what made them read as oddly wide with a lot of empty box around a
+    // short "0.00".
+    .fp-dialog__field {
+      flex: 0 1 150px;
+      min-width: 0;
+
+      &:first-child {
+        flex: 2 1 0;
+      }
+    }
+  }
+
+  &__total {
+    flex: 0 0 150px;
+    min-width: 0;
+  }
+
+  &__total-value {
+    color: $fp-value;
+    display: block;
+    font-size: $fp-text-xs;
+    padding: 11px 0;
+  }
+
+  &__remove {
+    background: none;
+    border: 0;
+    color: #9a9a9a;
+    cursor: pointer;
+    flex: 0 0 auto;
+    font-size: $fp-text-lg;
+    // The app's own global `button, .k-button, .btn` reset sets a 144px
+    // min-width meant for a real button -- on an icon-only button that left
+    // a wide dead zone of clickable-but-invisible space next to the icon,
+    // which is what actually read as "too much white space" here (not the
+    // row's own gap, which was already a normal 16px -- the trash icon's
+    // own box was just much wider than the glyph inside it). Same fix
+    // `.fp-dialog__link` already needed.
+    min-width: 0;
+    padding: 11px 0;
+
+    &:hover {
+      color: $fp-brand;
+    }
+  }
+
+  &__add {
+    align-items: center;
+    display: inline-flex;
+    gap: 8px;
+    margin-top: 16px;
+
+    em {
+      font-size: $fp-text-xs;
+    }
+  }
+
+  &__accumulated {
+    background: #f4fdff;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    color: $fp-label;
+    font-size: $fp-text-sm;
+    font-weight: 700;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+
+    strong {
+      color: $fp-value;
+      margin-left: 6px;
+    }
+  }
+}
+
+// Always-visible mirror of the distribution table's own last column -- see
+// the comment at its call site for why that column alone isn't enough.
+.fp-distribution-status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  &__item {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: $fp-text-sm;
+    gap: 6px;
+  }
+
+  &__label {
+    color: $fp-label;
+    font-weight: 600;
+  }
+
+  &__value {
+    align-items: center;
+    display: inline-flex;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    gap: 6px;
+
+    &--pending,
+    &--over {
+      color: #d32f2f;
+    }
+
+    &--done {
+      color: $fp-success;
+    }
+
+    .fas {
+      font-size: $fp-text-sm;
+    }
+  }
+}
+
+.fp-table--distribution {
+  min-width: 0;
+  width: 100%;
+
+  th:first-child,
+  td:first-child {
+    width: 140px;
+  }
+
+  th:last-child,
+  td:last-child {
+    width: 150px;
+  }
+
+  &__remaining {
+    color: $fp-value;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+
+    // Distributing the IDB amount across months is required, not optional
+    // -- this is what actually blocks `canSaveEstimate` until it reads 0,
+    // the same red the rest of the module already uses for a required field
+    // left incomplete.
+    &--pending {
+      color: #d32f2f;
+    }
+
+    // A negative remainder means the months already add up to MORE than the
+    // IDB amount -- that's a distinct mistake from "not finished yet", so it
+    // gets its own icon + "Exceeds by" wording instead of just a minus sign
+    // a person could easily miss.
+    &--over {
+      align-items: center;
+      color: #d32f2f;
+      display: inline-flex;
+      gap: 6px;
+
+      .fas {
+        font-size: $fp-text-sm;
+      }
+    }
+  }
+}
+
+// The sequence wizard walks one process at a time through "Monto estimado a
+// desembolsar" -- without a clear banner naming which one, the process code
+// was buried mid-sentence in the lead paragraph below and easy to lose track
+// of between "Siguiente" clicks.
+.fp-process-summary {
+  background: #f4fdff;
+  border: 1px solid $fp-border;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 16px;
+
+  &__title {
+    color: $fp-value;
+    font-size: $fp-text-lg;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+
+  &__grid {
+    display: grid;
+    gap: 12px 24px;
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+  }
+
+  &__label {
+    color: $fp-label;
+    display: block;
+    font-size: $fp-text-xs;
+  }
+
+  &__value {
+    color: $fp-value;
+    display: block;
+    font-size: $fp-text-sm;
+    font-weight: 600;
+  }
+}
+
+// "¿Deseas continuar?": the one line this whole dialog exists for, centered
+// the way the Figma reference sets it, not left-aligned like this module's
+// other lead paragraphs -- those introduce a longer block of content below
+// them, this one is the entire dialog.
+.fp-confirm-plan__message {
+  color: $fp-value;
+  font-size: $fp-text-md;
+  line-height: 1.5;
+  margin: 8px 0;
+  text-align: center;
+}
+
+// "Planes anteriores"' own list: three plain text columns (two dates and a
+// confirmation date), none of them a running total that benefits from the
+// cash-flow table's own right-aligned, 56rem-minimum layout.
+.fp-table--list {
+  min-width: 0;
+  width: 100%;
+
+  th,
+  td {
+    text-align: left;
+  }
+}

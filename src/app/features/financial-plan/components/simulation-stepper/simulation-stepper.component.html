@@ -1,0 +1,564 @@
+<div class="fp-stepper">
+  <ng-container *ngFor="let s of steps; let i = index; let last = last">
+    <button
+      type="button"
+      class="fp-stepper__item"
+      [class.fp-stepper__item--active]="step === s"
+      [class.fp-stepper__item--done]="stepIndex(step) > i"
+      [disabled]="stepIndex(s) > stepIndex(step)"
+      [attr.id]="'Tab_Simulation_Step_' + s"
+      (click)="goToStep(s)"
+    >
+      <span class="fp-stepper__circle">
+        <em class="fas fa-check" *ngIf="stepIndex(step) > i"></em>
+        <span class="fp-stepper__dot" *ngIf="stepIndex(step) <= i"></span>
+      </span>
+      <span class="fp-stepper__label">
+        {{ "FINANCIAL_PLAN.SIMULATION.STEPS." + s | translate }}
+      </span>
+    </button>
+    <span class="fp-stepper__line" *ngIf="!last"></span>
+  </ng-container>
+</div>
+
+<div class="fp-body" *ngIf="draft">
+  <ng-container *ngIf="step === 'information'">
+    <div class="fp-dialog-section">
+      <h3 class="fp-section-title">
+        {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.PERIOD_TITLE" | translate }}
+      </h3>
+      <p class="fp-lead">
+        {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.PERIOD_HELP" | translate }}
+      </p>
+      <div class="fp-dialog__row fp-dialog__row--2col">
+        <div class="fp-dialog__field">
+          <span class="fp-dialog__label fp-dialog__required">
+            {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+          </span>
+          <kendo-datepicker
+            class="c-datepicker"
+            format="dd/MM/yyyy"
+            [placeholder]="'FINANCIAL_PLAN.SIMULATION.INFORMATION.DATE_PLACEHOLDER' | translate"
+            id="Dtp_Simulation_StartDate"
+            [(ngModel)]="startDate"
+          ></kendo-datepicker>
+        </div>
+        <div class="fp-dialog__field">
+          <span class="fp-dialog__label fp-dialog__required">
+            {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+          </span>
+          <kendo-datepicker
+            class="c-datepicker"
+            format="dd/MM/yyyy"
+            [placeholder]="'FINANCIAL_PLAN.SIMULATION.INFORMATION.DATE_PLACEHOLDER' | translate"
+            id="Dtp_Simulation_EndDate"
+            [(ngModel)]="endDate"
+          ></kendo-datepicker>
+        </div>
+      </div>
+    </div>
+
+    <div class="fp-dialog-section">
+      <h3 class="fp-section-title">
+        {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.RATES_TITLE" | translate }}
+      </h3>
+      <p class="fp-lead">
+        {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.RATES_HELP" | translate }}
+      </p>
+      <table class="fp-table fp-table--rates">
+        <thead>
+          <tr>
+            <th scope="col">
+              {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.COLUMNS.CURRENCY" | translate }}
+            </th>
+            <th scope="col">
+              {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.COLUMNS.RATE" | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rate of draft.exchangeRates">
+            <td>{{ rate.currency }}</td>
+            <td>
+              <kendo-numerictextbox
+                class="fp-table__input"
+                [format]="'n5'"
+                [min]="0"
+                [spinners]="false"
+                [placeholder]="'0.00'"
+                [(ngModel)]="rate.rateToUsd"
+                [attr.id]="'Num_Simulation_Rate_' + rate.currency"
+              ></kendo-numerictextbox>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="fp-actions">
+      <div class="fp-actions__group">
+        <button
+          kendoButton
+          class="btn btn-brand"
+          id="Btn_Simulation_Continue"
+          [disabled]="!canContinue || saving"
+          (click)="saveInformation()"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.CONTINUE" | translate }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="step === 'simulation' && simulation">
+    <p class="fp-lead">
+      {{ "FINANCIAL_PLAN.SIMULATION.SIMULATION_LEAD" | translate }}
+    </p>
+
+    <h3 class="fp-section-title">
+      {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
+    </h3>
+    <div class="fp-period">
+      <div class="fp-period__box">
+        <span class="fp-period__label">
+          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+        </span>
+        <span class="fp-period__value">{{ draft.period.startDate | dateIF }}</span>
+      </div>
+      <div class="fp-period__box">
+        <span class="fp-period__label">
+          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+        </span>
+        <span class="fp-period__value">{{ draft.period.endDate | dateIF }}</span>
+      </div>
+    </div>
+
+    <div class="fp-actions">
+      <div class="fp-notice-row">
+        <em class="fas fa-info-circle"></em>
+        {{
+          "FINANCIAL_PLAN.ACTIVE.CURRENCY_NOTE"
+            | translate : { currency: "USD" }
+        }}
+      </div>
+      <div class="fp-actions__group">
+        <button
+          type="button"
+          class="fp-dialog__link"
+          id="Btn_Simulation_AdjustRate"
+          (click)="openAdjustRate()"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.TITLE" | translate }}
+        </button>
+        <button
+          kendoButton
+          class="btn btn-brand"
+          id="Btn_Simulation_AdjustPlan"
+          (click)="openAdjustPlan()"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN" | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="fp-scroll">
+      <table class="fp-table">
+        <thead>
+          <tr>
+            <th scope="col">{{ "FINANCIAL_PLAN.ACTIVE.COLUMNS.MONTHS" | translate }}</th>
+            <th scope="col" *ngFor="let month of simulation.months">{{ month.label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              {{ "FINANCIAL_PLAN.ACTIVE.ROWS.OPENING_BALANCE" | translate }}
+              <em
+                kendoTooltip
+                [showOn]="'click'"
+                class="fas fa-info-circle fp-info-icon"
+                [title]="'FINANCIAL_PLAN.SIMULATION.OPENING_BALANCE_TOOLTIP' | translate"
+              ></em>
+            </td>
+            <td *ngFor="let value of simulation.openingBalance; let i = index; trackBy: trackByIndex">
+              <kendo-numerictextbox
+                *ngIf="i === 0; else openingStatic"
+                class="fp-table__input"
+                [format]="'n0'"
+                [min]="0"
+                [spinners]="false"
+                [placeholder]="'0.00'"
+                [(ngModel)]="simulation.openingBalance[0]"
+                (blur)="recalculate()"
+                id="Num_Simulation_OpeningBalance"
+              ></kendo-numerictextbox>
+              <ng-template #openingStatic>{{ value | ifNumber }}</ng-template>
+            </td>
+          </tr>
+
+          <tr class="fp-table__section">
+            <td [attr.colspan]="simulation.months.length + 1">
+              {{ "FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSES_BY_COMPONENT" | translate }}
+            </td>
+          </tr>
+          <tr *ngFor="let component of simulation.components">
+            <td>
+              <button
+                type="button"
+                class="fp-table__component"
+                [attr.id]="'Lnk_Simulation_Component_' + component.componentCode"
+                (click)="openComponent(component.componentCode, component.componentName)"
+              >
+                {{ component.componentName }}
+              </button>
+              <em
+                kendoTooltip
+                [showOn]="'click'"
+                class="fas fa-info-circle fp-info-icon"
+                [title]="'FINANCIAL_PLAN.SIMULATION.COMPONENT_TOOLTIP' | translate"
+              ></em>
+            </td>
+            <td *ngFor="let value of component.monthlyAmounts">{{ value | ifNumber }}</td>
+          </tr>
+          <tr class="fp-table__subtotal">
+            <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSE_SUBTOTAL" | translate }}</td>
+            <td *ngFor="let value of simulation.expenseSubtotal; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+          </tr>
+          <tr class="fp-table__subtotal">
+            <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_EXPENSES" | translate }}</td>
+            <td *ngFor="let value of simulation.balanceAfterExpenses; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+          </tr>
+
+          <tr class="fp-table__section">
+            <td [attr.colspan]="simulation.months.length + 1">
+              {{ "FINANCIAL_PLAN.ACTIVE.ROWS.LOAN_INCOME" | translate }}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              {{ "FINANCIAL_PLAN.ACTIVE.ROWS.ADVANCE_AMOUNT" | translate }}
+              <em
+                kendoTooltip
+                [showOn]="'click'"
+                class="fas fa-info-circle fp-info-icon"
+                [title]="'FINANCIAL_PLAN.SIMULATION.ADVANCE_TOOLTIP' | translate"
+              ></em>
+            </td>
+            <td *ngFor="let value of simulation.advanceAmount; let i = index; trackBy: trackByIndex">
+              <kendo-numerictextbox
+                *ngIf="advanceEditable(i); else advanceStatic"
+                class="fp-table__input"
+                [format]="'n0'"
+                [min]="0"
+                [spinners]="false"
+                [placeholder]="'0.00'"
+                [(ngModel)]="simulation.advanceAmount[i]"
+                (blur)="recalculate()"
+                [attr.id]="'Num_Simulation_Advance_' + i"
+              ></kendo-numerictextbox>
+              <ng-template #advanceStatic>
+                <span class="fp-table__muted">{{ value | ifNumber }}</span>
+              </ng-template>
+            </td>
+          </tr>
+          <tr class="fp-table__subtotal">
+            <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_ADVANCE" | translate }}</td>
+            <td *ngFor="let value of simulation.balanceAfterAdvance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+          </tr>
+          <tr class="fp-table__caption">
+            <td [attr.colspan]="simulation.months.length + 1">
+              {{ "FINANCIAL_PLAN.ACTIVE.ROWS.OTHER_INCOME" | translate }}
+            </td>
+          </tr>
+          <tr>
+            <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.REIMBURSEMENTS" | translate }}</td>
+            <td *ngFor="let value of simulation.reimbursements; let i = index; trackBy: trackByIndex">
+              <kendo-numerictextbox
+                class="fp-table__input"
+                [format]="'n0'"
+                [min]="0"
+                [spinners]="false"
+                [placeholder]="'0.00'"
+                [(ngModel)]="simulation.reimbursements[i]"
+                (blur)="recalculate()"
+                [attr.id]="'Num_Simulation_Reimbursement_' + i"
+              ></kendo-numerictextbox>
+            </td>
+          </tr>
+          <tr>
+            <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.DIRECT_PAYMENTS" | translate }}</td>
+            <td *ngFor="let value of simulation.directPayments; let i = index; trackBy: trackByIndex">
+              <kendo-numerictextbox
+                class="fp-table__input"
+                [format]="'n0'"
+                [min]="0"
+                [spinners]="false"
+                [placeholder]="'0.00'"
+                [(ngModel)]="simulation.directPayments[i]"
+                (blur)="recalculate()"
+                [attr.id]="'Num_Simulation_DirectPayment_' + i"
+              ></kendo-numerictextbox>
+            </td>
+          </tr>
+
+          <tr class="fp-table__total">
+            <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.FINAL_BALANCE" | translate }}</td>
+            <td *ngFor="let value of simulation.finalBalance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="fp-actions fp-actions--bottom">
+      <button type="button" class="fp-dialog__link" id="Btn_Simulation_Exit" (click)="exit.emit()">
+        <em class="fas fa-arrow-left"></em>
+        {{ "FINANCIAL_PLAN.SIMULATION.EXIT" | translate }}
+      </button>
+      <div class="fp-actions__group">
+        <button
+          kendoButton
+          class="btn btn-neutral btn-no-stroke"
+          id="Btn_Simulation_Back"
+          (click)="goToStep('information')"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.BACK" | translate }}
+        </button>
+        <button
+          kendoButton
+          class="btn btn-brand"
+          id="Btn_Simulation_ContinueToConfirm"
+          (click)="continueToConfirmation()"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.CONTINUE" | translate }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="step === 'confirmation'">
+    <ng-container *ngIf="!justificationLoading; else justificationLoadingTpl">
+      <p class="fp-lead">
+        {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.REVIEW_LEAD" | translate }}
+      </p>
+
+      <h3 class="fp-section-title">
+        {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
+      </h3>
+      <div class="fp-period">
+        <div class="fp-period__box">
+          <span class="fp-period__label">
+            {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+          </span>
+          <span class="fp-period__value">{{ draft.period?.startDate | dateIF }}</span>
+        </div>
+        <div class="fp-period__box">
+          <span class="fp-period__label">
+            {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+          </span>
+          <span class="fp-period__value">{{ draft.period?.endDate | dateIF }}</span>
+        </div>
+      </div>
+
+      <div class="fp-actions">
+        <div class="fp-notice-row">
+          <em class="fas fa-info-circle"></em>
+          {{ "FINANCIAL_PLAN.ACTIVE.CURRENCY_NOTE" | translate : { currency: "USD" } }}
+        </div>
+        <div class="fp-actions__group">
+          <button
+            kendoButton
+            class="btn btn-neutral"
+            id="Btn_Confirmation_Download"
+            iconClass="fas fa-file-download"
+            (click)="downloadSimulation()"
+          >
+            {{ "FINANCIAL_PLAN.ACTIVE.DOWNLOAD" | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="fp-scroll">
+        <table class="fp-table">
+          <thead>
+            <tr>
+              <th scope="col">{{ "FINANCIAL_PLAN.ACTIVE.COLUMNS.MONTHS" | translate }}</th>
+              <th scope="col" *ngFor="let month of simulation.months">{{ month.label }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                {{ "FINANCIAL_PLAN.ACTIVE.ROWS.OPENING_BALANCE" | translate }}
+                <em
+                  kendoTooltip
+                  [showOn]="'click'"
+                  class="fas fa-info-circle fp-info-icon"
+                  [title]="'FINANCIAL_PLAN.SIMULATION.OPENING_BALANCE_TOOLTIP' | translate"
+                ></em>
+              </td>
+              <td *ngFor="let value of simulation.openingBalance; trackBy: trackByIndex">
+                {{ value | ifNumber }}
+              </td>
+            </tr>
+
+            <tr class="fp-table__section">
+              <td [attr.colspan]="simulation.months.length + 1">
+                {{ "FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSES_BY_COMPONENT" | translate }}
+              </td>
+            </tr>
+            <tr *ngFor="let component of simulation.components">
+              <td>
+                <button
+                  type="button"
+                  class="fp-table__component"
+                  [attr.id]="'Lnk_Confirmation_Component_' + component.componentCode"
+                  (click)="openComponent(component.componentCode, component.componentName)"
+                >
+                  {{ component.componentName }}
+                </button>
+                <em
+                  kendoTooltip
+                  [showOn]="'click'"
+                  class="fas fa-info-circle fp-info-icon"
+                  [title]="'FINANCIAL_PLAN.SIMULATION.COMPONENT_TOOLTIP' | translate"
+                ></em>
+              </td>
+              <td *ngFor="let value of component.monthlyAmounts">{{ value | ifNumber }}</td>
+            </tr>
+            <tr class="fp-table__subtotal">
+              <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSE_SUBTOTAL" | translate }}</td>
+              <td *ngFor="let value of simulation.expenseSubtotal; trackBy: trackByIndex">
+                {{ value | ifNumber }}
+              </td>
+            </tr>
+            <tr class="fp-table__subtotal">
+              <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_EXPENSES" | translate }}</td>
+              <td *ngFor="let value of simulation.balanceAfterExpenses; trackBy: trackByIndex">
+                {{ value | ifNumber }}
+              </td>
+            </tr>
+
+            <tr class="fp-table__section">
+              <td [attr.colspan]="simulation.months.length + 1">
+                {{ "FINANCIAL_PLAN.ACTIVE.ROWS.LOAN_INCOME" | translate }}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{ "FINANCIAL_PLAN.ACTIVE.ROWS.ADVANCE_AMOUNT" | translate }}
+                <em
+                  kendoTooltip
+                  [showOn]="'click'"
+                  class="fas fa-info-circle fp-info-icon"
+                  [title]="'FINANCIAL_PLAN.SIMULATION.ADVANCE_TOOLTIP' | translate"
+                ></em>
+              </td>
+              <td *ngFor="let value of simulation.advanceAmount; trackBy: trackByIndex">
+                <span [class.fp-table__muted]="!value">{{ value | ifNumber }}</span>
+              </td>
+            </tr>
+            <tr class="fp-table__subtotal">
+              <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_ADVANCE" | translate }}</td>
+              <td *ngFor="let value of simulation.balanceAfterAdvance; trackBy: trackByIndex">
+                {{ value | ifNumber }}
+              </td>
+            </tr>
+            <tr class="fp-table__caption">
+              <td [attr.colspan]="simulation.months.length + 1">
+                {{ "FINANCIAL_PLAN.ACTIVE.ROWS.OTHER_INCOME" | translate }}
+              </td>
+            </tr>
+            <tr>
+              <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.REIMBURSEMENTS" | translate }}</td>
+              <td *ngFor="let value of simulation.reimbursements; trackBy: trackByIndex">
+                {{ value | ifNumber }}
+              </td>
+            </tr>
+            <tr>
+              <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.DIRECT_PAYMENTS" | translate }}</td>
+              <td *ngFor="let value of simulation.directPayments; trackBy: trackByIndex">
+                {{ value | ifNumber }}
+              </td>
+            </tr>
+
+            <tr class="fp-table__total">
+              <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.FINAL_BALANCE" | translate }}</td>
+              <td *ngFor="let value of simulation.finalBalance; trackBy: trackByIndex">
+                {{ value | ifNumber }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Once enough of the plan is justified there is nothing left to flag
+           here -- the review table and the now-visible submit button already
+           say "this is ready." The section only earns its place on screen
+           when something is actually blocking confirmation. -->
+      <div class="fp-dialog-section" *ngIf="!canConfirmPlan && justification as j">
+        <h3 class="fp-section-title">
+          {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFICATION_TITLE" | translate }}
+        </h3>
+        <div class="fp-period">
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFIED_EXPENSE" | translate }}
+            </span>
+            <span class="fp-period__value">
+              {{ j.justifiedExpense | ifNumber }} ({{ j.justifiedPercentage }}%)
+            </span>
+          </div>
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.TOTAL_EXPENSE" | translate }}
+            </span>
+            <span class="fp-period__value">{{ j.totalExpense | ifNumber }}</span>
+          </div>
+        </div>
+
+        <fi-alert
+          type="error"
+          [title]="
+            'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.BLOCKED'
+              | translate : { percentage: j.justifiedPercentage, threshold: justificationThreshold }
+          "
+          [subtitle]="
+            'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.HELP'
+              | translate : { threshold: justificationThreshold }
+          "
+          [closable]="false"
+        ></fi-alert>
+      </div>
+    </ng-container>
+    <ng-template #justificationLoadingTpl>
+      <p class="fp-lead">{{ "FINANCIAL_PLAN.LOADING" | translate }}</p>
+    </ng-template>
+
+    <div class="fp-actions fp-actions--bottom" *ngIf="!justificationLoading">
+      <button type="button" class="fp-dialog__link" id="Btn_Confirmation_Exit" (click)="exit.emit()">
+        <em class="fas fa-arrow-left"></em>
+        {{ "FINANCIAL_PLAN.SIMULATION.EXIT" | translate }}
+      </button>
+      <div class="fp-actions__group">
+        <button
+          kendoButton
+          class="btn btn-neutral btn-no-stroke"
+          id="Btn_Confirmation_Back"
+          (click)="goToStep('simulation')"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.BACK" | translate }}
+        </button>
+        <button
+          *ngIf="canConfirmPlan"
+          kendoButton
+          class="btn btn-brand"
+          id="Btn_Confirmation_Confirm"
+          [disabled]="confirming"
+          (click)="confirmPlan()"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.CONFIRM" | translate }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>

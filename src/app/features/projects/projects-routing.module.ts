@@ -53,6 +53,18 @@ const routes: Routes = [
         },
       },
       {
+        path: 'financial-plan',
+        loadChildren: () =>
+          import('../financial-plan/financial-plan.module').then(
+            (m) => m.FinancialPlanModule
+          ),
+        data: {
+          breadcrumb: {
+            alias: 'financialPlan',
+          },
+        },
+      },
+      {
         path: 'transactions',
         loadChildren: () =>
           import('../transactions/transactions.module').then(

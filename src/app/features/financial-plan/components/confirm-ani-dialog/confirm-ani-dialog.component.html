@@ -1,0 +1,63 @@
+<div class="fp-dialog-body" *ngIf="summary">
+  <p class="fp-lead">
+    {{ "FINANCIAL_PLAN.ACTIVE.ANI.CONFIRM_LEAD" | translate }}
+  </p>
+
+  <div class="fp-period">
+    <div class="fp-period__box">
+      <span class="fp-period__label">
+        {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+      </span>
+      <span class="fp-period__value">{{ summary.period.startDate | dateIF }}</span>
+    </div>
+    <div class="fp-period__box">
+      <span class="fp-period__label">
+        {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+      </span>
+      <span class="fp-period__value">{{ summary.period.endDate | dateIF }}</span>
+    </div>
+    <div class="fp-period__box">
+      <span class="fp-period__label">
+        {{ "FINANCIAL_PLAN.ACTIVE.ANI.EXISTING_ADVANCE" | translate }}
+      </span>
+      <span class="fp-period__value">
+        {{ summary.currency }} {{ summary.existingAdvanceAmount | ifNumber }}
+      </span>
+    </div>
+    <div class="fp-period__box">
+      <span class="fp-period__label">
+        {{ "FINANCIAL_PLAN.ACTIVE.ANI.AMOUNT" | translate }}
+      </span>
+      <span class="fp-period__value">
+        {{ summary.currency }} {{ summary.aniAmount | ifNumber }}
+      </span>
+    </div>
+    <div class="fp-period__box">
+      <span class="fp-period__label">
+        {{ "FINANCIAL_PLAN.ACTIVE.ANI.DATE" | translate }}
+      </span>
+      <span class="fp-period__value">{{ summary.aniDate | dateIF }}</span>
+    </div>
+  </div>
+</div>
+
+<kendo-dialog-actions>
+  <button
+    kendoButton
+    class="btn btn-neutral btn-no-stroke"
+    id="Btn_ConfirmAni_Cancel"
+    [disabled]="saving"
+    (click)="cancel()"
+  >
+    {{ "PROCUREMENT.CANCEL" | translate }}
+  </button>
+  <button
+    kendoButton
+    class="btn btn-brand"
+    id="Btn_ConfirmAni_Confirm"
+    [disabled]="saving"
+    (click)="confirm()"
+  >
+    {{ "FINANCIAL_PLAN.ACTIVE.CONFIRM_ANI" | translate }}
+  </button>
+</kendo-dialog-actions>

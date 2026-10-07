@@ -204,6 +204,29 @@ export class UpdatePaymentDialogComponent
   }
 
   /**
+   * DPS only: the request is what the agency wants the Bank to pay in each
+   * source, already in the contract's currency -- so here the Equivalent
+   * fields are what gets typed into, and BID/aporte local/cofinanciamiento
+   * (the payment's own currency) become the derived ones, the opposite
+   * direction `recalculateAmounts()` uses everywhere else. Same rate, same
+   * "divide to convert, multiply to convert back" pair.
+   */
+  recalculateFromEquivalents(): void {
+    const rate = this.form.exchangeRate || 0;
+    this.rawIdbAmount = Math.round((this.form.idbFinancingAmount || 0) * rate * 100) / 100;
+    this.rawLocalAmount = Math.round((this.form.localFinancingAmount || 0) * rate * 100) / 100;
+    this.rawCofinancingAmount =
+      Math.round((this.form.cofinancingAmount || 0) * rate * 100) / 100;
+    this.form.amount =
+      (this.rawIdbAmount || 0) + (this.rawLocalAmount || 0) + (this.rawCofinancingAmount || 0);
+    this.form.equivalentAmount =
+      (this.form.idbFinancingAmount || 0) +
+      (this.form.localFinancingAmount || 0) +
+      (this.form.cofinancingAmount || 0);
+    this.syncReimbursementAmount();
+  }
+
+  /**
    * What the Bank reimburses is exactly the BID share of this payment,
    * already in the contract's currency -- the same "Equivalent IDB
    * financing amount" shown above, never its own number to type and never
@@ -229,7 +252,11 @@ export class UpdatePaymentDialogComponent
     if (this.rateLocked) {
       this.form.exchangeRate = 1;
     }
-    this.recalculateAmounts();
+    if (this.isDirectPayment) {
+      this.recalculateFromEquivalents();
+    } else {
+      this.recalculateAmounts();
+    }
   }
 
   /**

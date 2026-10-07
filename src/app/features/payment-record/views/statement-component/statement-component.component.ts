@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { NotificationGlobalService } from '@fiduciary-interface/app/shared/services/notification-global.service';
 import {
   CommitmentPayment,
+  FinancingBreakdown,
   StatementComponentDetail,
 } from '../../models/payment-record.model';
 import { PaymentRecordApiService } from '../../services/payment-record-api.service';
@@ -164,6 +165,68 @@ export class StatementComponentComponent implements OnInit, OnDestroy {
     return this.detail.payments
       .filter((payment) => this.selection[payment.id])
       .reduce((total, payment) => total + payment.equivalentAmount, 0);
+  }
+
+  /**
+   * `detail.toJustify` only ever reflects the selection the page loaded
+   * with -- the server that built it has no idea what the agency is about
+   * to tick or untick. Unticking a payment here is exactly the action this
+   * screen exists for, so the "Component justified" summary above the
+   * table has to recompute from the live `selection`, the same source the
+   * checkboxes themselves write to, not repeat the snapshot `save()` will
+   * eventually replace.
+   */
+  get liveToJustify(): FinancingBreakdown {
+    const empty: FinancingBreakdown = { idb: 0, localContribution: 0, cofinancing: 0 };
+    if (!this.detail) {
+      return empty;
+    }
+    return this.detail.payments
+      .filter((payment) => this.selection[payment.id])
+      .reduce(
+        (total, payment) => ({
+          idb: total.idb + (payment.idbFinancingAmount || 0),
+          localContribution:
+            total.localContribution + (payment.localFinancingAmount || 0),
+          cofinancing: total.cofinancing + (payment.cofinancingAmount || 0),
+        }),
+        empty
+      );
+  }
+
+  /**
+   * What is approved for the component never moves from unticking a
+   * payment -- only how much of it this statement is about to claim does.
+   * Reverse-derived from the snapshot's own two numbers (`toJustify` +
+   * `availableBalance` = approved) rather than duplicated from the server,
+   * so it can't drift from whatever baseline the snapshot actually used.
+   */
+  private get approved(): FinancingBreakdown {
+    if (!this.detail) {
+      return { idb: 0, localContribution: 0, cofinancing: 0 };
+    }
+    return {
+      idb: this.detail.toJustify.idb + this.detail.availableBalance.idb,
+      localContribution:
+        this.detail.toJustify.localContribution +
+        this.detail.availableBalance.localContribution,
+      cofinancing:
+        this.detail.toJustify.cofinancing + this.detail.availableBalance.cofinancing,
+    };
+  }
+
+  /** Same live recompute as `liveToJustify`, for the "Pending to justify"
+   *  summary right next to it -- otherwise the two panels stop adding up
+   *  to the approved amount the moment one of them goes live and the
+   *  other does not. */
+  get liveAvailableBalance(): FinancingBreakdown {
+    const approved = this.approved;
+    const justify = this.liveToJustify;
+    return {
+      idb: approved.idb - justify.idb,
+      localContribution: approved.localContribution - justify.localContribution,
+      cofinancing: approved.cofinancing - justify.cofinancing,
+    };
   }
 
   trackPayment(_index: number, payment: CommitmentPayment): string {

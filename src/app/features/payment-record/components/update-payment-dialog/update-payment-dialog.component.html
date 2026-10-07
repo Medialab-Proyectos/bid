@@ -222,12 +222,27 @@
       typed, in the payment's own currency -- then the total they add up to,
       then the rate. Position alone says "these three come from that."
     -->
+    <!--
+      DPS only: the request is what the agency wants the Bank to pay, in
+      the contract's currency -- so here these three are the derived ones
+      (read below) and the Equivalent fields in "Fuentes de financiamiento"
+      are what gets typed into, the opposite of every other opener of this
+      dialog.
+    -->
     <div class="pr-dialog__row pr-dialog__row--amount-cols">
       <div class="pr-dialog__field">
         <span class="pr-dialog__label">
           {{ "PAYMENT_RECORD.ADD_PAYMENTS.COLUMNS.IDB_AMOUNT" | translate }}
         </span>
+        <span
+          class="pr-dialog__static-value"
+          *ngIf="isDirectPayment"
+          id="Num_UpdatePayment_IdbAmount"
+        >
+          {{ rawIdbAmount | ifNumber }} {{ form.currency }}
+        </span>
         <kendo-numerictextbox
+          *ngIf="!isDirectPayment"
           [format]="'n2'"
           [min]="0"
           [readonly]="readOnly"
@@ -243,7 +258,15 @@
         <span class="pr-dialog__label">
           {{ "PAYMENT_RECORD.ADD_PAYMENTS.COLUMNS.LOCAL_AMOUNT" | translate }}
         </span>
+        <span
+          class="pr-dialog__static-value"
+          *ngIf="isDirectPayment"
+          id="Num_UpdatePayment_LocalAmount"
+        >
+          {{ rawLocalAmount | ifNumber }} {{ form.currency }}
+        </span>
         <kendo-numerictextbox
+          *ngIf="!isDirectPayment"
           [format]="'n2'"
           [min]="0"
           [readonly]="readOnly"
@@ -259,7 +282,15 @@
         <span class="pr-dialog__label">
           {{ "PAYMENT_RECORD.ADD_PAYMENTS.COLUMNS.COFINANCING_AMOUNT" | translate }}
         </span>
+        <span
+          class="pr-dialog__static-value"
+          *ngIf="isDirectPayment"
+          id="Num_UpdatePayment_CofinancingAmount"
+        >
+          {{ rawCofinancingAmount | ifNumber }} {{ form.currency }}
+        </span>
         <kendo-numerictextbox
+          *ngIf="!isDirectPayment"
           [format]="'n2'"
           [min]="0"
           [readonly]="readOnly"
@@ -396,25 +427,58 @@
         <span class="pr-dialog__label">
           {{ "PAYMENT_RECORD.UPDATE_PAYMENT.IDB_FINANCING" | translate }}
         </span>
-        <span class="pr-dialog__static-value" id="Num_UpdatePayment_Idb">
+        <span class="pr-dialog__static-value" *ngIf="!isDirectPayment" id="Num_UpdatePayment_Idb">
           {{ form.idbFinancingAmount | ifNumber }} {{ contractCurrency }}
         </span>
+        <kendo-numerictextbox
+          *ngIf="isDirectPayment"
+          [format]="'n2'"
+          [min]="0"
+          [autoCorrect]="true"
+          [spinners]="false"
+          [placeholder]="'PAYMENT_RECORD.MANUAL.AMOUNT_PLACEHOLDER' | translate"
+          [(ngModel)]="form.idbFinancingAmount"
+          (valueChange)="recalculateFromEquivalents()"
+          id="Num_UpdatePayment_Idb"
+        ></kendo-numerictextbox>
       </div>
       <div class="pr-dialog__field">
         <span class="pr-dialog__label">
           {{ "PAYMENT_RECORD.UPDATE_PAYMENT.LOCAL_FINANCING" | translate }}
         </span>
-        <span class="pr-dialog__static-value" id="Num_UpdatePayment_Local">
+        <span class="pr-dialog__static-value" *ngIf="!isDirectPayment" id="Num_UpdatePayment_Local">
           {{ form.localFinancingAmount | ifNumber }} {{ contractCurrency }}
         </span>
+        <kendo-numerictextbox
+          *ngIf="isDirectPayment"
+          [format]="'n2'"
+          [min]="0"
+          [autoCorrect]="true"
+          [spinners]="false"
+          [placeholder]="'PAYMENT_RECORD.MANUAL.AMOUNT_PLACEHOLDER' | translate"
+          [(ngModel)]="form.localFinancingAmount"
+          (valueChange)="recalculateFromEquivalents()"
+          id="Num_UpdatePayment_Local"
+        ></kendo-numerictextbox>
       </div>
       <div class="pr-dialog__field">
         <span class="pr-dialog__label">
           {{ "PAYMENT_RECORD.UPDATE_PAYMENT.COFINANCING" | translate }}
         </span>
-        <span class="pr-dialog__static-value" id="Num_UpdatePayment_Cofinancing">
+        <span class="pr-dialog__static-value" *ngIf="!isDirectPayment" id="Num_UpdatePayment_Cofinancing">
           {{ form.cofinancingAmount | ifNumber }} {{ contractCurrency }}
         </span>
+        <kendo-numerictextbox
+          *ngIf="isDirectPayment"
+          [format]="'n2'"
+          [min]="0"
+          [autoCorrect]="true"
+          [spinners]="false"
+          [placeholder]="'PAYMENT_RECORD.MANUAL.AMOUNT_PLACEHOLDER' | translate"
+          [(ngModel)]="form.cofinancingAmount"
+          (valueChange)="recalculateFromEquivalents()"
+          id="Num_UpdatePayment_Cofinancing"
+        ></kendo-numerictextbox>
       </div>
     </div>
 

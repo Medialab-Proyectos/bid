@@ -57,13 +57,16 @@
             <h4 class="pr-component__block-title">
               {{ "PAYMENT_RECORD.STATEMENT.COMPONENT_JUSTIFIED" | translate }}
             </h4>
+            <!-- Live, from the checkboxes below -- not the snapshot the page
+                 loaded with, which never moves as payments are ticked or
+                 unticked. -->
             <dl class="pr-component__list">
               <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_IDB" | translate }}</dt>
-              <dd>{{ detail.toJustify.idb | ifNumber }}</dd>
+              <dd>{{ liveToJustify.idb | ifNumber }}</dd>
               <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_LOCAL" | translate }}</dt>
-              <dd>{{ detail.toJustify.localContribution | ifNumber }}</dd>
+              <dd>{{ liveToJustify.localContribution | ifNumber }}</dd>
               <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_COFIN" | translate }}</dt>
-              <dd>{{ detail.toJustify.cofinancing | ifNumber }}</dd>
+              <dd>{{ liveToJustify.cofinancing | ifNumber }}</dd>
             </dl>
           </div>
 
@@ -73,11 +76,11 @@
             </h4>
             <dl class="pr-component__list">
               <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_IDB" | translate }}</dt>
-              <dd>{{ detail.availableBalance.idb | ifNumber }}</dd>
+              <dd>{{ liveAvailableBalance.idb | ifNumber }}</dd>
               <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_LOCAL" | translate }}</dt>
-              <dd>{{ detail.availableBalance.localContribution | ifNumber }}</dd>
+              <dd>{{ liveAvailableBalance.localContribution | ifNumber }}</dd>
               <dt>{{ "PAYMENT_RECORD.STATEMENT.SOURCE_COFIN" | translate }}</dt>
-              <dd>{{ detail.availableBalance.cofinancing | ifNumber }}</dd>
+              <dd>{{ liveAvailableBalance.cofinancing | ifNumber }}</dd>
             </dl>
           </div>
         </div>

@@ -278,6 +278,21 @@ function seedPayments(id: string): DemoPayment[] {
       ? { componentCode: '', componentName: '', productCode: '', productName: '' }
       : allocationFor(position);
 
+    // Split across the three sources of funds, so the statement table has
+    // something to show in each column -- every third payment carries local
+    // contribution and every fifth carries cofinancing, which is roughly how
+    // a real portfolio looks. BID takes the remainder, not its own fixed
+    // 85%: a payment that gets neither (most of them) would otherwise lose
+    // that share to nowhere, and the three would add up to less than
+    // `equivalentAmount` instead of exactly it.
+    const equivalentAmount = Math.round((amount / rate) * 100) / 100;
+    const localFinancingAmount =
+      position % 3 === 0 ? Math.round(equivalentAmount * 0.1 * 100) / 100 : 0;
+    const cofinancingAmount =
+      position % 5 === 0 ? Math.round(equivalentAmount * 0.05 * 100) / 100 : 0;
+    const idbFinancingAmount =
+      Math.round((equivalentAmount - localFinancingAmount - cofinancingAmount) * 100) / 100;
+
     return {
       // Unique across the loan, and shaped the way the design shows it:
       // the commitment plus the payment. Repeating `I001` under every
@@ -294,25 +309,18 @@ function seedPayments(id: string): DemoPayment[] {
       currency,
       amount,
       exchangeRate: rate,
-      equivalentAmount: Math.round((amount / rate) * 100) / 100,
+      equivalentAmount,
       status: alreadyJustified ? 'JUSTIFIED' : reported ? 'PAID' : 'SCHEDULED',
       country,
       beneficiaryName: beneficiary,
-      // Split across the three sources of funds, so the statement table has
-      // something to show in each column. Every third payment carries local
-      // contribution and every fifth carries cofinancing, which is roughly how
-      // a real portfolio looks.
-      idbFinancingAmount: Math.round(((amount / rate) * 0.85) * 100) / 100,
-      localFinancingAmount:
-        position % 3 === 0 ? Math.round(((amount / rate) * 0.1) * 100) / 100 : 0,
-      cofinancingAmount:
-        position % 5 === 0 ? Math.round(((amount / rate) * 0.05) * 100) / 100 : 0,
+      idbFinancingAmount,
+      localFinancingAmount,
+      cofinancingAmount,
       // Half of them travel as reimbursement, so both statement branches have
       // candidates to show. The amount is the BID share above, same rule
       // Actualizar pago now enforces -- never its own independent number.
       reimbursable: position % 2 === 0,
-      reimbursementAmount:
-        position % 2 === 0 ? Math.round(((amount / rate) * 0.85) * 100) / 100 : 0,
+      reimbursementAmount: position % 2 === 0 ? idbFinancingAmount : 0,
       statementTransactionNumber: alreadyJustified ? 'ODTR-100900' : undefined,
     };
   });

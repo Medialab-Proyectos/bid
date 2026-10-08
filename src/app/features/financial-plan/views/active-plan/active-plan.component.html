@@ -79,22 +79,55 @@
           </p>
         </ng-container>
 
-        <h3 class="fp-section-title">
-          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
-        </h3>
-        <div class="fp-period">
-          <div class="fp-period__box">
-            <span class="fp-period__label">
-              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
-            </span>
-            <span class="fp-period__value">{{ plan.period.startDate | dateIF }}</span>
+        <!-- One card, not two: the ANI reference is about the SAME plan the
+             period section describes, not a separate topic, so they share a
+             single bordered card split by a divider rather than sitting in
+             their own cards next to each other. Only shown outside
+             "Solicitar ANI" (see the "editingAni" block above). -->
+        <div class="fp-info-card">
+          <div class="fp-info-card__section">
+            <h3 class="fp-section-title">
+              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
+            </h3>
+            <div class="fp-period">
+              <div class="fp-period__box">
+                <span class="fp-period__label">
+                  {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+                </span>
+                <span class="fp-period__value">{{ plan.period.startDate | dateIF }}</span>
+              </div>
+              <div class="fp-period__box">
+                <span class="fp-period__label">
+                  {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+                </span>
+                <span class="fp-period__value">{{ plan.period.endDate | dateIF }}</span>
+              </div>
+            </div>
           </div>
-          <div class="fp-period__box">
-            <span class="fp-period__label">
-              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
-            </span>
-            <span class="fp-period__value">{{ plan.period.endDate | dateIF }}</span>
-          </div>
+
+          <ng-container *ngIf="!editingAni && plan.aniTransactionId">
+            <div class="fp-info-card__divider"></div>
+
+            <div class="fp-info-card__section">
+              <h3 class="fp-section-title">
+                {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION" | translate }}
+              </h3>
+              <div class="fp-period">
+                <div class="fp-period__box">
+                  <span class="fp-period__label">
+                    {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_ID" | translate }}
+                  </span>
+                  <span class="fp-period__value">{{ plan.aniTransactionId }}</span>
+                </div>
+                <div class="fp-period__box" *ngIf="plan.aniTransactionDate">
+                  <span class="fp-period__label">
+                    {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_DATE" | translate }}
+                  </span>
+                  <span class="fp-period__value">{{ plan.aniTransactionDate | dateIF }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
         </div>
 
         <div class="fp-notice-row">
@@ -208,7 +241,7 @@
                 </td>
                 <td *ngFor="let value of plan.advanceAmount; let i = index; trackBy: trackByIndex">
                   <kendo-numerictextbox
-                    *ngIf="editingAni && advanceEditable(i); else advanceStatic"
+                    *ngIf="editingAni && advanceEditable(i)"
                     class="fp-table__input"
                     [format]="'n0'"
                     [min]="0"
@@ -217,9 +250,19 @@
                     [(ngModel)]="draft.advanceAmount[i]"
                     [attr.id]="'Num_ActivePlan_Advance_' + i"
                   ></kendo-numerictextbox>
-                  <ng-template #advanceStatic>
-                    <span [class.fp-table__muted]="!value">{{ value | ifNumber }}</span>
-                  </ng-template>
+                  <!-- The first month is always locked (see `advanceEditable`)
+                       -- plain text like every other locked month, not an
+                       input box, but NOT the muted/grey treatment either:
+                       `fp-table__muted` exists to flag "nothing entered
+                       yet", which doesn't apply to a month that was never
+                       enterable in the first place. -->
+                  <span *ngIf="editingAni && !advanceEditable(i) && i === 0">
+                    {{ value | ifNumber }}
+                  </span>
+                  <span
+                    *ngIf="!editingAni || (!advanceEditable(i) && i !== 0)"
+                    [class.fp-table__muted]="!value"
+                  >{{ value | ifNumber }}</span>
                 </td>
               </tr>
               <tr class="fp-table__subtotal">

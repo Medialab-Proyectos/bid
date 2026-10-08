@@ -48,6 +48,11 @@ export class SimulationStepperComponent implements OnInit {
 
   simulation: FinancialPlanSimulation;
   simulationLoading = false;
+  savingDraft = false;
+  /** Set by every edit to step 2's own table (see `onSimulationFieldChange`),
+   *  cleared by a successful "Guardar borrador" -- what `requestExit` checks
+   *  before leaving, since nothing here is saved automatically. */
+  hasUnsavedChanges = false;
 
   /** Step 3's own gate -- how much of the simulation's total expense is
    *  currently backed by a ticked row, against the threshold it takes to
@@ -56,6 +61,13 @@ export class SimulationStepperComponent implements OnInit {
   justification: FinancialPlanJustificationSummary | null = null;
   justificationLoading = false;
   confirming = false;
+
+  /** Demo-only: lets whoever is showing the module flip to "what does the
+   *  blocked state look like" without having to actually untick components
+   *  first. Purely a display override -- `justification` itself, and every
+   *  real selection behind it, is untouched, so turning this back off always
+   *  returns to the real computed state. */
+  previewBlocked = false;
 
   constructor(
     private readonly api: FinancialPlanApiService,
@@ -72,6 +84,12 @@ export class SimulationStepperComponent implements OnInit {
         if (draft.period) {
           this.startDate = new Date(draft.period.startDate);
           this.endDate = new Date(draft.period.endDate);
+          // Information was already filled in on a previous visit (whether
+          // or not step 2's own table was ever saved) -- land back on the
+          // screen that already shows the plan instead of making the agency
+          // click back through a form that's already done.
+          this.step = 'simulation';
+          this.loadSimulation();
         }
         this.loading = false;
       },
@@ -210,6 +228,84 @@ export class SimulationStepperComponent implements OnInit {
     });
   }
 
+  /** Every editable cell in step 2's table calls this on blur instead of
+   *  `recalculate()` directly -- the one thing that actually marks the
+   *  table dirty, so `loadSimulation()`'s own first call to `recalculate()`
+   *  (deriving balances from whatever was just loaded) doesn't itself look
+   *  like an unsaved edit. */
+  onSimulationFieldChange(): void {
+    this.hasUnsavedChanges = true;
+    this.recalculate();
+  }
+
+  /** "Limpiar datos": every figure the agency can actually type into --
+   *  opening balance, advance, reimbursements, direct payments -- back to
+   *  0, not back to the schedule's own starting figures (that's what a
+   *  fresh, never-saved load already shows). A faster way to start over
+   *  than clearing each cell by hand. */
+  clearSimulationData(): void {
+    if (!this.simulation) {
+      return;
+    }
+    const sim = this.simulation;
+    sim.openingBalance[0] = 0;
+    sim.advanceAmount = sim.advanceAmount.map(() => 0);
+    sim.reimbursements = sim.reimbursements.map(() => 0);
+    sim.directPayments = sim.directPayments.map(() => 0);
+    this.onSimulationFieldChange();
+  }
+
+  /** "Guardar borrador": persists step 2's table as it stands right now, so
+   *  leaving and coming back (even a plain reload) picks it back up instead
+   *  of starting over from the schedule's own starting figures. */
+  saveDraft(): void {
+    if (!this.simulation || this.savingDraft) {
+      return;
+    }
+    this.savingDraft = true;
+    this.api.saveSimulationDraft(this.projectBucketId, this.simulation).subscribe({
+      next: (simulation) => {
+        this.simulation = simulation;
+        this.hasUnsavedChanges = false;
+        this.savingDraft = false;
+        this.notificationSvc.showSuccess(
+          this.translate.instant('FINANCIAL_PLAN.SIMULATION.DRAFT_SAVED')
+        );
+      },
+      error: () => {
+        this.savingDraft = false;
+      },
+    });
+  }
+
+  /** "Salir" from step 2 or 3: a plain exit when the table has no unsaved
+   *  edits, otherwise the same "¿Deseas continuar?" gate the rest of the
+   *  module puts in front of a losing action, worded for this one and with
+   *  its own Aceptar/Cancelar labels instead of the default Sí/No pair. */
+  requestExit(): void {
+    if (!this.hasUnsavedChanges) {
+      this.exit.emit();
+      return;
+    }
+    const dialog = this.dialogService.open({
+      title: this.translate.instant('FINANCIAL_PLAN.SIMULATION.EXIT_CONFIRM.TITLE'),
+      content: ConfirmPlanDialogComponent,
+      cssClass: 'fp-modal',
+      width: 560,
+    });
+
+    const instance = dialog.content.instance as ConfirmPlanDialogComponent;
+    instance.messageKey = 'FINANCIAL_PLAN.SIMULATION.EXIT_CONFIRM.BODY';
+    instance.noLabelKey = 'FINANCIAL_PLAN.SIMULATION.EXIT_CONFIRM.CANCEL';
+    instance.yesLabelKey = 'FINANCIAL_PLAN.SIMULATION.EXIT_CONFIRM.ACCEPT';
+
+    dialog.result.subscribe((result) => {
+      if ((result as { confirmed?: boolean })?.confirmed) {
+        this.exit.emit();
+      }
+    });
+  }
+
   openComponent(componentCode: string, componentName: string): void {
     const dialog = this.dialogService.open({
       content: ComponentDetailDialogComponent,
@@ -280,7 +376,32 @@ export class SimulationStepperComponent implements OnInit {
   }
 
   get canConfirmPlan(): boolean {
+    if (this.previewBlocked) {
+      return false;
+    }
     return (this.justification?.justifiedPercentage ?? 0) >= this.justificationThreshold;
+  }
+
+  togglePreviewBlocked(): void {
+    this.previewBlocked = !this.previewBlocked;
+  }
+
+  /** What the justification section actually renders -- the real data,
+   *  unless the demo preview is on, in which case a representative example
+   *  under the threshold stands in for it. Scaled off the real total when
+   *  one is already loaded so the numbers still look like they belong to
+   *  this plan rather than a fixed, unrelated figure. */
+  get displayJustification(): FinancialPlanJustificationSummary | null {
+    if (!this.previewBlocked) {
+      return this.justification;
+    }
+    const totalExpense = this.justification?.totalExpense || 100_000_000;
+    const justifiedPercentage = 48;
+    return {
+      totalExpense,
+      justifiedExpense: Math.round((totalExpense * justifiedPercentage) / 100),
+      justifiedPercentage,
+    };
   }
 
   /** "Confirmar Plan Financiero" opens the "¿Deseas continuar?" check first

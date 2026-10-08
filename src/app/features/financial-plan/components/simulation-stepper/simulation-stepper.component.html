@@ -152,6 +152,14 @@
         </button>
         <button
           kendoButton
+          class="btn btn-neutral"
+          id="Btn_Simulation_ClearData"
+          (click)="clearSimulationData()"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.CLEAR_DATA" | translate }}
+        </button>
+        <button
+          kendoButton
           class="btn btn-brand"
           id="Btn_Simulation_AdjustPlan"
           (click)="openAdjustPlan()"
@@ -189,7 +197,7 @@
                 [spinners]="false"
                 [placeholder]="'0.00'"
                 [(ngModel)]="simulation.openingBalance[0]"
-                (blur)="recalculate()"
+                (blur)="onSimulationFieldChange()"
                 id="Num_Simulation_OpeningBalance"
               ></kendo-numerictextbox>
               <ng-template #openingStatic>{{ value | ifNumber }}</ng-template>
@@ -253,7 +261,7 @@
                 [spinners]="false"
                 [placeholder]="'0.00'"
                 [(ngModel)]="simulation.advanceAmount[i]"
-                (blur)="recalculate()"
+                (blur)="onSimulationFieldChange()"
                 [attr.id]="'Num_Simulation_Advance_' + i"
               ></kendo-numerictextbox>
               <ng-template #advanceStatic>
@@ -280,7 +288,7 @@
                 [spinners]="false"
                 [placeholder]="'0.00'"
                 [(ngModel)]="simulation.reimbursements[i]"
-                (blur)="recalculate()"
+                (blur)="onSimulationFieldChange()"
                 [attr.id]="'Num_Simulation_Reimbursement_' + i"
               ></kendo-numerictextbox>
             </td>
@@ -295,7 +303,7 @@
                 [spinners]="false"
                 [placeholder]="'0.00'"
                 [(ngModel)]="simulation.directPayments[i]"
-                (blur)="recalculate()"
+                (blur)="onSimulationFieldChange()"
                 [attr.id]="'Num_Simulation_DirectPayment_' + i"
               ></kendo-numerictextbox>
             </td>
@@ -310,11 +318,11 @@
     </div>
 
     <div class="fp-actions fp-actions--bottom">
-      <button type="button" class="fp-dialog__link" id="Btn_Simulation_Exit" (click)="exit.emit()">
-        <em class="fas fa-arrow-left"></em>
-        {{ "FINANCIAL_PLAN.SIMULATION.EXIT" | translate }}
-      </button>
-      <div class="fp-actions__group">
+      <div class="fp-actions__group fp-actions__group--leading">
+        <button type="button" class="fp-dialog__link" id="Btn_Simulation_Exit" (click)="requestExit()">
+          <em class="fas fa-arrow-left"></em>
+          {{ "FINANCIAL_PLAN.SIMULATION.EXIT" | translate }}
+        </button>
         <button
           kendoButton
           class="btn btn-neutral btn-no-stroke"
@@ -322,6 +330,17 @@
           (click)="goToStep('information')"
         >
           {{ "FINANCIAL_PLAN.SIMULATION.BACK" | translate }}
+        </button>
+      </div>
+      <div class="fp-actions__group">
+        <button
+          kendoButton
+          class="btn btn-neutral"
+          id="Btn_Simulation_SaveDraft"
+          [disabled]="savingDraft"
+          (click)="saveDraft()"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.SAVE_DRAFT" | translate }}
         </button>
         <button
           kendoButton
@@ -340,6 +359,67 @@
       <p class="fp-lead">
         {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.REVIEW_LEAD" | translate }}
       </p>
+
+      <button
+        type="button"
+        class="fp-preview-toggle"
+        [class.fp-preview-toggle--active]="previewBlocked"
+        id="Btn_Simulation_PreviewBlocked"
+        [title]="'FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOOLTIP' | translate"
+        (click)="togglePreviewBlocked()"
+      >
+        <em class="fas" [class.fa-eye]="!previewBlocked" [class.fa-eye-slash]="previewBlocked"></em>
+        {{
+          (previewBlocked
+            ? "FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOGGLE_OFF"
+            : "FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOGGLE_ON"
+          ) | translate
+        }}
+      </button>
+
+      <!-- Once enough of the plan is justified there is nothing left to flag
+           here -- the review table and the now-visible submit button already
+           say "this is ready." The section only earns its place on screen
+           when something is actually blocking confirmation -- and when it
+           does, it leads (not the period/table below it), so the reason
+           confirmation is blocked is the first thing read, not something
+           found after scrolling past the whole cash-flow table. -->
+      <div class="fp-dialog-section" *ngIf="!canConfirmPlan && displayJustification as j">
+        <div class="fp-justification-alert">
+          <fi-alert
+            type="error"
+            [title]="
+              'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.BLOCKED'
+                | translate : { percentage: j.justifiedPercentage, threshold: justificationThreshold }
+            "
+            [subtitle]="
+              'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.HELP'
+                | translate : { threshold: justificationThreshold }
+            "
+            [closable]="false"
+          ></fi-alert>
+        </div>
+
+        <h3 class="fp-section-title">
+          {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFICATION_TITLE" | translate }}
+        </h3>
+        <div class="fp-period">
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFIED_EXPENSE" | translate }}
+            </span>
+            <span class="fp-period__value">
+              {{ j.justifiedExpense | ifNumber }} ({{ j.justifiedPercentage }}%)
+            </span>
+          </div>
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.TOTAL_EXPENSE" | translate }}
+            </span>
+            <span class="fp-period__value">{{ j.totalExpense | ifNumber }}</span>
+          </div>
+        </div>
+      </div>
 
       <h3 class="fp-section-title">
         {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
@@ -491,51 +571,13 @@
         </table>
       </div>
 
-      <!-- Once enough of the plan is justified there is nothing left to flag
-           here -- the review table and the now-visible submit button already
-           say "this is ready." The section only earns its place on screen
-           when something is actually blocking confirmation. -->
-      <div class="fp-dialog-section" *ngIf="!canConfirmPlan && justification as j">
-        <h3 class="fp-section-title">
-          {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFICATION_TITLE" | translate }}
-        </h3>
-        <div class="fp-period">
-          <div class="fp-period__box">
-            <span class="fp-period__label">
-              {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFIED_EXPENSE" | translate }}
-            </span>
-            <span class="fp-period__value">
-              {{ j.justifiedExpense | ifNumber }} ({{ j.justifiedPercentage }}%)
-            </span>
-          </div>
-          <div class="fp-period__box">
-            <span class="fp-period__label">
-              {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.TOTAL_EXPENSE" | translate }}
-            </span>
-            <span class="fp-period__value">{{ j.totalExpense | ifNumber }}</span>
-          </div>
-        </div>
-
-        <fi-alert
-          type="error"
-          [title]="
-            'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.BLOCKED'
-              | translate : { percentage: j.justifiedPercentage, threshold: justificationThreshold }
-          "
-          [subtitle]="
-            'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.HELP'
-              | translate : { threshold: justificationThreshold }
-          "
-          [closable]="false"
-        ></fi-alert>
-      </div>
     </ng-container>
     <ng-template #justificationLoadingTpl>
       <p class="fp-lead">{{ "FINANCIAL_PLAN.LOADING" | translate }}</p>
     </ng-template>
 
     <div class="fp-actions fp-actions--bottom" *ngIf="!justificationLoading">
-      <button type="button" class="fp-dialog__link" id="Btn_Confirmation_Exit" (click)="exit.emit()">
+      <button type="button" class="fp-dialog__link" id="Btn_Confirmation_Exit" (click)="requestExit()">
         <em class="fas fa-arrow-left"></em>
         {{ "FINANCIAL_PLAN.SIMULATION.EXIT" | translate }}
       </button>

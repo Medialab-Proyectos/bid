@@ -75,6 +75,16 @@ export class FinancialPlanApiService {
     );
   }
 
+  saveSimulationDraft(
+    projectBucketId: string,
+    simulation: FinancialPlanSimulation
+  ): Observable<FinancialPlanSimulation> {
+    return this.http.put<FinancialPlanSimulation>(
+      `${this.basePath}/${projectBucketId}/simulation`,
+      simulation
+    );
+  }
+
   saveExchangeRates(
     projectBucketId: string,
     exchangeRates: FinancialPlanExchangeRate[]

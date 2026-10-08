@@ -379,21 +379,17 @@
     <button kendoButton class="btn btn-neutral" id="Btn_AdjustPlan_Cancel" (click)="cancel()">
       {{ "PROCUREMENT.CANCEL" | translate }}
     </button>
+    <!-- "Add processes" never shows as its own button here, selected or
+         not -- the only way it actually fires is `confirm()` being called
+         from the END of the distribution sequence (see `saveEstimate()`),
+         once the LAST selected process has its amount distributed. One
+         button covers both the empty-selection and the has-a-selection
+         state: "Disbursement amount", disabled until something is ticked. -->
     <button
-      *ngIf="selectedCount === 0 || allFilled"
-      kendoButton
-      class="btn btn-brand"
-      id="Btn_AdjustPlan_Confirm"
-      [disabled]="selectedCount === 0 || saving"
-      (click)="confirm()"
-    >
-      {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.CONFIRM" | translate }}
-    </button>
-    <button
-      *ngIf="selectedCount > 0 && !allFilled"
       kendoButton
       class="btn btn-brand"
       id="Btn_AdjustPlan_DisbursementAmount"
+      [disabled]="selectedCount === 0"
       (click)="startDisbursementSequence()"
     >
       {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ENTER_AMOUNT" | translate }}

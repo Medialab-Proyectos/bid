@@ -119,6 +119,26 @@ $fp-control-height: 40px;
   }
 }
 
+// The justification banner's title+subtitle run two lines, but `.c-alert`'s
+// own global rule centers the icon across both (`align-items: center`) --
+// fine for a single-line alert, but here it floats the icon somewhere
+// between the two lines instead of next to the first one. Scoped to this
+// one banner rather than touching `.c-alert` itself, which every other
+// alert in the app also uses.
+.fp-justification-alert {
+  // `.c-alert__body` lives inside `fi-alert`'s OWN template, not this one --
+  // a plain descendant selector here gets compiled with THIS component's
+  // scoping attribute, which never matches an element scoped to a different
+  // component's view. `::ng-deep` is what actually reaches through it.
+  ::ng-deep .c-alert__body {
+    align-items: flex-start;
+  }
+
+  ::ng-deep .c-alert__icon {
+    padding-top: 0.8rem;
+  }
+}
+
 .fp-lead {
   color: $fp-label;
   font-size: $fp-text-md;
@@ -190,6 +210,58 @@ $fp-control-height: 40px;
   }
 }
 
+// "Plan activo": the period and the linked ANI transaction are both read
+// about the same plan, so they share ONE card, split by a divider, instead
+// of either stacking or sitting in two separate cards next to each other --
+// wraps to stacked on a narrow viewport, where a vertical divider stops
+// making sense between two full-width blocks, so it only shows at the
+// width it actually divides something horizontally.
+.fp-info-card {
+  background: #fff;
+  border: 1px solid $fp-border;
+  border-radius: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 16px;
+
+  &__section {
+    flex: 1 1 320px;
+
+    > .fp-section-title {
+      margin-bottom: 12px;
+    }
+
+    // `.fp-period__box` draws its own border everywhere else it's used,
+    // where it's the only border on the page -- nested inside this card's
+    // OWN border, that becomes a box-in-a-box, two borders apart by just
+    // the gap between them. Stripped down to plain label/value pairs here,
+    // the card's own edge is the only boundary either section needs.
+    .fp-period {
+      gap: 24px;
+      margin-bottom: 0;
+
+      &__box {
+        border: 0;
+        min-width: 0;
+        padding: 0;
+      }
+    }
+  }
+
+  &__divider {
+    align-self: stretch;
+    background: $fp-border;
+    flex: 0 0 1px;
+    margin: 0 20px;
+    width: 1px;
+
+    @media (max-width: 640px) {
+      display: none;
+    }
+  }
+}
+
 // A plain text line in the body's own grey read as just another sentence,
 // easy to skim past -- the one thing on this screen that changes how every
 // number below it should be read deserves to register before the eye
@@ -235,6 +307,13 @@ $fp-control-height: 40px;
     // Keeps the primary actions pinned to the right even when they wrap onto
     // their own line under a long "Simular nuevo Plan Financiero" label.
     margin-left: auto;
+
+    // The one group that belongs on the LEFT instead -- own auto margin
+    // would fight `.fp-actions`'s own `justify-content: space-between` for
+    // the same space the trailing group already claims.
+    &--leading {
+      margin-left: 0;
+    }
   }
 }
 
@@ -423,6 +502,13 @@ $fp-control-height: 40px;
   border: 0;
   color: $fp-label;
   cursor: pointer;
+  // Same global `button { min-width: 144px; min-height: ... }` reset this
+  // module has already hit twice (the trash icon, the dialog's own link
+  // buttons) -- without this a plain `<button>` sits inside that oversized
+  // box, which is what reads as "not left-aligned" and as a much wider gap
+  // to the checkbox next to it than `.fp-row-lead`'s own 6px.
+  min-height: 0;
+  min-width: 0;
   padding: 0;
 
   &:focus-visible {
@@ -659,6 +745,42 @@ $fp-control-height: 40px;
     flex: 1 1 32px;
     height: 1px;
     margin: 0 12px;
+  }
+}
+
+// Demo-only control on "Confirmar Plan Financiero": lets whoever is showing
+// the module flip to what the <80%-justified blocked state looks like
+// without first going back to untick real components. Deliberately styled
+// apart from every real action on this screen (dashed border, muted color,
+// pill shape) so it never reads as part of the plan's own actions.
+.fp-preview-toggle {
+  align-items: center;
+  background: none;
+  border: 1px dashed $fp-border;
+  border-radius: 999px;
+  color: $fp-label;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: $fp-text-xs;
+  gap: 6px;
+  margin-bottom: 20px;
+  padding: 6px 12px;
+
+  &:hover {
+    border-color: $fp-brand;
+    color: $fp-brand;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $fp-brand;
+    outline-offset: 2px;
+  }
+
+  &--active {
+    background: #fdf6e6;
+    border-color: #e68a00;
+    border-style: solid;
+    color: #7a5400;
   }
 }
 

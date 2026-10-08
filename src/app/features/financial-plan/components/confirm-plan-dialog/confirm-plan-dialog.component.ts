@@ -16,6 +16,8 @@ import { DialogContentBase, DialogRef } from '@progress/kendo-angular-dialog';
 })
 export class ConfirmPlanDialogComponent extends DialogContentBase {
   @Input() messageKey = 'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.MODAL_BODY';
+  @Input() noLabelKey = 'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.MODAL_NO';
+  @Input() yesLabelKey = 'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.MODAL_YES';
 
   constructor(dialog: DialogRef) {
     super(dialog);

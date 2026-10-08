@@ -71,6 +71,7 @@ import {
   saveDemoFinancialPlanExchangeRates,
   saveDemoFinancialPlanDraftInformation,
   saveDemoFinancialPlanPotentialProcessSelection,
+  saveDemoFinancialPlanSimulationDraft,
 } from './data/demo-financial-plan';
 import {
   buildDemoAvailableNumbers,
@@ -713,6 +714,15 @@ const routes: DemoRoute[] = [
     pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/simulation$/,
     handler: (context) =>
       buildDemoFinancialPlanSimulation(decodeURIComponent(context.params[0])),
+  },
+  {
+    method: 'PUT',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/simulation$/,
+    handler: (context) =>
+      saveDemoFinancialPlanSimulationDraft(
+        decodeURIComponent(context.params[0]),
+        context.request.body as never
+      ),
   },
   {
     method: 'PUT',

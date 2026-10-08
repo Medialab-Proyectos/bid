@@ -63,7 +63,27 @@ export class ActivePlanComponent implements OnInit, OnDestroy {
       .subscribe((state) => {
         this.projectBucketId = state.selectedProject.projectBucketId;
         this.load();
+        this.restoreInProgressSimulationTab();
       });
+    this.subscriptions.add(sub);
+  }
+
+  /** Leaving the module entirely (not just "Salir" inside the simulator,
+   *  but navigating away to another screen and back) tears this whole
+   *  component down -- `tab` itself has nothing to remember it was ever on
+   *  "Simulación". A period already saved on the draft is what `fi-
+   *  simulation-stepper`'s own `ngOnInit` already uses to jump straight to
+   *  step 2 once it renders; checking the same thing here is what gets it
+   *  rendered in the first place, landing back on "Simulación" instead of
+   *  defaulting to "Plan activo" as if nothing were in progress. */
+  private restoreInProgressSimulationTab(): void {
+    const sub = this.api.getDraft(this.projectBucketId).subscribe({
+      next: (draft) => {
+        if (draft.period) {
+          this.tab = 'simulation';
+        }
+      },
+    });
     this.subscriptions.add(sub);
   }
 
@@ -167,8 +187,14 @@ export class ActivePlanComponent implements OnInit, OnDestroy {
 
   /** Only a month with no advance yet can take the new one -- the months the
    *  plan already drew against stay locked, same as every other already-
-   *  reported figure in this module. */
+   *  reported figure in this module. The first month is locked outright
+   *  regardless of its own value: it's already underway (or past) by the
+   *  time anyone opens "Solicitar ANI", so there's no month left before it
+   *  to actually disburse a new advance into. */
   advanceEditable(monthIndex: number): boolean {
+    if (monthIndex === 0) {
+      return false;
+    }
     return this.plan.advanceAmount[monthIndex] === 0;
   }
 

@@ -96,6 +96,8 @@ function seedPlan(projectBucketId: string): ActiveFinancialPlan {
     reimbursements,
     directPayments,
     finalBalance,
+    aniTransactionId: '202600019087',
+    aniTransactionDate: new Date(2024, 1, 15).toISOString(),
     lastUpdatedOn: new Date().toISOString(),
   };
 }
@@ -296,6 +298,20 @@ export function saveDemoFinancialPlanExchangeRates(
   return { exchangeRates: draft.exchangeRates, lastUpdatedOn: new Date().toISOString() };
 }
 
+/** "Guardar borrador": step 2's own in-progress edits, keyed by project so
+ *  leaving mid-simulation and coming back (even a plain page reload, since
+ *  this lives on the demo "server" side, not in the component) restores
+ *  exactly what was last saved instead of the blank starting figures. */
+const SIMULATION_DRAFTS = new Map<string, FinancialPlanSimulation>();
+
+export function saveDemoFinancialPlanSimulationDraft(
+  projectBucketId: string,
+  simulation: FinancialPlanSimulation
+): FinancialPlanSimulation {
+  SIMULATION_DRAFTS.set(projectBucketId, simulation);
+  return simulation;
+}
+
 /**
  * Step 2's givens: expenses by component (read-only, pulled from the payment
  * schedule, the same way they are everywhere else in the module) and the
@@ -304,8 +320,18 @@ export function saveDemoFinancialPlanExchangeRates(
  * either across the whole period. Opening balance and advance amount are
  * left at 0; step 2's own screen is where the agency fills those in, and
  * every other figure in the table is derived from them on the client.
+ *
+ * A saved draft (see `saveDemoFinancialPlanSimulationDraft`) takes priority
+ * over all of that and is returned as-is -- once the agency has saved
+ * something, reopening step 2 is about picking up where they left off, not
+ * about seeing the schedule's own starting point again.
  */
 export function buildDemoFinancialPlanSimulation(projectBucketId: string): FinancialPlanSimulation {
+  const savedDraft = SIMULATION_DRAFTS.get(projectBucketId);
+  if (savedDraft) {
+    return savedDraft;
+  }
+
   const draft = buildDemoFinancialPlanDraft(projectBucketId);
   const months = draft.period
     ? monthsInRange(draft.period.startDate, draft.period.endDate)
@@ -366,9 +392,9 @@ function seedPotentialProcesses(): PotentialProcess[] {
     currency: 'USD',
     totalAmount: i % 2 === 0 ? 21_000_000 : 10_000_000,
     executionDate: new Date(2024, 2, 5 + i).toISOString(),
-    // Recommended first row starts ticked, matching the Figma reference's own
-    // "1 de 8" starting count -- everything else starts unticked.
-    selected: i === 0,
+    // Every row starts unticked -- selecting one is an explicit choice the
+    // agency makes, not something the picker should make for them.
+    selected: false,
     estimatedDisbursement: null,
   }));
 }
@@ -462,8 +488,38 @@ export function buildDemoFinancialPlanJustification(
  */
 const PLAN_HISTORY = new Map<string, ActiveFinancialPlan[]>();
 
+/** Two example entries so "Planes anteriores" has something to click into
+ *  before a real confirmation ever files one -- same cash-flow figures as
+ *  the active plan itself (cloned, not independently invented), so the
+ *  read-only detail dialog's own table stays internally consistent; only
+ *  the id, period, confirmation date and status change per entry. The
+ *  second is deliberately 'REJECTED' so the list's status column has an
+ *  example of both states to show, not just 'COMPLETED'. */
+function seedPlanHistory(projectBucketId: string): ActiveFinancialPlan[] {
+  const base = seedPlan(projectBucketId);
+  return [
+    {
+      ...base,
+      id: '202600023212',
+      period: { startDate: '2024-01-01', endDate: '2024-06-30' },
+      confirmedOn: new Date(2024, 9, 22).toISOString(),
+      status: 'COMPLETED',
+    },
+    {
+      ...base,
+      id: '202600023198',
+      period: { startDate: '2023-07-01', endDate: '2023-12-31' },
+      confirmedOn: new Date(2024, 0, 8).toISOString(),
+      status: 'REJECTED',
+    },
+  ];
+}
+
 export function buildDemoPreviousFinancialPlans(projectBucketId: string): ActiveFinancialPlan[] {
-  return PLAN_HISTORY.get(projectBucketId) ?? [];
+  if (!PLAN_HISTORY.has(projectBucketId)) {
+    PLAN_HISTORY.set(projectBucketId, seedPlanHistory(projectBucketId));
+  }
+  return PLAN_HISTORY.get(projectBucketId);
 }
 
 /**
@@ -471,8 +527,8 @@ export function buildDemoPreviousFinancialPlans(projectBucketId: string): Active
  * "Plan activo" showed before -- the same in-place swap `requestDemoAni`
  * already does to the one `PLANS` entry this project keeps. Unlike that
  * swap, the plan being replaced here is not just overwritten: it is read
- * once more before that happens and filed into `PLAN_HISTORY`, which is
- * what gives "Planes anteriores" anything to show at all.
+ * once more before that happens and filed into `PLAN_HISTORY`, on top of
+ * the example entries `buildDemoPreviousFinancialPlans` seeds there.
  */
 export function confirmDemoFinancialPlanSimulation(projectBucketId: string): ActiveFinancialPlan {
   const simulation = buildDemoFinancialPlanSimulation(projectBucketId);
@@ -480,7 +536,7 @@ export function confirmDemoFinancialPlanSimulation(projectBucketId: string): Act
 
   const replaced = PLANS.get(projectBucketId);
   if (replaced) {
-    const history = PLAN_HISTORY.get(projectBucketId) ?? [];
+    const history = buildDemoPreviousFinancialPlans(projectBucketId);
     history.push({
       ...replaced,
       // The active plan's own id is stable (`FP-${projectBucketId}`) because

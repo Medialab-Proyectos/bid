@@ -50,6 +50,14 @@ export interface ActiveFinancialPlan {
 
   finalBalance: number[];
 
+  /** The ANI (Anticipo) financial transaction the advance drawn against this
+   *  plan is actually recorded under in "Transacciones financieras" --
+   *  shown at the top of "Plan activo" so the plan's own number is never
+   *  the only reference to it; unset until the plan has an advance to point
+   *  to. */
+  aniTransactionId?: string;
+  aniTransactionDate?: string;
+
   lastUpdatedOn?: string;
   /** Set only on an entry in "Planes anteriores" -- "Fecha valor" in the
    *  Figma reference, when the plan that replaced this one was confirmed,

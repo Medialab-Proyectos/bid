@@ -78,6 +78,18 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     this.loading = true;
     this.api.getPotentialProcesses(this.projectBucketId).subscribe({
       next: (processes) => {
+        // Reopening this dialog is a fresh pass, not a continuation: a
+        // process already added on a previous visit (it carries an
+        // estimate) starts unticked again here, same as a brand-new one --
+        // touching it again is an explicit choice, not something left over
+        // from before. A process still mid-selection from earlier in THIS
+        // session (ticked but never actually saved) keeps whatever it was
+        // left at, same as the demo's own "first row recommended" seed.
+        processes.forEach((process) => {
+          if (process.estimatedDisbursement) {
+            process.selected = false;
+          }
+        });
         this.processes = processes;
         this.applyFilter();
         this.loading = false;
@@ -231,14 +243,15 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
 
   // ----------------------------------- "Monto estimado a desembolsar" screen
 
+  /** Always starts blank, even for a process that already carries an
+   *  estimate from a previous visit -- ticking it again is a fresh pass at
+   *  it, not a continuation, so nothing here should look like it already
+   *  has an answer. Saving still fully replaces whatever was there before
+   *  (see `saveEstimate()`), it just never shows it back first. */
   openEstimatedAmount(process: PotentialProcess): void {
     this.editingProcess = process;
-
-    const existing = process.estimatedDisbursement;
-    this.concept = existing?.concept ?? '';
-    this.components = existing
-      ? existing.components.map((row) => ({ ...row, monthlyAmounts: [...row.monthlyAmounts] }))
-      : [this.blankComponent()];
+    this.concept = '';
+    this.components = [this.blankComponent()];
 
     if (this.componentOptions.length === 0) {
       this.api.getComponentOptions(this.projectBucketId).subscribe({

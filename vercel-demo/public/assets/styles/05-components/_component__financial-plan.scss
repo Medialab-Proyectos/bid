@@ -1,0 +1,115 @@
+////
+/// Dialogs of the financial plan module.
+///
+/// Same `.k-dialog` fix payment-record's own `.pr-modal` already applies
+/// (see `_component__payment-record.scss`), copied here as this module's own
+/// `cssClass: 'fp-modal'` instead of reused directly, so this module's
+/// dialogs can change independently of payment-record's -- `.k-dialog-wrapper`
+/// renders outside Angular's per-component style scoping, so the only place
+/// either correction can live is a global stylesheet.
+///
+/// @access public
+/// @group components
+/// @name .fp-modal
+////
+
+.fp-modal.k-dialog-wrapper,
+.k-dialog-wrapper.fp-modal {
+  .k-dialog {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    max-height: 88vh;
+    max-width: 96vw;
+  }
+
+  .k-dialog-content {
+    max-height: calc(88vh - 150px);
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: rem(20) rem(28) rem(24);
+    text-align: left;
+  }
+
+  .k-dialog-title {
+    font-weight: 700;
+  }
+
+  .k-dialog-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(12);
+    margin: 0;
+    justify-content: flex-end;
+    padding: rem(14) rem(28);
+
+    .k-button {
+      font-size: rem(14);
+      min-height: rem(40);
+      min-width: rem(88);
+      padding: rem(10) rem(22);
+    }
+
+    .btn-brand:not(:disabled) {
+      background-color: #007eb6;
+      border-color: #007eb6;
+      color: $white;
+
+      &:hover,
+      &:focus {
+        background-color: #005e85;
+        border-color: #005e85;
+      }
+    }
+
+    .k-button:disabled,
+    .k-button.k-disabled {
+      background-color: #e8e8e8;
+      border-color: #c9c9c9;
+      color: #6b6b6b !important;
+      opacity: 1;
+    }
+  }
+
+  // Downloading reads as a different kind of action from Cerrar -- pushed to
+  // the far left of the footer, same as `.pr-modal__leading` already does in
+  // payment-record's own dialogs.
+  .fp-modal__leading {
+    margin-right: auto;
+    order: -1;
+  }
+}
+
+// The same `.btn-brand` / `.btn-neutral` correction above, but for buttons on
+// the module's own pages rather than inside a dialog -- "Ajustar Plan
+// Financiero", "Continuar", "Simular nuevo Plan Financiero" and the like sit
+// outside any `.fp-modal`, so without this they fall back to the generic
+// button styles' #0070d2 instead of IDB DS 2.0's own #007eb6 (see the same
+// note in `_component__payment-record.scss`, whose `.pr-page, .pr-modal`
+// pairing this mirrors).
+.fp-page {
+  .btn-brand:not(:disabled) {
+    background-color: #007eb6;
+    border-color: #007eb6;
+    color: $white;
+
+    &:hover,
+    &:focus {
+      background-color: #005e85;
+      border-color: #005e85;
+    }
+  }
+
+  .btn-neutral {
+    color: #007eb6;
+
+    &:hover {
+      color: #005e85;
+    }
+
+    &:active {
+      box-shadow: 0px 0px 3px #007eb6;
+    }
+  }
+}

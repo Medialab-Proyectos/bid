@@ -224,3 +224,10 @@
 // only, and those rules are declared further down than the components layer.
 // ----------------------------------------------------------*/
 @import "05-components/_component__payment-record";
+
+/*----------------------------------------------------------
+//     # FINANCIAL PLAN
+// Same reason as payment-record above: corrects the global .k-dialog rules
+// for this module's own dialogs only.
+// ----------------------------------------------------------*/
+@import "05-components/_component__financial-plan";

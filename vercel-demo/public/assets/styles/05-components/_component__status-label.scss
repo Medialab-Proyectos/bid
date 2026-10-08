@@ -42,4 +42,14 @@
   & &__orange-yellow {
     background-color: #ffa800;
   }
+
+  // "Ajustar Plan Financiero" process list: brighter green (in execution)
+  // and red (waiting) than this file's own palette already covers.
+  & &__bright-green {
+    background-color: #6ac212;
+  }
+
+  & &__red {
+    background-color: #f3430b;
+  }
 }

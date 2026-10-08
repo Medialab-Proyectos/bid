@@ -121,6 +121,28 @@
     font-size: 1rem;
   }
 }
+// Opt-in: the base rule above fixes `.k-input-inner` at a narrow 7rem, fine
+// for the short codes/currencies most dropdowns here show but not for a
+// selected option whose own label runs much longer (e.g. a component name)
+// -- this lets that text use the field's actual width instead of overflowing
+// past it. Truncated with an ellipsis rather than wrapped, so a long label
+// never grows the row's height; the host's own `title` attribute is what
+// recovers the full text on hover (see the `[title]` binding alongside this
+// class in the financial plan's component picker).
+.c-dropdown-list--wide {
+  span.k-input-inner {
+    overflow: hidden;
+    width: 100%;
+
+    span.k-input-value-text {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
 .#{$ns}dropdown-list.currency {
   .k-dropdown-wrap {
     border-left: none;

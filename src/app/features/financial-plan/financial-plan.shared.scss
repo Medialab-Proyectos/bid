@@ -823,6 +823,34 @@ $fp-control-height: 40px;
   }
 }
 
+// Flags a row/screen that already carries a saved estimate from a previous
+// visit -- the list itself resets every row to unticked on reopen (see
+// `load()` in the component), so without this a modified process looks
+// identical to one nobody has ever touched. Used both in the list's own
+// "Modified" column and inline next to the distribute-amount screen's title.
+.fp-modified-badge {
+  background: #eef6fc;
+  border-radius: 999px;
+  color: $fp-brand;
+  display: inline-block;
+  font-size: $fp-text-xs;
+  font-weight: 600;
+  padding: 2px 8px;
+  vertical-align: middle;
+  white-space: nowrap;
+
+  &--off {
+    background: transparent;
+    color: #9a9a9a;
+    font-weight: 400;
+    padding: 2px 0;
+  }
+}
+
+.fp-process-summary__title .fp-modified-badge {
+  margin-left: 8px;
+}
+
 // The cash-flow table's own 56rem minimum and uniform right alignment suit a
 // grid of nothing but month columns -- this one is mostly text (name,
 // beneficiary, status), so it earns its own modifier instead of fighting

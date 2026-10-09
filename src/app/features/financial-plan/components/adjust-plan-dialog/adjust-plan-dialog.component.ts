@@ -124,6 +124,15 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     return potentialProcessStatusClass(status);
   }
 
+  /** True for a process already estimated on a previous visit, regardless
+   *  of whether it's currently ticked -- the list resets selection on every
+   *  reopen (see `load()`), but this is what still flags it as "ya tiene
+   *  una distribución guardada" instead of looking identical to a process
+   *  nobody has ever touched. */
+  wasModified(process: PotentialProcess): boolean {
+    return !!process.estimatedDisbursement;
+  }
+
   trackProcess(_index: number, process: PotentialProcess): string {
     return process.code;
   }
@@ -243,15 +252,20 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
 
   // ----------------------------------- "Monto estimado a desembolsar" screen
 
-  /** Always starts blank, even for a process that already carries an
-   *  estimate from a previous visit -- ticking it again is a fresh pass at
-   *  it, not a continuation, so nothing here should look like it already
-   *  has an answer. Saving still fully replaces whatever was there before
-   *  (see `saveEstimate()`), it just never shows it back first. */
+  /** A process that was already estimated on a previous visit (it carries
+   *  `estimatedDisbursement`, see `wasModified`) opens prefilled with
+   *  exactly what was entered then -- re-ticking it is picking up an
+   *  existing answer to adjust, not starting over. Only a process that has
+   *  never been estimated opens blank. Saving either way fully replaces
+   *  whatever was there before (see `saveEstimate()`). */
   openEstimatedAmount(process: PotentialProcess): void {
     this.editingProcess = process;
-    this.concept = '';
-    this.components = [this.blankComponent()];
+
+    const existing = process.estimatedDisbursement;
+    this.concept = existing?.concept ?? '';
+    this.components = existing
+      ? existing.components.map((row) => ({ ...row, monthlyAmounts: [...row.monthlyAmounts] }))
+      : [this.blankComponent()];
 
     if (this.componentOptions.length === 0) {
       this.api.getComponentOptions(this.projectBucketId).subscribe({

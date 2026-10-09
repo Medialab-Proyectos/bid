@@ -7,6 +7,7 @@
       <li>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.STEP_1" | translate }}</li>
       <li>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.STEP_2" | translate }}</li>
       <li>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.STEP_3" | translate }}</li>
+      <li>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.STEP_4" | translate }}</li>
     </ol>
 
     <div class="fp-process-toolbar">
@@ -53,6 +54,9 @@
               {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.CODE" | translate }}
             </th>
             <th scope="col">
+              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.MODIFIED" | translate }}
+            </th>
+            <th scope="col">
               {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.NAME" | translate }}
             </th>
             <th scope="col">
@@ -83,6 +87,20 @@
               />
             </td>
             <td>{{ process.code }}</td>
+            <td>
+              <span
+                *ngIf="wasModified(process); else notModifiedTpl"
+                class="fp-modified-badge"
+                [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.MODIFIED_TOOLTIP' | translate"
+              >
+                {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.MODIFIED_BADGE" | translate }}
+              </span>
+              <ng-template #notModifiedTpl>
+                <span class="fp-modified-badge fp-modified-badge--off">
+                  {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.NOT_MODIFIED_BADGE" | translate }}
+                </span>
+              </ng-template>
+            </td>
             <td>{{ process.name }}</td>
             <td>{{ process.beneficiary }}</td>
             <td>
@@ -115,6 +133,13 @@
           "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.DISTRIBUTE_TITLE"
             | translate : { code: process.code }
         }}
+        <span
+          *ngIf="wasModified(process)"
+          class="fp-modified-badge"
+          [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.MODIFIED_TOOLTIP' | translate"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.MODIFIED_BADGE" | translate }}
+        </span>
       </p>
       <div class="fp-process-summary__grid">
         <div class="fp-process-summary__item">

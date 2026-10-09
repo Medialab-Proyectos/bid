@@ -488,29 +488,49 @@ export function buildDemoFinancialPlanJustification(
  */
 const PLAN_HISTORY = new Map<string, ActiveFinancialPlan[]>();
 
-/** Two example entries so "Planes anteriores" has something to click into
+/** Three example entries so "Planes anteriores" has something to click into
  *  before a real confirmation ever files one -- same cash-flow figures as
  *  the active plan itself (cloned, not independently invented), so the
  *  read-only detail dialog's own table stays internally consistent; only
- *  the id, period, confirmation date and status change per entry. The
- *  second is deliberately 'REJECTED' so the list's status column has an
- *  example of both states to show, not just 'COMPLETED'. */
+ *  the id, period, linked ANT transaction and status change per entry.
+ *  `id` is the plan's own sequential number -- unrelated to, and never the
+ *  same string as, `antTransactionId`, the separate "Número de
+ *  Transacción" the list also reads off each entry (empty for a plan that
+ *  was never actually settled, see FP003). The second is deliberately
+ *  'REJECTED' so the status column has an example of both states, not
+ *  just 'COMPLETED'. */
 function seedPlanHistory(projectBucketId: string): ActiveFinancialPlan[] {
   const base = seedPlan(projectBucketId);
+  // Plain sequential, not `FP-${projectBucketId}-00N` -- `projectBucketId`
+  // is the project's internal id (a GUID in this demo), fine as a lookup
+  // key but unreadable the one place this id is actually shown on screen.
   return [
     {
       ...base,
-      id: '202600023212',
+      id: 'FP-001',
       period: { startDate: '2024-01-01', endDate: '2024-06-30' },
+      antTransactionId: '202600023212',
+      antTransactionDate: new Date(2024, 9, 22).toISOString(),
       confirmedOn: new Date(2024, 9, 22).toISOString(),
       status: 'COMPLETED',
     },
     {
       ...base,
-      id: '202600023198',
+      id: 'FP-002',
       period: { startDate: '2023-07-01', endDate: '2023-12-31' },
+      antTransactionId: '202600023198',
+      antTransactionDate: undefined,
       confirmedOn: new Date(2024, 0, 8).toISOString(),
       status: 'REJECTED',
+    },
+    {
+      ...base,
+      id: 'FP-003',
+      period: { startDate: '2024-01-10', endDate: '2024-06-30' },
+      antTransactionId: undefined,
+      antTransactionDate: undefined,
+      confirmedOn: new Date(2024, 10, 3).toISOString(),
+      status: 'COMPLETED',
     },
   ];
 }

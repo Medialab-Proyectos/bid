@@ -153,6 +153,10 @@ export class SimulationStepperComponent implements OnInit {
         this.simulation = simulation;
         this.recalculate();
         this.simulationLoading = false;
+        // The justification gate now lives on THIS step, not step 3 -- it
+        // has to be in hand the moment the table renders, not only once
+        // "Continuar" is clicked.
+        this.loadJustification();
       },
       error: () => {
         this.simulationLoading = false;
@@ -318,6 +322,15 @@ export class SimulationStepperComponent implements OnInit {
     instance.componentCode = componentCode;
     instance.componentName = componentName;
     instance.selectable = true;
+
+    // Row selection here is exactly what the justification ratio is
+    // computed from -- a change saved here has to be reflected the moment
+    // the dialog closes, not just the next time this step happens to load.
+    dialog.result.subscribe((result) => {
+      if ((result as { confirmed?: boolean })?.confirmed) {
+        this.loadJustification();
+      }
+    });
   }
 
   openAdjustRate(): void {
@@ -352,14 +365,26 @@ export class SimulationStepperComponent implements OnInit {
     const instance = dialog.content.instance as AdjustPlanDialogComponent;
     instance.projectBucketId = this.projectBucketId;
     instance.months = this.simulation?.months ?? [];
+
+    // Adding processes here is the main way the justified ratio actually
+    // moves -- same reasoning as `openComponent()`'s own subscribe.
+    dialog.result.subscribe((result) => {
+      if ((result as { confirmed?: boolean })?.confirmed) {
+        this.loadJustification();
+      }
+    });
   }
 
-  /** "Continuar" from the simulation table -- unlike `saveInformation()`,
-   *  nothing here needs saving first: the table's own edits already live on
-   *  `this.simulation`, step 3 only reads how much of it is justified. */
+  /** "Continuar" from the simulation table: the justification gate now
+   *  blocks right here, not three clicks later on step 3's own Confirm
+   *  button -- `this.justification` is already in hand by the time this
+   *  can be clicked (loaded as soon as the table itself loads), so there is
+   *  nothing left to fetch, just the gate to check. */
   continueToConfirmation(): void {
+    if (!this.canConfirmPlan) {
+      return;
+    }
     this.step = 'confirmation';
-    this.loadJustification();
   }
 
   private loadJustification(): void {

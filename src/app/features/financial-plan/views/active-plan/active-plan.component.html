@@ -105,25 +105,25 @@
             </div>
           </div>
 
-          <ng-container *ngIf="!editingAni && plan.aniTransactionId">
+          <ng-container *ngIf="!editingAni && plan.antTransactionId">
             <div class="fp-info-card__divider"></div>
 
             <div class="fp-info-card__section">
               <h3 class="fp-section-title">
-                {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION" | translate }}
+                {{ "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION" | translate }}
               </h3>
               <div class="fp-period">
                 <div class="fp-period__box">
                   <span class="fp-period__label">
-                    {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_ID" | translate }}
+                    {{ "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_ID" | translate }}
                   </span>
-                  <span class="fp-period__value">{{ plan.aniTransactionId }}</span>
+                  <span class="fp-period__value">{{ plan.antTransactionId }}</span>
                 </div>
-                <div class="fp-period__box" *ngIf="plan.aniTransactionDate">
+                <div class="fp-period__box" *ngIf="plan.antTransactionDate">
                   <span class="fp-period__label">
-                    {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_DATE" | translate }}
+                    {{ "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_DATE" | translate }}
                   </span>
-                  <span class="fp-period__value">{{ plan.aniTransactionDate | dateIF }}</span>
+                  <span class="fp-period__value">{{ plan.antTransactionDate | dateIF }}</span>
                 </div>
               </div>
             </div>

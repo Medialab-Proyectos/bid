@@ -96,8 +96,8 @@ function seedPlan(projectBucketId: string): ActiveFinancialPlan {
     reimbursements,
     directPayments,
     finalBalance,
-    aniTransactionId: '202600019087',
-    aniTransactionDate: new Date(2024, 1, 15).toISOString(),
+    antTransactionId: '202600019087',
+    antTransactionDate: new Date(2024, 1, 15).toISOString(),
     lastUpdatedOn: new Date().toISOString(),
   };
 }

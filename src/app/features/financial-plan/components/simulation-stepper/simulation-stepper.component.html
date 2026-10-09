@@ -136,59 +136,69 @@
          is what it actually blocks (see `continueToConfirmation`), so the
          reason it's blocked has to be visible on the same screen as the
          button, not three steps of scrolling away on a screen you can't
-         even reach yet. -->
-    <div class="fp-dialog-section fp-justification-card" *ngIf="!canConfirmPlan && displayJustification as j">
-      <div class="fp-justification-alert">
-        <fi-alert
-          type="error"
-          [title]="
-            'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.BLOCKED'
-              | translate : { percentage: j.justifiedPercentage, threshold: justificationThreshold }
-          "
-          [subtitle]="
-            'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.HELP'
-              | translate : { threshold: justificationThreshold }
-          "
-          [closable]="false"
-        ></fi-alert>
-      </div>
-
-      <h3 class="fp-section-title">
-        {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFICATION_TITLE" | translate }}
-      </h3>
-      <div class="fp-period">
-        <div class="fp-period__box">
-          <span class="fp-period__label">
-            {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFIED_EXPENSE" | translate }}
-          </span>
-          <span class="fp-period__value">
-            {{ j.justifiedExpense | ifNumber }} ({{ j.justifiedPercentage }}%)
-          </span>
-        </div>
-        <div class="fp-period__box">
-          <span class="fp-period__label">
-            {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.TOTAL_EXPENSE" | translate }}
-          </span>
-          <span class="fp-period__value">{{ j.totalExpense | ifNumber }}</span>
+         even reach yet. Shares one card with the period, side by side, the
+         same pairing "Plan activo" already uses for its own period + ANT
+         transaction cards. -->
+    <div class="fp-info-card">
+      <div class="fp-info-card__banner" *ngIf="!canConfirmPlan && displayJustification as j">
+        <div class="fp-justification-alert">
+          <fi-alert
+            type="error"
+            [title]="
+              'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.BLOCKED'
+                | translate : { percentage: j.justifiedPercentage, threshold: justificationThreshold }
+            "
+            [subtitle]="
+              'FINANCIAL_PLAN.SIMULATION.CONFIRMATION.HELP'
+                | translate : { threshold: justificationThreshold }
+            "
+            [closable]="false"
+          ></fi-alert>
         </div>
       </div>
-    </div>
 
-    <h3 class="fp-section-title">
-      {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
-    </h3>
-    <div class="fp-period">
-      <div class="fp-period__box">
-        <span class="fp-period__label">
-          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
-        </span>
-        <span class="fp-period__value">{{ draft.period.startDate | dateIF }}</span>
+      <div class="fp-info-card__section" *ngIf="!canConfirmPlan && displayJustification as j">
+        <h3 class="fp-section-title">
+          {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFICATION_TITLE" | translate }}
+        </h3>
+        <div class="fp-period">
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.JUSTIFIED_EXPENSE" | translate }}
+            </span>
+            <span class="fp-period__value">
+              {{ j.justifiedExpense | ifNumber }} ({{ j.justifiedPercentage }}%)
+            </span>
+          </div>
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.TOTAL_EXPENSE" | translate }}
+            </span>
+            <span class="fp-period__value">{{ j.totalExpense | ifNumber }}</span>
+          </div>
+        </div>
       </div>
-      <div class="fp-period__box">
-        <span class="fp-period__label">
-          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
-        </span>
-        <span class="fp-period__value">{{ draft.period.endDate | dateIF }}</span>
+
+      <div class="fp-info-card__divider" *ngIf="!canConfirmPlan && displayJustification"></div>
+
+      <div class="fp-info-card__section">
+        <h3 class="fp-section-title">
+          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
+        </h3>
+        <div class="fp-period">
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+            </span>
+            <span class="fp-period__value">{{ draft.period.startDate | dateIF }}</span>
+          </div>
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+            </span>
+            <span class="fp-period__value">{{ draft.period.endDate | dateIF }}</span>
+          </div>
+        </div>
       </div>
     </div>
 

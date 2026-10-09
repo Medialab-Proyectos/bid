@@ -139,25 +139,6 @@ $fp-control-height: 40px;
   }
 }
 
-// The banner and the "Expense justification" figures below it are one
-// thought (why it's blocked, then exactly how far off it is), so they share
-// one card instead of a red banner floating above a separate, borderless
-// block. The banner stays full-bleed at the top -- its own rounded corners
-// already line up with the card's, `overflow: hidden` is what keeps them
-// from poking out past it -- and padding only resumes for the content below.
-.fp-justification-card {
-  background: #fff;
-  border: 1px solid $fp-border;
-  border-radius: 4px;
-  overflow: hidden;
-  padding: 16px;
-  padding-top: 0;
-
-  .fp-justification-alert {
-    margin: 0 -16px 16px;
-  }
-}
-
 .fp-lead {
   color: $fp-label;
   font-size: $fp-text-md;
@@ -242,7 +223,20 @@ $fp-control-height: 40px;
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 20px;
+  overflow: hidden;
   padding: 16px;
+
+  // An optional full-bleed strip above the section(s) below it -- e.g. the
+  // justification gate's own error banner on step 2. `flex: 1 1 100%` is
+  // what forces it onto a row of its own in this flex-wrap container,
+  // pushing every section after it onto the next line; the negative margin
+  // cancels the card's own padding on three sides so it reads as the card's
+  // header, not content sitting inside it, with `overflow: hidden` keeping
+  // its corners from poking out past the card's own rounding.
+  &__banner {
+    flex: 1 1 100%;
+    margin: -16px -16px 16px;
+  }
 
   &__section {
     flex: 1 1 320px;

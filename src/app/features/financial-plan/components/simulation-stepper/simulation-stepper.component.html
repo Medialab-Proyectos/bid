@@ -137,7 +137,7 @@
          reason it's blocked has to be visible on the same screen as the
          button, not three steps of scrolling away on a screen you can't
          even reach yet. -->
-    <div class="fp-dialog-section" *ngIf="!canConfirmPlan && displayJustification as j">
+    <div class="fp-dialog-section fp-justification-card" *ngIf="!canConfirmPlan && displayJustification as j">
       <div class="fp-justification-alert">
         <fi-alert
           type="error"

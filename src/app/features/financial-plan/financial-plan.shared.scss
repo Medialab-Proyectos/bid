@@ -139,6 +139,25 @@ $fp-control-height: 40px;
   }
 }
 
+// The banner and the "Expense justification" figures below it are one
+// thought (why it's blocked, then exactly how far off it is), so they share
+// one card instead of a red banner floating above a separate, borderless
+// block. The banner stays full-bleed at the top -- its own rounded corners
+// already line up with the card's, `overflow: hidden` is what keeps them
+// from poking out past it -- and padding only resumes for the content below.
+.fp-justification-card {
+  background: #fff;
+  border: 1px solid $fp-border;
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 16px;
+  padding-top: 0;
+
+  .fp-justification-alert {
+    margin: 0 -16px 16px;
+  }
+}
+
 .fp-lead {
   color: $fp-label;
   font-size: $fp-text-md;

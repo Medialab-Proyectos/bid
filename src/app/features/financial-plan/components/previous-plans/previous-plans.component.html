@@ -19,20 +19,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let plan of plans; trackBy: trackPlan">
-          <td>
-            <!-- Every plan opens from its own id -- a transaction number is
-                 only sometimes there (see `wasModified`'s own sibling idea
-                 for "Ajustar Plan Financiero": not every row carries one),
-                 so it can't be the only way into a plan's own detail. -->
-            <button
-              type="button"
-              class="fp-table__component"
-              [attr.id]="'Lnk_PreviousPlan_Id_' + plan.id"
-              (click)="openPlan(plan)"
-            >
-              {{ plan.id }}
-            </button>
-          </td>
+          <td>{{ plan.id }}</td>
           <td>{{ plan.period.startDate | dateIF }}</td>
           <td>{{ plan.period.endDate | dateIF }}</td>
           <td>

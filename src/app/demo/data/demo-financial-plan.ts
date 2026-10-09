@@ -493,10 +493,12 @@ const PLAN_HISTORY = new Map<string, ActiveFinancialPlan[]>();
  *  the active plan itself (cloned, not independently invented), so the
  *  read-only detail dialog's own table stays internally consistent; only
  *  the id, period, linked ANT transaction and status change per entry.
- *  `id` is the plan's own sequential number -- unrelated to, and never the
- *  same string as, `antTransactionId`, the separate "Número de
- *  Transacción" the list also reads off each entry (empty for a plan that
- *  was never actually settled, see FP003). The second is deliberately
+ *  `id` is the plan's own sequential number, shown as plain text -- it's
+ *  never a link into the plan's detail, since `antTransactionId` (the
+ *  "Número de Transacción" column) is the only way in, so every entry here
+ *  needs one. `antTransactionDate` can still be empty on its own (a
+ *  rejected plan's transaction never settles) -- that's a second, narrower
+ *  kind of gap than a missing id. The second entry is deliberately
  *  'REJECTED' so the status column has an example of both states, not
  *  just 'COMPLETED'. */
 function seedPlanHistory(projectBucketId: string): ActiveFinancialPlan[] {
@@ -527,8 +529,8 @@ function seedPlanHistory(projectBucketId: string): ActiveFinancialPlan[] {
       ...base,
       id: 'FP-003',
       period: { startDate: '2024-01-10', endDate: '2024-06-30' },
-      antTransactionId: undefined,
-      antTransactionDate: undefined,
+      antTransactionId: '202600023225',
+      antTransactionDate: new Date(2024, 10, 5).toISOString(),
       confirmedOn: new Date(2024, 10, 3).toISOString(),
       status: 'COMPLETED',
     },

@@ -15,25 +15,27 @@ import {
 import { FinancialPlanRoutingModule } from './financial-plan-routing.module';
 import { ActivePlanComponent } from './views/active-plan/active-plan.component';
 import { ConfirmAniDialogComponent } from './components/confirm-ani-dialog/confirm-ani-dialog.component';
-import { ComponentDetailDialogComponent } from './components/component-detail-dialog/component-detail-dialog.component';
+import { ComponentDetailComponent } from './views/component-detail/component-detail.component';
 import { SimulationStepperComponent } from './components/simulation-stepper/simulation-stepper.component';
 import { AdjustRateDialogComponent } from './components/adjust-rate-dialog/adjust-rate-dialog.component';
 import { AdjustPlanDialogComponent } from './components/adjust-plan-dialog/adjust-plan-dialog.component';
 import { ConfirmPlanDialogComponent } from './components/confirm-plan-dialog/confirm-plan-dialog.component';
 import { PreviousPlansComponent } from './components/previous-plans/previous-plans.component';
 import { PreviousPlanDetailDialogComponent } from './components/previous-plan-detail-dialog/previous-plan-detail-dialog.component';
+import { ProcessPaymentsDialogComponent } from './components/process-payments-dialog/process-payments-dialog.component';
 
 @NgModule({
   declarations: [
     ActivePlanComponent,
     ConfirmAniDialogComponent,
-    ComponentDetailDialogComponent,
+    ComponentDetailComponent,
     SimulationStepperComponent,
     AdjustRateDialogComponent,
     AdjustPlanDialogComponent,
     ConfirmPlanDialogComponent,
     PreviousPlansComponent,
     PreviousPlanDetailDialogComponent,
+    ProcessPaymentsDialogComponent,
   ],
   imports: [
     CommonModule,

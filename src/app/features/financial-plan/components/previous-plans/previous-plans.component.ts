@@ -71,4 +71,39 @@ export class PreviousPlansComponent implements OnInit {
     const instance = dialog.content.instance as PreviousPlanDetailDialogComponent;
     instance.plan = plan;
   }
+
+  /** Same client-side CSV export the detail dialog's own "Descargar Plan
+   *  Financiero" button uses -- a shortcut straight from the list, so
+   *  downloading a past plan no longer needs opening it first. */
+  downloadPlan(plan: ActiveFinancialPlan): void {
+    const t = (key: string) => this.translate.instant(key);
+    const header = ['', ...plan.months.map((m) => m.label)];
+    const rows: string[][] = [
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.OPENING_BALANCE'), ...plan.openingBalance.map(String)],
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSES_BY_COMPONENT')],
+      ...plan.components.map((c) => [c.componentName, ...c.monthlyAmounts.map(String)]),
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.EXPENSE_SUBTOTAL'), ...plan.expenseSubtotal.map(String)],
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_EXPENSES'), ...plan.balanceAfterExpenses.map(String)],
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.ADVANCE_AMOUNT'), ...plan.advanceAmount.map(String)],
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_ADVANCE'), ...plan.balanceAfterAdvance.map(String)],
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.REIMBURSEMENTS'), ...plan.reimbursements.map(String)],
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.DIRECT_PAYMENTS'), ...plan.directPayments.map(String)],
+      [t('FINANCIAL_PLAN.ACTIVE.ROWS.FINAL_BALANCE'), ...plan.finalBalance.map(String)],
+    ];
+
+    const separators = /[";\r\n]/;
+    const escape = (cell: string) =>
+      cell && separators.test(cell) ? '"' + cell.replace(/"/g, '""') + '"' : cell;
+    const lines = [header, ...rows].map((row) => row.map(escape).join(';')).join('\r\n');
+
+    const blob = new Blob([String.fromCharCode(0xfeff) + lines], {
+      type: 'text/csv;charset=utf-8',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${plan.id}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 }

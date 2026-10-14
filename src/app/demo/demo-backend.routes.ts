@@ -64,6 +64,8 @@ import {
   buildDemoFinancialPlanPotentialProcesses,
   buildDemoFinancialPlanSimulation,
   buildDemoPreviousFinancialPlans,
+  clearDemoFinancialPlanEstimatedDisbursement,
+  clearDemoFinancialPlanPotentialProcesses,
   confirmDemoFinancialPlanSimulation,
   requestDemoAni,
   saveDemoFinancialPlanComponentSelection,
@@ -747,6 +749,12 @@ const routes: DemoRoute[] = [
       buildDemoFinancialPlanPotentialProcesses(decodeURIComponent(context.params[0])),
   },
   {
+    method: 'DELETE',
+    pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/potential-processes$/,
+    handler: (context) =>
+      clearDemoFinancialPlanPotentialProcesses(decodeURIComponent(context.params[0])),
+  },
+  {
     method: 'PUT',
     pattern: /^\/api\/v3\/financial-plans\/([^/]+)\/potential-processes\/selection$/,
     handler: (context) =>
@@ -764,6 +772,16 @@ const routes: DemoRoute[] = [
         decodeURIComponent(context.params[0]),
         decodeURIComponent(context.params[1]),
         context.request.body as never
+      ),
+  },
+  {
+    method: 'DELETE',
+    pattern:
+      /^\/api\/v3\/financial-plans\/([^/]+)\/potential-processes\/([^/]+)\/estimated-disbursement$/,
+    handler: (context) =>
+      clearDemoFinancialPlanEstimatedDisbursement(
+        decodeURIComponent(context.params[0]),
+        decodeURIComponent(context.params[1])
       ),
   },
   {

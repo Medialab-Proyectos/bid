@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from '@progress/kendo-angular-dialog';
 import { Subscription, filter, take } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,7 +8,6 @@ import { VisibilityService } from '@core/services/view';
 import { ActiveFinancialPlan, AniRequestDraft } from '../../models/financial-plan.model';
 import { FinancialPlanApiService } from '../../services/financial-plan-api.service';
 import { ConfirmAniDialogComponent } from '../../components/confirm-ani-dialog/confirm-ani-dialog.component';
-import { ComponentDetailDialogComponent } from '../../components/component-detail-dialog/component-detail-dialog.component';
 
 /**
  * "Plan financiero", landed on "Plan activo": the plan the Bank has already
@@ -41,7 +41,9 @@ export class ActivePlanComponent implements OnInit, OnDestroy {
     private readonly projectStore: ProjectStoreService,
     private readonly visibilitySvc: VisibilityService,
     private readonly dialogService: DialogService,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -147,21 +149,11 @@ export class ActivePlanComponent implements OnInit, OnDestroy {
     URL.revokeObjectURL(url);
   }
 
-  openComponent(componentCode: string, componentName: string): void {
-    // No `title` string: Kendo's dialog title only takes plain text, with no
-    // way to put the Figma reference's icon next to it or left-align it, so
-    // the dialog builds its own header row instead and this stays an empty
-    // native title bar (still carrying the native close button).
-    const dialog = this.dialogService.open({
-      content: ComponentDetailDialogComponent,
-      cssClass: 'fp-modal',
-      width: 1100,
-    });
-
-    const instance = dialog.content.instance as ComponentDetailDialogComponent;
-    instance.projectBucketId = this.projectBucketId;
-    instance.componentCode = componentCode;
-    instance.componentName = componentName;
+  /** A screen of its own (`financial-plan/components/:componentCode`), read
+   *  only -- no `?selectable=1`, unlike the simulation's own link into the
+   *  same route. */
+  openComponent(componentCode: string): void {
+    this.router.navigate(['components', componentCode], { relativeTo: this.route });
   }
 
   startSimulation(): void {

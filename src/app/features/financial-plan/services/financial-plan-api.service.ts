@@ -128,6 +128,12 @@ export class FinancialPlanApiService {
     );
   }
 
+  clearPotentialProcesses(projectBucketId: string): Observable<PotentialProcess[]> {
+    return this.http.delete<PotentialProcess[]>(
+      `${this.basePath}/${projectBucketId}/potential-processes`
+    );
+  }
+
   saveEstimatedDisbursement(
     projectBucketId: string,
     code: string,
@@ -136,6 +142,12 @@ export class FinancialPlanApiService {
     return this.http.put<PotentialProcess>(
       `${this.basePath}/${projectBucketId}/potential-processes/${code}/estimated-disbursement`,
       disbursement
+    );
+  }
+
+  clearEstimatedDisbursement(projectBucketId: string, code: string): Observable<PotentialProcess> {
+    return this.http.delete<PotentialProcess>(
+      `${this.basePath}/${projectBucketId}/potential-processes/${code}/estimated-disbursement`
     );
   }
 

@@ -10,6 +10,8 @@ import {
   FinancialPlanSimulation,
   PotentialProcess,
   PotentialProcessStatus,
+  ProcessPayment,
+  ProcessRow,
 } from '@fiduciary-interface/app/features/financial-plan/models/financial-plan.model';
 import { buildDemoProjectComponents } from './demo-payment-record';
 
@@ -98,6 +100,13 @@ function seedPlan(projectBucketId: string): ActiveFinancialPlan {
     finalBalance,
     antTransactionId: '202600019087',
     antTransactionDate: new Date(2024, 1, 15).toISOString(),
+    // Example ANI, same reasoning as `antTransactionId` just above -- seeded
+    // so the "Linked ANI financial transaction" section has something to
+    // show the first time the module opens, not only after a real
+    // "Solicitar ANI" is confirmed (see `requestDemoAni`, which overwrites
+    // both fields with its own transaction once that happens for real).
+    aniTransactionId: '202600028716',
+    aniTransactionDate: new Date(2024, 5, 3).toISOString(),
     lastUpdatedOn: new Date().toISOString(),
   };
 }
@@ -120,11 +129,19 @@ export function buildDemoFinancialPlanComponentOptions(
   }));
 }
 
+/** Every ANI request confirmed across every project in this demo session
+ *  gets its own, never-repeated transaction number -- same "2026000" prefix
+ *  the seeded ANT transactions already use, just its own counter so the two
+ *  never collide. */
+let aniTransactionCounter = 31001;
+
 /**
  * Applies an ANI request in place: the edited advance/reimbursement/direct
  * payment rows replace the plan's own, every downstream subtotal is
- * recomputed from them, and the month that gained a new advance is handed
- * back so the confirmation dialog can show which one it was.
+ * recomputed from them, the month that gained a new advance is handed back
+ * so the confirmation dialog can show which one it was, and the request
+ * itself files its own ANI transaction against the plan -- separate from
+ * `antTransactionId`, which stays whatever it already was.
  */
 export function requestDemoAni(
   projectBucketId: string,
@@ -145,12 +162,24 @@ export function requestDemoAni(
   plan.advanceAmount = draft.advanceAmount.slice();
   plan.reimbursements = draft.reimbursements.slice();
   plan.directPayments = draft.directPayments.slice();
-  plan.balanceAfterAdvance = plan.months.map(
-    (_, i) => plan.balanceAfterExpenses[i] + plan.advanceAmount[i]
-  );
-  plan.finalBalance = plan.months.map(
-    (_, i) => plan.balanceAfterAdvance[i] + plan.reimbursements[i] + plan.directPayments[i]
-  );
+  plan.aniTransactionId = `2026000${aniTransactionCounter++}`;
+  plan.aniTransactionDate = new Date().toISOString();
+
+  // Every month after the first rolls its opening balance forward from the
+  // PREVIOUS month's own final balance -- the new advance doesn't just
+  // change the one month it lands in, it cascades through every later
+  // opening balance too. Same sequential chain `recalculate()` already
+  // walks for the simulation's own table; this was previously only
+  // recomputing `balanceAfterAdvance`/`finalBalance`, leaving every later
+  // `openingBalance`/`balanceAfterExpenses` stuck at the plan's original
+  // seed figures even after the advance changed.
+  plan.months.forEach((_, i) => {
+    plan.openingBalance[i] = i === 0 ? plan.openingBalance[0] : plan.finalBalance[i - 1];
+    plan.balanceAfterExpenses[i] = plan.openingBalance[i] - plan.expenseSubtotal[i];
+    plan.balanceAfterAdvance[i] = plan.balanceAfterExpenses[i] + plan.advanceAmount[i];
+    plan.finalBalance[i] =
+      plan.balanceAfterAdvance[i] + plan.reimbursements[i] + plan.directPayments[i];
+  });
   plan.lastUpdatedOn = new Date().toISOString();
 
   return { plan, aniAmount, aniMonthIndex };
@@ -158,13 +187,112 @@ export function requestDemoAni(
 
 const COMPONENT_DETAILS = new Map<string, FinancialPlanComponentDetail>();
 
+/** How many separate payments make up this process' given month -- cycling
+ *  through a fixed pattern (offset by `seed` so different processes don't
+ *  all land on the same counts for the same month) is enough to show the
+ *  drill-down varying from month to month without inventing a whole payment
+ *  schedule neither has. */
+const PAYMENT_COUNT_PATTERN = [4, 5, 3, 2, 4, 3, 5, 2, 4, 3, 5, 2];
+
+/** What each individual payment was actually for -- cycled the same way
+ *  `PAYMENT_COUNT_PATTERN` is, so the concept column has real-looking
+ *  variety instead of repeating the process' own description on every row
+ *  (which would make the concept column redundant with the one next to it). */
+const PAYMENT_CONCEPTS = [
+  'Pago de avance de obra',
+  'Pago de honorarios profesionales',
+  'Reembolso de gastos',
+  'Pago de materiales y suministros',
+  'Pago final de contrato',
+];
+
+/** Splits each month's own total into that many individual payments, dated
+ *  evenly across the month, instead of leaving `monthlyAmounts` as the only
+ *  figure the drill-down can show -- see `ProcessPayment`. */
+function splitIntoPayments(
+  months: FinancialPlanMonth[],
+  monthlyAmounts: number[],
+  seed: number
+): ProcessPayment[] {
+  const payments: ProcessPayment[] = [];
+  let paymentIndex = 0;
+  months.forEach((month, i) => {
+    const total = monthlyAmounts[i] ?? 0;
+    if (total <= 0) {
+      return;
+    }
+    const count = PAYMENT_COUNT_PATTERN[(i + seed) % PAYMENT_COUNT_PATTERN.length];
+    const base = Math.floor(total / count);
+    const remainder = total - base * count;
+    const monthDate = new Date(month.date);
+    const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
+    for (let p = 0; p < count; p++) {
+      const amount = base + (p === count - 1 ? remainder : 0);
+      const day = Math.min(daysInMonth, 3 + Math.round((p * daysInMonth) / count));
+      payments.push({
+        date: new Date(monthDate.getFullYear(), monthDate.getMonth(), day).toISOString(),
+        concept: PAYMENT_CONCEPTS[(paymentIndex + seed) % PAYMENT_CONCEPTS.length],
+        amount,
+      });
+      paymentIndex++;
+    }
+  });
+  return payments;
+}
+
+/** Every process "Ajustar Plan Financiero" has an estimate for, turned into
+ *  one read-only row per component its estimate touches -- appended
+ *  alongside the component's own two editable processes so the drill-down
+ *  shows the full picture of what the plan now includes. Computed fresh on
+ *  every read instead of folded into `COMPONENT_DETAILS`'s own cache, so a
+ *  process added via "Ajustar Plan Financiero" after this component was
+ *  first opened still shows up without needing a save here first -- and so
+ *  a row removed there (its `estimatedDisbursement` cleared) stops
+ *  appearing here too, instead of lingering from a stale cache entry. */
+function buildInjectedProcessRows(
+  projectBucketId: string,
+  componentCode: string,
+  months: FinancialPlanMonth[]
+): ProcessRow[] {
+  const potentialProcesses = buildDemoFinancialPlanPotentialProcesses(projectBucketId);
+  const rows: ProcessRow[] = [];
+  potentialProcesses.forEach((process) => {
+    const match = process.estimatedDisbursement?.components.find(
+      (c) => c.componentCode === componentCode
+    );
+    if (!match) {
+      return;
+    }
+    const monthlyAmounts = months.map((_, i) => match.monthlyAmounts[i] ?? 0);
+    rows.push({
+      processId: process.code,
+      description: process.estimatedDisbursement.concept,
+      contractName: '',
+      totalAmount: (match.idbAmount || 0) + (match.localAmount || 0) + (match.cofinancingAmount || 0),
+      monthlyAmounts,
+      payments: splitIntoPayments(months, monthlyAmounts, 2),
+      selected: true,
+      locked: true,
+      commitments: [],
+    });
+  });
+  return rows;
+}
+
 export function buildDemoFinancialPlanComponent(
   projectBucketId: string,
   componentCode: string
 ): FinancialPlanComponentDetail {
   const cacheKey = `${projectBucketId}:${componentCode}`;
   if (COMPONENT_DETAILS.has(cacheKey)) {
-    return COMPONENT_DETAILS.get(cacheKey);
+    const cached = COMPONENT_DETAILS.get(cacheKey);
+    return {
+      ...cached,
+      processes: [
+        ...cached.processes,
+        ...buildInjectedProcessRows(projectBucketId, componentCode, cached.months),
+      ],
+    };
   }
 
   const plan = buildDemoActiveFinancialPlan(projectBucketId);
@@ -187,26 +315,38 @@ export function buildDemoFinancialPlanComponent(
     processes: [
       {
         processId: `PR-${componentCode}-01`,
+        description: 'Consultoria para la construccion de lineamientos de politica publica',
+        contractName: `Contrato ${componentCode}-01/2024`,
         totalAmount: processAShare.reduce((s, v) => s + v, 0),
         monthlyAmounts: processAShare,
+        payments: splitIntoPayments(months, processAShare, 0),
         selected: true,
-        commitments: [
-          {
-            commitmentId: `PR-${componentCode}-01-C01`,
-            monthlyAmounts: processAShare.map((v) => Math.round(v * 0.6)),
-            selected: true,
-          },
-          {
-            commitmentId: `PR-${componentCode}-01-C02`,
-            monthlyAmounts: processAShare.map((v) => v - Math.round(v * 0.6)),
-            selected: true,
-          },
-        ],
+        commitments: (() => {
+          const c01Share = processAShare.map((v) => Math.round(v * 0.6));
+          const c02Share = processAShare.map((v, i) => v - c01Share[i]);
+          return [
+            {
+              commitmentId: `PR-${componentCode}-01-C01`,
+              monthlyAmounts: c01Share,
+              payments: splitIntoPayments(months, c01Share, 3),
+              selected: true,
+            },
+            {
+              commitmentId: `PR-${componentCode}-01-C02`,
+              monthlyAmounts: c02Share,
+              payments: splitIntoPayments(months, c02Share, 4),
+              selected: true,
+            },
+          ];
+        })(),
       },
       {
         processId: `PR-${componentCode}-02`,
+        description: 'Adquisicion de equipos para fortalecimiento institucional',
+        contractName: `Contrato ${componentCode}-02/2024`,
         totalAmount: processBShare.reduce((s, v) => s + v, 0),
         monthlyAmounts: processBShare,
+        payments: splitIntoPayments(months, processBShare, 1),
         selected: true,
         commitments: [],
       },
@@ -214,21 +354,30 @@ export function buildDemoFinancialPlanComponent(
     nonProcurement: [
       {
         scheduleId: `NP-${componentCode}-01`,
+        description: 'Gastos de personal y operacion del programa',
+        contractName: `Contrato ${componentCode}-NP01/2024`,
         totalAmount: processAShare.reduce((s, v) => s + v, 0),
         monthlyAmounts: processAShare,
+        payments: splitIntoPayments(months, processAShare, 5),
         selected: true,
       },
       {
         scheduleId: `NP-${componentCode}-02`,
+        description: 'Auditoria y seguimiento del proyecto',
+        contractName: `Contrato ${componentCode}-NP02/2024`,
         totalAmount: processBShare.reduce((s, v) => s + v, 0),
         monthlyAmounts: processBShare,
+        payments: splitIntoPayments(months, processBShare, 6),
         selected: true,
       },
     ],
   };
 
   COMPONENT_DETAILS.set(cacheKey, detail);
-  return detail;
+  return {
+    ...detail,
+    processes: [...detail.processes, ...buildInjectedProcessRows(projectBucketId, componentCode, months)],
+  };
 }
 
 /**
@@ -237,6 +386,12 @@ export function buildDemoFinancialPlanComponent(
  * included in this plan. Persisted so reopening the same component keeps
  * what was unchecked, the same way everything else in this module remembers
  * its own in-progress edits.
+ *
+ * `locked` rows (see `buildInjectedProcessRows`) travel in `detail.processes`
+ * the same as every editable one -- the frontend never tells them apart --
+ * so they have to be filtered back out before caching, or the next read
+ * would recompute them fresh AND find the stale copy this save just cached,
+ * doubling every process "Ajustar Plan Financiero" ever added.
  */
 export function saveDemoFinancialPlanComponentSelection(
   projectBucketId: string,
@@ -244,8 +399,11 @@ export function saveDemoFinancialPlanComponentSelection(
   detail: FinancialPlanComponentDetail
 ): FinancialPlanComponentDetail {
   const cacheKey = `${projectBucketId}:${componentCode}`;
-  COMPONENT_DETAILS.set(cacheKey, detail);
-  return detail;
+  COMPONENT_DETAILS.set(cacheKey, {
+    ...detail,
+    processes: detail.processes.filter((process) => !process.locked),
+  });
+  return buildDemoFinancialPlanComponent(projectBucketId, componentCode);
 }
 
 // ---------------------------------------------------------------------------
@@ -282,8 +440,20 @@ export function saveDemoFinancialPlanDraftInformation(
   exchangeRates: { currency: string; rateToUsd: number }[]
 ): FinancialPlanDraft {
   const draft = buildDemoFinancialPlanDraft(projectBucketId);
+  const periodChanged =
+    !draft.period ||
+    draft.period.startDate !== period.startDate ||
+    draft.period.endDate !== period.endDate;
   draft.period = period;
   draft.exchangeRates = exchangeRates;
+  // A saved step-2 draft is keyed to the months of the period it was saved
+  // under -- carrying it over into a different period would show a table
+  // whose own month columns no longer match what was just typed here. See
+  // `buildDemoFinancialPlanSimulation`, which regenerates a fresh table from
+  // the new period once there's nothing left in `SIMULATION_DRAFTS`.
+  if (periodChanged) {
+    SIMULATION_DRAFTS.delete(projectBucketId);
+  }
   return draft;
 }
 
@@ -421,6 +591,20 @@ export function saveDemoFinancialPlanPotentialProcessSelection(
   return processes;
 }
 
+/** "Limpiar datos", step 2's own button: undoes every process "Ajustar Plan
+ *  Financiero" has ever added -- ticks and distributed amounts alike --
+ *  without touching the opening balance, advance, reimbursements or direct
+ *  payments the payment schedule seeds, since those aren't what this button
+ *  is for. */
+export function clearDemoFinancialPlanPotentialProcesses(projectBucketId: string): PotentialProcess[] {
+  const processes = buildDemoFinancialPlanPotentialProcesses(projectBucketId);
+  processes.forEach((process) => {
+    process.selected = false;
+    process.estimatedDisbursement = null;
+  });
+  return processes;
+}
+
 /**
  * "Monto estimado a desembolsar", saved against the one process it was
  * opened from -- ticking it is implied by having an estimate to give it in
@@ -439,6 +623,26 @@ export function saveDemoFinancialPlanEstimatedDisbursement(
   }
   process.selected = true;
   process.estimatedDisbursement = disbursement;
+  return process;
+}
+
+/** Undoes a single process's own "Ajustar Plan Financiero" distribution --
+ *  reached from unchecking its row in the component drill-down (see
+ *  `buildInjectedProcessRows`), after confirming, since that's the only
+ *  other screen the row's own checkbox can be unchecked from. Narrower than
+ *  `clearDemoFinancialPlanPotentialProcesses`, which clears every process
+ *  at once. */
+export function clearDemoFinancialPlanEstimatedDisbursement(
+  projectBucketId: string,
+  code: string
+): PotentialProcess {
+  const processes = buildDemoFinancialPlanPotentialProcesses(projectBucketId);
+  const process = processes.find((p) => p.code === code);
+  if (!process) {
+    return null;
+  }
+  process.selected = false;
+  process.estimatedDisbursement = null;
   return process;
 }
 
@@ -492,7 +696,7 @@ const PLAN_HISTORY = new Map<string, ActiveFinancialPlan[]>();
  *  before a real confirmation ever files one -- same cash-flow figures as
  *  the active plan itself (cloned, not independently invented), so the
  *  read-only detail dialog's own table stays internally consistent; only
- *  the id, period, linked ANT transaction and status change per entry.
+ *  the id, period, linked ANT/ANI transactions and status change per entry.
  *  `id` is the plan's own sequential number, shown as plain text -- it's
  *  never a link into the plan's detail, since `antTransactionId` (the
  *  "Número de Transacción" column) is the only way in, so every entry here
@@ -500,7 +704,9 @@ const PLAN_HISTORY = new Map<string, ActiveFinancialPlan[]>();
  *  rejected plan's transaction never settles) -- that's a second, narrower
  *  kind of gap than a missing id. The second entry is deliberately
  *  'REJECTED' so the status column has an example of both states, not
- *  just 'COMPLETED'. */
+ *  just 'COMPLETED'. Only the first entry also carries an
+ *  `aniTransactionId` -- "si corresponde": most plans never had an ANI
+ *  requested against them, so the column needs an example of both states. */
 function seedPlanHistory(projectBucketId: string): ActiveFinancialPlan[] {
   const base = seedPlan(projectBucketId);
   // Plain sequential, not `FP-${projectBucketId}-00N` -- `projectBucketId`
@@ -513,6 +719,8 @@ function seedPlanHistory(projectBucketId: string): ActiveFinancialPlan[] {
       period: { startDate: '2024-01-01', endDate: '2024-06-30' },
       antTransactionId: '202600023212',
       antTransactionDate: new Date(2024, 9, 22).toISOString(),
+      aniTransactionId: '202600030544',
+      aniTransactionDate: new Date(2024, 10, 2).toISOString(),
       confirmedOn: new Date(2024, 9, 22).toISOString(),
       status: 'COMPLETED',
     },

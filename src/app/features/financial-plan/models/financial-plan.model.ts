@@ -57,6 +57,14 @@ export interface ActiveFinancialPlan {
   antTransactionId?: string;
   antTransactionDate?: string;
 
+  /** The ANI transaction "Solicitar ANI" files once a request is confirmed
+   *  -- a second, separate transaction from `antTransactionId`: one plan
+   *  can draw its original advance under one ANT transaction and still
+   *  request further advances afterward, each under its own ANI one.
+   *  Unset until the plan has had an ANI request confirmed against it. */
+  aniTransactionId?: string;
+  aniTransactionDate?: string;
+
   lastUpdatedOn?: string;
   /** Set only on an entry in "Planes anteriores" -- "Fecha valor" in the
    *  Figma reference, when the plan that replaced this one was confirmed,
@@ -92,9 +100,27 @@ export interface AniConfirmSummary {
   aniDate: string;
 }
 
+/** One actual disbursement, not a monthly subtotal -- a process (or a
+ *  commitment under it) pays out in several separate transactions within
+ *  the same month (different invoices, different beneficiaries under the
+ *  same contract), and `date` is what sorts/groups them back under the
+ *  right month in the drill-down. `concept` is what that specific payment
+ *  was actually for -- not every payment carries one, so the drill-down
+ *  only shows the column's value when it's there. */
+export interface ProcessPayment {
+  date: string;
+  concept?: string;
+  amount: number;
+}
+
 export interface ProcessCommitmentRow {
   commitmentId: string;
   monthlyAmounts: number[];
+  /** Same level of detail as `ProcessRow.payments` -- a commitment is still
+   *  paid out in separate transactions, not one lump sum, so its own
+   *  drill-down needs the same date/concept/amount rows the process above
+   *  it gets, not just a monthly total per column. */
+  payments: ProcessPayment[];
   /** Only meaningful in the simulation's own "selectable" mode -- whether
    *  this commitment is included in the plan being built. */
   selected?: boolean;
@@ -102,16 +128,34 @@ export interface ProcessCommitmentRow {
 
 export interface ProcessRow {
   processId: string;
+  description: string;
+  contractName: string;
   totalAmount: number;
   monthlyAmounts: number[];
+  /** Every individual payment behind `monthlyAmounts` -- each month's own
+   *  figure is just these grouped by month and summed, kept here instead of
+   *  only as a total so the drill-down can show "4 pagos en enero" instead
+   *  of one opaque monthly number. */
+  payments: ProcessPayment[];
   commitments: ProcessCommitmentRow[];
   selected?: boolean;
+  /** Set only on a row added here because "Ajustar Plan Financiero" already
+   *  distributed an amount for it -- that other screen is the only place
+   *  left to change or remove it, so this row's own checkbox renders
+   *  checked and disabled instead of lying about being untouchable while
+   *  still inviting a click. */
+  locked?: boolean;
 }
 
 export interface NonProcurementRow {
   scheduleId: string;
+  description: string;
+  contractName: string;
   totalAmount: number;
   monthlyAmounts: number[];
+  /** Same level of detail as `ProcessRow.payments` -- this row is still
+   *  paid out in separate transactions, not one lump sum. */
+  payments: ProcessPayment[];
   selected?: boolean;
 }
 

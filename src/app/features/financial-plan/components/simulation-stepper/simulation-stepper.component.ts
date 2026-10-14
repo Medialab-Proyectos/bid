@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from '@progress/kendo-angular-dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { NotificationGlobalService } from '@fiduciary-interface/app/shared/services/notification-global.service';
@@ -9,7 +10,6 @@ import {
   SimulationStepId,
 } from '../../models/financial-plan.model';
 import { FinancialPlanApiService } from '../../services/financial-plan-api.service';
-import { ComponentDetailDialogComponent } from '../component-detail-dialog/component-detail-dialog.component';
 import { AdjustRateDialogComponent } from '../adjust-rate-dialog/adjust-rate-dialog.component';
 import { AdjustPlanDialogComponent } from '../adjust-plan-dialog/adjust-plan-dialog.component';
 import { ConfirmPlanDialogComponent } from '../confirm-plan-dialog/confirm-plan-dialog.component';
@@ -49,6 +49,7 @@ export class SimulationStepperComponent implements OnInit {
   simulation: FinancialPlanSimulation;
   simulationLoading = false;
   savingDraft = false;
+  clearingData = false;
   /** Set by every edit to step 2's own table (see `onSimulationFieldChange`),
    *  cleared by a successful "Guardar borrador" -- what `requestExit` checks
    *  before leaving, since nothing here is saved automatically. */
@@ -73,7 +74,9 @@ export class SimulationStepperComponent implements OnInit {
     private readonly api: FinancialPlanApiService,
     private readonly dialogService: DialogService,
     private readonly translate: TranslateService,
-    private readonly notificationSvc: NotificationGlobalService
+    private readonly notificationSvc: NotificationGlobalService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -120,6 +123,14 @@ export class SimulationStepperComponent implements OnInit {
     if (!this.canContinue) {
       return;
     }
+    // Reached again later via "Ajustar periodo", not just the first time
+    // through -- only an actual date change needs the table rebuilt from the
+    // new period's own months; resubmitting the same dates leaves whatever
+    // is already on step 2's table (saved or not) alone.
+    const periodChanged =
+      !this.draft.period ||
+      this.draft.period.startDate !== this.startDate.toISOString() ||
+      this.draft.period.endDate !== this.endDate.toISOString();
     this.saving = true;
     this.api
       .saveDraftInformation(
@@ -135,6 +146,10 @@ export class SimulationStepperComponent implements OnInit {
           this.draft = draft;
           this.saving = false;
           this.step = 'simulation';
+          if (periodChanged) {
+            this.simulation = undefined;
+            this.justification = null;
+          }
           this.loadSimulation();
         },
         error: () => {
@@ -242,21 +257,44 @@ export class SimulationStepperComponent implements OnInit {
     this.recalculate();
   }
 
-  /** "Limpiar datos": every figure the agency can actually type into --
-   *  opening balance, advance, reimbursements, direct payments -- back to
-   *  0, not back to the schedule's own starting figures (that's what a
-   *  fresh, never-saved load already shows). A faster way to start over
-   *  than clearing each cell by hand. */
+  /** "Limpiar datos": undoes every process "Ajustar Plan Financiero" has
+   *  added -- ticks and distributed amounts alike -- back to its own
+   *  never-touched state. Deliberately leaves the opening balance, advance,
+   *  reimbursements and direct payments alone: those come from the payment
+   *  schedule, not from "Ajustar Plan Financiero", so this button isn't the
+   *  place to reset them -- clearing a cell the schedule seeded is still
+   *  only ever done by hand, cell by cell. Gated behind the same
+   *  "¿Deseas continuar?" confirm every other losing action in this module
+   *  uses, since every distributed amount it throws away would otherwise
+   *  take re-opening "Ajustar Plan Financiero" process by process to redo. */
   clearSimulationData(): void {
-    if (!this.simulation) {
-      return;
-    }
-    const sim = this.simulation;
-    sim.openingBalance[0] = 0;
-    sim.advanceAmount = sim.advanceAmount.map(() => 0);
-    sim.reimbursements = sim.reimbursements.map(() => 0);
-    sim.directPayments = sim.directPayments.map(() => 0);
-    this.onSimulationFieldChange();
+    const dialog = this.dialogService.open({
+      title: this.translate.instant('FINANCIAL_PLAN.SIMULATION.CLEAR_DATA_CONFIRM.TITLE'),
+      content: ConfirmPlanDialogComponent,
+      cssClass: 'fp-modal',
+      width: 560,
+    });
+
+    const instance = dialog.content.instance as ConfirmPlanDialogComponent;
+    instance.messageKey = 'FINANCIAL_PLAN.SIMULATION.CLEAR_DATA_CONFIRM.BODY';
+
+    dialog.result.subscribe((result) => {
+      if ((result as { confirmed?: boolean })?.confirmed) {
+        this.clearingData = true;
+        this.api.clearPotentialProcesses(this.projectBucketId).subscribe({
+          next: () => {
+            this.clearingData = false;
+            this.loadJustification();
+            this.notificationSvc.showSuccess(
+              this.translate.instant('FINANCIAL_PLAN.SIMULATION.CLEAR_DATA_DONE')
+            );
+          },
+          error: () => {
+            this.clearingData = false;
+          },
+        });
+      }
+    });
   }
 
   /** "Guardar borrador": persists step 2's table as it stands right now, so
@@ -310,26 +348,18 @@ export class SimulationStepperComponent implements OnInit {
     });
   }
 
-  openComponent(componentCode: string, componentName: string): void {
-    const dialog = this.dialogService.open({
-      content: ComponentDetailDialogComponent,
-      cssClass: 'fp-modal',
-      width: 1100,
-    });
-
-    const instance = dialog.content.instance as ComponentDetailDialogComponent;
-    instance.projectBucketId = this.projectBucketId;
-    instance.componentCode = componentCode;
-    instance.componentName = componentName;
-    instance.selectable = true;
-
-    // Row selection here is exactly what the justification ratio is
-    // computed from -- a change saved here has to be reflected the moment
-    // the dialog closes, not just the next time this step happens to load.
-    dialog.result.subscribe((result) => {
-      if ((result as { confirmed?: boolean })?.confirmed) {
-        this.loadJustification();
-      }
+  /** A screen of its own (`financial-plan/components/:componentCode`), not a
+   *  modal -- `?selectable=1` is what tells it to render the checkboxes and
+   *  "Guardar y recalcular" instead of opening read-only. Row selection
+   *  there is exactly what the justification ratio is computed from, but
+   *  since leaving this step for that route tears this component down,
+   *  there is nothing left here to refresh on return -- the fresh instance
+   *  `ActivePlanComponent` remounts already reloads it from scratch (see
+   *  `loadSimulation()`'s own call to `loadJustification()`). */
+  openComponent(componentCode: string): void {
+    this.router.navigate(['components', componentCode], {
+      relativeTo: this.route,
+      queryParams: { selectable: '1' },
     });
   }
 

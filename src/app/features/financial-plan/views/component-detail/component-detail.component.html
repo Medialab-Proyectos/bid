@@ -1,0 +1,344 @@
+<div class="fp-page">
+  <button
+    kendoButton
+    class="btn btn-neutral fp-back-button"
+    id="Btn_ComponentDetail_BackToPlan"
+    iconClass="fas fa-arrow-left"
+    (click)="back()"
+  >
+    {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.BACK_TO_PLAN" | translate }}
+  </button>
+
+  <div class="fp-card" *ngIf="detail">
+    <div class="fp-card__head">
+      <div class="fp-card__identity">
+        <span class="fp-card__icon"><em class="fas fa-list"></em></span>
+        <h2 class="fp-card__title">
+          {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TITLE" | translate }} {{ detail.componentName }}
+        </h2>
+      </div>
+    </div>
+
+    <div class="fp-body">
+      <fi-alert
+        type="warning"
+        [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.ADJUST_NOTE' | translate"
+        [closable]="true"
+      ></fi-alert>
+
+      <p class="fp-detail-hint">
+        <em class="fas fa-info-circle"></em>
+        <span *ngIf="selectable; else readonlyHint">
+          {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.HINT_SELECTABLE" | translate }}
+        </span>
+        <ng-template #readonlyHint>
+          <span>{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.HINT_READONLY" | translate }}</span>
+        </ng-template>
+      </p>
+
+      <div class="fp-dialog-section">
+        <h3 class="fp-section-title">
+          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
+        </h3>
+        <div class="fp-period">
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
+            </span>
+            <span class="fp-period__value">{{ detail.period.startDate | dateIF }}</span>
+          </div>
+          <div class="fp-period__box">
+            <span class="fp-period__label">
+              {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_END" | translate }}
+            </span>
+            <span class="fp-period__value">{{ detail.period.endDate | dateIF }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fp-dialog-section">
+        <div class="fp-table-section__head">
+          <div>
+            <h3 class="fp-section-title">
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.PROCESSES_TITLE" | translate }}
+            </h3>
+            <p class="fp-table-section__meta">
+              {{
+                "FINANCIAL_PLAN.COMPONENT_DETAIL.PROCESSES_META"
+                  | translate
+                    : {
+                        processCount: detail.processes.length,
+                        commitmentCount: processesCommitmentCount()
+                      }
+              }}
+            </p>
+          </div>
+          <div class="fp-table-section__subtotal">
+            <span class="fp-table-section__subtotal-label">
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.SUBTOTAL" | translate }}
+            </span>
+            <span class="fp-table-section__subtotal-value">{{ processesTotal() | ifNumber }}</span>
+          </div>
+        </div>
+        <div class="fp-scroll">
+          <table class="fp-table fp-table--component-detail">
+            <thead>
+              <tr>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PROCESS_ID" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.DESCRIPTION" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.CONTRACT_NAME" | translate }}
+                </th>
+                <th scope="col" *ngFor="let month of detail.months">{{ month.label }}</th>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.TOTAL_AMOUNT" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.DETAIL" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let process of detail.processes">
+                <tr>
+                  <td>
+                    <span class="fp-row-lead">
+                      <input
+                        *ngIf="selectable"
+                        type="checkbox"
+                        [checked]="process.selected"
+                        [title]="process.locked ? ('FINANCIAL_PLAN.COMPONENT_DETAIL.LOCKED_PROCESS_TOOLTIP' | translate) : null"
+                        (change)="toggleProcess(process, $event)"
+                        [attr.id]="'Chk_ComponentDetail_Process_' + process.processId"
+                      />
+                      <!-- Only a process with commitments underneath needs a
+                           way to show/hide them -- collapsed by default, same
+                           as the first version of this screen. -->
+                      <button
+                        *ngIf="process.commitments.length"
+                        type="button"
+                        class="fp-expand"
+                        [attr.id]="'Btn_ComponentDetail_ToggleCommitments_' + process.processId"
+                        [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.TOGGLE_COMMITMENTS' | translate"
+                        (click)="toggleExpand(process.processId)"
+                      >
+                        <em
+                          class="fas"
+                          [ngClass]="isExpanded(process.processId) ? 'fa-chevron-down' : 'fa-chevron-right'"
+                        ></em>
+                      </button>
+                      <span class="fp-row-lead__id">
+                        <span class="fp-row-lead__id-text">{{ process.processId }}</span>
+                      </span>
+                    </span>
+                  </td>
+                  <td>{{ process.description }}</td>
+                  <td>{{ process.contractName }}</td>
+                  <td *ngFor="let value of process.monthlyAmounts">{{ value | ifNumber }}</td>
+                  <td>{{ process.totalAmount | ifNumber }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="fp-table__breakdown"
+                      [attr.id]="'Btn_ComponentDetail_Expand_' + process.processId"
+                      [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.MONTHLY_BREAKDOWN' | translate"
+                      (click)="openProcessPayments(process)"
+                    >
+                      <em class="fas fa-list"></em>
+                      {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.BREAKDOWN" | translate }}
+                    </button>
+                  </td>
+                </tr>
+                <!-- A commitment belongs to this process, not the component
+                     as a whole -- shown right under it once expanded, same
+                     table, rather than only reachable from inside the
+                     process' own dialog. -->
+                <ng-container *ngIf="isExpanded(process.processId)">
+                  <tr class="fp-table__commitments-header">
+                    <td [attr.colspan]="detail.months.length + 5">
+                      {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COMMITMENTS_HEADER" | translate }}
+                    </td>
+                  </tr>
+                  <tr class="fp-table__commitment-row" *ngFor="let commitment of process.commitments">
+                    <td>
+                      <span class="fp-row-lead fp-row-lead--indent">
+                        <em class="fas fa-level-up-alt fa-rotate-90 fp-row-lead__connector"></em>
+                        <input
+                          *ngIf="selectable"
+                          type="checkbox"
+                          [checked]="commitment.selected"
+                          (change)="toggleCommitment(commitment)"
+                          [attr.id]="'Chk_ComponentDetail_Commitment_' + commitment.commitmentId"
+                        />
+                        <span class="fp-row-lead__id">
+                          <span class="fp-row-lead__id-text">{{ commitment.commitmentId }}</span>
+                        </span>
+                      </span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td *ngFor="let value of commitment.monthlyAmounts">{{ value | ifNumber }}</td>
+                    <td>{{ commitmentTotal(commitment) | ifNumber }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        class="fp-table__breakdown"
+                        [attr.id]="'Btn_ComponentDetail_ExpandCommitment_' + commitment.commitmentId"
+                        [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.MONTHLY_BREAKDOWN' | translate"
+                        (click)="openCommitmentPayments(commitment, process)"
+                      >
+                        <em class="fas fa-list"></em>
+                        {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.BREAKDOWN" | translate }}
+                      </button>
+                    </td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+              <tr class="fp-table__total">
+                <td>{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TOTAL" | translate }}</td>
+                <td></td>
+                <td></td>
+                <td *ngFor="let month of detail.months; let i = index">
+                  {{ processesMonthlyTotal(i) | ifNumber }}
+                </td>
+                <td>{{ processesTotal() | ifNumber }}</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="fp-dialog-section">
+        <div class="fp-table-section__head">
+          <div>
+            <h3 class="fp-section-title">
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.NON_PROCUREMENT_TITLE" | translate }}
+            </h3>
+            <p class="fp-table-section__meta">
+              {{
+                "FINANCIAL_PLAN.COMPONENT_DETAIL.ACTIVITIES_META"
+                  | translate : { count: detail.nonProcurement.length }
+              }}
+            </p>
+          </div>
+          <div class="fp-table-section__subtotal">
+            <span class="fp-table-section__subtotal-label">
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.SUBTOTAL" | translate }}
+            </span>
+            <span class="fp-table-section__subtotal-value">{{ nonProcurementTotal() | ifNumber }}</span>
+          </div>
+        </div>
+        <div class="fp-scroll">
+          <table class="fp-table fp-table--component-detail">
+            <thead>
+              <tr>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.SCHEDULE_ID" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.DESCRIPTION" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.CONTRACT_NAME" | translate }}
+                </th>
+                <th scope="col" *ngFor="let month of detail.months">{{ month.label }}</th>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.TOTAL_AMOUNT" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.DETAIL" | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of detail.nonProcurement">
+                <td>
+                  <span class="fp-row-lead">
+                    <input
+                      *ngIf="selectable"
+                      type="checkbox"
+                      [checked]="row.selected"
+                      (change)="toggleNonProcurement(row)"
+                      [attr.id]="'Chk_ComponentDetail_NonProcurement_' + row.scheduleId"
+                    />
+                    <span>{{ row.scheduleId }}</span>
+                  </span>
+                </td>
+                <td>{{ row.description }}</td>
+                <td>{{ row.contractName }}</td>
+                <td *ngFor="let value of row.monthlyAmounts">{{ value | ifNumber }}</td>
+                <td>{{ row.totalAmount | ifNumber }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="fp-table__breakdown"
+                    [attr.id]="'Btn_ComponentDetail_ExpandNonProcurement_' + row.scheduleId"
+                    [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.MONTHLY_BREAKDOWN' | translate"
+                    (click)="openNonProcurementPayments(row)"
+                  >
+                    <em class="fas fa-list"></em>
+                    {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.BREAKDOWN" | translate }}
+                  </button>
+                </td>
+              </tr>
+              <tr class="fp-table__total">
+                <td>{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TOTAL" | translate }}</td>
+                <td></td>
+                <td></td>
+                <td *ngFor="let month of detail.months; let i = index">
+                  {{ nonProcurementMonthlyTotal(i) | ifNumber }}
+                </td>
+                <td>{{ nonProcurementTotal() | ifNumber }}</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="fp-actions fp-actions--bottom">
+        <div class="fp-actions__group">
+          <button
+            *ngIf="!selectable"
+            kendoButton
+            class="btn btn-neutral"
+            id="Btn_ComponentDetail_Close"
+            (click)="back()"
+          >
+            {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.CLOSE" | translate }}
+          </button>
+          <ng-container *ngIf="selectable">
+            <button
+              kendoButton
+              class="btn btn-neutral"
+              id="Btn_ComponentDetail_Cancel"
+              [disabled]="saving"
+              (click)="back()"
+            >
+              {{ "PROCUREMENT.CANCEL" | translate }}
+            </button>
+            <button
+              kendoButton
+              class="btn btn-brand"
+              id="Btn_ComponentDetail_SaveRecalculate"
+              [disabled]="saving"
+              (click)="save()"
+            >
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.SAVE_RECALCULATE" | translate }}
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <fi-no-content
+    *ngIf="!loading && !detail"
+    [content]="'FINANCIAL_PLAN.COMPONENT_DETAIL.ERRORS.NOT_FOUND' | translate"
+  ></fi-no-content>
+</div>

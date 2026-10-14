@@ -1,0 +1,104 @@
+<div class="fp-dialog-head">
+  <span class="fp-dialog-head__icon"><em class="fas fa-list"></em></span>
+  <h2 class="fp-dialog-head__title">
+    {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.MONTHLY_BREAKDOWN" | translate }}
+  </h2>
+  <button
+    type="button"
+    class="fp-dialog-head__close"
+    id="Btn_ProcessPayments_CloseIcon"
+    [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.CLOSE' | translate"
+    (click)="close()"
+  >
+    <em class="fas fa-times"></em>
+  </button>
+</div>
+
+<div class="fp-dialog-body">
+  <div class="fp-payments-summary">
+    <p class="fp-payments-summary__id">
+      <strong>{{ itemId }}</strong>
+      <span *ngIf="description">{{ description }}</span>
+    </p>
+    <p class="fp-payments-summary__contract" *ngIf="contractName">{{ contractName }}</p>
+
+    <div class="fp-payments-summary__totals">
+      <div>
+        <span class="fp-payments-summary__label">
+          {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TOTAL" | translate }}
+        </span>
+        <span class="fp-payments-summary__value">{{ totalAmount | ifNumber }}</span>
+      </div>
+      <span class="fp-payments-summary__period">{{ periodStart | dateIF }} – {{ periodEnd | dateIF }}</span>
+    </div>
+
+    <div class="fp-month-bars">
+      <div class="fp-month-bars__item" *ngFor="let month of monthlyPayments()">
+        <span class="fp-month-bars__label">{{ month.label }}</span>
+        <span class="fp-month-bars__value">{{ month.total | ifNumber }}</span>
+        <span class="fp-month-bars__track">
+          <span
+            class="fp-month-bars__fill"
+            [class.fp-month-bars__fill--peak]="month.total === maxMonthlyTotal()"
+            [style.width.%]="(month.total / maxMonthlyTotal()) * 100"
+          ></span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fp-dialog-section">
+    <div class="fp-scroll">
+      <table class="fp-table fp-table--component-detail-monthly">
+        <thead>
+          <tr>
+            <th scope="col">
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PAYMENT_DATE" | translate }}
+            </th>
+            <th scope="col">
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PAYMENT_CONCEPT" | translate }}
+            </th>
+            <th scope="col">
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PAYMENT_AMOUNT" | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let month of monthlyPayments()">
+            <tr class="fp-table__caption fp-table__caption--collapsible" (click)="toggleMonth(month.label)">
+              <td colspan="3">
+                <div class="fp-table__caption-row">
+                  <span class="fp-table__caption-toggle">
+                    <em
+                      class="fas"
+                      [ngClass]="isMonthCollapsed(month.label) ? 'fa-chevron-right' : 'fa-chevron-down'"
+                    ></em>
+                    <strong>{{ month.label }}</strong>
+                    <span class="fp-table__caption-count">
+                      {{
+                        "FINANCIAL_PLAN.COMPONENT_DETAIL.PAYMENTS_COUNT"
+                          | translate : { count: month.payments.length }
+                      }}
+                    </span>
+                  </span>
+                  <span class="fp-table__caption-total">{{ month.total | ifNumber }}</span>
+                </div>
+              </td>
+            </tr>
+            <tr *ngFor="let payment of month.payments" [hidden]="isMonthCollapsed(month.label)">
+              <td>{{ payment.date | dateIF }}</td>
+              <td>{{ payment.concept }}</td>
+              <td>{{ payment.amount | ifNumber }}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<kendo-dialog-actions layout="normal">
+  <button kendoButton class="btn btn-neutral" id="Btn_ProcessPayments_Close" (click)="close()">
+    {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.CLOSE" | translate }}
+  </button>
+</kendo-dialog-actions>

@@ -15,6 +15,7 @@
           <th scope="col">{{ "FINANCIAL_PLAN.PREVIOUS.COLUMNS.ADVANCE_AMOUNT" | translate }}</th>
           <th scope="col">{{ "FINANCIAL_PLAN.PREVIOUS.COLUMNS.VALUE_DATE" | translate }}</th>
           <th scope="col">{{ "FINANCIAL_PLAN.PREVIOUS.COLUMNS.STATUS" | translate }}</th>
+          <th scope="col">{{ "FINANCIAL_PLAN.PREVIOUS.COLUMNS.DOWNLOAD" | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -23,19 +24,48 @@
           <td>{{ plan.period.startDate | dateIF }}</td>
           <td>{{ plan.period.endDate | dateIF }}</td>
           <td>
-            <button
-              *ngIf="plan.antTransactionId"
-              type="button"
-              class="fp-table__component"
-              [attr.id]="'Lnk_PreviousPlan_Transaction_' + plan.id"
-              (click)="openPlan(plan)"
-            >
-              {{ plan.antTransactionId }}
-            </button>
+            <div class="fp-table__transactions">
+              <span class="fp-table__transaction" *ngIf="plan.antTransactionId">
+                <span class="fp-table__transaction-tag">ANT</span>
+                <button
+                  type="button"
+                  class="fp-table__component"
+                  [attr.id]="'Lnk_PreviousPlan_Transaction_' + plan.id"
+                  (click)="openPlan(plan)"
+                >
+                  {{ plan.antTransactionId }}
+                </button>
+              </span>
+              <!-- "si corresponde" -- most plans never had an ANI requested
+                   against them, so this only shows up on the ones that did. -->
+              <span class="fp-table__transaction" *ngIf="plan.aniTransactionId">
+                <span class="fp-table__transaction-tag">ANI</span>
+                <button
+                  type="button"
+                  class="fp-table__component"
+                  [attr.id]="'Lnk_PreviousPlan_AniTransaction_' + plan.id"
+                  (click)="openPlan(plan)"
+                >
+                  {{ plan.aniTransactionId }}
+                </button>
+              </span>
+            </div>
           </td>
           <td>{{ advanceTotal(plan) | ifNumber }}</td>
           <td>{{ plan.antTransactionDate | dateIF }}</td>
           <td>{{ statusLabel(plan) | translate }}</td>
+          <td>
+            <button
+              type="button"
+              class="fp-table__download"
+              [attr.id]="'Btn_PreviousPlan_Download_' + plan.id"
+              [attr.aria-label]="'FINANCIAL_PLAN.ACTIVE.DOWNLOAD' | translate"
+              [title]="'FINANCIAL_PLAN.ACTIVE.DOWNLOAD' | translate"
+              (click)="downloadPlan(plan)"
+            >
+              <em class="fas fa-file-download"></em>
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>

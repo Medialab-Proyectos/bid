@@ -22,6 +22,14 @@ $fp-control-height: 40px;
   padding: 24px 0 48px;
 }
 
+// Standing on its own above the component-detail card, not tucked inside a
+// header row, so it needs its own breathing room before the card starts --
+// same reasoning as payment-record's own `.pr-back-button`.
+.fp-back-button {
+  margin-top: -16px;
+  margin-bottom: 8px;
+}
+
 .fp-card {
   background: #fff;
   border: 1px solid $fp-border;
@@ -538,6 +546,43 @@ $fp-control-height: 40px;
   align-items: center;
   display: inline-flex;
   gap: 6px;
+
+  // A commitment's own row, indented under the process it belongs to --
+  // same `.fp-row-lead` layout, just pushed in so it reads as a child of
+  // the row above it instead of a sibling process.
+  &--indent {
+    padding-left: 20px;
+  }
+
+  // The id itself plus whatever reads as a caption under it (a process'
+  // "N commitments" badge, a commitment's "X% of process" line) -- stacked
+  // below the id instead of crowding it on the same line as the checkbox
+  // and chevron, the same two-line shape the Figma reference gives both.
+  &__id {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__id-text {
+    color: inherit;
+  }
+
+  // The elbow glyph a commitment row leads with -- a visual "this belongs to
+  // the process above it" cue on top of the indent itself, same job the
+  // Figma reference's own connector line does.
+  &__connector {
+    color: #c7c7c7;
+    font-size: 11px;
+  }
+}
+
+// Same `nth-child` grey/bold the base `.fp-table` gives every row's own
+// first cell -- a commitment's ID is still an identifier, but the row
+// itself isn't a process of its own, so it reads one level lighter instead.
+.fp-table__commitment-row td:first-child {
+  color: $fp-label;
+  font-weight: 400;
 }
 
 .fp-page {
@@ -1133,4 +1178,374 @@ $fp-control-height: 40px;
   td {
     text-align: left;
   }
+}
+
+// Component drill-down's own two tables: a free-text description and
+// contract name sit between the ID and every numeric column, unlike any
+// other `.fp-table` in this module -- left at the base class's own
+// `nowrap`, a real description ("Consultoria para la construccion de...")
+// forces the table (already `min-width: 56rem`) far past the viewport, so
+// `.fp-scroll` always has something to scroll even on the full-screen
+// version of this page. Letting these two columns wrap instead, and
+// dropping the 56rem floor so the table can actually shrink to fit, is
+// what gets the whole table back under the fold without one.
+.fp-table--component-detail {
+  min-width: 0;
+
+  td:nth-child(2),
+  td:nth-child(3) {
+    max-width: 220px;
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+.fp-table--component-detail-monthly {
+  min-width: 0;
+  width: 100%;
+
+  th,
+  td {
+    font-size: $fp-text-xs;
+  }
+}
+
+// The "Número de Transacción" column can carry two different transactions
+// for the same plan -- the ANT one the plan originally disbursed under, and
+// an ANI one only if "Solicitar ANI" was ever confirmed against it -- so
+// each gets its own line with a tag naming which is which, instead of
+// leaving two bare numbers for the reader to tell apart on their own.
+.fp-table__transactions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fp-table__transaction {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+
+  &-tag {
+    color: $fp-label;
+    font-size: $fp-text-xs;
+    font-weight: 600;
+  }
+}
+
+// Icon-only action in its own column -- same `.fp-expand` reset against the
+// global `button { min-width: 144px }` leak, brand-colored since this is a
+// real action (downloading a copy) rather than a plain expand/collapse
+// toggle.
+.fp-table__download {
+  background: none;
+  border: 0;
+  color: $fp-brand;
+  cursor: pointer;
+  font-size: $fp-text-md;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+
+  &:hover {
+    color: #005e85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $fp-brand;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Component drill-down's redesigned tables: a header line per section (name,
+// how many rows it holds, its own subtotal) and a text "Desglose" button
+// instead of a bare icon -- the Figma reference's own shape for this screen.
+// ---------------------------------------------------------------------------
+
+// A single-line hint about how to read the two tables below it (checked
+// rows, the "Desglose" button) -- an inline info icon + grey text, not the
+// amber `.fp-notice-row` treatment, since nothing here is a warning.
+.fp-detail-hint {
+  align-items: center;
+  color: $fp-label;
+  display: flex;
+  font-size: $fp-text-sm;
+  gap: 8px;
+  margin: 0 0 20px;
+
+  .fas {
+    color: $fp-brand;
+    font-size: $fp-text-md;
+  }
+}
+
+.fp-table-section {
+  &__head {
+    align-items: flex-end;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    // Direct child of `.fp-dialog-section` is what gives every OTHER
+    // section title here its underline (see `.fp-dialog-section >
+    // .fp-section-title`) -- nested one level deeper inside this header row
+    // instead, so it stops matching that selector on purpose: the Figma
+    // reference's own section title carries no divider, just its own
+    // caption line right under it.
+    .fp-section-title {
+      margin-bottom: 2px;
+    }
+  }
+
+  &__meta {
+    color: $fp-label;
+    font-size: $fp-text-sm;
+    margin: 0;
+  }
+
+  &__subtotal {
+    flex: 0 0 auto;
+    text-align: right;
+  }
+
+  &__subtotal-label {
+    color: $fp-label;
+    display: block;
+    font-size: $fp-text-xs;
+  }
+
+  &__subtotal-value {
+    color: $fp-value;
+    display: block;
+    font-size: $fp-text-lg;
+    font-weight: 700;
+  }
+}
+
+// A real "Desglose" action, not just an icon -- ghost styled (no border, no
+// fill) the same way `.fp-table__download` already reads as a plain in-cell
+// action rather than a full button competing with the row's own checkbox
+// for attention; text instead of icon-only so what it does doesn't depend on
+// the tooltip alone.
+.fp-table__breakdown {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: $fp-brand;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: $fp-text-xs;
+  font-weight: 600;
+  gap: 6px;
+  min-height: 0;
+  min-width: 0;
+  padding: 4px 0;
+  white-space: nowrap;
+
+  .fas {
+    font-size: 11px;
+  }
+
+  &:hover {
+    color: #005e85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $fp-brand;
+  }
+}
+
+// The commitments belonging to the process right above it, called out once
+// expanded -- a label row of its own instead of a chip crowding the
+// process' own id, so "these rows underneath are its commitments" reads
+// even with every checkbox left unticked. The base `.fp-table`'s own
+// `tbody tr:not(.fp-table__total) td:first-child` rule (grey/bold, every
+// row's default) matches this row's single `colspan`'d cell too and outranks
+// a plain `.fp-table__commitments-header td` on specificity alone -- this
+// mirrors that same selector shape so the cascade's normal "later wins on a
+// tie" is what actually decides it, not `!important`.
+.fp-table tbody tr.fp-table__commitments-header td:first-child {
+  background: #f4fdff;
+  color: $fp-brand;
+  font-size: $fp-text-xs;
+  font-weight: 700;
+  padding-bottom: 8px;
+  padding-top: 12px;
+  text-align: left;
+}
+
+// ---------------------------------------------------------------------------
+// The payments dialog's own redesigned header: who/what this breakdown is
+// for, its total against the plan's own period, and a bar per month so the
+// heaviest month reads at a glance before the table below spells out why.
+// ---------------------------------------------------------------------------
+
+// `.fp-dialog-head` is already a flex row (icon + title) -- this just adds a
+// third child pinned to the far end, same reset `.fp-expand` already gives
+// every icon-only button against the global 144px floor.
+.fp-dialog-head__close {
+  background: none;
+  border: 0;
+  color: $fp-label;
+  cursor: pointer;
+  margin-left: auto;
+  min-height: 0;
+  min-width: 0;
+  padding: 4px;
+
+  &:hover {
+    color: $fp-value;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $fp-brand;
+  }
+}
+
+.fp-payments-summary {
+  margin-bottom: 28px;
+
+  &__id {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 4px;
+
+    strong {
+      color: $fp-brand;
+      font-size: $fp-text-lg;
+      font-weight: 700;
+    }
+
+    span {
+      color: $fp-label;
+      font-size: $fp-text-sm;
+    }
+  }
+
+  &__contract {
+    color: $fp-label;
+    font-size: $fp-text-sm;
+    margin: 0 0 20px;
+  }
+
+  &__totals {
+    align-items: flex-end;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  &__label {
+    color: $fp-label;
+    display: block;
+    font-size: $fp-text-xs;
+  }
+
+  &__value {
+    color: $fp-value;
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  &__period {
+    color: $fp-label;
+    font-size: $fp-text-sm;
+  }
+}
+
+.fp-month-bars {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__label {
+    color: $fp-label;
+    font-size: $fp-text-xs;
+    font-weight: 600;
+  }
+
+  &__value {
+    color: $fp-value;
+    font-size: $fp-text-sm;
+    font-weight: 700;
+  }
+
+  &__track {
+    background: #eef2f5;
+    border-radius: 999px;
+    display: block;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    background: #8fd3da;
+    border-radius: 999px;
+    display: block;
+    height: 100%;
+
+    // The heaviest month -- a darker fill instead of just the longest bar,
+    // so it still reads as "the one to look at first" even at a glance
+    // where every bar's own length is hard to compare precisely.
+    &--peak {
+      background: $fp-brand;
+    }
+  }
+}
+
+// A month's own caption row, clickable to show/hide the payments under it --
+// same job `.fp-table__caption` already does, just interactive, so its
+// content splits into a left (toggle + label + count) and right (subtotal)
+// side instead of the plain left-aligned line the static version uses.
+.fp-table__caption--collapsible {
+  cursor: pointer;
+
+  &:hover td {
+    color: $fp-value;
+  }
+}
+
+// The flex layout belongs on a wrapper INSIDE the `colspan="3"` cell, not on
+// the `<td>` itself -- `display: flex` on a table cell takes it out of
+// table-cell layout, and with it the browser's own colspan-across-3-columns
+// math, which is what was silently collapsing this cell down to column 1's
+// own width (the caption's own subtotal was landing somewhere inside
+// "Payment date" instead of lining up under "Amount"). A plain `<div>`
+// inside an unmodified `<td>` keeps the cell spanning all 3 columns the
+// normal way and still gets the same left/right split.
+.fp-table__caption-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.fp-table__caption-toggle {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+
+  .fas {
+    font-size: 11px;
+  }
+}
+
+.fp-table__caption-count {
+  color: $fp-label;
+  font-weight: 400;
+}
+
+.fp-table__caption-total {
+  color: $fp-value;
+  font-weight: 700;
 }

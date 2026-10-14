@@ -79,11 +79,15 @@
           </p>
         </ng-container>
 
-        <!-- One card, not two: the ANI reference is about the SAME plan the
-             period section describes, not a separate topic, so they share a
-             single bordered card split by a divider rather than sitting in
-             their own cards next to each other. Only shown outside
-             "Solicitar ANI" (see the "editingAni" block above). -->
+        <!-- One card, not two or three: the ANT/ANI transaction sections are
+             about the SAME plan the period section describes, not a
+             separate topic, so they share a single bordered card split by
+             dividers rather than sitting in their own cards next to each
+             other. The ANT section stays visible during "Solicitar ANI" too
+             -- the agency is requesting a new advance against THIS ANT
+             transaction, so it's exactly the reference that screen needs.
+             The ANI section stays hidden there: it would only ever show
+             whatever ANI preceded this one, not the request being built. -->
         <div class="fp-info-card">
           <div class="fp-info-card__section">
             <h3 class="fp-section-title">
@@ -105,7 +109,7 @@
             </div>
           </div>
 
-          <ng-container *ngIf="!editingAni && plan.antTransactionId">
+          <ng-container *ngIf="plan.antTransactionId">
             <div class="fp-info-card__divider"></div>
 
             <div class="fp-info-card__section">
@@ -124,6 +128,32 @@
                     {{ "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_DATE" | translate }}
                   </span>
                   <span class="fp-period__value">{{ plan.antTransactionDate | dateIF }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Only once "Solicitar ANI" has actually been confirmed at
+               least once -- most plans never have one. -->
+          <ng-container *ngIf="!editingAni && plan.aniTransactionId">
+            <div class="fp-info-card__divider"></div>
+
+            <div class="fp-info-card__section">
+              <h3 class="fp-section-title">
+                {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION" | translate }}
+              </h3>
+              <div class="fp-period">
+                <div class="fp-period__box">
+                  <span class="fp-period__label">
+                    {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_ID" | translate }}
+                  </span>
+                  <span class="fp-period__value">{{ plan.aniTransactionId }}</span>
+                </div>
+                <div class="fp-period__box" *ngIf="plan.aniTransactionDate">
+                  <span class="fp-period__label">
+                    {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_DATE" | translate }}
+                  </span>
+                  <span class="fp-period__value">{{ plan.aniTransactionDate | dateIF }}</span>
                 </div>
               </div>
             </div>
@@ -202,7 +232,7 @@
                     type="button"
                     class="fp-table__component"
                     [attr.id]="'Lnk_ActivePlan_Component_' + component.componentCode"
-                    (click)="openComponent(component.componentCode, component.componentName)"
+                    (click)="openComponent(component.componentCode)"
                   >
                     {{ component.componentName }}
                   </button>

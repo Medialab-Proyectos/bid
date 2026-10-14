@@ -214,6 +214,14 @@
         <button
           type="button"
           class="fp-dialog__link"
+          id="Btn_Simulation_AdjustPeriod"
+          (click)="goToStep('information')"
+        >
+          {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PERIOD" | translate }}
+        </button>
+        <button
+          type="button"
+          class="fp-dialog__link"
           id="Btn_Simulation_AdjustRate"
           (click)="openAdjustRate()"
         >
@@ -223,6 +231,7 @@
           kendoButton
           class="btn btn-neutral"
           id="Btn_Simulation_ClearData"
+          [disabled]="clearingData"
           (click)="clearSimulationData()"
         >
           {{ "FINANCIAL_PLAN.SIMULATION.CLEAR_DATA" | translate }}
@@ -284,7 +293,7 @@
                 type="button"
                 class="fp-table__component"
                 [attr.id]="'Lnk_Simulation_Component_' + component.componentCode"
-                (click)="openComponent(component.componentCode, component.componentName)"
+                (click)="openComponent(component.componentCode)"
               >
                 {{ component.componentName }}
               </button>
@@ -504,7 +513,7 @@
                   type="button"
                   class="fp-table__component"
                   [attr.id]="'Lnk_Confirmation_Component_' + component.componentCode"
-                  (click)="openComponent(component.componentCode, component.componentName)"
+                  (click)="openComponent(component.componentCode)"
                 >
                   {{ component.componentName }}
                 </button>

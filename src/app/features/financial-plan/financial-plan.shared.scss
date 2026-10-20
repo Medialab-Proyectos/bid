@@ -953,17 +953,16 @@ $fp-control-height: 40px;
       margin-top: 16px;
     }
 
-    // The component picker is the one field meant to grow and absorb the
-    // row's spare space -- the three amount fields next to it only need
-    // room for a number, not an equal split of whatever is left over, which
-    // is what made them read as oddly wide with a lot of empty box around a
-    // short "0.00".
+    // Neither field is meant to stretch into the row's spare space anymore
+    // (that was only needed back when up to three amount fields sat next to
+    // the picker) -- both now cap at a width that fits their own content
+    // instead of inflating into a wide box around a short label.
     .fp-dialog__field {
       flex: 0 1 150px;
       min-width: 0;
 
       &:first-child {
-        flex: 2 1 0;
+        flex: 0 1 320px;
       }
     }
   }

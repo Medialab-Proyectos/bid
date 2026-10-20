@@ -240,32 +240,6 @@
             [attr.id]="'Num_EstimatedAmount_Idb_' + i"
           ></kendo-numerictextbox>
         </div>
-        <div class="fp-dialog__field">
-          <span class="fp-dialog__label fp-dialog__required">
-            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.LOCAL_AMOUNT" | translate }}
-          </span>
-          <kendo-numerictextbox
-            [format]="'n2'"
-            [min]="0"
-            [spinners]="false"
-            [placeholder]="'0.00'"
-            [(ngModel)]="row.localAmount"
-            [attr.id]="'Num_EstimatedAmount_Local_' + i"
-          ></kendo-numerictextbox>
-        </div>
-        <div class="fp-dialog__field">
-          <span class="fp-dialog__label fp-dialog__required">
-            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.COFINANCING_AMOUNT" | translate }}
-          </span>
-          <kendo-numerictextbox
-            [format]="'n2'"
-            [min]="0"
-            [spinners]="false"
-            [placeholder]="'0.00'"
-            [(ngModel)]="row.cofinancingAmount"
-            [attr.id]="'Num_EstimatedAmount_Cofinancing_' + i"
-          ></kendo-numerictextbox>
-        </div>
         <div class="fp-estimated-amount__total">
           <span class="fp-dialog__label">
             {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.TOTAL_EQUIVALENT" | translate }}

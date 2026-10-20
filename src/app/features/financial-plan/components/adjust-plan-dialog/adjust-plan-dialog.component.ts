@@ -155,11 +155,7 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     if (!disbursement) {
       return 0;
     }
-    return disbursement.components.reduce(
-      (sum, component) =>
-        sum + (component.idbAmount || 0) + (component.localAmount || 0) + (component.cofinancingAmount || 0),
-      0
-    );
+    return disbursement.components.reduce((sum, component) => sum + (component.idbAmount || 0), 0);
   }
 
   toggle(process: PotentialProcess): void {
@@ -320,8 +316,6 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     return {
       componentCode: '',
       idbAmount: null,
-      localAmount: null,
-      cofinancingAmount: null,
       monthlyAmounts: this.months.map(() => 0),
     };
   }
@@ -331,7 +325,7 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
   }
 
   rowTotal(row: EstimatedDisbursementComponent): number {
-    return (row.idbAmount || 0) + (row.localAmount || 0) + (row.cofinancingAmount || 0);
+    return row.idbAmount || 0;
   }
 
   get grandTotal(): number {

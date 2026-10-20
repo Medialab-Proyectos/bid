@@ -268,7 +268,7 @@ function buildInjectedProcessRows(
       processId: process.code,
       description: process.estimatedDisbursement.concept,
       contractName: '',
-      totalAmount: (match.idbAmount || 0) + (match.localAmount || 0) + (match.cofinancingAmount || 0),
+      totalAmount: match.idbAmount || 0,
       monthlyAmounts,
       payments: splitIntoPayments(months, monthlyAmounts, 2),
       selected: true,

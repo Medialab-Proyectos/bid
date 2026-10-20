@@ -228,17 +228,14 @@ export interface FinancialPlanSimulation {
 export type PotentialProcessStatus = 'EXECUTION' | 'EVALUATION' | 'IN_PROCESS' | 'WAITING';
 
 /**
- * One funding-source breakdown within a process's estimated disbursement --
- * same BID/aporte local/cofinanciamiento split the payment dialogs already
- * use, plus how that component's own BID amount spreads across the plan's
- * months. A process can carry more than one of these (it may touch more than
- * one component), which is also why each one needs its own `componentCode`.
+ * One component a process's estimated disbursement touches -- its IDB
+ * amount, plus how that amount spreads across the plan's months. A process
+ * can carry more than one of these (it may touch more than one component),
+ * which is also why each one needs its own `componentCode`.
  */
 export interface EstimatedDisbursementComponent {
   componentCode: string;
   idbAmount: number;
-  localAmount: number;
-  cofinancingAmount: number;
   /** Aligned to the owning process list's own `months` -- how this
    *  component's `idbAmount` is spread across the period. */
   monthlyAmounts: number[];

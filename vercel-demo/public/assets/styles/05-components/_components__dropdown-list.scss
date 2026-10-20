@@ -131,7 +131,14 @@
 // class in the financial plan's component picker).
 .c-dropdown-list--wide {
   span.k-input-inner {
+    // The base rule's own `padding-top: 10px` with no matching bottom value
+    // was tuned against its `width: 7rem` box -- centering here instead of
+    // trusting that fixed offset keeps the placeholder/selected text level
+    // with the arrow icon regardless of this modifier's own width.
+    align-items: center;
+    display: flex;
     overflow: hidden;
+    padding-top: 0;
     width: 100%;
 
     span.k-input-value-text {

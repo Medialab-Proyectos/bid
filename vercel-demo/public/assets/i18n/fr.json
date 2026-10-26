@@ -1957,6 +1957,8 @@
   "FINANCIAL_PLAN.ACTIVE.STATUS_APPROVED": "Approuvé pour décaissement",
   "FINANCIAL_PLAN.ACTIVE.LEAD": "N'oubliez pas que vous pouvez simuler un nouveau plan financier ou demander une transaction ANI si nécessaire.",
   "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION": "Transaction financière ANT liée",
+  "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_HELP": "ANT (transaction d'avance) : l'avance de fonds que la BID verse à l'organisme d'exécution pour couvrir les dépenses de la période du plan. Elle est justifiée ensuite ; tant que 80 % n'est pas justifié, aucune nouvelle avance ni aucun nouveau plan financier ne peut être confirmé.",
+  "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_HELP": "ANI (augmentation de l'avance) : fonds supplémentaires demandés en plus de l'avance, dans le même plan, pour des dépenses imprévues. Elle conserve la période du plan, ne modifie que les mois à partir du mois en cours et ne peut être demandée qu'une fois par plan.",
   "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_ID": "ID de transaction",
   "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_DATE": "Date de la transaction",
   "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION": "Transaction financière ANI liée",

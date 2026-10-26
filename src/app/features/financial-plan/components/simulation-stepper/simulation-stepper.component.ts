@@ -457,10 +457,17 @@ export class SimulationStepperComponent implements OnInit {
     const instance = dialog.content.instance as AdjustPlanDialogComponent;
     instance.projectBucketId = this.projectBucketId;
     instance.months = this.simulation?.months ?? [];
+    instance.exchangeRates = (this.draft?.exchangeRates ?? []).map((r) => ({ ...r }));
 
     // Adding processes here is the main way the justified ratio actually
     // moves -- same reasoning as `openComponent()`'s own subscribe.
     dialog.result.subscribe((result) => {
+      // A legacy contract in a new currency saved its rate with it, whether
+      // or not the selection is confirmed afterwards: the rate table has to
+      // show that currency either way.
+      if (this.draft) {
+        this.draft.exchangeRates = instance.exchangeRates;
+      }
       if ((result as { confirmed?: boolean })?.confirmed) {
         this.loadJustification();
       }

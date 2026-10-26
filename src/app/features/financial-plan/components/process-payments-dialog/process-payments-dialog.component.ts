@@ -28,6 +28,10 @@ import { FinancialPlanMonth, ProcessPayment } from '../../models/financial-plan.
 })
 export class ProcessPaymentsDialogComponent extends DialogContentBase {
   itemId: string;
+  /** A potential process: it was entered month by month, with no payment
+   *  dates, so its breakdown is one line per month and no date column
+   *  (26/10: "no tenemos fecha... solamente tenemos uno por mes"). */
+  perMonth = false;
   description: string;
   contractName: string;
   totalAmount: number;
@@ -40,7 +44,7 @@ export class ProcessPaymentsDialogComponent extends DialogContentBase {
    *  default, same as the Figma reference's own "Monthly breakdown" dialog;
    *  this is purely about reading a long list more comfortably, not a
    *  decision that needs to survive reopening the dialog. */
-  private flatRows: { month: string; payment: ProcessPayment }[];
+  private readonly collapsedMonths = new Set<string>();
 
   /** `monthlyPayments()` is called from `*ngFor` in the template, so
    *  without caching its own result here, every single change-detection
@@ -99,16 +103,15 @@ export class ProcessPaymentsDialogComponent extends DialogContentBase {
     return this.cachedMaxMonthlyTotal;
   }
 
-  /** Every payment on its own line, in date order, each tagged with its
-   *  month -- the flat list asked for instead of an accordion per month.
-   *  Cached for the same reason as `monthlyPayments()`. */
-  paymentRows(): { month: string; payment: ProcessPayment }[] {
-    if (!this.flatRows) {
-      this.flatRows = this.monthlyPayments().reduce(
-        (rows, month) => rows.concat(month.payments.map((payment) => ({ month: month.label, payment }))),
-        [] as { month: string; payment: ProcessPayment }[]
-      );
+  isMonthCollapsed(label: string): boolean {
+    return this.collapsedMonths.has(label);
+  }
+
+  toggleMonth(label: string): void {
+    if (this.collapsedMonths.has(label)) {
+      this.collapsedMonths.delete(label);
+    } else {
+      this.collapsedMonths.add(label);
     }
-    return this.flatRows;
   }
 }

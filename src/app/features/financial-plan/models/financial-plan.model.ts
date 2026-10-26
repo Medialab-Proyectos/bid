@@ -145,6 +145,9 @@ export interface ProcessRow {
    *  checked and disabled instead of lying about being untouchable while
    *  still inviting a click. */
   locked?: boolean;
+  /** Where a `locked` row came from: a potential process or a contract with
+   *  no payment schedule (legacy), both entered as monthly totals. */
+  origin?: 'POTENTIAL' | 'LEGACY_CONTRACT';
 }
 
 export interface NonProcurementRow {
@@ -235,7 +238,14 @@ export type PotentialProcessStatus = 'EXECUTION' | 'EVALUATION' | 'IN_PROCESS' |
  */
 export interface EstimatedDisbursementComponent {
   componentCode: string;
+  /** Always USD. For a legacy contract it is calculated, never typed:
+   *  `currencyAmount` x `rateToUsd`. */
   idbAmount: number;
+  /** Legacy contracts only: the currency the amount was recorded in, the
+   *  amount in that currency and the rate used to turn it into `idbAmount`. */
+  currency?: string;
+  currencyAmount?: number;
+  rateToUsd?: number;
   /** Aligned to the owning process list's own `months` -- how this
    *  component's `idbAmount` is spread across the period. */
   monthlyAmounts: number[];
@@ -276,8 +286,17 @@ export interface FinancialPlanJustificationSummary {
   justifiedPercentage: number;
 }
 
+/** 'LEGACY_CONTRACT': a contract signed before the system, with no payment
+ *  schedule (26/10). It is picked and distributed like a potential process,
+ *  but recorded in its own currency. */
+export type PotentialProcessKind = 'PROCESS' | 'LEGACY_CONTRACT';
+
 export interface PotentialProcess {
   code: string;
+  /** Missing means 'PROCESS'. */
+  kind?: PotentialProcessKind;
+  /** Legacy contracts: every currency the contract is written in (up to four). */
+  currencies?: string[];
   name: string;
   beneficiary: string;
   status: PotentialProcessStatus;

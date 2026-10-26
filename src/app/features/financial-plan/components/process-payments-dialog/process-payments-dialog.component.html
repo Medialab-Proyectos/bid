@@ -59,7 +59,7 @@
             <th scope="col">
               {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.MONTH" | translate }}
             </th>
-            <th scope="col">
+            <th scope="col" *ngIf="!perMonth">
               {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PAYMENT_DATE" | translate }}
             </th>
             <th scope="col">
@@ -71,18 +71,58 @@
           </tr>
         </thead>
         <tbody>
-          <!-- One payment per line, all visible: no accordion to open month
-               by month. The month total is in the bars above. -->
-          <tr *ngFor="let row of paymentRows()">
-            <td>{{ row.month }}</td>
-            <td>{{ row.payment.date | dateIF }}</td>
-            <td>{{ row.payment.concept }}</td>
-            <td>{{ row.payment.amount | ifNumber }}</td>
-          </tr>
+          <!-- Contracts: a month with a single payment is one plain line;
+               only a month with several payments folds them under an
+               accordion row with its count and total, open by default. -->
+          <ng-container *ngIf="!perMonth; else perMonthRows">
+            <ng-container *ngFor="let month of monthlyPayments(); let mi = index">
+              <tr *ngIf="month.payments.length === 1; else monthGroup" class="fp-month-group-start">
+                <td class="fp-month-cell">{{ month.label }}</td>
+                <td>{{ month.payments[0].date | dateIF }}</td>
+                <td>{{ month.payments[0].concept }}</td>
+                <td>{{ month.payments[0].amount | ifNumber }}</td>
+              </tr>
+              <ng-template #monthGroup>
+                <tr class="fp-month-group-start fp-month-group">
+                  <td class="fp-month-cell">
+                    <button
+                      type="button"
+                      class="fp-expand fp-month-toggle"
+                      [attr.id]="'Btn_ProcessPayments_Month_' + mi"
+                      [attr.aria-expanded]="!isMonthCollapsed(month.label)"
+                      (click)="toggleMonth(month.label)"
+                    >
+                      <em
+                        class="fas"
+                        [ngClass]="isMonthCollapsed(month.label) ? 'fa-chevron-right' : 'fa-chevron-down'"
+                      ></em>
+                      {{ month.label }}
+                    </button>
+                  </td>
+                  <td colspan="2" class="fp-table__caption-count">
+                    {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.PAYMENTS_COUNT" | translate : { count: month.payments.length } }}
+                  </td>
+                  <td class="fp-table__caption-total">{{ month.total | ifNumber }}</td>
+                </tr>
+                <tr *ngFor="let payment of month.payments" [hidden]="isMonthCollapsed(month.label)">
+                  <td></td>
+                  <td>{{ payment.date | dateIF }}</td>
+                  <td>{{ payment.concept }}</td>
+                  <td>{{ payment.amount | ifNumber }}</td>
+                </tr>
+              </ng-template>
+            </ng-container>
+          </ng-container>
+          <!-- Potential process: no dates exist, only one total per month. -->
+          <ng-template #perMonthRows>
+            <tr *ngFor="let month of monthlyPayments()">
+              <td>{{ month.label }}</td>
+              <td>{{ description }}</td>
+              <td>{{ month.total | ifNumber }}</td>
+            </tr>
+          </ng-template>
           <tr class="fp-table__total">
-            <td>{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TOTAL" | translate }}</td>
-            <td></td>
-            <td></td>
+            <td [attr.colspan]="perMonth ? 2 : 3">{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TOTAL" | translate }}</td>
             <td>{{ totalAmount | ifNumber }}</td>
           </tr>
         </tbody>

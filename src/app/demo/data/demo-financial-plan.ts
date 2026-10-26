@@ -264,10 +264,12 @@ function buildInjectedProcessRows(
       return;
     }
     const monthlyAmounts = months.map((_, i) => match.monthlyAmounts[i] ?? 0);
+    const legacy = process.kind === 'LEGACY_CONTRACT';
     rows.push({
       processId: process.code,
       description: process.estimatedDisbursement.concept,
-      contractName: '',
+      contractName: legacy ? process.name : '',
+      origin: legacy ? 'LEGACY_CONTRACT' : 'POTENTIAL',
       totalAmount: match.idbAmount || 0,
       monthlyAmounts,
       payments: splitIntoPayments(months, monthlyAmounts, 2),
@@ -553,7 +555,47 @@ const POTENTIAL_PROCESS_STATUSES: PotentialProcessStatus[] = [
 
 const POTENTIAL_PROCESSES = new Map<string, PotentialProcess[]>();
 
+/** Contracts signed before the system, with no payment schedule (26/10). The
+ *  first is in Canadian dollars, the currency no draft carries a rate for:
+ *  recording it is what brings CAD into the rate table. */
+const LEGACY_CONTRACTS: { code: string; name: string; beneficiary: string; currencies: string[]; totalAmount: number }[] = [
+  {
+    code: 'CO-L1229-C01',
+    name: 'Construccion de la planta de tratamiento, fase 1',
+    beneficiary: 'Consorcio Aguas del Norte',
+    currencies: ['CAD'],
+    totalAmount: 4_800_000,
+  },
+  {
+    code: 'CO-L1229-C02',
+    name: 'Supervision tecnica de las obras',
+    beneficiary: 'Ingenieria Andina S.A.S.',
+    currencies: ['COP'],
+    totalAmount: 2_150_000_000,
+  },
+  {
+    code: 'CO-L1229-C03',
+    name: 'Suministro de equipos de laboratorio',
+    beneficiary: 'LabTech Europe GmbH',
+    currencies: ['EUR', 'USD'],
+    totalAmount: 1_250_000,
+  },
+];
+
 function seedPotentialProcesses(): PotentialProcess[] {
+  const legacy = LEGACY_CONTRACTS.map((contract, i): PotentialProcess => ({
+    ...contract,
+    kind: 'LEGACY_CONTRACT',
+    status: 'EXECUTION',
+    currency: contract.currencies.join(', '),
+    executionDate: new Date(2021, 6, 12 + i).toISOString(),
+    selected: false,
+    estimatedDisbursement: null,
+  }));
+  return [...seedProcesses(), ...legacy];
+}
+
+function seedProcesses(): PotentialProcess[] {
   return POTENTIAL_PROCESS_STATUSES.map((status, i) => ({
     code: `CO-L1229-P${120 + i}`,
     name: 'Consultoria para la construccion de lineamientos de politica publica',
@@ -623,6 +665,25 @@ export function saveDemoFinancialPlanEstimatedDisbursement(
   }
   process.selected = true;
   process.estimatedDisbursement = disbursement;
+
+  // A legacy contract in a currency the plan had no rate for brings that rate
+  // with it: set in its form the first time, editable later in "Ajustar tasa
+  // de cambio" like any other (26/10).
+  const draft = buildDemoFinancialPlanDraft(projectBucketId);
+  disbursement.components.forEach((component) => {
+    if (!component.currency || component.currency === 'USD' || !component.rateToUsd) {
+      return;
+    }
+    const known = draft.exchangeRates.find((rate) => rate.currency === component.currency);
+    if (!known) {
+      draft.exchangeRates = [
+        ...draft.exchangeRates,
+        { currency: component.currency, rateToUsd: component.rateToUsd },
+      ];
+    } else if (!known.rateToUsd) {
+      known.rateToUsd = component.rateToUsd;
+    }
+  });
   return process;
 }
 

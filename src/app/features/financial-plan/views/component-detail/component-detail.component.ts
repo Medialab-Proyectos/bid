@@ -123,6 +123,9 @@ export class ComponentDetailComponent implements OnInit, OnDestroy {
     instance.contractName = process.contractName;
     instance.totalAmount = process.totalAmount;
     instance.payments = process.payments;
+    // Without an accordion there are no dated payments to show: one line per
+    // month. A process with commitments (an accordion) keeps date and month.
+    instance.perMonth = !process.commitments.length;
   }
 
   /** Same dialog, same level of detail -- a commitment is still paid out in
@@ -152,6 +155,8 @@ export class ComponentDetailComponent implements OnInit, OnDestroy {
     instance.contractName = row.contractName;
     instance.totalAmount = row.totalAmount;
     instance.payments = row.payments;
+    // No accordion here either: one line per month.
+    instance.perMonth = true;
   }
 
   isExpanded(processId: string): boolean {

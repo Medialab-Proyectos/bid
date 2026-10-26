@@ -4,9 +4,9 @@
   </p>
 
   <!-- Same editable table as the Información step -- the rate is typed
-       straight in, no checkbox to unlock it first. A currency a new contract
-       brings (a legacy contract in Canadian dollars, say) is added as a row of
-       its own, the way Reporte de Pagos already adds currencies. -->
+       straight in, no checkbox to unlock it first. No currency is added by
+       hand (26/10): they come from the plan's records, and a legacy contract
+       in a new currency brings its own when it is recorded. -->
   <table class="fp-table fp-table--rates">
     <thead>
       <tr>
@@ -19,18 +19,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let rate of rates; let i = index" [class.fp-row-enter]="isAdded(rate)">
-        <td class="fp-table__currency">
-          <ng-container *ngIf="!isAdded(rate); else addedCurrency">{{ rate.currency }}</ng-container>
-          <ng-template #addedCurrency>
-            <kendo-dropdownlist
-              class="c-dropdown-list fp-rate-currency"
-              [data]="currenciesFor(rate)"
-              [(ngModel)]="rate.currency"
-              [attr.id]="'Ddl_AdjustRate_Currency_' + i"
-            ></kendo-dropdownlist>
-          </ng-template>
-        </td>
+      <tr *ngFor="let rate of rates; let i = index">
+        <td class="fp-table__currency">{{ rate.currency }}</td>
         <td>
           <div class="fp-rate-cell">
             <kendo-numerictextbox
@@ -42,17 +32,6 @@
               [(ngModel)]="rate.rateToUsd"
               [attr.id]="'Num_AdjustRate_' + i"
             ></kendo-numerictextbox>
-            <button
-              *ngIf="isAdded(rate)"
-              type="button"
-              class="fp-icon-button"
-              [attr.id]="'Btn_AdjustRate_Remove_' + i"
-              [attr.aria-label]="('FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.REMOVE' | translate) + ' ' + rate.currency"
-              [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.REMOVE' | translate"
-              (click)="removeCurrency(i)"
-            >
-              <em class="fas fa-trash-alt"></em>
-            </button>
             <span class="fp-rate-cell__missing" *ngIf="!rate.rateToUsd">
               {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.MISSING_ONE" | translate }}
             </span>
@@ -61,17 +40,6 @@
       </tr>
     </tbody>
   </table>
-
-  <button
-    kendoButton
-    class="btn btn-neutral fp-add-currency"
-    id="Btn_AdjustRate_AddCurrency"
-    iconClass="fas fa-plus"
-    [disabled]="!canAddCurrency"
-    (click)="addCurrency()"
-  >
-    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.ADD_CURRENCY" | translate }}
-  </button>
 
   <p class="fp-dialog__note" *ngIf="lastUpdatedOn">
     {{

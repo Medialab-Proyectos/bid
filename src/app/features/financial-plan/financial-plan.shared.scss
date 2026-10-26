@@ -1060,6 +1060,11 @@ $fp-control-height: 40px;
     text-align: center;
     width: 32px;
   }
+
+  // A code is read as one token: "CO-L1229-" / "C01" on two lines was not.
+  td:nth-child(2) {
+    white-space: nowrap;
+  }
 }
 
 .fp-grid__number,
@@ -1113,15 +1118,19 @@ $fp-control-height: 40px;
     }
   }
 
+  // Wide enough for "Total equivalent (USD)" and its help icon on one line.
   &__total {
-    flex: 0 0 150px;
+    flex: 0 0 190px;
     min-width: 0;
   }
 
+  // A read-only value as tall as the inputs beside it (42px), so every
+  // label in the row sits on the same line.
   &__total-value {
     color: $fp-value;
     display: block;
     font-size: $fp-text-xs;
+    line-height: 20px;
     padding: 11px 0;
   }
 
@@ -1746,7 +1755,7 @@ $fp-control-height: 40px;
   }
 }
 
-// ---- Exchange rates: add a currency (e.g. CAD), remove it, see what is missing
+// ---- Exchange rates: see which rate is still missing
 .fp-rate-cell {
   align-items: center;
   display: flex;
@@ -1758,36 +1767,8 @@ $fp-control-height: 40px;
   }
 }
 
-.fp-rate-currency {
-  width: 110px;
-}
-
-.fp-add-currency {
-  margin: 12px 0 16px;
-}
-
-.fp-icon-button {
-  align-items: center;
-  background: none;
-  border: 0;
-  border-radius: 4px;
-  color: #6b6b6b;
-  cursor: pointer;
-  display: inline-flex;
-  height: 36px;
-  justify-content: center;
-  min-width: 36px;
-  width: 36px;
-
-  &:hover {
-    background: #f3f3f3;
-    color: #b42318;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $fp-brand;
-    outline-offset: 2px;
-  }
+.fp-table--rates {
+  margin-bottom: 16px;
 }
 
 // ---- Status labels: soft tint and dark text of the same hue. The portal's
@@ -1820,12 +1801,12 @@ $fp-control-height: 40px;
     z-index: 2;
   }
 
-  tbody tr:not(.fp-table__section):not(.fp-table__subtotal):not(.fp-table__total) > td:first-child {
+  tbody tr:not(.fp-table__section):not(.fp-table__subtotal):not(.fp-table__total):not(.fp-month-group) > td:first-child {
     background-color: #fff;
   }
 }
 
-.fp-table tbody tr:nth-child(even):not(.fp-table__section):not(.fp-table__subtotal):not(.fp-table__total) > td:first-child {
+.fp-table tbody tr:nth-child(even):not(.fp-table__section):not(.fp-table__subtotal):not(.fp-table__total):not(.fp-month-group) > td:first-child {
   background-color: #fafbfc;
 }
 
@@ -2260,4 +2241,135 @@ $fp-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   font-weight: 600;
   padding: 1px 8px;
   white-space: nowrap;
+}
+
+// Breakdown: each month opens with a rule. A month with several payments is
+// an accordion row (count + total) whose payments sit indented under it.
+.fp-month-cell {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fp-table--component-detail-monthly tr.fp-month-group-start td {
+  border-top: 1px solid $fp-border;
+}
+
+.fp-table--component-detail-monthly tr.fp-month-group td {
+  background: #f7f9fb;
+}
+
+.fp-month-toggle {
+  align-items: center;
+  color: $fp-value;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  gap: 8px;
+
+  .fas {
+    color: $fp-label;
+    font-size: 11px;
+    width: 10px;
+  }
+
+  &:hover {
+    color: $fp-brand;
+  }
+}
+
+// "Include processes potentially executable": potential processes and legacy
+// contracts as two tabs of the same picker (26/10), each counting its ticks.
+.fp-tabstrip--inline {
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+.fp-tabstrip__count {
+  background: $fp-brand;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 20px;
+  margin-left: 8px;
+  min-width: 20px;
+  padding: 0 6px;
+  text-align: center;
+}
+
+// Legacy contract row: component, currency, amount, rate, USD equivalent.
+.fp-estimated-amount__row--legacy {
+  flex-wrap: wrap;
+
+  .fp-estimated-amount__currency {
+    flex: 0 1 110px;
+  }
+
+  .fp-estimated-amount__rate {
+    flex: 0 1 200px;
+  }
+}
+
+.fp-estimated-amount__source {
+  color: $fp-label;
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+.fp-estimated-amount__rate-note {
+  margin: 8px 0 0;
+}
+
+@media (max-width: 640px) {
+  // Two long tab names share a phone's width instead of running off it.
+  .fp-tabstrip--inline {
+    gap: 8px;
+
+    // The portal's global button reset (min-width 144px) kept them from shrinking.
+    .fp-tabstrip__tab {
+      flex: 1 1 0;
+      min-width: 0;
+      text-align: center;
+      white-space: normal;
+    }
+  }
+}
+
+// Component detail: the chevron and the Process ID are one button that opens
+// the commitments; a row without commitments keeps the chevron's width so the
+// IDs line up. A row added in the simulation says where it came from.
+.fp-row-lead__toggle {
+  align-items: center;
+  color: $fp-value;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  gap: 6px;
+
+  &:hover .fp-row-lead__id-text {
+    color: $fp-brand;
+    text-decoration: underline;
+  }
+}
+
+.fp-row-lead__chevron {
+  display: inline-block;
+  flex: 0 0 10px;
+  font-size: 11px;
+  width: 10px;
+}
+
+.fp-row-lead__origin {
+  color: $fp-label;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+// Distribution status before any amount is typed: guidance, not an error.
+.fp-distribution-status__idle {
+  color: $fp-label;
+  font-weight: 400;
 }

@@ -35,6 +35,40 @@
       <span [innerHTML]="stepHtml('STEP_4', 'badge')"></span>
     </p>
 
+    <!-- 26/10: contracts with no payment schedule sit next to the potential
+         processes, picked and distributed the same way. Each tab counts its
+         own ticks, since "Distribute amounts" walks both. -->
+    <div class="fp-tabstrip fp-tabstrip--inline" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="fp-tabstrip__tab"
+        [class.fp-tabstrip__tab--active]="kindTab === 'PROCESS'"
+        id="Tab_AdjustPlan_Processes"
+        [attr.aria-selected]="kindTab === 'PROCESS'"
+        (click)="setTab('PROCESS')"
+      >
+        {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.TAB_PROCESSES" | translate }}
+        <span class="fp-tabstrip__count" *ngIf="selectedFor('PROCESS')">{{ selectedFor("PROCESS") }}</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="fp-tabstrip__tab"
+        [class.fp-tabstrip__tab--active]="kindTab === 'LEGACY_CONTRACT'"
+        id="Tab_AdjustPlan_Legacy"
+        [attr.aria-selected]="kindTab === 'LEGACY_CONTRACT'"
+        (click)="setTab('LEGACY_CONTRACT')"
+      >
+        {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.TAB_LEGACY" | translate }}
+        <span class="fp-tabstrip__count" *ngIf="selectedFor('LEGACY_CONTRACT')">{{ selectedFor("LEGACY_CONTRACT") }}</span>
+      </button>
+    </div>
+
+    <p class="fp-lead" *ngIf="kindTab === 'LEGACY_CONTRACT'">
+      {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.LEGACY_INTRO" | translate }}
+    </p>
+
     <div class="fp-process-toolbar">
       <fi-filter
         class="fp-process-toolbar__filter"
@@ -44,7 +78,12 @@
       ></fi-filter>
       <div class="fp-process-toolbar__summary">
         <span>
-          {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.SELECTED_COUNT" | translate : { selected: selectedCount, total: processes.length } }}
+          {{
+            (kindTab === "LEGACY_CONTRACT"
+              ? "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.SELECTED_COUNT_LEGACY"
+              : "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.SELECTED_COUNT"
+            ) | translate : { selected: selectedFor(kindTab), total: countFor(kindTab) }
+          }}
         </span>
         <span>
           {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.SELECTED_AMOUNT" | translate }}
@@ -54,12 +93,22 @@
     </div>
 
     <h3 class="fp-section-title">
-      {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.PROCESS_SECTION" | translate }}
+      {{
+        (kindTab === "LEGACY_CONTRACT"
+          ? "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.LEGACY_SECTION"
+          : "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.PROCESS_SECTION"
+        ) | translate
+      }}
     </h3>
 
     <fi-no-content
       *ngIf="!loading && filtered.length === 0"
-      [content]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.EMPTY' | translate"
+      [content]="
+        (kindTab === 'LEGACY_CONTRACT'
+          ? 'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.EMPTY_LEGACY'
+          : 'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.EMPTY'
+        ) | translate
+      "
     ></fi-no-content>
 
     <div class="fp-scroll" *ngIf="filtered.length > 0">
@@ -94,10 +143,10 @@
               {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.CURRENCY" | translate }}
             </th>
             <th scope="col" class="fp-grid__number">
-              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.TOTAL_AMOUNT" | translate }}
+              {{ columnKey("TOTAL_AMOUNT", kindTab) | translate }}
             </th>
             <th scope="col">
-              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.EXECUTION_DATE" | translate }}
+              {{ columnKey("EXECUTION_DATE", kindTab) | translate }}
             </th>
           </tr>
         </thead>
@@ -150,15 +199,19 @@
   <div class="fp-dialog-body" *ngIf="editingProcess as process">
     <p class="fp-sequence-indicator" *ngIf="sequence.length > 1">
       {{
-        "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.SEQUENCE_POSITION"
-          | translate : { index: sequenceIndex + 1, total: sequence.length }
+        (isLegacy(process)
+          ? "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.SEQUENCE_POSITION_LEGACY"
+          : "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.SEQUENCE_POSITION"
+        ) | translate : { index: sequenceIndex + 1, total: sequence.length }
       }}
     </p>
     <div class="fp-process-summary">
       <p class="fp-process-summary__title">
         {{
-          "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.DISTRIBUTE_TITLE"
-            | translate : { code: process.code }
+          (isLegacy(process)
+            ? "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.LEGACY_TITLE"
+            : "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.DISTRIBUTE_TITLE"
+          ) | translate : { code: process.code }
         }}
         <span
           *ngIf="wasModified(process)"
@@ -200,13 +253,13 @@
         </div>
         <div class="fp-process-summary__item">
           <span class="fp-process-summary__label">
-            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.TOTAL_AMOUNT" | translate }}
+            {{ columnKey("TOTAL_AMOUNT", kindOf(process)) | translate }}
           </span>
           <span class="fp-process-summary__value">{{ process.totalAmount | ifNumber }}</span>
         </div>
         <div class="fp-process-summary__item">
           <span class="fp-process-summary__label">
-            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.EXECUTION_DATE" | translate }}
+            {{ columnKey("EXECUTION_DATE", kindOf(process)) | translate }}
           </span>
           <span class="fp-process-summary__value">{{ process.executionDate | dateIF }}</span>
         </div>
@@ -215,8 +268,10 @@
 
     <p class="fp-lead">
       {{
-        "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.LEAD"
-          | translate : { code: process.code }
+        (isLegacy(process)
+          ? "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.LEGACY_LEAD"
+          : "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.LEAD"
+        ) | translate : { code: process.code }
       }}
     </p>
 
@@ -237,60 +292,138 @@
     </p>
 
     <div class="fp-estimated-amount__card">
-      <div class="fp-estimated-amount__row" *ngFor="let row of components; let i = index; trackBy: trackByIndex">
-        <div class="fp-dialog__field">
-          <span class="fp-dialog__label fp-dialog__required">
-            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.COMPONENT" | translate }}
-          </span>
-          <kendo-dropdownlist
-            class="c-dropdown-list c-dropdown-list--wide"
-            [data]="componentOptions"
-            textField="name"
-            valueField="code"
-            [valuePrimitive]="true"
-            [defaultItem]="{ code: '', name: ('FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.COMPONENT_PLACEHOLDER' | translate) }"
-            [(ngModel)]="row.componentCode"
-            [attr.title]="componentName(row.componentCode)"
-            [attr.id]="'Ddl_EstimatedAmount_Component_' + i"
-          ></kendo-dropdownlist>
+      <ng-container *ngFor="let row of components; let i = index; trackBy: trackByIndex">
+        <div class="fp-estimated-amount__row" [class.fp-estimated-amount__row--legacy]="isLegacy(process)">
+          <div class="fp-dialog__field">
+            <span class="fp-dialog__label fp-dialog__required">
+              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.COMPONENT" | translate }}
+            </span>
+            <kendo-dropdownlist
+              class="c-dropdown-list c-dropdown-list--wide"
+              [data]="componentOptions"
+              textField="name"
+              valueField="code"
+              [valuePrimitive]="true"
+              [defaultItem]="{ code: '', name: ('FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.COMPONENT_PLACEHOLDER' | translate) }"
+              [(ngModel)]="row.componentCode"
+              [attr.title]="componentName(row.componentCode)"
+              [attr.id]="'Ddl_EstimatedAmount_Component_' + i"
+            ></kendo-dropdownlist>
+          </div>
+
+          <!-- Legacy contract (26/10): currency, amount in that currency and
+               its rate. The USD equivalent is calculated, never typed; the
+               rate comes from the plan's table, or is set here the first
+               time the currency appears. -->
+          <ng-container *ngIf="isLegacy(process); else idbAmountTpl">
+            <div class="fp-dialog__field fp-estimated-amount__currency">
+              <span class="fp-dialog__label fp-dialog__required">
+                {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.CURRENCY" | translate }}
+              </span>
+              <kendo-dropdownlist
+                *ngIf="(process.currencies?.length || 0) > 1; else singleCurrencyTpl"
+                class="c-dropdown-list"
+                [data]="process.currencies"
+                [(ngModel)]="row.currency"
+                [attr.id]="'Ddl_EstimatedAmount_Currency_' + i"
+              ></kendo-dropdownlist>
+              <ng-template #singleCurrencyTpl>
+                <span class="fp-estimated-amount__total-value">{{ row.currency }}</span>
+              </ng-template>
+            </div>
+            <div class="fp-dialog__field">
+              <span class="fp-dialog__label fp-dialog__required">
+                {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.AMOUNT_IN" | translate : { currency: row.currency } }}
+              </span>
+              <kendo-numerictextbox
+                [format]="'n2'"
+                [min]="0"
+                [spinners]="false"
+                [placeholder]="'0.00'"
+                [(ngModel)]="row.currencyAmount"
+                [attr.id]="'Num_EstimatedAmount_CurrencyAmount_' + i"
+              ></kendo-numerictextbox>
+            </div>
+            <div class="fp-dialog__field fp-estimated-amount__rate">
+              <span class="fp-dialog__label" [class.fp-dialog__required]="isNewCurrency(row.currency)">
+                {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.RATE" | translate }}
+              </span>
+              <kendo-numerictextbox
+                *ngIf="isNewCurrency(row.currency); else knownRateTpl"
+                [format]="'n5'"
+                [decimals]="5"
+                [min]="0"
+                [spinners]="false"
+                [placeholder]="'0.00000'"
+                [(ngModel)]="newRates[row.currency]"
+                [attr.id]="'Num_EstimatedAmount_Rate_' + i"
+              ></kendo-numerictextbox>
+              <ng-template #knownRateTpl>
+                <span class="fp-estimated-amount__total-value">
+                  {{ rowRate(row) | number : "1.2-5" }}
+                  <span class="fp-estimated-amount__source" *ngIf="row.currency !== 'USD'">
+                    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.RATE_FROM_TABLE" | translate }}
+                  </span>
+                </span>
+              </ng-template>
+            </div>
+          </ng-container>
+          <ng-template #idbAmountTpl>
+            <div class="fp-dialog__field">
+              <span class="fp-dialog__label fp-dialog__required">
+                {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.IDB_AMOUNT" | translate }}
+              </span>
+              <kendo-numerictextbox
+                [format]="'n2'"
+                [min]="0"
+                [spinners]="false"
+                [placeholder]="'0.00'"
+                [(ngModel)]="row.idbAmount"
+                [attr.id]="'Num_EstimatedAmount_Idb_' + i"
+              ></kendo-numerictextbox>
+            </div>
+          </ng-template>
+
+          <div class="fp-estimated-amount__total">
+            <span class="fp-dialog__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.TOTAL_EQUIVALENT" | translate }}
+              <em
+                kendoTooltip
+                [showOn]="'click'"
+                class="fas fa-info-circle fp-info-icon"
+                [title]="
+                  (isLegacy(process)
+                    ? 'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.EQUIVALENT_TOOLTIP'
+                    : 'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.TOTAL_EQUIVALENT_TOOLTIP'
+                  ) | translate
+                "
+              ></em>
+            </span>
+            <span class="fp-estimated-amount__total-value">{{ rowTotal(row) | ifNumber }}</span>
+          </div>
+          <button
+            *ngIf="components.length > 1"
+            type="button"
+            class="fp-estimated-amount__remove"
+            [attr.id]="'Btn_EstimatedAmount_Remove_' + i"
+            [attr.aria-label]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.REMOVE_COMPONENT' | translate"
+            [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.REMOVE_COMPONENT' | translate"
+            (click)="removeComponent(i)"
+          >
+            <em class="fas fa-trash-alt"></em>
+          </button>
         </div>
-        <div class="fp-dialog__field">
-          <span class="fp-dialog__label fp-dialog__required">
-            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.IDB_AMOUNT" | translate }}
-          </span>
-          <kendo-numerictextbox
-            [format]="'n2'"
-            [min]="0"
-            [spinners]="false"
-            [placeholder]="'0.00'"
-            [(ngModel)]="row.idbAmount"
-            [attr.id]="'Num_EstimatedAmount_Idb_' + i"
-          ></kendo-numerictextbox>
-        </div>
-        <div class="fp-estimated-amount__total">
-          <span class="fp-dialog__label">
-            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.TOTAL_EQUIVALENT" | translate }}
-            <em
-              kendoTooltip
-              [showOn]="'click'"
-              class="fas fa-info-circle fp-info-icon"
-              [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.TOTAL_EQUIVALENT_TOOLTIP' | translate"
-            ></em>
-          </span>
-          <span class="fp-estimated-amount__total-value">{{ rowTotal(row) | ifNumber }}</span>
-        </div>
-        <button
-          *ngIf="components.length > 1"
-          type="button"
-          class="fp-estimated-amount__remove"
-          [attr.id]="'Btn_EstimatedAmount_Remove_' + i"
-          [attr.aria-label]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.REMOVE_COMPONENT' | translate"
-          [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.REMOVE_COMPONENT' | translate"
-          (click)="removeComponent(i)"
+
+        <p
+          class="fp-detail-hint fp-estimated-amount__rate-note"
+          *ngIf="isLegacy(process) && isNewCurrency(row.currency) && isFirstRowFor(row, i)"
         >
-          <em class="fas fa-trash-alt"></em>
-        </button>
-      </div>
+          <em class="fas fa-info-circle"></em>
+          <span>
+            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.RATE_FIRST_TIME" | translate : { currency: row.currency } }}
+          </span>
+        </p>
+      </ng-container>
 
       <button
         type="button"
@@ -309,7 +442,12 @@
     </div>
 
     <p class="fp-dialog__required fp-lead" *ngIf="months.length">
-      {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.DISTRIBUTION_HELP" | translate }}
+      {{
+        (isLegacy(process)
+          ? "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.MONTHS_IN_USD"
+          : "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.DISTRIBUTION_HELP"
+        ) | translate
+      }}
     </p>
 
     <!-- Kept outside `.fp-scroll` on purpose: the table's own "Remaining"
@@ -336,8 +474,16 @@
           *ngIf="!isOverDistributed(row) && !isFullyDistributed(row)"
           class="fp-distribution-status__value fp-distribution-status__value--pending"
         >
-          {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.REMAINING" | translate }}:
-          {{ remainingToDistribute(row) | ifNumber }}
+          <ng-container *ngIf="rowTotal(row) > 0; else noAmountYet">
+            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.REMAINING" | translate }}:
+            {{ remainingToDistribute(row) | ifNumber }}
+          </ng-container>
+          <!-- Nothing typed yet is not an error: neutral, not red. -->
+          <ng-template #noAmountYet>
+            <span class="fp-distribution-status__idle">
+              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.NO_AMOUNT_YET" | translate }}
+            </span>
+          </ng-template>
         </span>
         <span
           *ngIf="isFullyDistributed(row)"
@@ -380,7 +526,7 @@
               <span
                 *ngIf="!isOverDistributed(row)"
                 class="fp-table--distribution__remaining"
-                [class.fp-table--distribution__remaining--pending]="!isFullyDistributed(row)"
+                [class.fp-table--distribution__remaining--pending]="!isFullyDistributed(row) && rowTotal(row) > 0"
               >
                 {{ remainingToDistribute(row) | ifNumber }}
               </span>
@@ -419,6 +565,7 @@
       (click)="startDisbursementSequence()"
     >
       {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ENTER_AMOUNT" | translate }}
+      <ng-container *ngIf="selectedCount > 0">({{ selectedCount }})</ng-container>
     </button>
   </ng-container>
 

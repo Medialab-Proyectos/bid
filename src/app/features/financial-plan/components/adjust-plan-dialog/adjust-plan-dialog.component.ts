@@ -6,8 +6,10 @@ import {
   EstimatedDisbursement,
   EstimatedDisbursementComponent,
   FinancialPlanComponentOption,
+  FinancialPlanExchangeRate,
   FinancialPlanMonth,
   PotentialProcess,
+  PotentialProcessKind,
 } from '../../models/financial-plan.model';
 import { FinancialPlanApiService } from '../../services/financial-plan-api.service';
 import { potentialProcessStatusClass } from '../../utils/potential-process-status';
@@ -27,6 +29,12 @@ type AdjustPlanScreen = 'list' | 'estimated-amount';
  * the list until the last. Only once every ticked process carries an
  * estimate does "Añadir procesos" reappear, itself gated behind one more
  * "¿Deseas continuar?" check before it actually saves the selection.
+ *
+ * Legacy contracts (26/10) are a second tab of the same list: signed before
+ * the system, with no payment schedule. They go through the same walk, but
+ * each component is recorded in the contract's own currency -- the USD
+ * equivalent is calculated with the plan's rate, or with a rate set right
+ * there the first time a currency appears, which then joins the rate table.
  */
 @Component({
   selector: 'fi-adjust-plan-dialog',
@@ -38,8 +46,12 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
   /** The simulation's own period months -- what "Monto estimado a
    *  desembolsar"'s own distribution table lines up with. */
   months: FinancialPlanMonth[] = [];
+  /** The draft's rates, as a working copy the opener reads back on close: a
+   *  legacy contract in a new currency adds its rate here when saved. */
+  exchangeRates: FinancialPlanExchangeRate[] = [];
 
   screen: AdjustPlanScreen = 'list';
+  kindTab: PotentialProcessKind = 'PROCESS';
 
   // ---- list screen
   processes: PotentialProcess[] = [];
@@ -54,6 +66,9 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
   concept = '';
   components: EstimatedDisbursementComponent[] = [];
   savingEstimate = false;
+  /** Rates typed for a currency the plan has none for yet, by currency --
+   *  shared by every row (and contract) in that currency until saved. */
+  newRates: Record<string, number> = {};
 
   /** The ticked processes "Monto a desembolsar" is currently walking through,
    *  in order -- empty outside of that sequence. */
@@ -107,12 +122,43 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     this.applyFilter();
   }
 
+  setTab(kind: PotentialProcessKind): void {
+    this.kindTab = kind;
+    this.applyFilter();
+  }
+
+  kindOf(process: PotentialProcess): PotentialProcessKind {
+    return process.kind ?? 'PROCESS';
+  }
+
+  /** A contract has a contract amount and a contract date, not a process
+   *  total and an expected execution date. */
+  columnKey(column: 'TOTAL_AMOUNT' | 'EXECUTION_DATE', kind: PotentialProcessKind): string {
+    const suffix = kind === 'LEGACY_CONTRACT' ? '_LEGACY' : '';
+    return `FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.${column}${suffix}`;
+  }
+
+  isLegacy(process: PotentialProcess): boolean {
+    return this.kindOf(process) === 'LEGACY_CONTRACT';
+  }
+
+  countFor(kind: PotentialProcessKind): number {
+    return this.processes.filter((process) => this.kindOf(process) === kind).length;
+  }
+
+  /** Ticked rows in one tab, for the count on that tab: the walk covers
+   *  every ticked row in both tabs, so the other tab's ticks must show. */
+  selectedFor(kind: PotentialProcessKind): number {
+    return this.processes.filter((process) => process.selected && this.kindOf(process) === kind).length;
+  }
+
   private applyFilter(): void {
+    const inTab = this.processes.filter((process) => this.kindOf(process) === this.kindTab);
     if (!this.searchTerm) {
-      this.filtered = [...this.processes];
+      this.filtered = inTab;
       return;
     }
-    this.filtered = this.processes.filter((process) =>
+    this.filtered = inTab.filter((process) =>
       [process.code, process.name, process.beneficiary]
         .join(' ')
         .toLocaleLowerCase()
@@ -268,6 +314,13 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     this.editingProcess = process;
 
     const existing = process.estimatedDisbursement;
+    // A rate set the first time on an earlier visit comes back with it, if
+    // the rate table still doesn't carry that currency.
+    existing?.components.forEach((row) => {
+      if (row.currency && row.rateToUsd && !this.knownRate(row.currency)) {
+        this.newRates[row.currency] = row.rateToUsd;
+      }
+    });
     this.concept = existing?.concept ?? '';
     this.components = existing
       ? existing.components.map((row) => ({ ...row, monthlyAmounts: [...row.monthlyAmounts] }))
@@ -323,18 +376,49 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
   }
 
   private blankComponent(): EstimatedDisbursementComponent {
-    return {
+    const row: EstimatedDisbursementComponent = {
       componentCode: '',
       idbAmount: null,
       monthlyAmounts: this.months.map(() => 0),
     };
+    if (this.editingProcess && this.isLegacy(this.editingProcess)) {
+      row.currency = this.editingProcess.currencies?.[0] ?? 'USD';
+      row.currencyAmount = null;
+    }
+    return row;
+  }
+
+  /** The plan's own rate for a currency, or null when it has none yet. */
+  knownRate(currency: string): number | null {
+    if (currency === 'USD') {
+      return 1;
+    }
+    return this.exchangeRates.find((rate) => rate.currency === currency)?.rateToUsd || null;
+  }
+
+  /** A currency this plan has no rate for: its rate is asked for once, here. */
+  isNewCurrency(currency: string): boolean {
+    return Boolean(currency) && !this.knownRate(currency);
+  }
+
+  /** The note about a first-time rate shows once per currency, not per row. */
+  isFirstRowFor(row: EstimatedDisbursementComponent, index: number): boolean {
+    return this.components.findIndex((other) => other.currency === row.currency) === index;
+  }
+
+  rowRate(row: EstimatedDisbursementComponent): number | null {
+    return this.knownRate(row.currency) ?? this.newRates[row.currency] ?? null;
   }
 
   componentName(code: string): string {
     return this.componentOptions.find((option) => option.code === code)?.name ?? '';
   }
 
+  /** USD. For a legacy contract: amount in its currency x rate, to the cent. */
   rowTotal(row: EstimatedDisbursementComponent): number {
+    if (row.currency) {
+      return Math.round((row.currencyAmount || 0) * (this.rowRate(row) || 0) * 100) / 100;
+    }
     return row.idbAmount || 0;
   }
 
@@ -351,12 +435,14 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
    *  point error, which would block a save that is, in every way a person
    *  reading the screen can tell, already fully distributed. */
   remainingToDistribute(row: EstimatedDisbursementComponent): number {
-    const remaining = (row.idbAmount || 0) - this.monthlyTotal(row);
+    const remaining = this.rowTotal(row) - this.monthlyTotal(row);
     return Math.round(remaining * 100) / 100;
   }
 
+  /** Nothing to distribute yet is not "fully distributed": with no amount
+   *  entered, 0 left over would otherwise read as done. */
   isFullyDistributed(row: EstimatedDisbursementComponent): boolean {
-    return this.remainingToDistribute(row) === 0;
+    return this.rowTotal(row) > 0 && this.remainingToDistribute(row) === 0;
   }
 
   isOverDistributed(row: EstimatedDisbursementComponent): boolean {
@@ -409,7 +495,9 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     const disbursement: EstimatedDisbursement = {
       paymentDate: null,
       concept: this.concept,
-      components: this.components,
+      components: this.components.map((row) =>
+        row.currency ? { ...row, idbAmount: this.rowTotal(row), rateToUsd: this.rowRate(row) } : row
+      ),
     };
 
     this.api
@@ -418,6 +506,7 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
         next: () => {
           this.savingEstimate = false;
           this.editingProcess.estimatedDisbursement = disbursement;
+          this.adoptNewRates(disbursement);
           this.notificationSvc.showSuccess(
             this.translate.instant('FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.SAVE_SUCCESS')
           );
@@ -441,5 +530,22 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
           this.savingEstimate = false;
         },
       });
+  }
+
+  /** Same merge the server does on save: a first-time rate joins the plan's
+   *  rates, so the next contract in that currency finds it already set. */
+  private adoptNewRates(disbursement: EstimatedDisbursement): void {
+    disbursement.components.forEach((row) => {
+      if (!row.currency || !this.isNewCurrency(row.currency) || !row.rateToUsd) {
+        return;
+      }
+      const known = this.exchangeRates.find((rate) => rate.currency === row.currency);
+      if (known) {
+        known.rateToUsd = row.rateToUsd;
+      } else {
+        this.exchangeRates = [...this.exchangeRates, { currency: row.currency, rateToUsd: row.rateToUsd }];
+      }
+      delete this.newRates[row.currency];
+    });
   }
 }

@@ -85,6 +85,13 @@
             <span class="fp-table-section__subtotal-value">{{ processesTotal() | ifNumber }}</span>
           </div>
         </div>
+        <!-- Contracts with no payment schedule are not in the schedule this
+             table reads from: they only show up once recorded in the
+             simulation's "Ajustar Plan Financiero". -->
+        <p class="fp-detail-hint" *ngIf="selectable">
+          <em class="fas fa-info-circle"></em>
+          <span>{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.LEGACY_HINT" | translate }}</span>
+        </p>
         <div class="fp-scroll">
           <table class="fp-table fp-table--component-detail">
             <thead>
@@ -120,9 +127,34 @@
                         (change)="toggleProcess(process, $event)"
                         [attr.id]="'Chk_ComponentDetail_Process_' + process.processId"
                       />
-                      <span class="fp-row-lead__id">
+                      <!-- Only a process with commitments underneath is an
+                           accordion, collapsed by default: the chevron and the
+                           Process ID itself open it. Rows without one keep
+                           the chevron's space so every ID lines up. -->
+                      <button
+                        *ngIf="process.commitments.length; else noToggle"
+                        type="button"
+                        class="fp-expand fp-row-lead__toggle"
+                        [attr.id]="'Btn_ComponentDetail_ToggleCommitments_' + process.processId"
+                        [attr.aria-expanded]="isExpanded(process.processId)"
+                        [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.TOGGLE_COMMITMENTS' | translate"
+                        (click)="toggleExpand(process.processId)"
+                      >
+                        <em
+                          class="fas fp-row-lead__chevron"
+                          [ngClass]="isExpanded(process.processId) ? 'fa-chevron-down' : 'fa-chevron-right'"
+                        ></em>
                         <span class="fp-row-lead__id-text">{{ process.processId }}</span>
-                      </span>
+                      </button>
+                      <ng-template #noToggle>
+                        <span class="fp-row-lead__chevron" aria-hidden="true"></span>
+                        <span class="fp-row-lead__id">
+                          <span class="fp-row-lead__id-text">{{ process.processId }}</span>
+                          <span class="fp-row-lead__origin" *ngIf="process.origin">
+                            {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.ORIGIN." + process.origin | translate }}
+                          </span>
+                        </span>
+                      </ng-template>
                     </span>
                   </td>
                   <td>{{ process.description }}</td>
@@ -143,9 +175,10 @@
                   </td>
                 </tr>
                 <!-- A commitment belongs to this process, not the component
-                     as a whole: always shown right under it, one per line,
-                     instead of hidden behind an accordion. -->
-                <ng-container *ngIf="process.commitments.length">
+                     as a whole -- shown right under it once expanded, same
+                     table, rather than only reachable from inside the
+                     process' own dialog. -->
+                <ng-container *ngIf="process.commitments.length && isExpanded(process.processId)">
                   <tr class="fp-table__commitments-header">
                     <td [attr.colspan]="detail.months.length + 5">
                       {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COMMITMENTS_HEADER" | translate }}

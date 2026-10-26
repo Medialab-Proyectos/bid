@@ -60,6 +60,11 @@ export class AdjustRateDialogComponent extends DialogContentBase {
     const row: FinancialPlanExchangeRate = { currency: next, rateToUsd: null };
     this.added.add(row);
     this.rates = [...this.rates, row];
+    // Straight into the new row's rate, the one thing left to type.
+    const index = this.rates.length - 1;
+    setTimeout(() =>
+      (document.querySelector(`#Num_AdjustRate_${index} input`) as HTMLInputElement | null)?.focus()
+    );
   }
 
   removeCurrency(index: number): void {

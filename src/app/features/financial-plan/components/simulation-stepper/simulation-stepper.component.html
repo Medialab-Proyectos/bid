@@ -301,7 +301,11 @@
                 [title]="'FINANCIAL_PLAN.SIMULATION.OPENING_BALANCE_TOOLTIP' | translate"
               ></em>
             </td>
-            <td *ngFor="let value of simulation.openingBalance; let i = index; trackBy: trackByIndex">
+            <td
+              *ngFor="let value of simulation.openingBalance; let i = index; trackBy: trackByIndex"
+              class="fp-cell-flash"
+              [class.fp-cell-flash--on]="i > 0 && isChanged('opening', i)"
+            >
               <kendo-numerictextbox
                 *ngIf="i === 0; else openingStatic"
                 class="fp-table__input"
@@ -347,7 +351,11 @@
           </tr>
           <tr class="fp-table__subtotal">
             <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_EXPENSES" | translate }}</td>
-            <td *ngFor="let value of simulation.balanceAfterExpenses; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+            <td
+              *ngFor="let value of simulation.balanceAfterExpenses; let i = index; trackBy: trackByIndex"
+              class="fp-cell-flash"
+              [class.fp-cell-flash--on]="isChanged('afterExpenses', i)"
+            >{{ value | ifNumber }}</td>
           </tr>
 
           <tr class="fp-table__section">
@@ -384,7 +392,11 @@
           </tr>
           <tr class="fp-table__subtotal">
             <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.BALANCE_AFTER_ADVANCE" | translate }}</td>
-            <td *ngFor="let value of simulation.balanceAfterAdvance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+            <td
+              *ngFor="let value of simulation.balanceAfterAdvance; let i = index; trackBy: trackByIndex"
+              class="fp-cell-flash"
+              [class.fp-cell-flash--on]="isChanged('afterAdvance', i)"
+            >{{ value | ifNumber }}</td>
           </tr>
           <tr class="fp-table__caption">
             <td [attr.colspan]="simulation.months.length + 1">
@@ -424,7 +436,11 @@
 
           <tr class="fp-table__total">
             <td>{{ "FINANCIAL_PLAN.ACTIVE.ROWS.FINAL_BALANCE" | translate }}</td>
-            <td *ngFor="let value of simulation.finalBalance; trackBy: trackByIndex">{{ value | ifNumber }}</td>
+            <td
+              *ngFor="let value of simulation.finalBalance; let i = index; trackBy: trackByIndex"
+              class="fp-cell-flash"
+              [class.fp-cell-flash--on]="isChanged('final', i)"
+            >{{ value | ifNumber }}</td>
           </tr>
         </tbody>
       </table>

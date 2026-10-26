@@ -1957,6 +1957,8 @@
   "FINANCIAL_PLAN.ACTIVE.STATUS_APPROVED": "Aprobado para desembolso",
   "FINANCIAL_PLAN.ACTIVE.LEAD": "No olvides que tienes la opción de simular un nuevo Plan Financiero o solicitar una transacción ANI si es necesario.",
   "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION": "Transacción financiera ANT vinculada",
+  "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_HELP": "ANT (transacción de anticipo): el anticipo de fondos que el BID entrega al ejecutor para cubrir los gastos del período del plan. Se justifica después; hasta justificar el 80 % no se puede confirmar otro anticipo ni otro plan financiero.",
+  "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_HELP": "ANI (incremento de anticipo): fondos adicionales al anticipo, dentro del mismo plan, para gastos no previstos. Mantiene el período del plan, solo cambia los meses desde el actual en adelante y se puede pedir una sola vez por plan.",
   "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_ID": "ID de transacción",
   "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_DATE": "Fecha de la transacción",
   "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION": "Transacción financiera ANI vinculada",

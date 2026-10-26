@@ -2085,3 +2085,179 @@ $fp-control-height: 40px;
   gap: 6px;
   margin-left: auto;
 }
+
+
+// ---------------------------------------------------------------------------
+// Micro-interactions, each for system-status visibility: what changed, what
+// just appeared, what the button just did. Only opacity and transform move.
+// ---------------------------------------------------------------------------
+$fp-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+// 1. A recalculated cell lights up at once and fades out over ~0.8s. The
+// highlight lives on a pseudo-element so only its opacity animates.
+.fp-cell-flash {
+  position: relative;
+
+  &::after {
+    background: rgba(0, 112, 210, 0.14);
+    content: '';
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: opacity 800ms $fp-ease-out;
+  }
+
+  &--on::after {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+// 3. A currency row just added fades and settles in from slightly above.
+@keyframes fp-row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.fp-row-enter {
+  animation: fp-row-enter 200ms $fp-ease-out;
+}
+
+// 4. Errors and hints appear softly instead of popping in and shifting text.
+@keyframes fp-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+
+.fp-field-error,
+.fp-rate-cell__missing,
+.fp-actions__hint {
+  animation: fp-fade-in 160ms $fp-ease-out;
+}
+
+// 5. Buttons: a light press, and colour changes (disabled -> enabled) eased
+// so "Continue" visibly comes alive when the form is complete.
+.btn {
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease,
+    transform 120ms $fp-ease-out;
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+// 6. The stepper's circles and labels change colour smoothly between steps.
+.fp-stepper__circle,
+.fp-stepper__label {
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+// Reduced motion: keep what explains (fades, colour), drop what moves.
+@media (prefers-reduced-motion: reduce) {
+  .fp-row-enter,
+  .fp-field-error,
+  .fp-rate-cell__missing,
+  .fp-actions__hint {
+    animation-name: fp-fade-only;
+  }
+
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+@keyframes fp-fade-only {
+  from {
+    opacity: 0;
+  }
+}
+
+
+// ---- "How it works" steps (Include processes): numbered cards, the current
+// one tinted in the brand blue, a done one with a check -- the same visual
+// language as the simulation stepper, so a step reads as a step.
+.fp-howto {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__step {
+    align-items: flex-start;
+    background: #f7f9fb;
+    border: 1px solid $fp-border;
+    border-radius: 6px;
+    color: $fp-label;
+    display: flex;
+    font-size: $fp-text-sm;
+    gap: 10px;
+    padding: 12px 14px;
+    transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+  }
+
+  &__num {
+    align-items: center;
+    background: #fff;
+    border: 2px solid #c7c7c7;
+    border-radius: 50%;
+    color: #6b6b6b;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    height: 24px;
+    justify-content: center;
+    transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+    width: 24px;
+  }
+
+  &__step--active {
+    background: #eef5fd;
+    border-color: #b6d2f2;
+    color: $fp-value;
+
+    .fp-howto__num {
+      border-color: $fp-brand;
+      color: $fp-brand;
+    }
+  }
+
+  &__step--done .fp-howto__num {
+    background: $fp-brand;
+    border-color: $fp-brand;
+    color: #fff;
+  }
+}
+
+// Names inside the step texts (injected markup, hence ::ng-deep): a button
+// name looks like a small button, a status like the badge in the table.
+:host ::ng-deep .fp-ref-button {
+  background: #fff;
+  border: 1px solid #b6d2f2;
+  border-radius: 4px;
+  color: #0b5aa8;
+  font-weight: 600;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .fp-ref-badge {
+  background: #eef6fc;
+  border-radius: 999px;
+  color: #0b5aa8;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 1px 8px;
+  white-space: nowrap;
+}

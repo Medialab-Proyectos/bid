@@ -137,6 +137,16 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     return process.code;
   }
 
+  /** A step's text with every "quoted" name (a button, a status) drawn as
+   *  the thing it names: a button-like chip, or the "Modified" badge. The
+   *  text is escaped first, so only these spans are ever markup. */
+  stepHtml(step: string, as: 'button' | 'badge' = 'button'): string {
+    const text = this.translate.instant(`FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.${step}`) as string;
+    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const cls = as === 'badge' ? 'fp-ref-badge' : 'fp-ref-button';
+    return escaped.replace(/"([^"]+)"/g, `<span class="${cls}">$1</span>`);
+  }
+
   get selectedCount(): number {
     return this.processes.filter((process) => process.selected).length;
   }

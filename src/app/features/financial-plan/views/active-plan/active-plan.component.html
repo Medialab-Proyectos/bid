@@ -140,6 +140,13 @@
             <div class="fp-info-card__section">
               <h3 class="fp-section-title">
                 {{ "FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION" | translate }}
+                <!-- Same (i) help as the table rows: what this transaction is. -->
+                <em
+                  kendoTooltip
+                  [showOn]="'click'"
+                  class="fas fa-info-circle fp-info-icon"
+                  [title]="'FINANCIAL_PLAN.ACTIVE.ANT_TRANSACTION_HELP' | translate"
+                ></em>
               </h3>
               <div class="fp-period">
                 <div class="fp-period__box">
@@ -166,6 +173,13 @@
             <div class="fp-info-card__section">
               <h3 class="fp-section-title">
                 {{ "FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION" | translate }}
+                <!-- Same (i) help as the table rows: what this transaction is. -->
+                <em
+                  kendoTooltip
+                  [showOn]="'click'"
+                  class="fas fa-info-circle fp-info-icon"
+                  [title]="'FINANCIAL_PLAN.ACTIVE.ANI_TRANSACTION_HELP' | translate"
+                ></em>
               </h3>
               <div class="fp-period">
                 <div class="fp-period__box">

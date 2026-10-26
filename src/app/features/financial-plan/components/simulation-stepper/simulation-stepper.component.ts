@@ -276,7 +276,47 @@ export class SimulationStepperComponent implements OnInit {
    *  like an unsaved edit. */
   onSimulationFieldChange(): void {
     this.hasUnsavedChanges = true;
+    const before = this.snapshotBalances();
     this.recalculate();
+    this.flashChangedCells(before);
+  }
+
+  /** Cells whose value just changed in a recalculation, as "row:month" keys.
+   *  The balances cascade from month to month, so one edit can move numbers
+   *  several columns away; a short highlight shows exactly which ones did. */
+  changedCells = new Set<string>();
+  private flashTimer: ReturnType<typeof setTimeout>;
+
+  isChanged(row: string, monthIndex: number): boolean {
+    return this.changedCells.has(`${row}:${monthIndex}`);
+  }
+
+  private snapshotBalances(): Record<string, number[]> {
+    const sim = this.simulation;
+    return {
+      opening: [...sim.openingBalance],
+      afterExpenses: [...sim.balanceAfterExpenses],
+      afterAdvance: [...sim.balanceAfterAdvance],
+      final: [...sim.finalBalance],
+    };
+  }
+
+  private flashChangedCells(before: Record<string, number[]>): void {
+    const after = this.snapshotBalances();
+    const changed = new Set<string>();
+    Object.keys(after).forEach((row) =>
+      after[row].forEach((value, i) => {
+        if (value !== before[row][i]) {
+          changed.add(`${row}:${i}`);
+        }
+      })
+    );
+    clearTimeout(this.flashTimer);
+    this.changedCells = changed;
+    // Held briefly at full strength, then the class goes and the CSS fades
+    // the highlight out; a new edit re-adds it at once (transition, so it
+    // retargets instead of restarting).
+    this.flashTimer = setTimeout(() => (this.changedCells = new Set<string>()), 450);
   }
 
   /** "Limpiar datos": undoes every process "Ajustar Plan Financiero" has

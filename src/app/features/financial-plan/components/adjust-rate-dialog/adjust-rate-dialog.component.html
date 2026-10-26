@@ -19,7 +19,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let rate of rates; let i = index">
+      <tr *ngFor="let rate of rates; let i = index" [class.fp-row-enter]="isAdded(rate)">
         <td class="fp-table__currency">
           <ng-container *ngIf="!isAdded(rate); else addedCurrency">{{ rate.currency }}</ng-container>
           <ng-template #addedCurrency>

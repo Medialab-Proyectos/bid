@@ -3,12 +3,37 @@
     <p class="fp-lead">
       {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.INTRO" | translate }}
     </p>
-    <ol class="fp-steps">
-      <li>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.STEP_1" | translate }}</li>
-      <li>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.STEP_2" | translate }}</li>
-      <li>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.STEP_3" | translate }}</li>
-      <li>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.STEP_4" | translate }}</li>
+    <!-- The three steps as numbered cards in the stepper's own language, with
+         the one the user is on lit up: nothing ticked yet = step 1; something
+         ticked = step 1 done, step 2 next. Step 3 happens on the next screen.
+         Button names inside the text are drawn as the buttons they name. -->
+    <ol class="fp-howto">
+      <li
+        class="fp-howto__step"
+        [class.fp-howto__step--active]="selectedCount === 0"
+        [class.fp-howto__step--done]="selectedCount > 0"
+      >
+        <span class="fp-howto__num">
+          <em class="fas fa-check" *ngIf="selectedCount > 0; else num1"></em>
+          <ng-template #num1>1</ng-template>
+        </span>
+        <span class="fp-howto__text" [innerHTML]="stepHtml('STEP_1')"></span>
+      </li>
+      <li class="fp-howto__step" [class.fp-howto__step--active]="selectedCount > 0">
+        <span class="fp-howto__num">2</span>
+        <span class="fp-howto__text" [innerHTML]="stepHtml('STEP_2')"></span>
+      </li>
+      <li class="fp-howto__step">
+        <span class="fp-howto__num">3</span>
+        <span class="fp-howto__text" [innerHTML]="stepHtml('STEP_3')"></span>
+      </li>
     </ol>
+
+    <!-- Not a step: how to recognise a process touched on an earlier visit. -->
+    <p class="fp-detail-hint">
+      <em class="fas fa-info-circle"></em>
+      <span [innerHTML]="stepHtml('STEP_4', 'badge')"></span>
+    </p>
 
     <div class="fp-process-toolbar">
       <fi-filter

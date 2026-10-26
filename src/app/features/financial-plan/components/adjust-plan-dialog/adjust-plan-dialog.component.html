@@ -96,7 +96,9 @@
                 {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.MODIFIED_BADGE" | translate }}
               </span>
               <ng-template #notModifiedTpl>
-                <span class="fp-modified-badge fp-modified-badge--off">
+                <!-- Only a modified process says so; "Not modified" on every
+                     other row was noise. Screen readers still get it. -->
+                <span class="fp-sr-only">
                   {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.NOT_MODIFIED_BADGE" | translate }}
                 </span>
               </ng-template>

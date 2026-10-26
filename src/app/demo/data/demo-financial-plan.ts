@@ -15,9 +15,9 @@ import {
 } from '@fiduciary-interface/app/features/financial-plan/models/financial-plan.model';
 import { buildDemoProjectComponents } from './demo-payment-record';
 
-const MONTH_LABELS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
 const ALL_MONTH_NAMES = [
-  'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic',
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ];
 
 function buildMonths(): FinancialPlanMonth[] {

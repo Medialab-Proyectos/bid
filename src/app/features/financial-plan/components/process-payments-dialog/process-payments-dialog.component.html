@@ -1,8 +1,17 @@
-<div class="fp-dialog-head">
+<!-- Pinned while the payments scroll: what this is (the breakdown) and
+     whose it is (process or commitment, and its contract) stay in view. -->
+<div class="fp-dialog-head fp-dialog-head--sticky">
   <span class="fp-dialog-head__icon"><em class="fas fa-list"></em></span>
-  <h2 class="fp-dialog-head__title">
-    {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.MONTHLY_BREAKDOWN" | translate }}
-  </h2>
+  <div class="fp-dialog-head__text">
+    <h2 class="fp-dialog-head__title">
+      {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.MONTHLY_BREAKDOWN" | translate }}
+    </h2>
+    <p class="fp-dialog-head__subtitle">
+      <strong>{{ itemId }}</strong>
+      <span *ngIf="description">{{ description }}</span>
+      <span *ngIf="contractName">· {{ contractName }}</span>
+    </p>
+  </div>
   <button
     type="button"
     class="fp-dialog-head__close"
@@ -16,11 +25,6 @@
 
 <div class="fp-dialog-body">
   <div class="fp-payments-summary">
-    <p class="fp-payments-summary__id">
-      <strong>{{ itemId }}</strong>
-      <span *ngIf="description">{{ description }}</span>
-    </p>
-    <p class="fp-payments-summary__contract" *ngIf="contractName">{{ contractName }}</p>
 
     <div class="fp-payments-summary__totals">
       <div>
@@ -53,6 +57,9 @@
         <thead>
           <tr>
             <th scope="col">
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.MONTH" | translate }}
+            </th>
+            <th scope="col">
               {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PAYMENT_DATE" | translate }}
             </th>
             <th scope="col">
@@ -64,33 +71,20 @@
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let month of monthlyPayments()">
-            <tr class="fp-table__caption fp-table__caption--collapsible" (click)="toggleMonth(month.label)">
-              <td colspan="3">
-                <div class="fp-table__caption-row">
-                  <span class="fp-table__caption-toggle">
-                    <em
-                      class="fas"
-                      [ngClass]="isMonthCollapsed(month.label) ? 'fa-chevron-right' : 'fa-chevron-down'"
-                    ></em>
-                    <strong>{{ month.label }}</strong>
-                    <span class="fp-table__caption-count">
-                      {{
-                        "FINANCIAL_PLAN.COMPONENT_DETAIL.PAYMENTS_COUNT"
-                          | translate : { count: month.payments.length }
-                      }}
-                    </span>
-                  </span>
-                  <span class="fp-table__caption-total">{{ month.total | ifNumber }}</span>
-                </div>
-              </td>
-            </tr>
-            <tr *ngFor="let payment of month.payments" [hidden]="isMonthCollapsed(month.label)">
-              <td>{{ payment.date | dateIF }}</td>
-              <td>{{ payment.concept }}</td>
-              <td>{{ payment.amount | ifNumber }}</td>
-            </tr>
-          </ng-container>
+          <!-- One payment per line, all visible: no accordion to open month
+               by month. The month total is in the bars above. -->
+          <tr *ngFor="let row of paymentRows()">
+            <td>{{ row.month }}</td>
+            <td>{{ row.payment.date | dateIF }}</td>
+            <td>{{ row.payment.concept }}</td>
+            <td>{{ row.payment.amount | ifNumber }}</td>
+          </tr>
+          <tr class="fp-table__total">
+            <td>{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TOTAL" | translate }}</td>
+            <td></td>
+            <td></td>
+            <td>{{ totalAmount | ifNumber }}</td>
+          </tr>
         </tbody>
       </table>
     </div>

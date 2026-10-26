@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from '@progress/kendo-angular-dialog';
 import { Subscription, filter, take } from 'rxjs';
@@ -24,10 +24,17 @@ import { ConfirmAniDialogComponent } from '../../components/confirm-ani-dialog/c
   templateUrl: './active-plan.component.html',
   styleUrls: ['../../financial-plan.shared.scss'],
 })
-export class ActivePlanComponent implements OnInit, OnDestroy {
+export class ActivePlanComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly subscriptions = new Subscription();
+  /** The pinned header; its height is what the simulation's own pinned
+   *  stepper offsets itself by, so the two stack instead of overlapping. */
+  @ViewChild('stickyHead') private stickyHead: ElementRef<HTMLElement>;
+  private stickyObserver: ResizeObserver;
 
   projectBucketId: string;
+  /** «4921/OC-EC · EC-L1248» -- shown in the pinned header, so the operation
+   *  stays in view after the portal's own operation card scrolls away. */
+  operationLabel = '';
   tab: 'active' | 'simulation' | 'previous' = 'active';
   plan: ActiveFinancialPlan;
   loading = false;
@@ -64,6 +71,9 @@ export class ActivePlanComponent implements OnInit, OnDestroy {
       )
       .subscribe((state) => {
         this.projectBucketId = state.selectedProject.projectBucketId;
+        this.operationLabel = [state.selectedProject.contract, state.selectedProject.operationNumber]
+          .filter((part) => !!part)
+          .join(' · ');
         this.load();
         this.restoreInProgressSimulationTab();
       });
@@ -89,8 +99,20 @@ export class ActivePlanComponent implements OnInit, OnDestroy {
     this.subscriptions.add(sub);
   }
 
+  ngAfterViewInit(): void {
+    const head = this.stickyHead?.nativeElement;
+    if (!head || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+    this.stickyObserver = new ResizeObserver(() =>
+      head.parentElement?.style.setProperty('--fp-sticky-h', `${head.offsetHeight}px`)
+    );
+    this.stickyObserver.observe(head);
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.stickyObserver?.disconnect();
   }
 
   load(): void {
@@ -99,9 +121,15 @@ export class ActivePlanComponent implements OnInit, OnDestroy {
       next: (plan) => {
         this.plan = plan;
         this.loading = false;
+        // First plan of the operation: there is nothing to show under
+        // "Plan activo", so it goes straight to the simulation (09/10).
+        if (!plan) {
+          this.tab = 'simulation';
+        }
       },
       error: () => {
         this.loading = false;
+        this.tab = 'simulation';
       },
     });
     this.subscriptions.add(sub);

@@ -54,6 +54,8 @@ export class ComponentDetailComponent implements OnInit, OnDestroy {
    *  modal (`openProcessPayments`/`openCommitmentPayments`) is a separate
    *  action from just seeing which commitments make up a process. */
   private readonly expandedProcesses = new Set<string>();
+  /** «4921/OC-EC · EC-L1248», shown in the pinned header. */
+  operationLabel = '';
 
   constructor(
     private readonly api: FinancialPlanApiService,
@@ -88,6 +90,9 @@ export class ComponentDetailComponent implements OnInit, OnDestroy {
         take(1),
         switchMap((state) => {
           this.projectBucketId = state.selectedProject.projectBucketId;
+          this.operationLabel = [state.selectedProject.contract, state.selectedProject.operationNumber]
+            .filter((part) => !!part)
+            .join(' · ');
           return this.api.getComponentDetail(this.projectBucketId, this.componentCode);
         })
       )

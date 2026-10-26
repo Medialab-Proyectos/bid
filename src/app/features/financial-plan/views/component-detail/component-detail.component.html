@@ -1,30 +1,35 @@
 <div class="fp-page">
-  <button
-    kendoButton
-    class="btn btn-neutral fp-back-button"
-    id="Btn_ComponentDetail_BackToPlan"
-    iconClass="fas fa-arrow-left"
-    (click)="back()"
-  >
-    {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.BACK_TO_PLAN" | translate }}
-  </button>
-
   <div class="fp-card" *ngIf="detail">
-    <div class="fp-card__head">
-      <div class="fp-card__identity">
-        <span class="fp-card__icon"><em class="fas fa-list"></em></span>
-        <h2 class="fp-card__title">
-          {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TITLE" | translate }} {{ detail.componentName }}
-        </h2>
+    <!-- Pinned like the plan's own header: which component, of which
+         operation, and the way back stay in view while the tables scroll. -->
+    <div class="fp-card__sticky">
+      <div class="fp-card__head">
+        <div class="fp-card__identity">
+          <span class="fp-card__icon"><em class="fas fa-list"></em></span>
+          <h2 class="fp-card__title">
+            {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TITLE" | translate }} {{ detail.componentName }}
+          </h2>
+          <span class="fp-card__operation" *ngIf="operationLabel">{{ operationLabel }}</span>
+        </div>
+        <button
+          kendoButton
+          class="btn btn-neutral"
+          id="Btn_ComponentDetail_BackToPlan"
+          iconClass="fas fa-arrow-left"
+          (click)="back()"
+        >
+          {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.BACK_TO_PLAN" | translate }}
+        </button>
       </div>
     </div>
 
     <div class="fp-body">
-      <fi-alert
-        type="warning"
-        [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.ADJUST_NOTE' | translate"
-        [closable]="true"
-      ></fi-alert>
+      <!-- Where to make a change is guidance, not a problem: it reads as the
+           same plain hint as the line below instead of an orange warning. -->
+      <p class="fp-detail-hint">
+        <em class="fas fa-info-circle"></em>
+        <span>{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.ADJUST_NOTE" | translate }}</span>
+      </p>
 
       <p class="fp-detail-hint">
         <em class="fas fa-info-circle"></em>
@@ -40,7 +45,7 @@
         <h3 class="fp-section-title">
           {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
         </h3>
-        <div class="fp-period">
+        <div class="fp-period fp-period--range">
           <div class="fp-period__box">
             <span class="fp-period__label">
               {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
@@ -115,22 +120,6 @@
                         (change)="toggleProcess(process, $event)"
                         [attr.id]="'Chk_ComponentDetail_Process_' + process.processId"
                       />
-                      <!-- Only a process with commitments underneath needs a
-                           way to show/hide them -- collapsed by default, same
-                           as the first version of this screen. -->
-                      <button
-                        *ngIf="process.commitments.length"
-                        type="button"
-                        class="fp-expand"
-                        [attr.id]="'Btn_ComponentDetail_ToggleCommitments_' + process.processId"
-                        [title]="'FINANCIAL_PLAN.COMPONENT_DETAIL.TOGGLE_COMMITMENTS' | translate"
-                        (click)="toggleExpand(process.processId)"
-                      >
-                        <em
-                          class="fas"
-                          [ngClass]="isExpanded(process.processId) ? 'fa-chevron-down' : 'fa-chevron-right'"
-                        ></em>
-                      </button>
                       <span class="fp-row-lead__id">
                         <span class="fp-row-lead__id-text">{{ process.processId }}</span>
                       </span>
@@ -154,10 +143,9 @@
                   </td>
                 </tr>
                 <!-- A commitment belongs to this process, not the component
-                     as a whole -- shown right under it once expanded, same
-                     table, rather than only reachable from inside the
-                     process' own dialog. -->
-                <ng-container *ngIf="isExpanded(process.processId)">
+                     as a whole: always shown right under it, one per line,
+                     instead of hidden behind an accordion. -->
+                <ng-container *ngIf="process.commitments.length">
                   <tr class="fp-table__commitments-header">
                     <td [attr.colspan]="detail.months.length + 5">
                       {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COMMITMENTS_HEADER" | translate }}

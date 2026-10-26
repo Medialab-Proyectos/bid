@@ -6,7 +6,9 @@
 $fp-border: #e0e0e0;
 $fp-label: #58595b;
 $fp-value: #1a1a1a;
-$fp-brand: #007eb6;
+// The portal's own link blue: #007eb6 fell to 4.35:1 on the striped table
+// rows, under the 4.5:1 AA minimum; this one keeps 4.57:1 or better there.
+$fp-brand: #0070d2;
 $fp-success: #2e7d32;
 $fp-success-tint: #eef7ee;
 
@@ -71,6 +73,102 @@ $fp-control-height: 40px;
     font-weight: 600;
     margin: 0;
   }
+}
+
+// Title, operation and tabs stay in view while the page scrolls under them:
+// without it, scrolling past the portal's operation card left the agency
+// typing exchange rates with no sign of which operation or tab they were in.
+.fp-card__sticky {
+  background: #fff;
+  border-radius: 4px 4px 0 0;
+  position: sticky;
+  // The portal's scrolling area (`.k-drawer-content`, _fi.scss) has a 13px top
+  // padding, and a sticky box stops below it: at `top: 0` a 13px band of the
+  // page kept showing through above the bar. This lines it up with the edge.
+  top: -13px;
+  z-index: 6;
+}
+
+.fp-card__sticky {
+  box-shadow: 0 6px 8px -6px rgba(0, 0, 0, 0.18);
+}
+
+// In the simulation the stepper is the bottom of the pinned stack and
+// carries the shadow; two shadows stacked read as two separate layers.
+.fp-card--simulating .fp-card__sticky {
+  box-shadow: none;
+}
+
+.fp-card__operation {
+  border-left: 1px solid $fp-border;
+  color: $fp-label;
+  font-size: $fp-text-sm;
+  margin-left: 4px;
+  padding-left: 12px;
+}
+
+// Buttons follow the module's own type scale. The portal's global `.btn`
+// is 11.7px on a 32px box, sized for its 13px pages; next to this module's
+// 14-16px text it read smaller than the sentence describing it.
+.btn {
+  align-items: center;
+  display: inline-flex;
+  font-size: $fp-text-sm;
+  gap: 6px;
+  justify-content: center;
+  line-height: 1.2;
+  min-height: 36px;
+}
+
+// The plan's state. Same green as the portal's own success notices ($success,
+// #478150: 4.64:1 with white text) rather than the shared status label's lime,
+// which only reaches 2.25:1. The check icon keeps it from relying on colour alone.
+.fp-status-chip {
+  align-items: center;
+  background: #478150;
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: $fp-text-sm;
+  font-weight: 600;
+  gap: 6px;
+  padding: 4px 12px;
+  white-space: nowrap;
+}
+
+// Active plan: its state and the two things you can do next, on one line.
+.fp-plan-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  &__status {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  &__lead {
+    color: $fp-label;
+    font-size: $fp-text-md;
+    margin: 0;
+  }
+}
+
+// What the table is in (its currency) and what you can do with it
+// (download), right above it rather than split around the action buttons.
+.fp-table-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  margin: 24px 0 12px;
 }
 
 .fp-tabstrip {
@@ -198,11 +296,17 @@ $fp-control-height: 40px;
   gap: 16px;
   margin-bottom: 20px;
 
+  // A label/value pair, not a box: inside the module's own bordered card, a
+  // bordered box per date made a box inside a box for two short values.
   &__box {
-    border: 1px solid $fp-border;
-    border-radius: 4px;
-    min-width: 178px;
-    padding: 10px 16px;
+    border: 0;
+    min-width: 0;
+    padding: 0;
+  }
+
+  &__action {
+    align-self: center;
+    margin-left: 20px;
   }
 
   &__label {
@@ -224,15 +328,13 @@ $fp-control-height: 40px;
 // wraps to stacked on a narrow viewport, where a vertical divider stops
 // making sense between two full-width blocks, so it only shows at the
 // width it actually divides something horizontally.
+// No border of its own either: it already sits inside the module's card, and
+// a second frame around a couple of label/value pairs read as "two boxes".
 .fp-info-card {
-  background: #fff;
-  border: 1px solid $fp-border;
-  border-radius: 4px;
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 20px;
-  overflow: hidden;
-  padding: 16px;
+  margin-bottom: 24px;
+  row-gap: 16px;
 
   // An optional full-bleed strip above the section(s) below it -- e.g. the
   // justification gate's own error banner on step 2. `flex: 1 1 100%` is
@@ -243,7 +345,6 @@ $fp-control-height: 40px;
   // its corners from poking out past the card's own rounding.
   &__banner {
     flex: 1 1 100%;
-    margin: -16px -16px 16px;
   }
 
   &__section {
@@ -277,8 +378,14 @@ $fp-control-height: 40px;
     margin: 0 20px;
     width: 1px;
 
+    // Stacked on a narrow screen, the sections ran into each other; a
+    // horizontal rule keeps them apart instead of hiding the divider.
     @media (max-width: 640px) {
-      display: none;
+      align-self: auto;
+      flex: 1 1 100%;
+      height: 1px;
+      margin: 0;
+      width: auto;
     }
   }
 }
@@ -289,21 +396,20 @@ $fp-control-height: 40px;
 // reaches the table, not blend into the paragraph above it. Same amber
 // notice-chip treatment payment-record's own `.pr-notice` already uses for
 // the same job (see payment-record.shared.scss).
+// A plain caption, not a warning: which currency the amounts are in is
+// neutral information, so it no longer borrows the amber/orange of a real
+// warning -- that kept teaching people to skim past the orange that matters.
 .fp-notice-row {
   align-items: center;
-  background: #fdf6e6;
-  border-radius: 4px;
-  color: #7a5400;
+  color: $fp-label;
   display: inline-flex;
-  font-size: $fp-text-md;
-  font-weight: 600;
-  gap: 10px;
-  margin-bottom: 20px;
-  padding: 10px 14px;
+  font-size: $fp-text-sm;
+  gap: 8px;
+  margin: 0;
 
   .fas {
-    color: #e68a00;
-    font-size: $fp-text-lg;
+    color: $fp-label;
+    font-size: $fp-text-sm;
   }
 }
 
@@ -341,9 +447,20 @@ $fp-control-height: 40px;
 // Cancelar/Confirmar ANI: once editing starts, these belong under the table
 // the agency is actually editing, not above it where the eye has already
 // moved past by the time there is anything to confirm.
+// Pinned to the bottom of the scrolling area, so Continue / Save stay in
+// reach however far down the table the agency has scrolled -- same white
+// bar, #dddbda edge and upward shadow as the portal's own
+// `.sticky-footer-container`.
 .fp-actions--bottom {
+  background: #fff;
+  border-top: 1px solid #dddbda;
+  bottom: 0;
+  box-shadow: 0 -6px 8px -6px #00000026;
   margin-bottom: 0;
   margin-top: 28px;
+  padding: 12px 0;
+  position: sticky;
+  z-index: 4;
 }
 
 .fp-scroll {
@@ -423,8 +540,9 @@ $fp-control-height: 40px;
     text-align: left;
   }
 
+  // White on #5e90a8 was 3.48:1; this darker step of the same blue is 5.34:1.
   &__total td {
-    background: #5e90a8;
+    background: #3f7189;
     color: #fff;
     font-size: $fp-text-sm;
     font-weight: 700;
@@ -435,8 +553,10 @@ $fp-control-height: 40px;
     width: 110px;
   }
 
+  // The zero amounts are still data people read: #9a9a9a was 2.72:1, this
+  // grey (already the module's muted text elsewhere) is 5.14:1 or better.
   &__muted {
-    color: #9a9a9a;
+    color: #6b6b6b;
   }
 }
 
@@ -695,27 +815,41 @@ $fp-control-height: 40px;
 // lives in the body, next to what it is warning about, not in the action
 // bar, where it read as a caption for the Cancelar/Guardar buttons instead
 // of context for the table above it.
-// A compact two-column table (currency, rate) -- the cash-flow table's own
-// 56rem minimum exists for its six-plus month columns and would force this
-// one to stretch far past the handful of currencies it actually lists.
-// A short, simple table (checkbox, currency, rate) -- the cash-flow table's
-// own 56rem minimum exists for its six-plus month columns and would force
-// this one into unnecessary horizontal scroll; this one instead fills
-// whatever width the dialog actually gives it, at a size comfortable to
-// read rather than the dense cash-flow table's own compact 13px.
+// The rates table (Información step and the Adjust exchange rate dialog):
+// a currency and its rate read as one pair, so both sit on the left and the
+// last column soaks up the spare width -- the rows keep their full-width
+// stripes, but the input stays right next to its currency instead of at the
+// far edge of the card. Widths go by class, not by position: the dialog has a
+// checkbox column the Información step doesn't, and a positional width meant
+// for one landed on the wrong column in the other. Same left-aligned layout
+// Reporte de Pagos already uses for its own rates table.
 .fp-table--rates {
   font-size: $fp-text-sm;
   min-width: 0;
   width: 100%;
 
-  th:first-child,
-  td:first-child {
-    width: 48px;
+  th,
+  td {
+    text-align: left;
+    white-space: nowrap;
   }
 
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 200px;
+  th:last-child,
+  td:last-child {
+    width: 100%;
+  }
+
+  .fp-table__check {
+    width: 40px;
+  }
+
+  .fp-table__currency {
+    width: 120px;
+
+    label {
+      cursor: pointer;
+      margin: 0;
+    }
   }
 }
 
@@ -724,11 +858,20 @@ $fp-control-height: 40px;
 // reachable once the one before it is done, never ahead of where the draft
 // actually is.
 // ---------------------------------------------------------------------------
+// A progress indicator for the simulation, not a second row of tabs: compact,
+// left-aligned and numbered, and pinned right under the module header so the
+// current step stays in view while the table scrolls.
 .fp-stepper {
   align-items: center;
+  background: #fff;
   border-bottom: 1px solid $fp-border;
+  box-shadow: 0 6px 8px -6px rgba(0, 0, 0, 0.18);
   display: flex;
-  padding: 20px 24px 24px;
+  gap: 4px;
+  padding: 12px 24px;
+  position: sticky;
+  top: calc(var(--fp-sticky-h, 0px) - 13px);
+  z-index: 5;
 
   &__item {
     align-items: center;
@@ -765,15 +908,15 @@ $fp-control-height: 40px;
     width: 20px;
   }
 
-  &__dot {
-    background: currentColor;
-    border-radius: 50%;
-    height: 8px;
-    width: 8px;
+  &__num {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
   }
 
+  // #9a9a9a was 2.81:1; the upcoming steps still have to be readable.
   &__label {
-    color: #9a9a9a;
+    color: #6b6b6b;
     font-size: $fp-text-sm;
     white-space: nowrap;
   }
@@ -798,9 +941,11 @@ $fp-control-height: 40px;
     color: $fp-value;
   }
 
+  // Short connectors: stretched across the full width they pushed the steps
+  // apart into what read as a second row of tabs.
   &__line {
     background: $fp-border;
-    flex: 1 1 32px;
+    flex: 0 0 40px;
     height: 1px;
     margin: 0 12px;
   }
@@ -811,22 +956,23 @@ $fp-control-height: 40px;
 // without first going back to untick real components. Deliberately styled
 // apart from every real action on this screen (dashed border, muted color,
 // pill shape) so it never reads as part of the plan's own actions.
+// A demo-only helper: a quiet text action, not a dashed pill that looked
+// like neither a button nor a tag.
 .fp-preview-toggle {
   align-items: center;
   background: none;
-  border: 1px dashed $fp-border;
-  border-radius: 999px;
+  border: 0;
   color: $fp-label;
   cursor: pointer;
   display: inline-flex;
-  font-size: $fp-text-xs;
+  font-size: $fp-text-sm;
   gap: 6px;
-  margin-bottom: 20px;
-  padding: 6px 12px;
+  margin-bottom: 16px;
+  padding: 4px 0;
 
   &:hover {
-    border-color: $fp-brand;
     color: $fp-brand;
+    text-decoration: underline;
   }
 
   &:focus-visible {
@@ -1191,11 +1337,16 @@ $fp-control-height: 40px;
 .fp-table--component-detail {
   min-width: 0;
 
+  // A floor as well as a ceiling: with only the ceiling, the numbers (which
+  // never wrap) took the room and squeezed these to one word per line, cut
+  // mid-word ("construcci / on"). Wrapping now happens between words only.
   td:nth-child(2),
   td:nth-child(3) {
-    max-width: 220px;
+    max-width: 260px;
+    min-width: 180px;
+    overflow-wrap: normal;
     white-space: normal;
-    word-break: break-word;
+    word-break: normal;
   }
 }
 
@@ -1547,4 +1698,390 @@ $fp-control-height: 40px;
 .fp-table__caption-total {
   color: $fp-value;
   font-weight: 700;
+}
+
+
+// ---------------------------------------------------------------------------
+// Second UX/UI pass (2026-10-26): shared rules that keep every view of the
+// module on one system -- one way to show a hint, one way to show a status,
+// one way to show a period, and nothing that only works at desktop width.
+// ---------------------------------------------------------------------------
+
+.fp-actions__group {
+  align-items: center;
+}
+
+// Why a primary action is disabled, said next to it.
+.fp-actions__hint {
+  color: $fp-label;
+  font-size: $fp-text-sm;
+  margin: 0;
+}
+
+// Captions are information, not actions: grey icon, never the link blue.
+.fp-detail-hint .fas,
+.fp-notice-row .fas {
+  color: $fp-label;
+}
+
+.fp-sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+// Text columns read from the left; only amounts align right.
+.fp-table--component-detail {
+  th:nth-child(2),
+  th:nth-child(3),
+  td:nth-child(2),
+  td:nth-child(3) {
+    text-align: left;
+  }
+}
+
+// ---- Exchange rates: add a currency (e.g. CAD), remove it, see what is missing
+.fp-rate-cell {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+
+  &__missing {
+    color: #b42318;
+    font-size: $fp-text-sm;
+  }
+}
+
+.fp-rate-currency {
+  width: 110px;
+}
+
+.fp-add-currency {
+  margin: 12px 0 16px;
+}
+
+.fp-icon-button {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  color: #6b6b6b;
+  cursor: pointer;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  min-width: 36px;
+  width: 36px;
+
+  &:hover {
+    background: #f3f3f3;
+    color: #b42318;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $fp-brand;
+    outline-offset: 2px;
+  }
+}
+
+// ---- Status labels: soft tint and dark text of the same hue. The portal's
+// own labels put white text on light fills (lime is 2.25:1) and, all
+// saturated, they fought each other and every other colour on the screen.
+// Each pair below is 5.6:1 or better.
+:host ::ng-deep .c-status-label {
+  p.c-status-label__bright-green { background-color: #e4f4da; color: #2b6410; }
+  p.c-status-label__green { background-color: #e0f2ec; color: #1d6650; }
+  p.c-status-label__blue { background-color: #e3eefb; color: #1b5ea3; }
+  p.c-status-label__light-blue { background-color: #ddf3fc; color: #0b5f7f; }
+  p.c-status-label__orange-yellow { background-color: #fff0d4; color: #7f4d00; }
+  p.c-status-label__orange { background-color: #fde8df; color: #a03a12; }
+  p.c-status-label__yellow { background-color: #fdf1dc; color: #7a4f00; }
+  p.c-status-label__red { background-color: #fde6e0; color: #a32a0a; }
+  p.c-status-label__grey { background-color: #eceef1; color: #474f5c; }
+}
+
+// ---- Wide tables: the label column stays put while the months scroll
+// sideways, so a row never loses its name -- on a phone and on desktop alike.
+.fp-table {
+  th:first-child,
+  td:first-child {
+    left: 0;
+    position: sticky;
+    z-index: 1;
+  }
+
+  thead th:first-child {
+    z-index: 2;
+  }
+
+  tbody tr:not(.fp-table__section):not(.fp-table__subtotal):not(.fp-table__total) > td:first-child {
+    background-color: #fff;
+  }
+}
+
+.fp-table tbody tr:nth-child(even):not(.fp-table__section):not(.fp-table__subtotal):not(.fp-table__total) > td:first-child {
+  background-color: #fafbfc;
+}
+
+// ---- Narrow screens
+@media (max-width: 640px) {
+  .fp-card__head {
+    padding: 10px 16px;
+  }
+
+  .fp-card__identity {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
+  // The tabs scroll sideways instead of being cut off at the edge.
+  .fp-tabstrip {
+    gap: 4px;
+    overflow-x: auto;
+    padding: 0 8px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .fp-tabstrip__tab {
+    flex: 0 0 auto;
+    padding: 12px 10px;
+    white-space: nowrap;
+  }
+
+  .fp-body {
+    padding: 16px;
+  }
+
+  // Only the current step keeps its name; the others stay as numbered dots.
+  .fp-stepper {
+    padding: 10px 16px;
+  }
+
+  .fp-stepper__item:not(.fp-stepper__item--active) .fp-stepper__label {
+    display: none;
+  }
+
+  .fp-plan-bar .fp-actions__group,
+  .fp-table-toolbar .fp-actions__group {
+    margin-left: 0;
+  }
+
+  // The pinned label column leaves room for at least one month beside it.
+  .fp-table tbody td:first-child,
+  .fp-table thead th:first-child {
+    max-width: 160px;
+    white-space: normal;
+  }
+}
+
+
+// ---- The plan's period as a range: start box -> end box. Two loose
+// label/value pairs ran together into one line ("26 Oct 2026 13 Oct 2026");
+// as two boxes joined by an arrow it reads at a glance as "from -> until",
+// and the tinted end date is the one people check first. Only the period:
+// ID/date pairs (ANT, ANI) stay as plain pairs, an arrow would mean nothing there.
+.fp-period--range {
+  align-items: stretch;
+  flex-wrap: nowrap;
+  gap: 0;
+
+  .fp-period__box {
+    background: #f7f9fb;
+    border: 1px solid $fp-border;
+    border-radius: 6px;
+    min-width: 150px;
+    padding: 10px 16px;
+  }
+
+  .fp-period__box + .fp-period__box {
+    background: #eef5fd;
+    border-color: #b6d2f2;
+    margin-left: 48px;
+    position: relative;
+
+    &::before {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 14'%3E%3Cpath d='M1 7h24M19 1l6 6-6 6' fill='none' stroke='%237c8a99' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+        no-repeat center / contain;
+      content: '';
+      height: 14px;
+      left: -40px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+    }
+
+    .fp-period__value {
+      color: #0b5aa8;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .fp-period__box {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+}
+
+// Inline error under a field, next to the cause rather than at the bottom.
+.fp-field-error {
+  align-items: center;
+  color: #b42318;
+  display: flex;
+  font-size: $fp-text-sm;
+  gap: 6px;
+  margin: 6px 0 0;
+}
+
+.fp-stepper__exit {
+  margin-left: auto;
+}
+
+// Breakdown: the month, date and concept are text and read from the left;
+// only the amount, the last column, aligns right.
+.fp-table--component-detail-monthly {
+  th:not(:last-child),
+  td:not(:last-child) {
+    text-align: left;
+  }
+}
+
+
+// ---- Separators. The period block is closed off from what follows by a
+// line, and inside a block each label/value pair is set apart from the next
+// by a vertical rule, so "Transaction ID 202600019087 Transaction date 15
+// Feb 2024" no longer reads as one run-on line.
+.fp-info-card {
+  border-bottom: 1px solid $fp-border;
+  padding-bottom: 24px;
+}
+
+.fp-period--range {
+  border-bottom: 1px solid $fp-border;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+
+// Inside the card the card itself draws the line, once.
+.fp-info-card .fp-period--range {
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.fp-period:not(.fp-period--range) .fp-period__box + .fp-period__box {
+  border-left: 1px solid $fp-border;
+  padding-left: 16px;
+}
+
+// A section title with its own action right beside it ("Financial Plan
+// period  [Adjust period]"): the action is clearly about this block.
+.fp-section-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+
+  > .fp-section-title {
+    margin: 0;
+  }
+}
+
+// ---- Dialog header that stays put while the body scrolls. The kendo dialog
+// content has a 20px top padding and a sticky box stops below it, so it is
+// pulled up by that much to sit flush with the dialog's top edge.
+.fp-dialog-head--sticky {
+  background: #fff;
+  box-shadow: 0 6px 8px -6px rgba(0, 0, 0, 0.18);
+  position: sticky;
+  top: -20px;
+  z-index: 3;
+}
+
+.fp-dialog-head__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.fp-dialog-head__subtitle {
+  color: $fp-label;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: $fp-text-sm;
+  gap: 4px 8px;
+  margin: 2px 0 0;
+
+  strong {
+    color: $fp-brand;
+  }
+}
+
+// ---- Alerts in this module: a soft tint with a coloured edge and dark text,
+// instead of the portal's solid orange/red blocks. Solid orange passed at
+// 5.03:1 but outweighed the table it was warning about; this is 10.71:1
+// (warning) and 9.23:1 (error), with the icon still in the alert's colour.
+:host ::ng-deep .c-alert.c-alert--warning {
+  background-color: #fff5e8;
+  border-left: 4px solid #b54708;
+  color: #5c2c06;
+
+  .c-alert__icon,
+  .c-alert__icon .fas,
+  .c-alert--warning__icon {
+    color: #b54708;
+  }
+}
+
+:host ::ng-deep .c-alert.c-alert--error {
+  background-color: #fdeceb;
+  border-left: 4px solid #b42318;
+  color: #7a1b10;
+
+  .c-alert__icon,
+  .c-alert__icon .fas {
+    color: #b42318;
+  }
+
+  .c-alert__title,
+  .c-alert__subtitle {
+    color: #7a1b10;
+  }
+}
+
+// Secondary actions of the simulation as a whole (the demo preview, Exit),
+// together at the right end of the pinned stepper bar.
+.fp-stepper__actions {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+
+  .fp-preview-toggle {
+    margin: 0;
+  }
+
+  .fp-stepper__exit {
+    margin-left: 0;
+  }
+}
+
+.fp-actions__hint--error {
+  align-items: center;
+  color: #b42318;
+  display: inline-flex;
+  font-weight: 600;
+  gap: 6px;
+  margin-left: auto;
 }

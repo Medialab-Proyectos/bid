@@ -11,7 +11,7 @@
     >
       <span class="fp-stepper__circle">
         <em class="fas fa-check" *ngIf="stepIndex(step) > i"></em>
-        <span class="fp-stepper__dot" *ngIf="stepIndex(step) <= i"></span>
+        <span class="fp-stepper__num" *ngIf="stepIndex(step) <= i">{{ i + 1 }}</span>
       </span>
       <span class="fp-stepper__label">
         {{ "FINANCIAL_PLAN.SIMULATION.STEPS." + s | translate }}
@@ -19,6 +19,38 @@
     </button>
     <span class="fp-stepper__line" *ngIf="!last"></span>
   </ng-container>
+  <!-- Leaving the simulation is navigation, so it sits up here with the
+       steps -- pinned, reachable from any point -- instead of in the bottom
+       bar right next to "Back", where two ways out read as the same thing. -->
+  <div class="fp-stepper__actions">
+    <!-- Demo helper: up here with Exit instead of taking a line of the form. -->
+    <button
+      *ngIf="step === 'simulation' && simulation"
+      type="button"
+      class="fp-preview-toggle"
+      [class.fp-preview-toggle--active]="previewBlocked"
+      id="Btn_Simulation_PreviewBlocked"
+      [title]="'FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOOLTIP' | translate"
+      (click)="togglePreviewBlocked()"
+    >
+      <em class="fas" [class.fa-eye]="!previewBlocked" [class.fa-eye-slash]="previewBlocked"></em>
+      {{
+        (previewBlocked
+          ? "FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOGGLE_OFF"
+          : "FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOGGLE_ON"
+        ) | translate
+      }}
+    </button>
+  <button
+    kendoButton
+    class="btn btn-neutral btn-no-stroke fp-stepper__exit"
+    id="Btn_Simulation_Exit"
+    iconClass="fas fa-times"
+    (click)="requestExit()"
+  >
+    {{ "FINANCIAL_PLAN.SIMULATION.EXIT" | translate }}
+  </button>
+  </div>
 </div>
 
 <div class="fp-body" *ngIf="draft">
@@ -52,8 +84,13 @@
             format="dd/MM/yyyy"
             [placeholder]="'FINANCIAL_PLAN.SIMULATION.INFORMATION.DATE_PLACEHOLDER' | translate"
             id="Dtp_Simulation_EndDate"
+            [min]="startDate"
             [(ngModel)]="endDate"
           ></kendo-datepicker>
+          <p class="fp-field-error" *ngIf="periodReversed">
+            <em class="fas fa-exclamation-circle"></em>
+            {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.END_BEFORE_START" | translate }}
+          </p>
         </div>
       </div>
     </div>
@@ -68,7 +105,7 @@
       <table class="fp-table fp-table--rates">
         <thead>
           <tr>
-            <th scope="col">
+            <th scope="col" class="fp-table__currency">
               {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.COLUMNS.CURRENCY" | translate }}
             </th>
             <th scope="col">
@@ -78,14 +115,14 @@
         </thead>
         <tbody>
           <tr *ngFor="let rate of draft.exchangeRates">
-            <td>{{ rate.currency }}</td>
+            <td class="fp-table__currency">{{ rate.currency }}</td>
             <td>
               <kendo-numerictextbox
                 class="fp-table__input"
                 [format]="'n5'"
+                [decimals]="5"
                 [min]="0"
                 [spinners]="false"
-                [placeholder]="'0.00'"
                 [(ngModel)]="rate.rateToUsd"
                 [attr.id]="'Num_Simulation_Rate_' + rate.currency"
               ></kendo-numerictextbox>
@@ -95,7 +132,10 @@
       </table>
     </div>
 
-    <div class="fp-actions">
+    <div class="fp-actions fp-actions--bottom">
+      <p class="fp-actions__hint" *ngIf="!canContinue">
+        {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.CONTINUE_HINT" | translate }}
+      </p>
       <div class="fp-actions__group">
         <button
           kendoButton
@@ -114,23 +154,6 @@
     <p class="fp-lead">
       {{ "FINANCIAL_PLAN.SIMULATION.SIMULATION_LEAD" | translate }}
     </p>
-
-    <button
-      type="button"
-      class="fp-preview-toggle"
-      [class.fp-preview-toggle--active]="previewBlocked"
-      id="Btn_Simulation_PreviewBlocked"
-      [title]="'FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOOLTIP' | translate"
-      (click)="togglePreviewBlocked()"
-    >
-      <em class="fas" [class.fa-eye]="!previewBlocked" [class.fa-eye-slash]="previewBlocked"></em>
-      {{
-        (previewBlocked
-          ? "FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOGGLE_OFF"
-          : "FINANCIAL_PLAN.SIMULATION.PREVIEW_BLOCKED.TOGGLE_ON"
-        ) | translate
-      }}
-    </button>
 
     <!-- The justification gate lives here now, not on step 3 -- "Continuar"
          is what it actually blocks (see `continueToConfirmation`), so the
@@ -182,10 +205,23 @@
       <div class="fp-info-card__divider" *ngIf="!canConfirmPlan && displayJustification"></div>
 
       <div class="fp-info-card__section">
-        <h3 class="fp-section-title">
-          {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
-        </h3>
-        <div class="fp-period">
+        <!-- The period's own action sits next to its title, so it reads as
+             "edit this section" instead of a button floating beside the dates. -->
+        <div class="fp-section-head">
+          <h3 class="fp-section-title">
+            {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
+          </h3>
+          <button
+            kendoButton
+            class="btn btn-neutral"
+            id="Btn_Simulation_AdjustPeriod"
+            iconClass="fas fa-pen"
+            (click)="goToStep('information')"
+          >
+            {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PERIOD" | translate }}
+          </button>
+        </div>
+        <div class="fp-period fp-period--range">
           <div class="fp-period__box">
             <span class="fp-period__label">
               {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
@@ -202,35 +238,34 @@
       </div>
     </div>
 
-    <div class="fp-actions">
-      <div class="fp-notice-row">
-        <em class="fas fa-info-circle"></em>
-        {{
-          "FINANCIAL_PLAN.ACTIVE.CURRENCY_NOTE"
-            | translate : { currency: "USD" }
-        }}
-      </div>
-      <div class="fp-actions__group">
+    <!-- Each action sits next to what it changes: the currency note with
+         "Adjust exchange rate", the table's own actions on the right. All are
+         real buttons -- a link-styled action next to bordered buttons left
+         people unsure which ones were clickable. -->
+    <div class="fp-actions fp-table-toolbar">
+      <div class="fp-actions__group fp-actions__group--leading">
+        <p class="fp-notice-row">
+          <em class="fas fa-info-circle"></em>
+          {{
+            "FINANCIAL_PLAN.ACTIVE.CURRENCY_NOTE"
+              | translate : { currency: "USD" }
+          }}
+        </p>
         <button
-          type="button"
-          class="fp-dialog__link"
-          id="Btn_Simulation_AdjustPeriod"
-          (click)="goToStep('information')"
-        >
-          {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PERIOD" | translate }}
-        </button>
-        <button
-          type="button"
-          class="fp-dialog__link"
+          kendoButton
+          class="btn btn-neutral"
           id="Btn_Simulation_AdjustRate"
           (click)="openAdjustRate()"
         >
           {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.TITLE" | translate }}
         </button>
+      </div>
+      <div class="fp-actions__group">
         <button
           kendoButton
-          class="btn btn-neutral"
+          class="btn btn-neutral btn-no-stroke"
           id="Btn_Simulation_ClearData"
+          iconClass="fas fa-eraser"
           [disabled]="clearingData"
           (click)="clearSimulationData()"
         >
@@ -397,10 +432,6 @@
 
     <div class="fp-actions fp-actions--bottom">
       <div class="fp-actions__group fp-actions__group--leading">
-        <button type="button" class="fp-dialog__link" id="Btn_Simulation_Exit" (click)="requestExit()">
-          <em class="fas fa-arrow-left"></em>
-          {{ "FINANCIAL_PLAN.SIMULATION.EXIT" | translate }}
-        </button>
         <button
           kendoButton
           class="btn btn-neutral btn-no-stroke"
@@ -410,6 +441,14 @@
           {{ "FINANCIAL_PLAN.SIMULATION.BACK" | translate }}
         </button>
       </div>
+      <!-- The banner scrolls away; the reason Continue is greyed out stays next to it. -->
+      <p class="fp-actions__hint fp-actions__hint--error" *ngIf="!canConfirmPlan && displayJustification as j">
+        <em class="fas fa-ban"></em>
+        {{
+          "FINANCIAL_PLAN.SIMULATION.CONFIRMATION.BLOCKED_SHORT"
+            | translate : { percentage: j.justifiedPercentage, threshold: justificationThreshold }
+        }}
+      </p>
       <div class="fp-actions__group">
         <button
           kendoButton
@@ -424,7 +463,7 @@
           kendoButton
           class="btn btn-brand"
           id="Btn_Simulation_ContinueToConfirm"
-          [disabled]="!canConfirmPlan || justificationLoading"
+          [disabled]="!canConfirmPlan || justificationLoading || periodReversed"
           (click)="continueToConfirmation()"
         >
           {{ "FINANCIAL_PLAN.SIMULATION.CONTINUE" | translate }}
@@ -445,7 +484,7 @@
     <h3 class="fp-section-title">
       {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
     </h3>
-      <div class="fp-period">
+      <div class="fp-period fp-period--range">
         <div class="fp-period__box">
           <span class="fp-period__label">
             {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
@@ -593,10 +632,6 @@
       </div>
 
     <div class="fp-actions fp-actions--bottom">
-      <button type="button" class="fp-dialog__link" id="Btn_Confirmation_Exit" (click)="requestExit()">
-        <em class="fas fa-arrow-left"></em>
-        {{ "FINANCIAL_PLAN.SIMULATION.EXIT" | translate }}
-      </button>
       <div class="fp-actions__group">
         <button
           kendoButton

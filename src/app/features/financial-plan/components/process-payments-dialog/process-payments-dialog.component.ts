@@ -40,7 +40,7 @@ export class ProcessPaymentsDialogComponent extends DialogContentBase {
    *  default, same as the Figma reference's own "Monthly breakdown" dialog;
    *  this is purely about reading a long list more comfortably, not a
    *  decision that needs to survive reopening the dialog. */
-  private readonly collapsedMonths = new Set<string>();
+  private flatRows: { month: string; payment: ProcessPayment }[];
 
   /** `monthlyPayments()` is called from `*ngFor` in the template, so
    *  without caching its own result here, every single change-detection
@@ -99,15 +99,16 @@ export class ProcessPaymentsDialogComponent extends DialogContentBase {
     return this.cachedMaxMonthlyTotal;
   }
 
-  isMonthCollapsed(label: string): boolean {
-    return this.collapsedMonths.has(label);
-  }
-
-  toggleMonth(label: string): void {
-    if (this.collapsedMonths.has(label)) {
-      this.collapsedMonths.delete(label);
-    } else {
-      this.collapsedMonths.add(label);
+  /** Every payment on its own line, in date order, each tagged with its
+   *  month -- the flat list asked for instead of an accordion per month.
+   *  Cached for the same reason as `monthlyPayments()`. */
+  paymentRows(): { month: string; payment: ProcessPayment }[] {
+    if (!this.flatRows) {
+      this.flatRows = this.monthlyPayments().reduce(
+        (rows, month) => rows.concat(month.payments.map((payment) => ({ month: month.label, payment }))),
+        [] as { month: string; payment: ProcessPayment }[]
+      );
     }
+    return this.flatRows;
   }
 }

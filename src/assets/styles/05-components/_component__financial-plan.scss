@@ -31,8 +31,12 @@
     text-align: left;
   }
 
+  // Left-aligned like the module's own dialog headers (the breakdown's icon
+  // + title), instead of the portal's centred title floating over the body.
   .k-dialog-title {
     font-weight: 700;
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .k-dialog-actions {

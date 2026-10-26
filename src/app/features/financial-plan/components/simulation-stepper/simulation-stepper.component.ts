@@ -106,8 +106,22 @@ export class SimulationStepperComponent implements OnInit {
     return this.steps.indexOf(stepId);
   }
 
+  /** Both dates and a rate for every currency: without the rates, the
+   *  amounts in other currencies would be converted with nothing. */
   get canContinue(): boolean {
-    return !!this.startDate && !!this.endDate;
+    const rates = this.draft?.exchangeRates ?? [];
+    return (
+      !!this.startDate &&
+      !!this.endDate &&
+      !this.periodReversed &&
+      rates.every((rate) => !!rate.rateToUsd && rate.rateToUsd > 0)
+    );
+  }
+
+  /** The end date has to come after the start: a plan from 26 Oct to 13 Oct
+   *  was being accepted all the way to Confirmar. */
+  get periodReversed(): boolean {
+    return !!this.startDate && !!this.endDate && this.endDate.getTime() <= this.startDate.getTime();
   }
 
   goToStep(target: SimulationStepId): void {
@@ -179,10 +193,18 @@ export class SimulationStepperComponent implements OnInit {
     });
   }
 
-  /** Only the first two months take an advance -- it is drawn once, near the
-   *  start of the plan, not spread across the whole period. */
+  /** The advance goes in ONE month, the first or the second, never both
+   *  (08/10 and 09/10: "no puede haber 2 meses consecutivos de anticipo").
+   *  Once one of the two has an amount, the other locks; a month that
+   *  already holds one stays editable so it can be cleared. */
   advanceEditable(monthIndex: number): boolean {
-    return monthIndex <= 1;
+    if (monthIndex > 1) {
+      return false;
+    }
+    const advance = this.simulation?.advanceAmount ?? [];
+    const own = advance[monthIndex] ?? 0;
+    const other = advance[monthIndex === 0 ? 1 : 0] ?? 0;
+    return own > 0 || !(other > 0);
   }
 
   /** Same client-side CSV export "Plan activo"'s own "Descargar" button

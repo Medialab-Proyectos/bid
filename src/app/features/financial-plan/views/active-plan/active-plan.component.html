@@ -1,11 +1,13 @@
 <div class="fp-page">
-  <div class="fp-card">
+  <div class="fp-card" [class.fp-card--simulating]="tab === 'simulation'">
+    <div class="fp-card__sticky" #stickyHead>
     <div class="fp-card__head">
       <div class="fp-card__identity">
         <span class="fp-card__icon"><em class="fas fa-chart-line"></em></span>
         <h2 class="fp-card__title">
           {{ "FINANCIAL_PLAN.TITLE" | translate }}
         </h2>
+        <span class="fp-card__operation" *ngIf="operationLabel">{{ operationLabel }}</span>
       </div>
     </div>
 
@@ -44,6 +46,7 @@
         {{ "FINANCIAL_PLAN.TABS.PREVIOUS" | translate }}
       </button>
     </div>
+    </div>
 
     <fi-simulation-stepper
       *ngIf="tab === 'simulation'"
@@ -58,17 +61,39 @@
 
     <ng-container *ngIf="plan && tab === 'active'">
       <div class="fp-body">
-        <ng-container *ngIf="!editingAni">
-          <fi-alert
-            type="success"
-            [title]="'FINANCIAL_PLAN.ACTIVE.APPROVED_BANNER' | translate"
-            [closable]="true"
-          ></fi-alert>
-
-          <p class="fp-lead">
-            {{ "FINANCIAL_PLAN.ACTIVE.LEAD" | translate }}
-          </p>
-        </ng-container>
+        <!-- The plan's state as a status label, the way the portal shows
+             states everywhere else, instead of a full-width green banner
+             that out-shouted the page and could be closed away. The two
+             next steps sit on the same line as the sentence that offers them. -->
+        <div class="fp-plan-bar" *ngIf="!editingAni">
+          <div class="fp-plan-bar__status">
+            <span class="fp-status-chip">
+              <em class="fas fa-check-circle" aria-hidden="true"></em>
+              {{ "FINANCIAL_PLAN.ACTIVE.STATUS_APPROVED" | translate }}
+            </span>
+            <p class="fp-plan-bar__lead">
+              {{ "FINANCIAL_PLAN.ACTIVE.LEAD" | translate }}
+            </p>
+          </div>
+          <div class="fp-actions__group">
+            <button
+              kendoButton
+              class="btn btn-neutral"
+              id="Btn_ActivePlan_Simulate"
+              (click)="startSimulation()"
+            >
+              {{ "FINANCIAL_PLAN.ACTIVE.SIMULATE_NEW" | translate }}
+            </button>
+            <button
+              kendoButton
+              class="btn btn-brand"
+              id="Btn_ActivePlan_RequestAni"
+              (click)="startAni()"
+            >
+              {{ "FINANCIAL_PLAN.ACTIVE.REQUEST_ANI" | translate }}
+            </button>
+          </div>
+        </div>
 
         <ng-container *ngIf="editingAni">
           <h3 class="fp-section-title">
@@ -93,7 +118,7 @@
             <h3 class="fp-section-title">
               {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_TITLE" | translate }}
             </h3>
-            <div class="fp-period">
+            <div class="fp-period fp-period--range">
               <div class="fp-period__box">
                 <span class="fp-period__label">
                   {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
@@ -160,15 +185,14 @@
           </ng-container>
         </div>
 
-        <div class="fp-notice-row">
-          <em class="fas fa-info-circle"></em>
-          {{
-            "FINANCIAL_PLAN.ACTIVE.CURRENCY_NOTE"
-              | translate : { currency: plan.approvalCurrency }
-          }}
-        </div>
-
-        <div class="fp-actions">
+        <div class="fp-table-toolbar">
+          <p class="fp-notice-row">
+            <em class="fas fa-info-circle"></em>
+            {{
+              "FINANCIAL_PLAN.ACTIVE.CURRENCY_NOTE"
+                | translate : { currency: plan.approvalCurrency }
+            }}
+          </p>
           <button
             kendoButton
             class="btn btn-neutral"
@@ -178,25 +202,6 @@
           >
             {{ "FINANCIAL_PLAN.ACTIVE.DOWNLOAD" | translate }}
           </button>
-
-          <div class="fp-actions__group" *ngIf="!editingAni">
-            <button
-              kendoButton
-              class="btn btn-neutral"
-              id="Btn_ActivePlan_Simulate"
-              (click)="startSimulation()"
-            >
-              {{ "FINANCIAL_PLAN.ACTIVE.SIMULATE_NEW" | translate }}
-            </button>
-            <button
-              kendoButton
-              class="btn btn-brand"
-              id="Btn_ActivePlan_RequestAni"
-              (click)="startAni()"
-            >
-              {{ "FINANCIAL_PLAN.ACTIVE.REQUEST_ANI" | translate }}
-            </button>
-          </div>
         </div>
 
         <div class="fp-scroll">

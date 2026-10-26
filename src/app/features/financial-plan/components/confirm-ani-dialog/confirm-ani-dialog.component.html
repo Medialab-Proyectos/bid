@@ -3,7 +3,7 @@
     {{ "FINANCIAL_PLAN.ACTIVE.ANI.CONFIRM_LEAD" | translate }}
   </p>
 
-  <div class="fp-period">
+  <div class="fp-period fp-period--range">
     <div class="fp-period__box">
       <span class="fp-period__label">
         {{ "FINANCIAL_PLAN.ACTIVE.PERIOD_START" | translate }}
@@ -16,6 +16,11 @@
       </span>
       <span class="fp-period__value">{{ summary.period.endDate | dateIF }}</span>
     </div>
+  </div>
+
+  <!-- The amounts and the date are not steps of the period: they sit in a
+       row of their own, as plain pairs split by a rule, with no arrow. -->
+  <div class="fp-period fp-period--summary">
     <div class="fp-period__box">
       <span class="fp-period__label">
         {{ "FINANCIAL_PLAN.ACTIVE.ANI.EXISTING_ADVANCE" | translate }}

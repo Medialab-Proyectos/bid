@@ -1,19 +1,16 @@
 <div class="fp-dialog-body">
   <p class="fp-lead">
-    <span class="fp-dialog__required-mark">*</span>
-    <strong>{{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.REQUIRED" | translate }}</strong>
-    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.HELP" | translate }}
+    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.INTRO" | translate }}
   </p>
 
-  <p class="fp-section-title" style="border-bottom: 0">
-    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.MODE" | translate }}
-  </p>
-
+  <!-- Same editable table as the Información step -- the rate is typed
+       straight in, no checkbox to unlock it first. A currency a new contract
+       brings (a legacy contract in Canadian dollars, say) is added as a row of
+       its own, the way Reporte de Pagos already adds currencies. -->
   <table class="fp-table fp-table--rates">
     <thead>
       <tr>
-        <th scope="col"></th>
-        <th scope="col">
+        <th scope="col" class="fp-table__currency">
           {{ "FINANCIAL_PLAN.SIMULATION.INFORMATION.COLUMNS.CURRENCY" | translate }}
         </th>
         <th scope="col">
@@ -22,31 +19,59 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let rate of rates">
-        <td>
-          <input
-            type="checkbox"
-            [checked]="isSelected(rate.currency)"
-            (change)="toggle(rate.currency)"
-            [attr.id]="'Chk_AdjustRate_' + rate.currency"
-          />
+      <tr *ngFor="let rate of rates; let i = index">
+        <td class="fp-table__currency">
+          <ng-container *ngIf="!isAdded(rate); else addedCurrency">{{ rate.currency }}</ng-container>
+          <ng-template #addedCurrency>
+            <kendo-dropdownlist
+              class="c-dropdown-list fp-rate-currency"
+              [data]="currenciesFor(rate)"
+              [(ngModel)]="rate.currency"
+              [attr.id]="'Ddl_AdjustRate_Currency_' + i"
+            ></kendo-dropdownlist>
+          </ng-template>
         </td>
-        <td>{{ rate.currency }}</td>
         <td>
-          <kendo-numerictextbox
-            class="fp-table__input"
-            [format]="'n5'"
-            [min]="0"
-            [spinners]="false"
-            [placeholder]="'0.00'"
-            [disabled]="!isSelected(rate.currency)"
-            [(ngModel)]="rate.rateToUsd"
-            [attr.id]="'Num_AdjustRate_' + rate.currency"
-          ></kendo-numerictextbox>
+          <div class="fp-rate-cell">
+            <kendo-numerictextbox
+              class="fp-table__input"
+              [format]="'n5'"
+              [decimals]="5"
+              [min]="0"
+              [spinners]="false"
+              [(ngModel)]="rate.rateToUsd"
+              [attr.id]="'Num_AdjustRate_' + i"
+            ></kendo-numerictextbox>
+            <button
+              *ngIf="isAdded(rate)"
+              type="button"
+              class="fp-icon-button"
+              [attr.id]="'Btn_AdjustRate_Remove_' + i"
+              [attr.aria-label]="('FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.REMOVE' | translate) + ' ' + rate.currency"
+              [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.REMOVE' | translate"
+              (click)="removeCurrency(i)"
+            >
+              <em class="fas fa-trash-alt"></em>
+            </button>
+            <span class="fp-rate-cell__missing" *ngIf="!rate.rateToUsd">
+              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.MISSING_ONE" | translate }}
+            </span>
+          </div>
         </td>
       </tr>
     </tbody>
   </table>
+
+  <button
+    kendoButton
+    class="btn btn-neutral fp-add-currency"
+    id="Btn_AdjustRate_AddCurrency"
+    iconClass="fas fa-plus"
+    [disabled]="!canAddCurrency"
+    (click)="addCurrency()"
+  >
+    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.ADD_CURRENCY" | translate }}
+  </button>
 
   <p class="fp-dialog__note" *ngIf="lastUpdatedOn">
     {{
@@ -60,12 +85,16 @@
     [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.IMPACT_NOTE' | translate"
     [closable]="false"
   ></fi-alert>
+
+  <p class="fp-actions__hint" *ngIf="!canSave && !saving">
+    {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_RATE.MISSING_RATES" | translate }}
+  </p>
 </div>
 
-<kendo-dialog-actions layout="normal">
+<kendo-dialog-actions layout="end">
   <button
     kendoButton
-    class="btn btn-neutral btn-no-stroke"
+    class="btn btn-neutral"
     id="Btn_AdjustRate_Cancel"
     [disabled]="saving"
     (click)="cancel()"

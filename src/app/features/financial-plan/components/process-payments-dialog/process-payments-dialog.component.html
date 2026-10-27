@@ -65,8 +65,18 @@
             <th scope="col">
               {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PAYMENT_CONCEPT" | translate }}
             </th>
+            <!-- Scheduled payments keep the currency they are paid in; the
+                 last column is always USD, which is what the totals add. -->
+            <ng-container *ngIf="!perMonth">
+              <th scope="col">
+                {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.CURRENCY" | translate }}
+              </th>
+              <th scope="col" class="fp-grid__number">
+                {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.CURRENCY_AMOUNT" | translate }}
+              </th>
+            </ng-container>
             <th scope="col">
-              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PAYMENT_AMOUNT" | translate }}
+              {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.COLUMNS.PAYMENT_AMOUNT_USD" | translate }}
             </th>
           </tr>
         </thead>
@@ -80,6 +90,8 @@
                 <td class="fp-month-cell">{{ month.label }}</td>
                 <td>{{ month.payments[0].date | dateIF }}</td>
                 <td>{{ month.payments[0].concept }}</td>
+                <td>{{ month.payments[0].currency }}</td>
+                <td class="fp-grid__number">{{ month.payments[0].currencyAmount | ifNumber }}</td>
                 <td>{{ month.payments[0].amount | ifNumber }}</td>
               </tr>
               <ng-template #monthGroup>
@@ -99,7 +111,7 @@
                       {{ month.label }}
                     </button>
                   </td>
-                  <td colspan="2" class="fp-table__caption-count">
+                  <td colspan="4" class="fp-table__caption-count">
                     {{ "FINANCIAL_PLAN.COMPONENT_DETAIL.PAYMENTS_COUNT" | translate : { count: month.payments.length } }}
                   </td>
                   <td class="fp-table__caption-total">{{ month.total | ifNumber }}</td>
@@ -108,6 +120,8 @@
                   <td></td>
                   <td>{{ payment.date | dateIF }}</td>
                   <td>{{ payment.concept }}</td>
+                  <td>{{ payment.currency }}</td>
+                  <td class="fp-grid__number">{{ payment.currencyAmount | ifNumber }}</td>
                   <td>{{ payment.amount | ifNumber }}</td>
                 </tr>
               </ng-template>
@@ -122,7 +136,7 @@
             </tr>
           </ng-template>
           <tr class="fp-table__total">
-            <td [attr.colspan]="perMonth ? 2 : 3">{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TOTAL" | translate }}</td>
+            <td [attr.colspan]="perMonth ? 2 : 5">{{ "FINANCIAL_PLAN.COMPONENT_DETAIL.TOTAL" | translate }}</td>
             <td>{{ totalAmount | ifNumber }}</td>
           </tr>
         </tbody>

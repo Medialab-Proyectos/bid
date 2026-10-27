@@ -206,6 +206,11 @@ const PAYMENT_CONCEPTS = [
   'Pago final de contrato',
 ];
 
+/** The currencies a schedule's payments come in, cycled per payment, and the
+ *  demo's rate for each (USD per unit) -- a contract can carry several. */
+const PAYMENT_CURRENCIES = ['COP', 'COP', 'USD', 'EUR'];
+const PAYMENT_RATES: Record<string, number> = { COP: 0.00025, EUR: 1.08, USD: 1 };
+
 /** Splits each month's own total into that many individual payments, dated
  *  evenly across the month, instead of leaving `monthlyAmounts` as the only
  *  figure the drill-down can show -- see `ProcessPayment`. */
@@ -229,10 +234,13 @@ function splitIntoPayments(
     for (let p = 0; p < count; p++) {
       const amount = base + (p === count - 1 ? remainder : 0);
       const day = Math.min(daysInMonth, 3 + Math.round((p * daysInMonth) / count));
+      const currency = PAYMENT_CURRENCIES[(paymentIndex + seed) % PAYMENT_CURRENCIES.length];
       payments.push({
         date: new Date(monthDate.getFullYear(), monthDate.getMonth(), day).toISOString(),
         concept: PAYMENT_CONCEPTS[(paymentIndex + seed) % PAYMENT_CONCEPTS.length],
         amount,
+        currency,
+        currencyAmount: Math.round((amount / PAYMENT_RATES[currency]) * 100) / 100,
       });
       paymentIndex++;
     }
@@ -558,13 +566,23 @@ const POTENTIAL_PROCESSES = new Map<string, PotentialProcess[]>();
 /** Contracts signed before the system, with no payment schedule (26/10). The
  *  first is in Canadian dollars, the currency no draft carries a rate for:
  *  recording it is what brings CAD into the rate table. */
-const LEGACY_CONTRACTS: { code: string; name: string; beneficiary: string; currencies: string[]; totalAmount: number }[] = [
+const LEGACY_CONTRACTS: {
+  code: string;
+  name: string;
+  beneficiary: string;
+  currencies: string[];
+  totalAmount: number;
+  contractStartDate: string;
+  contractEndDate: string;
+}[] = [
   {
     code: 'CO-L1229-C01',
     name: 'Construccion de la planta de tratamiento, fase 1',
     beneficiary: 'Consorcio Aguas del Norte',
     currencies: ['CAD'],
     totalAmount: 4_800_000,
+    contractStartDate: new Date(2021, 6, 12).toISOString(),
+    contractEndDate: new Date(2027, 5, 30).toISOString(),
   },
   {
     code: 'CO-L1229-C02',
@@ -572,6 +590,8 @@ const LEGACY_CONTRACTS: { code: string; name: string; beneficiary: string; curre
     beneficiary: 'Ingenieria Andina S.A.S.',
     currencies: ['COP'],
     totalAmount: 2_150_000_000,
+    contractStartDate: new Date(2021, 6, 13).toISOString(),
+    contractEndDate: new Date(2026, 11, 31).toISOString(),
   },
   {
     code: 'CO-L1229-C03',
@@ -579,16 +599,18 @@ const LEGACY_CONTRACTS: { code: string; name: string; beneficiary: string; curre
     beneficiary: 'LabTech Europe GmbH',
     currencies: ['EUR', 'USD'],
     totalAmount: 1_250_000,
+    contractStartDate: new Date(2021, 6, 14).toISOString(),
+    contractEndDate: new Date(2027, 2, 31).toISOString(),
   },
 ];
 
 function seedPotentialProcesses(): PotentialProcess[] {
-  const legacy = LEGACY_CONTRACTS.map((contract, i): PotentialProcess => ({
+  const legacy = LEGACY_CONTRACTS.map((contract): PotentialProcess => ({
     ...contract,
     kind: 'LEGACY_CONTRACT',
     status: 'EXECUTION',
     currency: contract.currencies.join(', '),
-    executionDate: new Date(2021, 6, 12 + i).toISOString(),
+    executionDate: contract.contractStartDate,
     selected: false,
     estimatedDisbursement: null,
   }));

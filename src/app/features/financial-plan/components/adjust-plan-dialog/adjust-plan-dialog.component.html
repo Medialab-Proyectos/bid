@@ -143,11 +143,23 @@
               {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.CURRENCY" | translate }}
             </th>
             <th scope="col" class="fp-grid__number">
-              {{ columnKey("TOTAL_AMOUNT", kindTab) | translate }}
+              {{ amountColumnKey(kindTab) | translate }}
             </th>
-            <th scope="col">
-              {{ columnKey("EXECUTION_DATE", kindTab) | translate }}
-            </th>
+            <!-- A contract shows its current start and end dates (Rafael,
+                 26/10); a potential process, its expected execution date. -->
+            <ng-container *ngIf="kindTab === 'LEGACY_CONTRACT'; else executionDateHead">
+              <th scope="col">
+                {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.START_DATE_LEGACY" | translate }}
+              </th>
+              <th scope="col">
+                {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.END_DATE_LEGACY" | translate }}
+              </th>
+            </ng-container>
+            <ng-template #executionDateHead>
+              <th scope="col">
+                {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.EXECUTION_DATE" | translate }}
+              </th>
+            </ng-template>
           </tr>
         </thead>
         <tbody>
@@ -187,7 +199,13 @@
             </td>
             <td>{{ process.currency }}</td>
             <td class="fp-grid__number">{{ process.totalAmount | ifNumber }}</td>
-            <td>{{ process.executionDate | dateIF }}</td>
+            <ng-container *ngIf="isLegacy(process); else executionDateCell">
+              <td>{{ process.contractStartDate | dateIF }}</td>
+              <td>{{ process.contractEndDate | dateIF }}</td>
+            </ng-container>
+            <ng-template #executionDateCell>
+              <td>{{ process.executionDate | dateIF }}</td>
+            </ng-template>
           </tr>
         </tbody>
       </table>
@@ -253,16 +271,32 @@
         </div>
         <div class="fp-process-summary__item">
           <span class="fp-process-summary__label">
-            {{ columnKey("TOTAL_AMOUNT", kindOf(process)) | translate }}
+            {{ amountColumnKey(kindOf(process)) | translate }}
           </span>
           <span class="fp-process-summary__value">{{ process.totalAmount | ifNumber }}</span>
         </div>
-        <div class="fp-process-summary__item">
-          <span class="fp-process-summary__label">
-            {{ columnKey("EXECUTION_DATE", kindOf(process)) | translate }}
-          </span>
-          <span class="fp-process-summary__value">{{ process.executionDate | dateIF }}</span>
-        </div>
+        <ng-container *ngIf="isLegacy(process); else executionDateItem">
+          <div class="fp-process-summary__item">
+            <span class="fp-process-summary__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.START_DATE_LEGACY" | translate }}
+            </span>
+            <span class="fp-process-summary__value">{{ process.contractStartDate | dateIF }}</span>
+          </div>
+          <div class="fp-process-summary__item">
+            <span class="fp-process-summary__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.END_DATE_LEGACY" | translate }}
+            </span>
+            <span class="fp-process-summary__value">{{ process.contractEndDate | dateIF }}</span>
+          </div>
+        </ng-container>
+        <ng-template #executionDateItem>
+          <div class="fp-process-summary__item">
+            <span class="fp-process-summary__label">
+              {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.EXECUTION_DATE" | translate }}
+            </span>
+            <span class="fp-process-summary__value">{{ process.executionDate | dateIF }}</span>
+          </div>
+        </ng-template>
       </div>
     </div>
 
@@ -384,19 +418,17 @@
             </div>
           </ng-template>
 
-          <div class="fp-estimated-amount__total">
+          <!-- Only a legacy contract has an equivalent to show: a potential
+               process is always in the approval currency, USD, so its IDB
+               amount already is the total (Rafael, 26/10). -->
+          <div class="fp-estimated-amount__total" *ngIf="isLegacy(process)">
             <span class="fp-dialog__label">
               {{ "FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.TOTAL_EQUIVALENT" | translate }}
               <em
                 kendoTooltip
                 [showOn]="'click'"
                 class="fas fa-info-circle fp-info-icon"
-                [title]="
-                  (isLegacy(process)
-                    ? 'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.EQUIVALENT_TOOLTIP'
-                    : 'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.TOTAL_EQUIVALENT_TOOLTIP'
-                  ) | translate
-                "
+                [title]="'FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.ESTIMATED_AMOUNT.EQUIVALENT_TOOLTIP' | translate"
               ></em>
             </span>
             <span class="fp-estimated-amount__total-value">{{ rowTotal(row) | ifNumber }}</span>

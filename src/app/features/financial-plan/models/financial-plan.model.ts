@@ -110,7 +110,13 @@ export interface AniConfirmSummary {
 export interface ProcessPayment {
   date: string;
   concept?: string;
+  /** Always USD, the approval currency: what every total adds up. */
   amount: number;
+  /** The currency the payment is scheduled in, and the amount in it. Only
+   *  payments from a payment schedule carry them (contracts and other
+   *  activities); a potential process is estimated straight in USD. */
+  currency?: string;
+  currencyAmount?: number;
 }
 
 export interface ProcessCommitmentRow {
@@ -297,6 +303,10 @@ export interface PotentialProcess {
   kind?: PotentialProcessKind;
   /** Legacy contracts: every currency the contract is written in (up to four). */
   currencies?: string[];
+  /** Legacy contracts: the contract's current start and end dates, as they
+   *  stand after any amendment (Rafael, 26/10). */
+  contractStartDate?: string;
+  contractEndDate?: string;
   name: string;
   beneficiary: string;
   status: PotentialProcessStatus;

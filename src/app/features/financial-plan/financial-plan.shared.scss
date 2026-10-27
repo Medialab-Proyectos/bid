@@ -2373,3 +2373,10 @@ $fp-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   color: $fp-label;
   font-weight: 400;
 }
+
+// Breakdown: the amount in the payment's own currency reads as a number too
+// (the table's other text columns are left-aligned).
+.fp-table--component-detail-monthly th.fp-grid__number,
+.fp-table--component-detail-monthly td.fp-grid__number {
+  text-align: right;
+}

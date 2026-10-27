@@ -131,11 +131,10 @@ export class AdjustPlanDialogComponent extends DialogContentBase implements OnIn
     return process.kind ?? 'PROCESS';
   }
 
-  /** A contract has a contract amount and a contract date, not a process
-   *  total and an expected execution date. */
-  columnKey(column: 'TOTAL_AMOUNT' | 'EXECUTION_DATE', kind: PotentialProcessKind): string {
+  /** A contract has a contract amount, not a process total. */
+  amountColumnKey(kind: PotentialProcessKind): string {
     const suffix = kind === 'LEGACY_CONTRACT' ? '_LEGACY' : '';
-    return `FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.${column}${suffix}`;
+    return `FINANCIAL_PLAN.SIMULATION.ADJUST_PLAN.COLUMNS.TOTAL_AMOUNT${suffix}`;
   }
 
   isLegacy(process: PotentialProcess): boolean {
